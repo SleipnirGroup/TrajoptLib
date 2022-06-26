@@ -19,4 +19,14 @@ public class Path {
             throw new IndexOutOfBoundsException();
         }
     }
+
+    double[] asArray() {
+        double[] array = new double[length() * Waypoint.ARRAY_LENGTH];
+        for (int i = 0; i < length(); i++) {
+            array[Waypoint.ARRAY_LENGTH*i    ] = get(i).x;
+            array[Waypoint.ARRAY_LENGTH*i + 1] = get(i).y;
+            array[Waypoint.ARRAY_LENGTH*i + 2] = get(i).heading;
+        }
+        return array;
+    }
 }

@@ -1,6 +1,9 @@
 package org.team2363.helixtrajectory;
 
 public class TrajectorySample {
+
+    static int ARRAY_LENGTH = 7;
+
     public final double ts, x, y, heading, vx, vy, omega;
 
     public TrajectorySample(double ts, double x, double y,

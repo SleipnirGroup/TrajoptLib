@@ -16,4 +16,9 @@ public class SwerveDrive {
         this.tauMax = tauMax;
         this.wheelRadius = wheelRadius;
     }
+
+    double[] asArray() {
+        return new double[]{ wheelbaseX, wheelbaseY, length, width, mass, moi,
+            omegaMax, tauMax, wheelRadius};
+    }
 }

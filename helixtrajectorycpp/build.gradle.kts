@@ -6,12 +6,16 @@ repositories {
 }
 
 dependencies {
+    // implementation(project(":helixtrajectorycpp"))
 }
 
 library {
     linkage.set(listOf(Linkage.SHARED))
     privateHeaders {
+        from("${org.gradle.internal.jvm.Jvm.current().javaHome}/include")
+        from("${org.gradle.internal.jvm.Jvm.current().javaHome}/include/darwin")
         from("${rootProject.projectDir}/casadi/include")
+        from("${projectDir}/src/main/headers")
     }
     tasks.withType(CppCompile::class.java).configureEach {
         compilerArgs.addAll(toolChain.map { toolChain ->

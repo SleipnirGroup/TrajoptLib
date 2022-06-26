@@ -17,6 +17,10 @@ application {
     mainClassName = "org.team2363.helixtrajectory.Main"
 }
 
+tasks.withType(JavaExec::class.java).configureEach {
+    systemProperty("java.library.path", "/Users/jlbabilino/Documents/TripleHelix/Programming/Repositories/HelixTrajectoryJ/helixtrajectorycpp/build/lib/main")
+}
+
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
