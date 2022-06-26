@@ -59,7 +59,7 @@ namespace helixtrajectory {
 
 		// TODO: maybe get rid of lambda and just use the slices below
 		for (int i = 0; i < nTotal; i++) {
-			casadi::MX xNext = X(all, i) + vertcat(X(threeFourFive, i), U(zeroOneTwo, i) * trajectorySegmentDts[i / N_PER_TRAJECTORY_SEGMENT]);
+			casadi::MX xNext = X(all, i) + vertcat(X(threeFourFive, i), U(zeroOneTwo, i)) * trajectorySegmentDts[i / N_PER_TRAJECTORY_SEGMENT];
 			opti.subject_to(X(all, i + 1) == xNext);
 		}
 		std::cout << "Applied kinematic constraints" << std::endl;

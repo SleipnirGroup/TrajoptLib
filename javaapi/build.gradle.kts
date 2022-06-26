@@ -1,6 +1,5 @@
 plugins {
-    `java`
-    `application`
+    `java-library`
 }
 
 repositories {
@@ -13,8 +12,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 }
 
-application {
-    mainClassName = "org.team2363.helixtrajectory.Main"
+java {
 }
 
 tasks.withType(JavaExec::class.java).configureEach {
