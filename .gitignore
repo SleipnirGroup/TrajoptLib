@@ -11,3 +11,5 @@ casadi-x86_64
 .vscode
 
 bin
+
+.DS_Store

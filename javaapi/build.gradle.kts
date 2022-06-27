@@ -16,7 +16,7 @@ java {
 }
 
 tasks.withType(JavaExec::class.java).configureEach {
-    systemProperty("java.library.path", "/Users/jlbabilino/Documents/TripleHelix/Programming/Repositories/HelixTrajectoryJ/helixtrajectorycpp/build/lib/main")
+    systemProperty("java.library.path", "/Users/jlbabilino/Documents/TripleHelix/Programming/Repositories/HelixTrajectoryJ/helixtrajectorycpp/build/lib/main/debug")
 }
 
 tasks.named<Test>("test") {
