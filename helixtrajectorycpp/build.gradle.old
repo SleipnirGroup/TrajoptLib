@@ -1,0 +1,43 @@
+plugins {
+    id 'cpp'
+}
+
+model {
+    toolChains {
+        clang(Clang) {
+            path "/usr/bin/"
+            target "osx_arm-v8"
+        }
+    }
+    platforms {
+        osx {
+            operatingSystem "osx"
+            architecture "arm64"
+        }
+    }
+    components {
+        helixtrajectorycpp(NativeLibrarySpec) {
+            binaries.all {
+                targetPlatform "osx"
+                if (targetPlatform.operatingSystem.macOsX) {
+                    cppCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+                    cppCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/darwin"
+                    cppCompiler.args '-I', "${rootProject.projectDir}/casadi/include/"
+                    cppCompiler.args '-mmacosx-version-min=10.4'
+                    linker.args '-mmacosx-version-min=10.4'
+                } else if (targetPlatform.operatingSystem.linux) {
+                    cppCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+                    cppCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/linux"
+                    cppCompiler.args '-D_FILE_OFFSET_BITS=64'
+                } else if (targetPlatform.operatingSystem.windows) {
+                    cppCompiler.args "-I${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+                    cppCompiler.args "-I${org.gradle.internal.jvm.Jvm.current().javaHome}/include/win32"
+                    linker.args "Shlwapi.lib", "Advapi32.lib"
+                } else if (targetPlatform.operatingSystem.freeBSD) {
+                    cppCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include"
+                    cppCompiler.args '-I', "${org.gradle.internal.jvm.Jvm.current().javaHome}/include/freebsd"
+                }
+            }
+        }
+    }
+}
