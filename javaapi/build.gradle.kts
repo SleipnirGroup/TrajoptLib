@@ -1,5 +1,6 @@
 plugins {
-    `java-library`
+    `java`
+    `application`
 }
 
 repositories {
@@ -15,8 +16,12 @@ dependencies {
 java {
 }
 
+application {
+    mainClassName = "org.team2363.helixtrajectory.Main"
+}
+
 tasks.withType(JavaExec::class.java).configureEach {
-    systemProperty("java.library.path", "/Users/jlbabilino/Documents/TripleHelix/Programming/Repositories/HelixTrajectoryJ/helixtrajectorycpp/build/lib/main/debug")
+    systemProperty("java.library.path", "/Users/jlbabilino/Documents/TripleHelix/Programming/Repositories/HelixTrajectoryJ/helixtrajectorycpp/build/src")
 }
 
 tasks.named<Test>("test") {

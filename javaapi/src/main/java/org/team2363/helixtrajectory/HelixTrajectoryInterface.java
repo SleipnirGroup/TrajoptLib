@@ -10,5 +10,5 @@ public class HelixTrajectoryInterface {
         System.loadLibrary("helixtrajectorycpp");
     }
 
-    public native double[] generateTrajectory(double[] robotConfiguration, double[] path);
+    public native double[] generateTrajectory(SwerveDrive drive, Path path);
 }

@@ -71,7 +71,7 @@ namespace helixtrajectory {
 		std::cout << "Applied swerve constraints" << std::endl;
 		ApplyBoundryConstraints(opti, vx, vy, omega, nTotal);
 		std::cout << "Applied boundry constraints" << std::endl;
-		ApplyWaypointConstraints(opti, x, y, theta, path);
+		ApplyWaypointConstraints(opti, x, y, theta, vx, vy, omega, path);
 		std::cout << "Applied Waypoint constraints" << std::endl;
 
 		opti.solver("ipopt");
@@ -118,13 +118,29 @@ namespace helixtrajectory {
 		solver.subject_to(omega(nTotal) == 0);
 	}
 
-	void TrajectoryGenerator::ApplyWaypointConstraints(casadi::Opti& solver, const casadi::MX& x, const casadi::MX& y, const casadi::MX& theta, Path& path) {
+	void TrajectoryGenerator::ApplyWaypointConstraints(casadi::Opti& solver, const casadi::MX& x, const casadi::MX& y, const casadi::MX& theta, const casadi::MX& vx, const casadi::MX& vy, const casadi::MX& omega, Path& path) {
 		const size_t waypointCount = path.waypoints.size();
 		for (int i = 0; i < waypointCount; i++) {
 			int index = i * N_PER_TRAJECTORY_SEGMENT;
-			solver.subject_to(x(index) == path.waypoints[i].x);
-			solver.subject_to(y(index) == path.waypoints[i].y);
-			solver.subject_to(theta(index) == path.waypoints[i].heading);
+			const Waypoint& waypoint = path.waypoints[i];
+			if (waypoint.xConstrained) {
+				solver.subject_to(x(index) == waypoint.x);
+			}
+			if (waypoint.yConstrained) {
+				solver.subject_to(y(index) == waypoint.y);
+			}
+			if (waypoint.headingConstrained) {
+				solver.subject_to(theta(index) == waypoint.heading);
+			}
+			if (waypoint.vxConstrained) {
+				solver.subject_to(vx(index) == waypoint.vx);
+			}
+			if (waypoint.vyConstrained) {
+				solver.subject_to(vy(index) == waypoint.vy);
+			}
+			if (waypoint.omegaConstrained) {
+				solver.subject_to(omega(index) == waypoint.omega);
+			}
 		}
 	}
 }

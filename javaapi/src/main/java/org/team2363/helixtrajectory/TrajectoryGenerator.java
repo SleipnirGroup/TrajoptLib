@@ -9,6 +9,6 @@ public class TrajectoryGenerator {
     }
 
     public Trajectory generate(Path path) {
-        return Trajectory.fromArray(new HelixTrajectoryInterface().generateTrajectory(drive.asArray(), path.asArray()));
+        return Trajectory.fromArray(new HelixTrajectoryInterface().generateTrajectory(drive, path));
     }
 }
