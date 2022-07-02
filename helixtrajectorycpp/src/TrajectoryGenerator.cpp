@@ -132,12 +132,27 @@ namespace helixtrajectory {
 			if (waypoint.headingConstrained) {
 				solver.subject_to(theta(index) == waypoint.heading);
 			}
-			if (waypoint.vxConstrained) {
-				solver.subject_to(vx(index) == waypoint.vx);
+			if (waypoint.vMagnitudeConstrained) {
+				if (waypoint.vxConstrained) {
+					solver.subject_to(vx(index) == waypoint.vx);
+				}
+				if (waypoint.vyConstrained) {
+					solver.subject_to(vy(index) == waypoint.vy);
+				}
+				if (!waypoint.vxConstrained && !waypoint.vyConstrained) {
+					double magnitudeSquared = waypoint.vx * waypoint.vx + waypoint.vy * waypoint.vy;
+					solver.subject_to(vx(index) * vx(index) + vy(index) * vy(index) == magnitudeSquared);
+				}
+			} else {
+				casadi::MX scalarMultiplier = solver.variable();
+				if (waypoint.vxConstrained) {
+					solver.subject_to(vx(index) == scalarMultiplier * waypoint.vx);
+				}
+				if (waypoint.vyConstrained) {
+					solver.subject_to(vy(index) == scalarMultiplier * waypoint.vy);
+				}
 			}
-			if (waypoint.vyConstrained) {
-				solver.subject_to(vy(index) == waypoint.vy);
-			}
+			
 			if (waypoint.omegaConstrained) {
 				solver.subject_to(omega(index) == waypoint.omega);
 			}

@@ -26,6 +26,7 @@ JNIEXPORT jdoubleArray JNICALL Java_org_team2363_helixtrajectory_HelixTrajectory
     jfieldID jWaypointClassHeadingConstrained = env->GetFieldID(jWaypointClass, "headingConstrained", "Z");
     jfieldID jWaypointClassVXConstrained = env->GetFieldID(jWaypointClass, "vxConstrained", "Z");
     jfieldID jWaypointClassVYConstrained = env->GetFieldID(jWaypointClass, "vyConstrained", "Z");
+    jfieldID jWaypointClassVMagnitudeConstrained = env->GetFieldID(jWaypointClass, "vMagnitudeConstrained", "Z");
     jfieldID jWaypointClassOmegaConstrained = env->GetFieldID(jWaypointClass, "omegaConstrained", "Z");
     jclass jSwerveDriveClass = env->FindClass("org/team2363/helixtrajectory/SwerveDrive");
     jfieldID jSwerveDriveWheelbaseX = env->GetFieldID(jSwerveDriveClass, "wheelbaseX", "D");
@@ -55,6 +56,7 @@ JNIEXPORT jdoubleArray JNICALL Java_org_team2363_helixtrajectory_HelixTrajectory
         jboolean headingConstrained = env->GetBooleanField(jWaypoint, jWaypointClassHeadingConstrained);
         jboolean vxConstrained = env->GetBooleanField(jWaypoint, jWaypointClassVXConstrained);
         jboolean vyConstrained = env->GetBooleanField(jWaypoint, jWaypointClassVYConstrained);
+        jboolean vMagnitudeConstrained = env->GetBooleanField(jWaypoint, jWaypointClassVMagnitudeConstrained);
         jboolean omegaConstrained = env->GetBooleanField(jWaypoint, jWaypointClassOmegaConstrained);
         waypoints.push_back(Waypoint{
                 static_cast<double>(x),
@@ -68,6 +70,7 @@ JNIEXPORT jdoubleArray JNICALL Java_org_team2363_helixtrajectory_HelixTrajectory
                 static_cast<bool>(headingConstrained),
                 static_cast<bool>(vxConstrained),
                 static_cast<bool>(vyConstrained),
+                static_cast<bool>(vMagnitudeConstrained),
                 static_cast<bool>(omegaConstrained)});
     }
     Path path = waypoints;
