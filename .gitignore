@@ -7,7 +7,9 @@ build
 casadi
 casadi-aarch64
 casadi-x86_64
+casadi-static
 runlibs
+lib
 
 .vscode
 
