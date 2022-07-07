@@ -1,14 +1,8 @@
 package org.team2363.helixtrajectory;
 
 public class TrajectoryGenerator {
-    
-    private final SwerveDrive drive;
-    
-    public TrajectoryGenerator(SwerveDrive drive) {
-        this.drive = drive;
-    }
 
-    public Trajectory generate(Path path) {
-        return Trajectory.fromArray(new HelixTrajectoryInterface().generateTrajectory(drive, path));
+    public static Trajectory generate(SwerveDrive drive, Path path, Obstacle[] obstacles) {
+        return Trajectory.fromArray(new HelixTrajectoryInterface().generateTrajectory(drive, path, obstacles));
     }
 }

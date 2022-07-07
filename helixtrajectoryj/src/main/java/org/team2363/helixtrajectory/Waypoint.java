@@ -5,10 +5,12 @@ public class Waypoint {
     public final double x, y, heading, vx, vy, omega;
     public final boolean xConstrained, yConstrained, headingConstrained,
             vxConstrained, vyConstrained, vMagnitudeConstrained, omegaConstrained;
+    public final InitialGuessPoint[] initialGuessPoints;
 
     public Waypoint(double x, double y, double heading, double vx, double vy, double omega,
             boolean xConstrained, boolean yConstrained, boolean headingConstrained,
-            boolean vxConstrained, boolean vyConstrained, boolean vMagnitudeConstrained, boolean omegaConstrained) {
+            boolean vxConstrained, boolean vyConstrained, boolean vMagnitudeConstrained, boolean omegaConstrained,
+            InitialGuessPoint... initialGuessPoints) {
         this.x = x;
         this.y = y;
         this.heading = heading;
@@ -23,6 +25,20 @@ public class Waypoint {
         this.vyConstrained = vyConstrained;
         this.vMagnitudeConstrained = vMagnitudeConstrained;
         this.omegaConstrained = omegaConstrained;
+
+        this.initialGuessPoints = initialGuessPoints;
+    }
+
+    public int initialGuessPointsLength() {
+        return initialGuessPoints.length;
+    }
+
+    public InitialGuessPoint getInitialGuessPoint(int index) throws IndexOutOfBoundsException {
+        if (index >= 0 && index < initialGuessPointsLength()) {
+            return initialGuessPoints[index];
+        } else {
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     public static Waypoint softWaypoint(double x, double y) {

@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     org_team2363_helixtrajectory_HelixTrajectoryInterface
  * Method:    generateTrajectory
- * Signature: (Lorg/team2363/helixtrajectory/SwerveDrive;Lorg/team2363/helixtrajectory/Path;)[D
+ * Signature: (Lorg/team2363/helixtrajectory/SwerveDrive;Lorg/team2363/helixtrajectory/Path;[Lorg/team2363/helixtrajectory/Obstacle;)[D
  */
 JNIEXPORT jdoubleArray JNICALL Java_org_team2363_helixtrajectory_HelixTrajectoryInterface_generateTrajectory
-  (JNIEnv *, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject, jobject, jobjectArray);
 
 #ifdef __cplusplus
 }
