@@ -111,6 +111,6 @@ namespace helixtrajectory {
          * @param theta the instantaneous heading of the robot
          * @return a 2 x 4 matrix of positions where each column is a module and each row is a coordinate
          */
-        const casadi::MX SolveModulePositions(const casadi::MX& theta) const;
+        const casadi::MX SolveModulePosition(const casadi::MX& theta, const SwerveModule& module) const;
     };
 }

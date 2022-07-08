@@ -16,6 +16,10 @@ namespace helixtrajectory {
             ax(U(0, all)), ay(U(1, all)), alpha(U(2, all)),
             trajectorySegmentTs(opti.variable(1, trajectorySegmentCount)),
             trajectorySegmentDts(trajectorySegmentTs / nPerTrajectorySegment) {
+
+        std::cout << "Module count " << drive.modules.size() << std::endl;
+        std::cout << "nTotal " << nTotal << std::endl;
+
         casadi::MX totalT = 0;
         for (size_t i = 0; i < trajectorySegmentCount; i++) {
             totalT += trajectorySegmentTs(i);
@@ -36,9 +40,9 @@ namespace helixtrajectory {
         std::cout << "Set initial trajectory" << std::endl;
 
         drive.ApplyKinematicsConstraints(opti, theta, vx, vy, omega, ax, ay, alpha, nTotal);
-        std::cout << "Applied Obstacle constraints" << std::endl;
+        std::cout << "Applied Swerve constraints" << std::endl;
         drive.ApplyObstacleConstraints(opti, x, y, theta, nTotal, obstacles);
-        std::cout << "Applied swerve constraints" << std::endl;
+        std::cout << "Applied Obstacle constraints" << std::endl;
         ApplyBoundryConstraints();
         std::cout << "Applied boundry constraints" << std::endl;
         ApplyWaypointConstraints();
@@ -83,6 +87,7 @@ namespace helixtrajectory {
     }
 
     void TrajectoryGenerator::ApplyBoundryConstraints() {
+        std::cout << "About to apply boundry constraints" << std::endl;
         opti.subject_to(vx(0) == 0);
         opti.subject_to(vy(0) == 0);
         opti.subject_to(omega(0) == 0);
