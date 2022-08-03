@@ -8,11 +8,10 @@
 namespace helixtrajectory {
 
     SwerveDrive::SwerveDrive(
-            double wheelbaseX, double wheelbaseY, double length, double width,
+            double wheelbaseX, double wheelbaseY,
             double mass, double moi,
-            double wheelMaxAngularVelocity, double wheelMaxTorque, double wheelRadius) :
-        HolonomicDrive(mass, moi,
-            Obstacle(0, { {+length/2, +width/2}, {-length/2, +width/2}, {-length/2, -width/2}, {+length/2, -width/2} })), // full four corners
+            double wheelMaxAngularVelocity, double wheelMaxTorque, double wheelRadius, const Obstacle& bumpers) :
+        HolonomicDrive(mass, moi, bumpers), // full four corners
             // Obstacle(0, { {+length/2, +width/2}, {length/2, -width/2} })), // only front two
             // Obstacle(hypot(length / 2, width / 2), { {0, 0} })), // approximate with circle
         modules({

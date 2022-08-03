@@ -36,13 +36,12 @@ JNIEXPORT jdoubleArray JNICALL Java_org_team2363_helixtrajectory_HelixTrajectory
     jclass jSwerveDriveClass = env->FindClass("org/team2363/helixtrajectory/SwerveDrive");
     jfieldID jSwerveDriveWheelbaseX = env->GetFieldID(jSwerveDriveClass, "wheelbaseX", "D");
     jfieldID jSwerveDriveWheelbaseY = env->GetFieldID(jSwerveDriveClass, "wheelbaseY", "D");
-    jfieldID jSwerveDriveLength = env->GetFieldID(jSwerveDriveClass, "length", "D");
-    jfieldID jSwerveDriveWidth = env->GetFieldID(jSwerveDriveClass, "width", "D");
     jfieldID jSwerveDriveMass = env->GetFieldID(jSwerveDriveClass, "mass", "D");
     jfieldID jSwerveDriveMoi = env->GetFieldID(jSwerveDriveClass, "moi", "D");
     jfieldID jSwerveDriveOmegaMax = env->GetFieldID(jSwerveDriveClass, "omegaMax", "D");
     jfieldID jSwerveDriveTauMax = env->GetFieldID(jSwerveDriveClass, "tauMax", "D");
     jfieldID jSwerveDriveWheelRadius = env->GetFieldID(jSwerveDriveClass, "wheelRadius", "D");
+    jfieldID jSwerveDriveBumpers = env->GetFieldID(jSwerveDriveClass, "bumpers", "Lorg/team2363/helixtrajectory/Obstacle;");
     jclass jObstacleClass = env->FindClass("org/team2363/helixtrajectory/Obstacle");
     jfieldID jObstacleClassSafetyDistance = env->GetFieldID(jObstacleClass, "safetyDistance", "D");
     jmethodID jObstacleClassLengthMethod = env->GetMethodID(jObstacleClass, "length", "()I");
@@ -91,16 +90,28 @@ JNIEXPORT jdoubleArray JNICALL Java_org_team2363_helixtrajectory_HelixTrajectory
     }
     Path path = waypoints;
 
+    jobject jBumpers = env->GetObjectField(jDrive, jSwerveDriveBumpers);
+    double bumpersSafetyDistance = env->GetDoubleField(jBumpers, jObstacleClassSafetyDistance);
+    size_t bumpersPointCount = env->CallIntMethod(jBumpers, jObstacleClassLengthMethod);
+    std::vector<ObstaclePoint> bumpersPoints;
+    bumpersPoints.reserve(bumpersPointCount);
+    for (size_t bumpersPointIndex = 0; bumpersPointIndex < bumpersPointCount; bumpersPointIndex++) {
+        jobject jBumperPoint = env->CallObjectMethod(jBumpers, jObstacleClassGetMethod, bumpersPointIndex);
+        jdouble jBumperPointX = env->GetDoubleField(jBumperPoint, jObstaclePointClassX);
+        jdouble jBumperPointY = env->GetDoubleField(jBumperPoint, jObstaclePointClassY);
+        bumpersPoints.push_back({jBumperPointX, jBumperPointY});
+    }
+
     SwerveDrive drive = {
         env->GetDoubleField(jDrive, jSwerveDriveWheelbaseX),
         env->GetDoubleField(jDrive, jSwerveDriveWheelbaseY),
-        env->GetDoubleField(jDrive, jSwerveDriveLength),
-        env->GetDoubleField(jDrive, jSwerveDriveWidth),
         env->GetDoubleField(jDrive, jSwerveDriveMass),
         env->GetDoubleField(jDrive, jSwerveDriveMoi),
         env->GetDoubleField(jDrive, jSwerveDriveOmegaMax),
         env->GetDoubleField(jDrive, jSwerveDriveTauMax),
-        env->GetDoubleField(jDrive, jSwerveDriveWheelRadius)};
+        env->GetDoubleField(jDrive, jSwerveDriveWheelRadius),
+        Obstacle(bumpersSafetyDistance, bumpersPoints)
+    };
 
     size_t obstacleCount = env->GetArrayLength(jObstacles);
     std::vector<Obstacle> obstacles;

@@ -93,9 +93,8 @@ namespace helixtrajectory {
          * @param wheelMaxTorque maximum torque applied to wheels
          * @param wheelRadius radius of wheels
          */
-        SwerveDrive(double wheelbaseX, double wheelbaseY,
-                double length, double width, double mass, double moi,
-                double wheelMaxAngularVelocity, double wheelMaxTorque, double wheelRadius);
+        SwerveDrive(double wheelbaseX, double wheelbaseY, double mass, double moi,
+                double wheelMaxAngularVelocity, double wheelMaxTorque, double wheelRadius, const Obstacle& bumpers);
         virtual void ApplyKinematicsConstraints(casadi::Opti& opti,
                 const casadi::MX& theta, const casadi::MX& vx, const casadi::MX& vy,
                 const casadi::MX& omega, const casadi::MX& ax, const casadi::MX& ay,
