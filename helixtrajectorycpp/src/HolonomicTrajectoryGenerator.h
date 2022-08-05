@@ -83,7 +83,8 @@ namespace helixtrajectory {
         HolonomicTrajectoryGenerator(const HolonomicDrive& drive, const HolonomicPath& path, const std::vector<Obstacle>& obstacles);
         /**
          * @brief Optimizes the given path using IPOPT. Note this function call
-         * may take a long time to complete. It may also fail, an
+         * may take a long time to complete. It may also fail, and throw a
+         * CasadiException.
          * 
          * @return a unique pointer to a holonomic trajectory
          */

@@ -12,12 +12,8 @@ namespace helixtrajectory {
         casadi::MX position(2, 1);
         double cornerDiagonal = hypot(bumperCorner.x, bumperCorner.y);
         double cornerAngle = atan2(bumperCorner.y, bumperCorner.x);
-        std::cout << "About to assign bumper corner position" << std::endl;
-        std::cout << "Row count = " << theta.rows() << std::endl;
-        std::cout << "Col count = " << theta.columns() << std::endl;
         position(0) = x + cornerDiagonal * cos(cornerAngle + theta);
         position(1) = y + cornerDiagonal * sin(cornerAngle + theta);
-        std::cout << "Assigned bumper corner poses" << std::endl;
         return position;
     }
 
@@ -46,17 +42,17 @@ namespace helixtrajectory {
                     }
                 } else {
                     for (size_t bumperCornerIndex = 0; bumperCornerIndex < bumperCornerCount - 1; bumperCornerIndex++) {
-                        std::cout << "About to solve bumper positions" << std::endl;
+                        // std::cout << "About to solve bumper positions" << std::endl;
                         casadi::MX startBumperCornerPosition = SolveBumperCornerPosition(x(i), y(i), theta(i), bumpers.points[bumperCornerIndex]);
                         casadi::MX endBumperCornerPosition = SolveBumperCornerPosition(x(i), y(i), theta(i), bumpers.points[bumperCornerIndex + 1]);
-                        std::cout << "solved bumper positions" << std::endl;
+                        // std::cout << "solved bumper positions" << std::endl;
                         for (const ObstaclePoint& obstaclePoint : obstacle.points) {
-                            std::cout << "Finding line point dist" << std::endl;
+                            // std::cout << "Finding line point dist" << std::endl;
                             casadi::MX dist = linePointDist(startBumperCornerPosition(0), startBumperCornerPosition(1),
                                     endBumperCornerPosition(0), endBumperCornerPosition(1), obstaclePoint.x, obstaclePoint.y);
-                            std::cout << "Line point dist found" << std::endl;
+                            // std::cout << "Line point dist found" << std::endl;
                             opti.subject_to(dist >= distSquared);
-                            std::cout << "Constrained line point dist" << std::endl;
+                            // std::cout << "Constrained line point dist" << std::endl;
                         }
                     }
                     if (bumperCornerCount >= 3) { // must have at least three points to make a closed shape

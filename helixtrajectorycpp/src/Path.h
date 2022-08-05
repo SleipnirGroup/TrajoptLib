@@ -79,5 +79,6 @@ namespace helixtrajectory {
          * @return a const reference to the waypoint
          */
         inline virtual const Waypoint& GetWaypoint(size_t index) const = 0;
+        // virtual bool IsValid() const = 0;
     };
 }

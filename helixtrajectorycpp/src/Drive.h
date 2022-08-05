@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <casadi/casadi.hpp>
 
 #include "Obstacle.h"
@@ -82,6 +84,6 @@ namespace helixtrajectory {
          * @param nTotal the number of segments in this trajectory (number of sample points - 1)
          */
         void ApplyObstacleConstraints(casadi::Opti& opti, const casadi::MX& x, const casadi::MX& y,
-                const casadi::MX& theta, const size_t nTotal, const std::vector<Obstacle>& obstacles) const;
+                const casadi::MX& theta, size_t nTotal, const std::vector<Obstacle>& obstacles) const;
     };
 }

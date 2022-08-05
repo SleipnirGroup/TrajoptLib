@@ -1,5 +1,10 @@
 #pragma once
 
+#include <vector>
+
+#include <casadi/casadi.hpp>
+
+#include "Drive.h"
 #include "HolonomicDrive.h"
 #include "Path.h"
 #include "Obstacle.h"

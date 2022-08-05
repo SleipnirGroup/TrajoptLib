@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Path.h"
 
 namespace helixtrajectory {

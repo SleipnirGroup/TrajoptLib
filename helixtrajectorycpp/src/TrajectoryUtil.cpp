@@ -22,16 +22,20 @@ namespace helixtrajectory {
             if (guessPointsCount == 0) {
                 linspace(X, 0, path.GetWaypoint(i).x, path.GetWaypoint(i + 1).x, nPerTrajectorySegment);
                 linspace(X, 1, path.GetWaypoint(i).y, path.GetWaypoint(i + 1).y, nPerTrajectorySegment);
+                linspace(X, 2, path.GetWaypoint(i).heading, path.GetWaypoint(i + 1).heading, nPerTrajectorySegment);
             } else {
                 size_t segmentsPerGuessSegment = nPerTrajectorySegment / guessPointsCount;
                 linspace(X, 0, path.GetWaypoint(i).x, path.GetWaypoint(i).initialGuessPoints[0].x, segmentsPerGuessSegment);
                 linspace(X, 1, path.GetWaypoint(i).y, path.GetWaypoint(i).initialGuessPoints[0].y, segmentsPerGuessSegment);
+                linspace(X, 2, path.GetWaypoint(i).heading, path.GetWaypoint(i).initialGuessPoints[0].heading, segmentsPerGuessSegment);
                 for (int j = 0; j < guessPointsCount - 1; j++) {
                     linspace(X, 0, path.GetWaypoint(i).initialGuessPoints[j].x, path.GetWaypoint(i).initialGuessPoints[j + 1].x, segmentsPerGuessSegment);
                     linspace(X, 1, path.GetWaypoint(i).initialGuessPoints[j].y, path.GetWaypoint(i).initialGuessPoints[j + 1].y, segmentsPerGuessSegment);
+                    linspace(X, 2, path.GetWaypoint(i).initialGuessPoints[j].heading, path.GetWaypoint(i).initialGuessPoints[j + 1].heading, segmentsPerGuessSegment);
                 }
                 linspace(X, 0, path.GetWaypoint(i).initialGuessPoints[guessPointsCount - 1].x, path.GetWaypoint(i + 1).x, nPerTrajectorySegment - guessPointsCount * segmentsPerGuessSegment);
                 linspace(X, 1, path.GetWaypoint(i).initialGuessPoints[guessPointsCount - 1].y, path.GetWaypoint(i + 1).y, nPerTrajectorySegment - guessPointsCount * segmentsPerGuessSegment);
+                linspace(X, 1, path.GetWaypoint(i).initialGuessPoints[guessPointsCount - 1].heading, path.GetWaypoint(i + 1).heading, nPerTrajectorySegment - guessPointsCount * segmentsPerGuessSegment);
             }
         }
         X(0, (waypointCount - 1) * nPerTrajectorySegment) = path.GetWaypoint(waypointCount - 1).x;

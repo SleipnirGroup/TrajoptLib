@@ -13,15 +13,15 @@ namespace helixtrajectory {
     /**
      * @brief slices all the rows or columns
      */
-    const casadi::Slice all;
+    const casadi::Slice ALL;
     /**
      * @brief slices the first 3 rows or columns
      */
-    const casadi::Slice zeroOneTwo(0, 3);
+    const casadi::Slice ZERO_ONE_TWO(0, 3);
     /**
      * @brief slices the second 3 rows or columns
      */
-    const casadi::Slice threeFourFive(3, 6);
+    const casadi::Slice THREE_FOUR_FIVE(3, 6);
 
     void linspace(casadi::DM& x, size_t row, double start, double end, double n);
 
