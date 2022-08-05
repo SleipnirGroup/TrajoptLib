@@ -10,13 +10,22 @@ namespace helixtrajectory {
     /**
      * @brief Represents a type of drivetrain that is holonomic. Holonomic drivetrains allow
      * the robot to have complete (or approximate) control over the three degrees of freedom:
-     * position and heading. For example, mecanum drivetrains and swerve drivetrains can both
+     * position and rotation. For example, mecanum drivetrains and swerve drivetrains can both
      * manipulate their motors to have any overall velocity vector while having any heading.
+     * HolonomicDrive introduces no new fields, but it forces subtypes to implement the
+     * kinematics constraints method.
      */
     class HolonomicDrive : public Drive {
     protected:
+        /**
+         * @brief Construct a new HolonomicDrive with the robot's mass, moment of inertia, and bumpers.
+         * 
+         * @param mass the mass of the entire robot
+         * @param moi the moment of inertia of the robot about the center of rotation, which 
+         * @param bumpers the bumpers of the robot represented as an obstacle
+         */
         HolonomicDrive(double mass, double moi, const Obstacle& bumpers);
-    protected:
+    public:
         /**
          * @brief Applies the drivetrain-specific constraints to the optimizer. These constraints
          * prevent motors from spinning too fast or with too much power. 
@@ -36,6 +45,6 @@ namespace helixtrajectory {
         virtual void ApplyKinematicsConstraints(casadi::Opti& opti,
                 const casadi::MX& theta, const casadi::MX& vx, const casadi::MX& vy,
                 const casadi::MX& omega, const casadi::MX& ax, const casadi::MX& ay,
-                const casadi::MX& alpha, const size_t nTotal) const = 0;
+                const casadi::MX& alpha, size_t nTotal) const = 0;
     };
 }

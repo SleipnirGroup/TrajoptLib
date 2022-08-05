@@ -3,13 +3,17 @@
 #include <vector>
 
 namespace helixtrajectory {
+
+    /**
+     * @brief A point of an obstacle, usually representing a vertex of a polygon.
+     */
     struct ObstaclePoint {
         /**
-         * @brief x coordinate of obstacle point
+         * @brief the x-coordinate of obstacle point
          */
         double x;
         /**
-         * @brief y coordinate of obstacle point
+         * @brief the y-coordinate of obstacle point
          */
         double y;
     };
@@ -17,7 +21,8 @@ namespace helixtrajectory {
     /**
      * @brief Represents a physical obstacle that the robot must avoid by a certain distance.
      * Arbitrary polygons can be expressed with this class, and circle obstacles can also be
-     * created by only using one point.
+     * created by only using one point with a safety distance. Obstacle points must be wound either
+     * clockwise or counterclockwise.
      */
     class Obstacle {
     public:

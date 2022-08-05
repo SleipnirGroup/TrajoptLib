@@ -1,8 +1,8 @@
-#include "Trajectory.h"
+#include "HolonomicTrajectory.h"
 
 namespace helixtrajectory {
 
-    Trajectory::Trajectory(const std::vector<TrajectorySample>& samples)
+    HolonomicTrajectory::HolonomicTrajectory(const std::vector<HolonomicTrajectorySample>& samples)
         : samples(samples) {
     }
 }

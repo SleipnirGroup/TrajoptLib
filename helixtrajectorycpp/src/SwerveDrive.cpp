@@ -7,18 +7,8 @@
 
 namespace helixtrajectory {
 
-    SwerveDrive::SwerveDrive(
-            double wheelbaseX, double wheelbaseY,
-            double mass, double moi,
-            double wheelMaxAngularVelocity, double wheelMaxTorque, double wheelRadius, const Obstacle& bumpers) :
-        HolonomicDrive(mass, moi, bumpers), // full four corners
-            // Obstacle(0, { {+length/2, +width/2}, {length/2, -width/2} })), // only front two
-            // Obstacle(hypot(length / 2, width / 2), { {0, 0} })), // approximate with circle
-        modules({
-            {+wheelbaseX, +wheelbaseY, wheelRadius, wheelMaxAngularVelocity, wheelMaxTorque},
-            {+wheelbaseX, -wheelbaseY, wheelRadius, wheelMaxAngularVelocity, wheelMaxTorque},
-            {-wheelbaseX, +wheelbaseY, wheelRadius, wheelMaxAngularVelocity, wheelMaxTorque},
-            {-wheelbaseX, -wheelbaseY, wheelRadius, wheelMaxAngularVelocity, wheelMaxTorque} }) {
+    SwerveDrive::SwerveDrive(double mass, double moi, const std::vector<SwerveModule>& modules,  const Obstacle& bumpers) :
+        HolonomicDrive(mass, moi, bumpers), modules(modules) {
     }
 
     const casadi::MX SwerveDrive::SolveModulePosition(const casadi::MX& theta, const SwerveModule& module) const {

@@ -4,10 +4,24 @@
 
 namespace helixtrajectory {
 
+    /**
+     * @brief An initial guess of a possible state the robot may be in during the trajectory.
+     */
     struct InitialGuessPoint {
+        /**
+         * @brief the initial guess of the x-coordinate of the robot
+         */
         double x;
+        /**
+         * @brief the initial guess of the y-coordinate of the robot
+         */
         double y;
+        /**
+         * @brief the initial guess of the heading of the robot
+         */
+        double heading;
     };
+
     /**
      * @brief A certain state that the robot must have during some instance of the trajectory.
      * Includes options to constrain dynamics like position and velocity during that instance.
@@ -26,44 +40,44 @@ namespace helixtrajectory {
          */
         double heading;
         /**
-         * @brief x-coordinate of robot velocity at waypoint
+         * @brief whether or not the optimizer should constrain the x-coordinate of the robot at waypoint
          */
-        double vx;
+        bool xConstrained;
         /**
-         * @brief y-coordinate of robot velocity at waypoint
+         * @brief whether or not the optimizer should constrain the y-coordinate of the robot at waypoint
          */
-        double vy;
+        bool yConstrained;
         /**
-         * @brief angular velocity of robot at waypoint
+         * @brief whether or not the optimizer should constrain the heading of the robot at waypoint
          */
-        double omega;
-        /**
-         * @brief indicates which parts of the robot state must be constrained, and which parts are
-         * free to be selected by the optimizer.
-         */
-        bool xConstrained, yConstrained, headingConstrained,
-                vxConstrained, vyConstrained, vMagnitudeConstrained, omegaConstrained;
+        bool headingConstrained;
         /**
          * @brief the points used to construct the initial trajectory guess for the next trajectory segment
          */
         std::vector<InitialGuessPoint> initialGuessPoints;
     };
 
-    /**
-     * @brief A sequence of waypoints that make up a path that the robot can follow. Note that
-     * and a Trajectory is the detailed output of the optimizer that tells the robot exactly how
-     * to move.
-     */
-    struct Path {
+    class Path {
+    public:
         /**
-         * @brief the waypoints that make up this path
-         */
-        std::vector<Waypoint> waypoints;
-        /**
-         * @brief Construct a Path with a list of waypoints
+         * @brief Gets the number of waypoints that make up this path.
          * 
-         * @param waypoints the waypoints that make up this path
+         * @return the length of this path
          */
-        Path(const std::vector<Waypoint>& waypoints);
+        inline virtual size_t Length() const noexcept = 0;
+        /**
+         * @brief Get the waypoint at the specified index.
+         * 
+         * @param index the index
+         * @return a reference to the waypoint
+         */
+        inline virtual Waypoint& GetWaypoint(size_t index) = 0;
+        /**
+         * @brief Get the waypoint at the specified index.
+         * 
+         * @param index the index
+         * @return a const reference to the waypoint
+         */
+        inline virtual const Waypoint& GetWaypoint(size_t index) const = 0;
     };
 }

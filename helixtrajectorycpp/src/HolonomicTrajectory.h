@@ -10,7 +10,7 @@ namespace helixtrajectory {
      * since it can be inferred with simple calculations. For example, the rotation of each
      * swerve module is omitted. State is measured relative to the field coordinate system.
      */
-    struct TrajectorySample {
+    struct HolonomicTrajectorySample {
         /**
          * @brief the amount of time since the beginning of the trajectory
          */
@@ -46,18 +46,18 @@ namespace helixtrajectory {
      * This gives the trajectory follower the exact data it needs to make the robot
      * follow the generated path.
      */
-    struct Trajectory {
+    struct HolonomicTrajectory {
 
         /**
          * @brief the list of sample points that make up this trajectory
          */
-        std::vector<TrajectorySample> samples;
+        std::vector<HolonomicTrajectorySample> samples;
 
         /**
          * @brief Construct a new Trajectory object with a list of sample points.
          * 
          * @param samples the list of sample points that make up this trajectory
          */
-        Trajectory(const std::vector<TrajectorySample>& samples);
+        HolonomicTrajectory(const std::vector<HolonomicTrajectorySample>& samples);
     };
 }

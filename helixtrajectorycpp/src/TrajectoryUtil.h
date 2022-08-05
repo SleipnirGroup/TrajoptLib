@@ -5,12 +5,22 @@
 #include "casadi/casadi.hpp"
 
 #include "Path.h"
-#include "Trajectory.h"
+#include "HolonomicPath.h"
+#include "HolonomicTrajectory.h"
 
 namespace helixtrajectory {
 
+    /**
+     * @brief slices all the rows or columns
+     */
     const casadi::Slice all;
+    /**
+     * @brief slices the first 3 rows or columns
+     */
     const casadi::Slice zeroOneTwo(0, 3);
+    /**
+     * @brief slices the second 3 rows or columns
+     */
     const casadi::Slice threeFourFive(3, 6);
 
     void linspace(casadi::DM& x, size_t row, double start, double end, double n);
@@ -34,6 +44,6 @@ namespace helixtrajectory {
         return distSquared;
     }
 
-    void printPath(const Path& path);
-    void printTrajectory(const Trajectory& trajectory);
+    void printHolonomicPath(const HolonomicPath& path);
+    void printHolonomicTrajectory(const HolonomicTrajectory& trajectory);
 }

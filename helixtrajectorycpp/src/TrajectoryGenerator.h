@@ -1,54 +1,94 @@
 #pragma once
 
-#include <memory>
-
-#include "Obstacle.h"
+#include "HolonomicDrive.h"
 #include "Path.h"
-#include "SwerveDrive.h"
-#include "Trajectory.h"
+#include "Obstacle.h"
 
 namespace helixtrajectory {
+
+    /**
+     * @brief This class is the superclass for all trajectory generators. It contains the common
+     * functionality of all optimizers: waypoint position constraints and obstacle avoidance.
+     */
     class TrajectoryGenerator {
-    private:
-        const SwerveDrive& drive;
+    protected:
+        /**
+         * @brief the drive
+         */
+        const Drive& drive;
+        /**
+         * @brief the path
+         */
         const Path& path;
+        /**
+         * @brief the list of obstacles
+         */
         const std::vector<Obstacle>& obstacles;
 
+        /**
+         * @brief the number of waypoints in the path
+         */
         const size_t waypointCount;
+        /**
+         * @brief the number of trajectory segments in the trajectory
+         */
         const size_t trajectorySegmentCount;
+        /**
+         * @brief the number of segments in a trajectory segment
+         */
         const size_t nPerTrajectorySegment;
+        /**
+         * @brief the total number of segments in the trajectory
+         */
         const size_t nTotal;
 
+        /**
+         * @brief the optimizer
+         */
         casadi::Opti opti;
-        casadi::MX X;
-        casadi::MX x;
-        casadi::MX y;
-        casadi::MX theta;
-        casadi::MX vx;
-        casadi::MX vy;
-        casadi::MX omega;
-        casadi::MX U;
-        casadi::MX ax;
-        casadi::MX ay;
-        casadi::MX alpha;
+
+        /**
+         * @brief the list of durations of each trajectory segment
+         */
         casadi::MX trajectorySegmentTs;
+        /**
+         * @brief the list of time differentials of each trajectory segment
+         */
         casadi::MX trajectorySegmentDts;
 
         /**
-         * @brief Apply constraints that represent the fact that the robot is still when starting and
-         * ending a path. This could be modified so that the robot is required to have a
-         * certain starting and ending velocity.
-         * 
-         * @param opti the current optimizer
-         * @param vx (nTotal + 1) x 1 column vector of velocity x-components for each sample point
-         * @param vy (nTotal + 1) x 1 column vector of velocity y-components for each sample point
-         * @param omega (nTotal + 1) x 1 column vector of angular velocities for each sample point
-         * @param nTotal number of segments in path (number of sample points - 1)
+         * @brief The 3 x (nTotal + 1) matrix of robot position state per trajectory sample point.
+         * Each column is a sample point. The first row is the x-coordinate, the second row is
+         * the y-coordinate, and the third row is the heading.
          */
-        void ApplyBoundryConstraints();
-        void ApplyWaypointConstraints();
-    public:
-        TrajectoryGenerator(const SwerveDrive& drive, const Path& path, const std::vector<Obstacle>& obstacles);
-        std::unique_ptr<Trajectory> Generate();
+        casadi::MX X;
+        /**
+         * @brief the 1 x (nTotal + 1) vector of the robot's x-coordinate per trajectory sample point
+         */
+        casadi::MX x;
+        /**
+         * @brief the 1 x (nTotal + 1) vector of the robot's y-coordinate per trajectory sample point
+         */
+        casadi::MX y;
+        /**
+         * @brief the 1 x (nTotal + 1) vector of the robot's heading per trajectory sample point
+         */
+        casadi::MX theta;
+
+        /**
+         * @brief Construct a new Trajectory Generator from a drive, path, and list of obstacles.
+         * 
+         * @param drive the drive
+         * @param path the path
+         * @param obstacles the list of obstacles
+         */
+        TrajectoryGenerator(const Drive& drive, const Path& path, const std::vector<Obstacle>& obstacles);
+    private:
+        /**
+         * @brief Applies the constraints that force the robot's motion to comply
+         * with the list of waypoints provided. This may include constraints on
+         * position and heading.
+         */
+        void ApplyPathConstraints();
     };
 }

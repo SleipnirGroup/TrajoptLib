@@ -9,6 +9,12 @@
 
 namespace helixtrajectory {
 
+    /**
+     * @brief This struct represents a single swerve module in a swerve drivetrain.
+     * It is defined by the module diagonal, which is the line connecting the origin
+     * of the robot coordinate system to the center of the module. The wheel radius,
+     * max speed, and max torque must also be specified per module.
+     */
     struct SwerveModule {
         /**
          * @brief the x-coordinate of the swerve module relative to the robot coordinate system
@@ -31,46 +37,30 @@ namespace helixtrajectory {
          */
         double wheelMaxTorque;
 
-        double GetModuleDiagonal() const {
+        /**
+         * @brief Calculates the length of the module diagonal, which is the 
+         * distance from the origin of the robot coordinate system to the
+         * center of the module.
+         * 
+         * @return the module diagonal length
+         */
+        inline double GetModuleDiagonal() const {
             return hypot(x, y);
         }
-        double GetModuleAngle() const {
+        /**
+         * @brief Calculates the angle between the x-axis of the robot coordinate
+         * system and the module diagonal
+         * 
+         * @return the module diagonal angle
+         */
+        inline double GetModuleAngle() const {
             return atan2(y, x);
         }
     };
     /**
      * @brief This class represents a swerve drive robot. It includes the physical properties necessary to
-     * accurately model the dynamics of the system. To understand this code, some definitions
-     * are required.
-     * 
-     * When properties for each module (or bumper corner) are listed, they are always in the order of
-     * [front_left, front_right, rear_left, rear_right].
-     * Related to the 2D coordinate system of the field, the robot coordinate system is defined with its
-     * center placed on the center of the robot (which is the center of a rectangle with corners touching
-     * each swerve module), and the x-axis points directly towards the front face of the robot. The y-axis
-     * points 90 degress counter-clockwise. The following diagram shows the coordinate system and some
-     * related dimensions:
-     *  _________________________________________                    \ 
-     * /                                         \                   |
-     * |   00                              00    |                   |
-     * |   00  rear_left        front_left  00   |   \               |
-     * |   00               y                00  |   |               |
-     * |                    ^                    |   | wheelbase_y   |
-     * |                    |                    |   |               |
-     * |                    +----> x             |   /               | width
-     * |                                         |                   |
-     * |                                         |                   |
-     * |  00                                00   |                   |
-     * |   00  rear_right      front_right  00   |                   |
-     * |    00                              00   |                   |
-     * |                                         |                   |
-     * \_________________________________________/                   /
-     *                      <- wheelbase_x ->
-     * <----------------- length ---------------->
-     * 
-     * The nonrotating robot coordinate system is defined with the same center as the robot coordinate
-     * system, but it does not rotate and its axes always point in the same directions as the field
-     * coordinate system. The robot rotates relative to the nonrotating robot coordinate system.
+     * accurately model the dynamics of the system. An arbitrary number of swerve modules can be specified,
+     * but typically it will be four. The order the swerve modules are listed does not matter.
      */
     class SwerveDrive : public HolonomicDrive {
     public:
@@ -80,35 +70,52 @@ namespace helixtrajectory {
         std::vector<SwerveModule> modules;
 
         /**
-         * @brief Construct a SwerveDrive object with the appropriate properties.
+         * @brief Construct a new SwerveDrive with the robot's mass, moment of inertia, swerve modules, and bumpers.
          * 
-         * @param wheelbaseX x coordinate of the front or rear right module relative to the nonrotating robot coordinate system
-         * @param wheelbaseY y coordinate of the front or rear right module relative to the nonrotating robot coordinate system
-         * @param length bumper-to-bumper distance in x-direction relative to the nonrotating robot coordinate system
-         * @param width bumper-to-bumper distance in y-direction relative to the nonrotating robot coordinate system
-         * @param mass mass of the robot
-         * @param moi moment of inertia of robot about axis of rotation (currently through
-         *            center of robot coordinate system)
-         * @param wheelMaxAngularVelocity maximum angular velocity of wheels 
-         * @param wheelMaxTorque maximum torque applied to wheels
-         * @param wheelRadius radius of wheels
+         * @param mass the mass of the entire robot
+         * @param moi the moment of inertia of the robot about the center of rotation, which 
+         * @param modules the list of modules the make up this swerve drive
+         * @param bumpers the bumpers of the robot represented as an obstacle
          */
-        SwerveDrive(double wheelbaseX, double wheelbaseY, double mass, double moi,
-                double wheelMaxAngularVelocity, double wheelMaxTorque, double wheelRadius, const Obstacle& bumpers);
+        SwerveDrive(double mass, double moi, const std::vector<SwerveModule>& modules, const Obstacle& bumpers);
+
+        /**
+         * @brief Applies the drivetrain-specific constraints to the optimizer. These constraints
+         * prevent motors from spinning too fast or with too much power. For swerve, this applies
+         * constraints that connect the speed and direction of each swerve module wheel to the overall
+         * kinematics and dynamics of the system. There are two parts: the velocity of each wheel is
+         * connected to the velocity of the robot, and the force generated by each wheel is connected
+         * to the acceleration of the robot. For both of these, limits are placed on the speed and torque
+         * of each wheel. This allows the optimizer to generate an efficient, smooth path that the robot
+         * can follow.
+         * 
+         * @param opti the current optimizer upon which constraints will be applied
+         * @param theta (nTotal + 1) x 1 column vector of the robot's heading for each sample point
+         * @param vx (nTotal + 1) x 1 column vector of the x-coordinate of the robot's velocity for each sample point
+         * @param vy (nTotal + 1) x 1 column vector of the y-coordinate of the robot's velocity for each sample point
+         * @param omega (nTotal + 1) x 1 column vector of the robot's angular velocity for each sample point
+         * @param ax nTotal x 1 column vector of the x-coordinate of the robot's acceleration for each sample
+         *           point
+         * @param ay nTotal x 1 column vector of the y-coordinate of the robot's acceleration for each sample
+         *           point
+         * @param alpha nTotal x 1 column vector of the robot's angular velocity for each sample point
+         * @param nTotal the number of segments in this trajectory (number of sample points - 1)
+         */
         virtual void ApplyKinematicsConstraints(casadi::Opti& opti,
                 const casadi::MX& theta, const casadi::MX& vx, const casadi::MX& vy,
                 const casadi::MX& omega, const casadi::MX& ax, const casadi::MX& ay,
-                const casadi::MX& alpha, const size_t nTotal) const;
+                const casadi::MX& alpha, size_t nTotal) const;
 
     private:
         /**
-         * @brief Gives expressions for the position of each module relative to the nonrotating robot
-         * coordinate system with a certain heading. Returns a 2 x 4 matrix of position expressions.
-         * Each column is a certain module, with the module order specified in this class. The first row
-         * contains the x-coordinates, and the second row contains the y-coordinates.
+         * @brief Gives an expression for the position of a swerve module relative
+         * to the nonrotating robot coordinate system, given the robot's heading.
+         * The first row contains the x-coordinate, and the second row
+         * contains the y-coordinate.
          * 
          * @param theta the instantaneous heading of the robot
-         * @return a 2 x 4 matrix of positions where each column is a module and each row is a coordinate
+         * @param module the swerve module to find the position for
+         * @return a 2 x 1 vector of positions where each row is a coordinate
          */
         const casadi::MX SolveModulePosition(const casadi::MX& theta, const SwerveModule& module) const;
     };
