@@ -83,15 +83,21 @@ namespace helixtrajectory {
                     opti.subject_to(vy(index) == waypoint.vy);
                 }
                 if (!waypoint.vxConstrained && !waypoint.vyConstrained) {
-                    double magnitudeSquared = waypoint.vx * waypoint.vx + waypoint.vy * waypoint.vy;
-                    opti.subject_to(vx(index) * vx(index) + vy(index) * vy(index) == magnitudeSquared);
+                    if (waypoint.vx == 0.0 && waypoint.vy == 0.0) {
+                        opti.subject_to(vx(index) == 0.0);
+                        opti.subject_to(vy(index) == 0.0);
+                    } else {
+                        double magnitudeSquared = waypoint.vx * waypoint.vx + waypoint.vy * waypoint.vy;
+                        opti.subject_to(vx(index) * vx(index) + vy(index) * vy(index) == magnitudeSquared);
+                    }
                 }
-            } else {
-                casadi::MX scalarMultiplier = opti.variable();
-                if (waypoint.vxConstrained) {
+            } else if (waypoint.vxConstrained && waypoint.vyConstrained) {
+                if (waypoint.vx == 0.0 && waypoint.vy == 0.0) {
+                        opti.subject_to(vx(index) == 0.0);
+                        opti.subject_to(vy(index) == 0.0);
+                } else {
+                    casadi::MX scalarMultiplier = opti.variable();
                     opti.subject_to(vx(index) == scalarMultiplier * waypoint.vx);
-                }
-                if (waypoint.vyConstrained) {
                     opti.subject_to(vy(index) == scalarMultiplier * waypoint.vy);
                 }
             }

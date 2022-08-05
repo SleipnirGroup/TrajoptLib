@@ -10,7 +10,8 @@ namespace helixtrajectory {
      * @brief A waypoint in a holonomic path. This struct includes additional velocity constraints
      * specific to holonomic drivetrains.
      */
-    struct HolonomicWaypoint : public Waypoint {
+    class HolonomicWaypoint : public Waypoint {
+    public:
         /**
          * @brief x-coordinate of robot velocity at waypoint
          */
@@ -39,6 +40,14 @@ namespace helixtrajectory {
          * @brief whether or not the optimizer should constrain the angular velocity of the robot at waypoint
          */
         bool omegaConstrained;
+
+        HolonomicWaypoint(double x, double y, double heading, double vx, double vy, double omega,
+                bool xConstrained, bool yConstrained, bool headingConstrained,
+                bool vxConstrained, bool vyConstrained,
+                bool vMagnitudeConstrained, bool omegaConstrained,
+                const std::vector<InitialGuessPoint>& initialGuessPoints);
+
+        virtual bool IsVelocityStateKnown() const noexcept;
     };
 
     /**

@@ -26,7 +26,8 @@ namespace helixtrajectory {
      * @brief A certain state that the robot must have during some instance of the trajectory.
      * Includes options to constrain dynamics like position and velocity during that instance.
      */
-    struct Waypoint {
+    class Waypoint {
+    public:
         /**
          * @brief x-coordinate of robot at waypoint
          */
@@ -55,6 +56,13 @@ namespace helixtrajectory {
          * @brief the points used to construct the initial trajectory guess for the next trajectory segment
          */
         std::vector<InitialGuessPoint> initialGuessPoints;
+
+        virtual bool IsValid() const noexcept;
+        bool IsPositionStateKnown() const noexcept;
+        virtual bool IsVelocityStateKnown() const noexcept = 0;
+        bool IsStateKnown() const noexcept;
+    protected:
+        Waypoint(double x, double y, double heading, bool xConstrained, bool yConstrained, bool headingConstrained, const std::vector<InitialGuessPoint>& initialGuessPoints);
     };
 
     class Path {
@@ -79,6 +87,6 @@ namespace helixtrajectory {
          * @return a const reference to the waypoint
          */
         inline virtual const Waypoint& GetWaypoint(size_t index) const = 0;
-        // virtual bool IsValid() const = 0;
+        bool IsValid() const noexcept;
     };
 }
