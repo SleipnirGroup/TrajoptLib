@@ -25,7 +25,11 @@ namespace helixtrajectory {
          * @param bumpers the bumpers of the robot represented as an obstacle
          */
         HolonomicDrive(double mass, double moi, const Obstacle& bumpers);
+
     public:
+
+        virtual ~HolonomicDrive();
+
         /**
          * @brief Applies the drivetrain-specific constraints to the optimizer. These constraints
          * prevent motors from spinning too fast or with too much power. 

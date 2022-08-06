@@ -81,6 +81,9 @@ namespace helixtrajectory {
          * @param obstacles the list of obstacles
          */
         HolonomicTrajectoryGenerator(const HolonomicDrive& drive, const HolonomicPath& path, const std::vector<Obstacle>& obstacles);
+
+        virtual ~HolonomicTrajectoryGenerator();
+
         /**
          * @brief Optimizes the given path using IPOPT. Note this function call
          * may take a long time to complete. It may also fail, and throw a

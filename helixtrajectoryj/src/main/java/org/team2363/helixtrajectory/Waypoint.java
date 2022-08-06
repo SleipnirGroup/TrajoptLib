@@ -12,7 +12,6 @@ public abstract class Waypoint {
     public final boolean yConstrained;
     public final boolean headingConstrained;
 
-    private final List<? extends InitialGuessPoint> initialGuessPointsMutable;
     public final List<? extends InitialGuessPoint> initialGuessPoints;
 
     protected Waypoint(double x, double y, double heading,
@@ -26,7 +25,6 @@ public abstract class Waypoint {
         this.yConstrained = yConstrained;
         this.headingConstrained = headingConstrained;
 
-        this.initialGuessPointsMutable = initialGuessPoints;
-        this.initialGuessPoints = Collections.unmodifiableList(this.initialGuessPointsMutable);
+        this.initialGuessPoints = Collections.unmodifiableList(initialGuessPoints);
     }
 }

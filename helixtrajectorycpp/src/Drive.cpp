@@ -7,6 +7,9 @@ namespace helixtrajectory {
         : mass(mass), moi(moi), bumpers(bumpers) {
     }
 
+    Drive::~Drive() {
+    }
+
     const casadi::MX Drive::SolveBumperCornerPosition(const casadi::MX& x, const casadi::MX& y,
             const casadi::MX& theta, const ObstaclePoint& bumperCorner) const {
         casadi::MX position(2, 1);

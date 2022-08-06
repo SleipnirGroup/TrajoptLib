@@ -1,152 +1,209 @@
-#include <jni.h>
-#include "org_team2363_helixtrajectory_HelixTrajectoryInterface.h"
+#include "org_team2363_helixtrajectory_HolonomicTrajectoryGenerator.h"
 
 #include <iostream>
+#include <memory>
 
-#include "Path.h"
-#include "TrajectoryGenerator.h"
+#include <jni.h>
+
+#include "HolonomicPath.h"
+#include "HolonomicDrive.h"
+#include "SwerveDrive.h"
+#include "HolonomicTrajectoryGenerator.h"
+#include "Obstacle.h"
 #include "TrajectoryUtil.h"
 
-JNIEXPORT jdoubleArray JNICALL Java_org_team2363_helixtrajectory_HelixTrajectoryInterface_generateTrajectory
-        (JNIEnv *env, jobject jObj, jobject jDrive, jobject jPath, jobjectArray jObstacles) {
-    using namespace helixtrajectory;
+using namespace helixtrajectory;
+
+std::unique_ptr<HolonomicDrive> holonomicDriveFromJHolonomicDrive(JNIEnv* env, jobject jHolonomicDrive);
+Obstacle obstacleFromJObstacle(JNIEnv* env, jobject jObstacle);
+
+JNIEXPORT jobject JNICALL Java_org_team2363_helixtrajectory_HolonomicTrajectoryGenerator_generate
+        (JNIEnv* env, jobject jObj) {
     
-    jclass jPathClass = env->FindClass("org/team2363/helixtrajectory/Path");
-    jmethodID jPathClassLengthMethod = env->GetMethodID(jPathClass, "length", "()I");
-    jmethodID jPathClassGetMethod = env->GetMethodID(jPathClass, "get", "(I)Lorg/team2363/helixtrajectory/Waypoint;");
-    jclass jWaypointClass = env->FindClass("org/team2363/helixtrajectory/Waypoint");
-    jfieldID jWaypointClassX = env->GetFieldID(jWaypointClass, "x", "D");
-    jfieldID jWaypointClassY = env->GetFieldID(jWaypointClass, "y", "D");
-    jfieldID jWaypointClassHeading = env->GetFieldID(jWaypointClass, "heading", "D");
-    jfieldID jWaypointClassVX = env->GetFieldID(jWaypointClass, "vx", "D");
-    jfieldID jWaypointClassVY = env->GetFieldID(jWaypointClass, "vy", "D");
-    jfieldID jWaypointClassOmega = env->GetFieldID(jWaypointClass, "omega", "D");
-    jfieldID jWaypointClassXConstrained = env->GetFieldID(jWaypointClass, "xConstrained", "Z");
-    jfieldID jWaypointClassYConstrained = env->GetFieldID(jWaypointClass, "yConstrained", "Z");
-    jfieldID jWaypointClassHeadingConstrained = env->GetFieldID(jWaypointClass, "headingConstrained", "Z");
-    jfieldID jWaypointClassVXConstrained = env->GetFieldID(jWaypointClass, "vxConstrained", "Z");
-    jfieldID jWaypointClassVYConstrained = env->GetFieldID(jWaypointClass, "vyConstrained", "Z");
-    jfieldID jWaypointClassVMagnitudeConstrained = env->GetFieldID(jWaypointClass, "vMagnitudeConstrained", "Z");
-    jfieldID jWaypointClassOmegaConstrained = env->GetFieldID(jWaypointClass, "omegaConstrained", "Z");
-    jmethodID jWaypointClassInitialGuessPointsLengthMethod = env->GetMethodID(jWaypointClass, "initialGuessPointsLength", "()I");
-    jmethodID jWaypointClassGetInitialGuessPointMethod = env->GetMethodID(jWaypointClass, "getInitialGuessPoint", "(I)Lorg/team2363/helixtrajectory/InitialGuessPoint;");
+    jclass jListClass = env->FindClass("java/util/List");
+    jmethodID jListClassSizeMethod = env->GetMethodID(jListClass, "size", "()I");
+    jmethodID jListClassGetMethod = env->GetMethodID(jListClass, "get", "(I)Ljava/lang/Object;");
+
+    jclass jHolonomicPathClass = env->FindClass("org/team2363/helixtrajectory/HolonomicPath");
+    jfieldID jHolonomicPathClassHolonomicWaypointsField = env->GetFieldID(jHolonomicPathClass, "holonomicWaypoints", "Ljava/util/List;");
+
+    jclass jHolonomicWaypointClass = env->FindClass("org/team2363/helixtrajectory/HolonomicWaypoint");
+    jfieldID jHolonomicWaypointClassXField = env->GetFieldID(jHolonomicWaypointClass, "x", "D");
+    jfieldID jHolonomicWaypointClassYField = env->GetFieldID(jHolonomicWaypointClass, "y", "D");
+    jfieldID jHolonomicWaypointClassHeadingField = env->GetFieldID(jHolonomicWaypointClass, "heading", "D");
+    jfieldID jHolonomicWaypointClassVelocityXField = env->GetFieldID(jHolonomicWaypointClass, "velocityX", "D");
+    jfieldID jHolonomicWaypointClassVelocityYField = env->GetFieldID(jHolonomicWaypointClass, "velocityY", "D");
+    jfieldID jHolonomicWaypointClassAngularVelocityField = env->GetFieldID(jHolonomicWaypointClass, "angularVelocity", "D");
+    jfieldID jHolonomicWaypointClassXConstrainedField = env->GetFieldID(jHolonomicWaypointClass, "xConstrained", "Z");
+    jfieldID jHolonomicWaypointClassYConstrainedField = env->GetFieldID(jHolonomicWaypointClass, "yConstrained", "Z");
+    jfieldID jHolonomicWaypointClassHeadingConstrainedField = env->GetFieldID(jHolonomicWaypointClass, "headingConstrained", "Z");
+    jfieldID jHolonomicWaypointClassVelocityXConstrainedField = env->GetFieldID(jHolonomicWaypointClass, "velocityXConstrained", "Z");
+    jfieldID jHolonomicWaypointClassVelocityYConstrainedField = env->GetFieldID(jHolonomicWaypointClass, "velocityYConstrained", "Z");
+    jfieldID jHolonomicWaypointClassVelocityMagnitudeConstrainedField = env->GetFieldID(jHolonomicWaypointClass, "velocityMagnitudeConstrained", "Z");
+    jfieldID jHolonomicWaypointClassAngularVelocityConstrainedField = env->GetFieldID(jHolonomicWaypointClass, "angularVelocityConstrained", "Z");
+    jfieldID jHolonomicWaypointClassInitialGuessPointsField = env->GetFieldID(jHolonomicWaypointClass, "initialGuessPoints", "Ljava/util/List;");
+
     jclass jInitialGuessPointClass = env->FindClass("org/team2363/helixtrajectory/InitialGuessPoint");
-    jfieldID jInitialGuessPointClassX = env->GetFieldID(jInitialGuessPointClass, "x", "D");
-    jfieldID jInitialGuessPointClassY = env->GetFieldID(jInitialGuessPointClass, "y", "D");
-    jclass jSwerveDriveClass = env->FindClass("org/team2363/helixtrajectory/SwerveDrive");
-    jfieldID jSwerveDriveWheelbaseX = env->GetFieldID(jSwerveDriveClass, "wheelbaseX", "D");
-    jfieldID jSwerveDriveWheelbaseY = env->GetFieldID(jSwerveDriveClass, "wheelbaseY", "D");
-    jfieldID jSwerveDriveMass = env->GetFieldID(jSwerveDriveClass, "mass", "D");
-    jfieldID jSwerveDriveMoi = env->GetFieldID(jSwerveDriveClass, "moi", "D");
-    jfieldID jSwerveDriveOmegaMax = env->GetFieldID(jSwerveDriveClass, "omegaMax", "D");
-    jfieldID jSwerveDriveTauMax = env->GetFieldID(jSwerveDriveClass, "tauMax", "D");
-    jfieldID jSwerveDriveWheelRadius = env->GetFieldID(jSwerveDriveClass, "wheelRadius", "D");
-    jfieldID jSwerveDriveBumpers = env->GetFieldID(jSwerveDriveClass, "bumpers", "Lorg/team2363/helixtrajectory/Obstacle;");
-    jclass jObstacleClass = env->FindClass("org/team2363/helixtrajectory/Obstacle");
-    jfieldID jObstacleClassSafetyDistance = env->GetFieldID(jObstacleClass, "safetyDistance", "D");
-    jmethodID jObstacleClassLengthMethod = env->GetMethodID(jObstacleClass, "length", "()I");
-    jmethodID jObstacleClassGetMethod = env->GetMethodID(jObstacleClass, "get", "(I)Lorg/team2363/helixtrajectory/ObstaclePoint;");
-    jclass jObstaclePointClass = env->FindClass("org/team2363/helixtrajectory/ObstaclePoint");
-    jfieldID jObstaclePointClassX = env->GetFieldID(jObstaclePointClass, "x", "D");
-    jfieldID jObstaclePointClassY = env->GetFieldID(jObstaclePointClass, "y", "D");
+    jmethodID jInitialGuessPointClassXMethod = env->GetMethodID(jInitialGuessPointClass, "x", "()D");
+    jmethodID jInitialGuessPointClassYMethod = env->GetMethodID(jInitialGuessPointClass, "y", "()D");
+    jmethodID jInitialGuessPointClassHeadingMethod = env->GetMethodID(jInitialGuessPointClass, "heading", "()D");
 
-    size_t waypointCount = env->CallIntMethod(jPath, jPathClassLengthMethod);
+    jclass jHolonomicTrajectorySampleClass = env->FindClass("org/team2363/helixtrajectory/HolonomicTrajectorySample");
+    jmethodID jHolonomicTrajectorySampleClassConstructor = env->GetMethodID(jHolonomicTrajectorySampleClass, "<init>", "(DDDDDDD)V");
+    jclass jHolonomicTrajectoryClass = env->FindClass("org/team2363/helixtrajectory/HolonomicTrajectory");
+    jmethodID jHolonomicTrajectoryClassConstructor = env->GetMethodID(jHolonomicTrajectoryClass, "<init>", "(Lorg/team2363/helixtrajectory/HolonomicTrajectorySample;[])V");
+    
+    jclass jHolonomicTrajectoryGeneratorClass = env->FindClass("org/team2363/helixtrajectory/HolonomicTrajectoryGenerator");
+    jfieldID jHolonomicTrajectoryGeneratorClassHolonomicDriveField = env->GetFieldID(jHolonomicTrajectoryGeneratorClass, "holonomicDrive", "Lorg/team2363/helixtrajectory/HolonomicDrive;");
+    jfieldID jHolonomicTrajectoryGeneratorClassHolonomicPathField = env->GetFieldID(jHolonomicTrajectoryGeneratorClass, "holonomicPath", "Lorg/team2363/helixtrajectory/HolonomicPath;");
+    jfieldID jHolonomicTrajectoryGeneratorClassObstaclesField = env->GetFieldID(jHolonomicTrajectoryGeneratorClass, "obstacles", "Ljava/util/List;");
 
-    std::vector<Waypoint> waypoints;
+    jobject jHolonomicDrive = env->GetObjectField(jObj, jHolonomicTrajectoryGeneratorClassHolonomicDriveField);
+    jobject jHolonomicPath = env->GetObjectField(jObj, jHolonomicTrajectoryGeneratorClassHolonomicPathField);
+    jobject jObstacles = env->GetObjectField(jObj, jHolonomicTrajectoryGeneratorClassObstaclesField);
+
+    jobject jHolonomicPathHolonomicWaypoints = env->GetObjectField(jHolonomicPath, jHolonomicPathClassHolonomicWaypointsField);
+    size_t waypointCount = env->CallIntMethod(jHolonomicPathHolonomicWaypoints, jListClassSizeMethod);
+    std::vector<HolonomicWaypoint> waypoints;
     waypoints.reserve(waypointCount);
     for (size_t i = 0; i < waypointCount; i++) {
-        jobject jWaypoint = env->CallObjectMethod(jPath, jPathClassGetMethod, i);
-        jdouble x = env->GetDoubleField(jWaypoint, jWaypointClassX);
-        jdouble y = env->GetDoubleField(jWaypoint, jWaypointClassY);
-        jdouble heading = env->GetDoubleField(jWaypoint, jWaypointClassHeading);
-        jdouble vx = env->GetDoubleField(jWaypoint, jWaypointClassVX);
-        jdouble vy = env->GetDoubleField(jWaypoint, jWaypointClassVY);
-        jdouble omega = env->GetDoubleField(jWaypoint, jWaypointClassOmega);
-        jboolean xConstrained = env->GetBooleanField(jWaypoint, jWaypointClassXConstrained);
-        jboolean yConstrained = env->GetBooleanField(jWaypoint, jWaypointClassYConstrained);
-        jboolean headingConstrained = env->GetBooleanField(jWaypoint, jWaypointClassHeadingConstrained);
-        jboolean vxConstrained = env->GetBooleanField(jWaypoint, jWaypointClassVXConstrained);
-        jboolean vyConstrained = env->GetBooleanField(jWaypoint, jWaypointClassVYConstrained);
-        jboolean vMagnitudeConstrained = env->GetBooleanField(jWaypoint, jWaypointClassVMagnitudeConstrained);
-        jboolean omegaConstrained = env->GetBooleanField(jWaypoint, jWaypointClassOmegaConstrained);
-        size_t initialGuessPointCount = env->CallIntMethod(jWaypoint, jWaypointClassInitialGuessPointsLengthMethod);
+        jobject jHolonomicWaypoint = env->CallObjectMethod(jHolonomicPath, jListClassGetMethod, i);
+        double x = env->GetDoubleField(jHolonomicWaypoint, jHolonomicWaypointClassXField);
+        double y = env->GetDoubleField(jHolonomicWaypoint, jHolonomicWaypointClassYField);
+        double heading = env->GetDoubleField(jHolonomicWaypoint, jHolonomicWaypointClassHeadingField);
+        double velocityX = env->GetDoubleField(jHolonomicWaypoint, jHolonomicWaypointClassVelocityXField);
+        double velocityY = env->GetDoubleField(jHolonomicWaypoint, jHolonomicWaypointClassVelocityYField);
+        double angularVelocity = env->GetDoubleField(jHolonomicWaypoint, jHolonomicWaypointClassAngularVelocityField);
+        jboolean jXConstrained = env->GetBooleanField(jHolonomicWaypoint, jHolonomicWaypointClassXConstrainedField);
+        jboolean jYConstrained = env->GetBooleanField(jHolonomicWaypoint, jHolonomicWaypointClassYConstrainedField);
+        jboolean jHeadingConstrained = env->GetBooleanField(jHolonomicWaypoint, jHolonomicWaypointClassHeadingConstrainedField);
+        jboolean jVelocityXConstrained = env->GetBooleanField(jHolonomicWaypoint, jHolonomicWaypointClassVelocityXConstrainedField);
+        jboolean jVelocityYConstrained = env->GetBooleanField(jHolonomicWaypoint, jHolonomicWaypointClassVelocityYConstrainedField);
+        jboolean jVelocityMagnitudeConstrained = env->GetBooleanField(jHolonomicWaypoint, jHolonomicWaypointClassVelocityMagnitudeConstrainedField);
+        jboolean jAngularVelocityConstrained = env->GetBooleanField(jHolonomicWaypoint, jHolonomicWaypointClassAngularVelocityConstrainedField);
+        jobject jInitialGuessPoints = env->GetObjectField(jHolonomicWaypoint, jHolonomicWaypointClassInitialGuessPointsField);
+        size_t initialGuessPointCount = env->CallIntMethod(jInitialGuessPoints, jListClassSizeMethod);
         std::vector<InitialGuessPoint> initialGuessPoints;
         initialGuessPoints.reserve(initialGuessPointCount);
         for (size_t initialGuessPointIndex = 0; initialGuessPointIndex < initialGuessPointCount; initialGuessPointIndex++) {
-            jobject jInitialGuessPoint = env->CallObjectMethod(jWaypoint, jWaypointClassGetInitialGuessPointMethod, initialGuessPointIndex);
-            jdouble initialGuessPointX = env->GetDoubleField(jInitialGuessPoint, jInitialGuessPointClassX);
-            jdouble initialGuessPointY = env->GetDoubleField(jInitialGuessPoint, jInitialGuessPointClassY);
-            initialGuessPoints.push_back({initialGuessPointX, initialGuessPointY});
+            jobject jInitialGuessPoint = env->CallObjectMethod(jInitialGuessPoints, jListClassGetMethod, initialGuessPointIndex);
+            jdouble jInitialGuessPointX = env->CallDoubleMethod(jInitialGuessPoint, jInitialGuessPointClassXMethod);
+            jdouble jInitialGuessPointY = env->CallDoubleMethod(jInitialGuessPoint, jInitialGuessPointClassYMethod);
+            jdouble jInitialGuessPointHeading = env->CallDoubleMethod(jInitialGuessPoint, jInitialGuessPointClassHeadingMethod);
+            initialGuessPoints.push_back({jInitialGuessPointX, jInitialGuessPointY, jInitialGuessPointHeading});
         }
-        waypoints.push_back({x, y, heading, vx, vy, omega,
-                static_cast<bool>(xConstrained),
-                static_cast<bool>(yConstrained),
-                static_cast<bool>(headingConstrained),
-                static_cast<bool>(vxConstrained),
-                static_cast<bool>(vyConstrained),
-                static_cast<bool>(vMagnitudeConstrained),
-                static_cast<bool>(omegaConstrained),
+        waypoints.push_back({x, y, heading, velocityX, velocityY, angularVelocity,
+                static_cast<bool>(jXConstrained),
+                static_cast<bool>(jYConstrained),
+                static_cast<bool>(jHeadingConstrained),
+                static_cast<bool>(jVelocityXConstrained),
+                static_cast<bool>(jVelocityYConstrained),
+                static_cast<bool>(jVelocityMagnitudeConstrained),
+                static_cast<bool>(jAngularVelocityConstrained),
                 initialGuessPoints});
     }
-    Path path = waypoints;
+    HolonomicPath holonomicPath = waypoints;
 
-    jobject jBumpers = env->GetObjectField(jDrive, jSwerveDriveBumpers);
-    double bumpersSafetyDistance = env->GetDoubleField(jBumpers, jObstacleClassSafetyDistance);
-    size_t bumpersPointCount = env->CallIntMethod(jBumpers, jObstacleClassLengthMethod);
-    std::vector<ObstaclePoint> bumpersPoints;
-    bumpersPoints.reserve(bumpersPointCount);
-    for (size_t bumpersPointIndex = 0; bumpersPointIndex < bumpersPointCount; bumpersPointIndex++) {
-        jobject jBumperPoint = env->CallObjectMethod(jBumpers, jObstacleClassGetMethod, bumpersPointIndex);
-        jdouble jBumperPointX = env->GetDoubleField(jBumperPoint, jObstaclePointClassX);
-        jdouble jBumperPointY = env->GetDoubleField(jBumperPoint, jObstaclePointClassY);
-        bumpersPoints.push_back({jBumperPointX, jBumperPointY});
-    }
+    const std::unique_ptr<HolonomicDrive> holonomicDrive = holonomicDriveFromJHolonomicDrive(env, jHolonomicDrive);
 
-    SwerveDrive drive = {
-        env->GetDoubleField(jDrive, jSwerveDriveWheelbaseX),
-        env->GetDoubleField(jDrive, jSwerveDriveWheelbaseY),
-        env->GetDoubleField(jDrive, jSwerveDriveMass),
-        env->GetDoubleField(jDrive, jSwerveDriveMoi),
-        env->GetDoubleField(jDrive, jSwerveDriveOmegaMax),
-        env->GetDoubleField(jDrive, jSwerveDriveTauMax),
-        env->GetDoubleField(jDrive, jSwerveDriveWheelRadius),
-        Obstacle(bumpersSafetyDistance, bumpersPoints)
-    };
-
-    size_t obstacleCount = env->GetArrayLength(jObstacles);
+    size_t obstacleCount = env->CallIntMethod(jObstacles, jListClassSizeMethod);
     std::vector<Obstacle> obstacles;
     obstacles.reserve(obstacleCount);
-    for (size_t i = 0; i < obstacleCount; i++) {
-        jobject jObstacle = env->GetObjectArrayElement(jObstacles, i);
-        double safetyDistance = env->GetDoubleField(jObstacle, jObstacleClassSafetyDistance);
-        size_t obstaclePointCount = env->CallIntMethod(jObstacle, jObstacleClassLengthMethod);
-        std::vector<ObstaclePoint> obstaclePoints;
-        obstaclePoints.reserve(obstaclePointCount);
-        for (size_t obstaclePointIndex = 0; obstaclePointIndex < obstaclePointCount; obstaclePointIndex++) {
-            jobject jObstaclePoint = env->CallObjectMethod(jObstacle, jObstacleClassGetMethod, obstaclePointIndex);
-            jdouble jObstaclePointX = env->GetDoubleField(jObstaclePoint, jObstaclePointClassX);
-            jdouble jObstaclePointY = env->GetDoubleField(jObstaclePoint, jObstaclePointClassY);
-            obstaclePoints.push_back({jObstaclePointX, jObstaclePointY});
-        }
-        obstacles.push_back(Obstacle(safetyDistance, obstaclePoints));
+    for (size_t obstacleIndex = 0; obstacleIndex < obstacleCount; obstacleIndex++) {
+        jobject jObstacle = env->CallObjectMethod(jObstacles, jListClassGetMethod, obstacleIndex);
+        obstacles.push_back(obstacleFromJObstacle(env, jObstacle));
     }
 
-    TrajectoryGenerator gen(drive, path, obstacles);
-    std::unique_ptr<Trajectory> traj = gen.Generate();
+    HolonomicTrajectoryGenerator generator(*holonomicDrive, holonomicPath, obstacles);
+    std::unique_ptr<HolonomicTrajectory> traj = generator.Generate();
     size_t sampleCount = traj->samples.size();
-    size_t sampleArrLength = sampleCount * 7;
-    jdouble sampleArr[sampleArrLength];
-    for (size_t i = 0; i < sampleCount; i++) {
-        sampleArr[7*i    ] = traj->samples[i].ts;
-        sampleArr[7*i + 1] = traj->samples[i].x;
-        sampleArr[7*i + 2] = traj->samples[i].y;
-        sampleArr[7*i + 3] = traj->samples[i].heading;
-        sampleArr[7*i + 4] = traj->samples[i].vx;
-        sampleArr[7*i + 5] = traj->samples[i].vy;
-        sampleArr[7*i + 6] = traj->samples[i].omega;
+    jobjectArray jSampleArray = env->NewObjectArray(sampleCount, jHolonomicTrajectorySampleClass, NULL);
+    for (size_t sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
+        env->SetObjectArrayElement(jSampleArray, sampleIndex, env->NewObject(jHolonomicTrajectorySampleClass, jHolonomicTrajectorySampleClassConstructor,
+                traj->samples[sampleIndex].ts,
+                traj->samples[sampleIndex].x,
+                traj->samples[sampleIndex].y,
+                traj->samples[sampleIndex].heading,
+                traj->samples[sampleIndex].vx,
+                traj->samples[sampleIndex].vy,
+                traj->samples[sampleIndex].omega));
+    }
+    jobject jHolonomicTrajectory = env->NewObject(jHolonomicTrajectoryClass, jHolonomicTrajectoryClassConstructor, jSampleArray);
+    return jHolonomicTrajectory;
+}
+
+std::unique_ptr<HolonomicDrive> holonomicDriveFromJHolonomicDrive(JNIEnv* env, jobject jHolonomicDrive) {
+    jclass jListClass = env->FindClass("java/util/List");
+    jmethodID jListClassSizeMethod = env->GetMethodID(jListClass, "size", "()I");
+    jmethodID jListClassGetMethod = env->GetMethodID(jListClass, "get", "(I)Ljava/lang/Object;");
+
+    jclass jHolonomicDriveClass = env->FindClass("org/team2363/helixtrajectory/HolonomicDrive");
+    jfieldID jHolonomicDriveClassMassField = env->GetFieldID(jHolonomicDriveClass, "mass", "D");
+    jfieldID jHolonomicDriveClassMoiField = env->GetFieldID(jHolonomicDriveClass, "moi", "D");
+    jfieldID jHolonomicDriveClassBumpersField = env->GetFieldID(jHolonomicDriveClass, "bumpers", "Lorg/team2363/helixtrajectory/Obstacle;");
+
+    jclass jSwerveDriveClass = env->FindClass("org/team2363/helixtrajectory/SwerveDrive");
+    jfieldID jSwerveDriveClassModulesField = env->GetFieldID(jSwerveDriveClass, "modules", "Ljava/util/List;");
+
+    jclass jSwerveModuleClass = env->FindClass("org/team2363/helixtrajectory/SwerveModule");
+    jmethodID jSwerveModuleClassXMethod = env->GetMethodID(jSwerveModuleClass, "x", "()D");
+    jmethodID jSwerveModuleClassYMethod = env->GetMethodID(jSwerveModuleClass, "y", "()D");
+    jmethodID jSwerveModuleClassWheelRadiusMethod = env->GetMethodID(jSwerveModuleClass, "wheelRadius", "()D");
+    jmethodID jSwerveModuleClassWheelMaxAngularVelocityMethod = env->GetMethodID(jSwerveModuleClass, "wheelMaxAngularVelocity", "()D");
+    jmethodID jSwerveModuleClassWheelMaxTorqueMethod = env->GetMethodID(jSwerveModuleClass, "wheelMaxTorque", "()D");
+
+    jdouble jHolonomicDriveMass = env->GetDoubleField(jHolonomicDrive, jHolonomicDriveClassMassField);
+    jdouble jHolonomicDriveMoi = env->GetDoubleField(jHolonomicDrive, jHolonomicDriveClassMassField);
+    jobject jHolonomicDriveBumpers = env->GetObjectField(jHolonomicDrive, jHolonomicDriveClassBumpersField);
+
+    Obstacle bumpers = obstacleFromJObstacle(env, jHolonomicDriveBumpers);
+
+    if (env->IsInstanceOf(jHolonomicDrive, jSwerveDriveClass)) {
+        jobject jSwerveDrive = jHolonomicDrive;
+        jobject jSwerveDriveModules = env->GetObjectField(jSwerveDrive, jSwerveDriveClassModulesField);
+        size_t swerveModuleCount = env->CallIntMethod(jSwerveDriveModules, jListClassSizeMethod);
+        std::vector<SwerveModule> modules;
+        modules.reserve(swerveModuleCount);
+        for (size_t swerveModuleIndex = 0; swerveModuleIndex < swerveModuleCount; swerveModuleIndex++) {
+            jobject jSwerveModule = env->CallObjectMethod(jSwerveDriveModules, jListClassGetMethod, swerveModuleIndex);
+            modules.push_back({
+                env->CallDoubleMethod(jSwerveModule, jSwerveModuleClassXMethod),
+                env->CallDoubleMethod(jSwerveModule, jSwerveModuleClassYMethod),
+                env->CallDoubleMethod(jSwerveModule, jSwerveModuleClassWheelRadiusMethod),
+                env->CallDoubleMethod(jSwerveModule, jSwerveModuleClassWheelMaxAngularVelocityMethod),
+                env->CallDoubleMethod(jSwerveModule, jSwerveModuleClassWheelMaxTorqueMethod)});
+        }
+        return std::unique_ptr<HolonomicDrive>(new SwerveDrive(jHolonomicDriveMass, jHolonomicDriveMoi, modules, bumpers));
+    } else {
+        throw "Only swerve is supported currently";
+    }
+}
+
+Obstacle obstacleFromJObstacle(JNIEnv* env, jobject jObstacle) {
+    jclass jListClass = env->FindClass("java/util/List");
+    jmethodID jListClassSizeMethod = env->GetMethodID(jListClass, "size", "()I");
+    jmethodID jListClassGetMethod = env->GetMethodID(jListClass, "get", "(I)Ljava/lang/Object;");
+
+    jclass jObstacleClass = env->FindClass("org/team2363/helixtrajectory/Obstacle");
+    jfieldID jObstacleClassSafetyDistanceField = env->GetFieldID(jObstacleClass, "safetyDistance", "D");
+    jfieldID jObstacleClassObstaclePointsField = env->GetFieldID(jObstacleClass, "obstaclePoints", "Ljava/util/List;");
+    
+    jclass jObstaclePointClass = env->FindClass("org/team2363/helixtrajectory/ObstaclePoint");
+    jmethodID jObstaclePointClassXMethod = env->GetMethodID(jObstaclePointClass, "x", "()D");
+    jmethodID jObstaclePointClassYMethod = env->GetMethodID(jObstaclePointClass, "y", "()D");
+
+    double obstacleSafetyDistance = env->GetDoubleField(jObstacle, jObstacleClassSafetyDistanceField);
+    jobject jObstacleObstaclePoints = env->GetObjectField(jObstacle, jObstacleClassObstaclePointsField);
+    size_t obstaclePointCount = env->CallIntMethod(jObstacleObstaclePoints, jListClassSizeMethod);
+
+    std::vector<ObstaclePoint> obstaclePoints;
+    obstaclePoints.reserve(obstaclePointCount);
+    for (size_t obstaclePointIndex = 0; obstaclePointIndex < obstaclePointCount; obstaclePointIndex++) {
+        jobject jObstaclePoint = env->CallObjectMethod(jObstacleObstaclePoints, jListClassGetMethod, obstaclePointIndex);
+        double obstaclePointX = env->CallDoubleMethod(jObstaclePoint, jObstaclePointClassXMethod);
+        double obstaclePointY = env->CallDoubleMethod(jObstaclePoint, jObstaclePointClassYMethod);
+        obstaclePoints.push_back({obstaclePointX, obstaclePointY});
     }
 
-    jdoubleArray newArr = env->NewDoubleArray(sampleArrLength);
-    env->SetDoubleArrayRegion(newArr, 0, sampleArrLength, (const jdouble*) &sampleArr);
-    return newArr;
+    return Obstacle(obstacleSafetyDistance, obstaclePoints);
 }

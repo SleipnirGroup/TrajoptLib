@@ -88,6 +88,7 @@ namespace helixtrajectory {
          * @param obstacles the list of obstacles
          */
         TrajectoryGenerator(const Drive& drive, const Path& path, const std::vector<Obstacle>& obstacles);
+
     private:
         /**
          * @brief Applies the constraints that force the robot's motion to comply
@@ -95,5 +96,8 @@ namespace helixtrajectory {
          * position and heading.
          */
         void ApplyPathConstraints();
+
+    public:
+        virtual ~TrajectoryGenerator();
     };
 }

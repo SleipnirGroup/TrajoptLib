@@ -10,6 +10,9 @@ namespace helixtrajectory {
             : x(x), y(y), heading(heading), xConstrained(xConstrained), yConstrained(yConstrained), headingConstrained(headingConstrained), initialGuessPoints(initialGuessPoints) {
     }
 
+    Waypoint::~Waypoint() {
+    }
+
     bool Waypoint::IsValid() const noexcept {
         return xConstrained || yConstrained;
     }
@@ -18,6 +21,9 @@ namespace helixtrajectory {
     }
     bool Waypoint::IsStateKnown() const noexcept {
         return IsPositionStateKnown() && IsVelocityStateKnown();
+    }
+
+    Path::~Path() {
     }
 
     bool Path::IsValid() const noexcept {

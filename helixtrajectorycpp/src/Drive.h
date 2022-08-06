@@ -55,6 +55,7 @@ namespace helixtrajectory {
          * @param bumpers the bumpers of the robot represented as an obstacle
          */
         Drive(double mass, double moi, const Obstacle& bumpers);
+
     public:
         /**
          * @brief mass of the robot
@@ -69,6 +70,8 @@ namespace helixtrajectory {
          * @brief the boundaries of the robot's bumpers, represented as an Obstacle.
          */
         Obstacle bumpers;
+
+        virtual ~Drive();
 
         /**
          * @brief Applies constraints that prevent the robot from getting too close to a given obstacle.

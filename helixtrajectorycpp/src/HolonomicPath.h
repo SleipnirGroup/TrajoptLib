@@ -47,6 +47,8 @@ namespace helixtrajectory {
                 bool vMagnitudeConstrained, bool omegaConstrained,
                 const std::vector<InitialGuessPoint>& initialGuessPoints);
 
+        virtual ~HolonomicWaypoint();
+
         virtual bool IsVelocityStateKnown() const noexcept;
     };
 
@@ -67,6 +69,8 @@ namespace helixtrajectory {
          * @param waypoints the holonomic waypoints that make up this path
          */
         HolonomicPath(const std::vector<HolonomicWaypoint>& waypoints);
+
+        virtual ~HolonomicPath();
 
         inline virtual size_t Length() const noexcept;
         inline virtual Waypoint& GetWaypoint(size_t index);

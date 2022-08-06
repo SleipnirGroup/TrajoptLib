@@ -44,6 +44,9 @@ namespace helixtrajectory {
         std::cout << "Set Initial Trajectory" << std::endl;
     }
 
+    TrajectoryGenerator::~TrajectoryGenerator() {
+    }
+
     void TrajectoryGenerator::ApplyPathConstraints() {
         for (int i = 0; i < waypointCount; i++) {
             int index = i * nPerTrajectorySegment;

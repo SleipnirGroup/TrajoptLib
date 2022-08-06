@@ -15,6 +15,9 @@ namespace helixtrajectory {
             vMagnitudeConstrained(vMagnitudeConstrained), omegaConstrained(omegaConstrained) {
     }
 
+    HolonomicWaypoint::~HolonomicWaypoint() {
+    }
+
     bool HolonomicWaypoint::IsVelocityStateKnown() const noexcept {
         return (vMagnitudeConstrained && vxConstrained && vyConstrained) || 
                 ((vx == 0.0 && vy == 0.0) && (
@@ -24,6 +27,9 @@ namespace helixtrajectory {
 
     HolonomicPath::HolonomicPath(const std::vector<HolonomicWaypoint>& waypoints)
         : waypoints(waypoints) {
+    }
+
+    HolonomicPath::~HolonomicPath() {
     }
 
     inline size_t HolonomicPath::Length() const noexcept {

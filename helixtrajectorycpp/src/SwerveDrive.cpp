@@ -18,6 +18,9 @@ namespace helixtrajectory {
         HolonomicDrive(mass, moi, bumpers), modules(modules) {
     }
 
+    SwerveDrive::~SwerveDrive() {
+    }
+
     const casadi::MX SwerveDrive::SolveModulePosition(const casadi::MX& theta, const SwerveModule& module) const {
         casadi::MX position(2, 1);
         position(0) = module.GetModuleDiagonal() * cos(module.GetModuleAngle() + theta);

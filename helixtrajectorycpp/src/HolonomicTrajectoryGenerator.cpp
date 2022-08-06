@@ -34,6 +34,9 @@ namespace helixtrajectory {
         std::cout << "Applied Holonomic Path Constraints" << std::endl;
     }
 
+    HolonomicTrajectoryGenerator::~HolonomicTrajectoryGenerator() {
+    }
+
     std::unique_ptr<HolonomicTrajectory> HolonomicTrajectoryGenerator::Generate() {
         opti.solver("ipopt");
         std::cout << "Located IPOPT Plugin" << std::endl;

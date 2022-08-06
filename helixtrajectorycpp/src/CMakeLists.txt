@@ -1,4 +1,4 @@
-add_library(${PROJECT_NAME} SHARED Drive.cpp HolonomicDrive.cpp JNI.cpp Obstacle.cpp Path.cpp SwerveDrive.cpp Trajectory.cpp TrajectoryGenerator.cpp TrajectoryUtil.cpp)
+add_library(${PROJECT_NAME} SHARED Drive.cpp HolonomicDrive.cpp HolonomicPath.cpp HolonomicTrajectory.cpp HolonomicTrajectoryGenerator.cpp JNI.cpp Obstacle.cpp Path.cpp SwerveDrive.cpp TrajectoryGenerator.cpp TrajectoryUtil.cpp)
 # add_executable(${PROJECT_NAME} Main.cpp)
 install(TARGETS ${PROJECT_NAME} DESTINATION "lib")
 
