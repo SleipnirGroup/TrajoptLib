@@ -1,51 +1,32 @@
 package org.team2363.helixtrajectory;
 
-public class Waypoint {
+import java.util.Collections;
+import java.util.List;
 
-    public final double x, y, heading, vx, vy, omega;
-    public final boolean xConstrained, yConstrained, headingConstrained,
-            vxConstrained, vyConstrained, vMagnitudeConstrained, omegaConstrained;
-    public final InitialGuessPoint[] initialGuessPoints;
+public abstract class Waypoint {
 
-    public Waypoint(double x, double y, double heading, double vx, double vy, double omega,
+    public final double x;
+    public final double y;
+    public final double heading;
+    public final boolean xConstrained;
+    public final boolean yConstrained;
+    public final boolean headingConstrained;
+
+    private final List<? extends InitialGuessPoint> initialGuessPointsMutable;
+    public final List<? extends InitialGuessPoint> initialGuessPoints;
+
+    protected Waypoint(double x, double y, double heading,
             boolean xConstrained, boolean yConstrained, boolean headingConstrained,
-            boolean vxConstrained, boolean vyConstrained, boolean vMagnitudeConstrained, boolean omegaConstrained,
-            InitialGuessPoint... initialGuessPoints) {
+            List<? extends InitialGuessPoint> initialGuessPoints) {
         this.x = x;
         this.y = y;
         this.heading = heading;
-        this.vx = vx;
-        this.vy = vy;
-        this.omega = omega;
         
         this.xConstrained = xConstrained;
         this.yConstrained = yConstrained;
         this.headingConstrained = headingConstrained;
-        this.vxConstrained = vxConstrained;
-        this.vyConstrained = vyConstrained;
-        this.vMagnitudeConstrained = vMagnitudeConstrained;
-        this.omegaConstrained = omegaConstrained;
 
-        this.initialGuessPoints = initialGuessPoints;
+        this.initialGuessPointsMutable = initialGuessPoints;
+        this.initialGuessPoints = Collections.unmodifiableList(this.initialGuessPointsMutable);
     }
-
-    public int initialGuessPointsLength() {
-        return initialGuessPoints.length;
-    }
-
-    public InitialGuessPoint getInitialGuessPoint(int index) throws IndexOutOfBoundsException {
-        if (index >= 0 && index < initialGuessPointsLength()) {
-            return initialGuessPoints[index];
-        } else {
-            throw new IndexOutOfBoundsException();
-        }
-    }
-
-    public static Waypoint softWaypoint(double x, double y) {
-        return new Waypoint(x, y, 0.0, 0.0, 0.0, 0.0, true, true, false, false, false, false, false);
-    }
-    public static Waypoint hardWaypoint(double x, double y, double heading) {
-        return new Waypoint(x, y, heading, 0.0, 0.0, 0.0, true, true, true, false, false, false, false);
-    }
-
 }

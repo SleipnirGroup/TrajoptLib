@@ -1,22 +1,13 @@
 package org.team2363.helixtrajectory;
 
-public class Path {
+import java.util.Collections;
+import java.util.List;
 
-    final Waypoint[] waypoints;
+public abstract class Path {
 
-    public Path(Waypoint... waypoints) {
-        this.waypoints = waypoints;
-    }
+    public final List<? extends Waypoint> waypoints;
 
-    public int length() {
-        return waypoints.length;
-    }
-
-    public Waypoint get(int index) throws IndexOutOfBoundsException {
-        if (index >= 0 && index < length()) {
-            return waypoints[index];
-        } else {
-            throw new IndexOutOfBoundsException();
-        }
+    protected Path(List<? extends Waypoint> waypoints) throws NullPointerException {
+        this.waypoints = Collections.unmodifiableList(waypoints);
     }
 }

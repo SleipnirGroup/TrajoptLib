@@ -1,24 +1,15 @@
 package org.team2363.helixtrajectory;
 
-public class Obstacle {
+import java.util.Collections;
+import java.util.List;
+
+public final class Obstacle {
 
     public final double safetyDistance;
-    final ObstaclePoint[] obstaclePoints;
+    public final List<ObstaclePoint> obstaclePoints;
 
-    public Obstacle(double safetyDistance, ObstaclePoint... obstaclePoints) {
+    public Obstacle(double safetyDistance, ObstaclePoint... obstaclePoints) throws NullPointerException {
         this.safetyDistance = safetyDistance;
-        this.obstaclePoints = obstaclePoints;
-    }
-
-    public int length() {
-        return obstaclePoints.length;
-    }
-
-    public ObstaclePoint get(int index) throws IndexOutOfBoundsException {
-        if (index >= 0 && index < length()) {
-            return obstaclePoints[index];
-        } else {
-            throw new IndexOutOfBoundsException();
-        }
+        this.obstaclePoints = Collections.unmodifiableList(List.of(obstaclePoints));
     }
 }
