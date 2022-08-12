@@ -1,23 +1,21 @@
 package org.team2363.helixtrajectory;
 
-import java.util.List;
-import java.util.Objects;
+public interface HolonomicTrajectoryGenerator {
+    
+    HolonomicTrajectory generate() throws InvalidPathException, TrajectoryGenerationException;
 
-public final class HolonomicTrajectoryGenerator {
-
-    static {
-        System.loadLibrary("helixtrajectorycpp");
+    static boolean checkHolonomicPath(HolonomicPath path) {
+        if (path.waypoints.isEmpty()) {
+            return true;
+        }
+        if (path.waypoints.get(0).controlIntervalCount != 0) {
+            return false;
+        }
+        for (int index = 1; index < path.waypoints.size(); index++) {
+            if (path.waypoints.get(index).controlIntervalCount <= 0) {
+                return false;
+            }
+        }
+        return true;
     }
-
-    private final HolonomicDrive holonomicDrive;
-    private final HolonomicPath holonomicPath;
-    private final List<Obstacle> obstacles;
-
-    public HolonomicTrajectoryGenerator(HolonomicDrive holonomicDrive, HolonomicPath holonomicPath, Obstacle... obstacles) throws NullPointerException {
-        this.holonomicDrive = Objects.requireNonNull(holonomicDrive, "Holonomic Trajectory Generator holonomic drive cannot be null");
-        this.holonomicPath = Objects.requireNonNull(holonomicPath, "Holonomic Trajectory Generator holonomic path cannot be null");
-        this.obstacles = List.of(obstacles);
-    }
-
-    public native HolonomicTrajectory generate();
 }

@@ -18,8 +18,10 @@ public final class HolonomicWaypoint extends Waypoint {
             boolean xConstrained, boolean yConstrained, boolean headingConstrained,
             boolean velocityXConstrained, boolean velocityYConstrained,
             boolean velocityMagnitudeConstrained, boolean angularVelocityConstrained,
+            int controlIntervalCount,
             List<? extends InitialGuessPoint> initialGuessPoints) throws NullPointerException {
-        super(x, y, heading, xConstrained, yConstrained, headingConstrained, initialGuessPoints);
+        super(x, y, heading, xConstrained, yConstrained, headingConstrained,
+                controlIntervalCount, initialGuessPoints);
 
         this.velocityX = velocityX;
         this.velocityY = velocityY;
@@ -36,10 +38,13 @@ public final class HolonomicWaypoint extends Waypoint {
             boolean xConstrained, boolean yConstrained, boolean headingConstrained,
             boolean velocityXConstrained, boolean velocityYConstrained,
             boolean velocityMagnitudeConstrained, boolean angularVelocityConstrained,
+            int controlIntervalCount,
             InitialGuessPoint... initialGuessPoints) throws NullPointerException {
         this(x, y, heading, velocityX, velocityY, angularVelocity,
                 xConstrained, yConstrained, headingConstrained,
                 velocityXConstrained, velocityYConstrained,
-                velocityMagnitudeConstrained, angularVelocityConstrained, List.of(initialGuessPoints));
+                velocityMagnitudeConstrained, angularVelocityConstrained,
+                controlIntervalCount,
+                List.of(initialGuessPoints));
     }
 }

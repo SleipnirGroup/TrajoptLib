@@ -11,11 +11,13 @@ public abstract class Waypoint {
     public final boolean xConstrained;
     public final boolean yConstrained;
     public final boolean headingConstrained;
+    public final int controlIntervalCount;
 
     public final List<? extends InitialGuessPoint> initialGuessPoints;
 
     protected Waypoint(double x, double y, double heading,
             boolean xConstrained, boolean yConstrained, boolean headingConstrained,
+            int controlIntervalCount,
             List<? extends InitialGuessPoint> initialGuessPoints) {
         this.x = x;
         this.y = y;
@@ -24,6 +26,8 @@ public abstract class Waypoint {
         this.xConstrained = xConstrained;
         this.yConstrained = yConstrained;
         this.headingConstrained = headingConstrained;
+
+        this.controlIntervalCount = controlIntervalCount;
 
         this.initialGuessPoints = Collections.unmodifiableList(initialGuessPoints);
     }

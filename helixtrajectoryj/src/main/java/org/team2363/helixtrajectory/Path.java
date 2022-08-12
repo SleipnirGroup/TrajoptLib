@@ -6,7 +6,7 @@ public abstract class Path {
 
     public final List<? extends Waypoint> waypoints;
 
-    protected Path(List<? extends Waypoint> waypoints) throws NullPointerException {
+    protected Path(List<? extends Waypoint> waypoints) {
         this.waypoints = waypoints;
     }
 }
