@@ -5,42 +5,58 @@
 
 namespace helixtrajectory {
 
-    void linspace(casadi::DM& x, size_t row, double start, double end, double n) {
-        double delta = (end - start) / n;
-        for (int i = 0; i < n; i++) {
-            x(row, i) = start + i * delta;
+    void linspace(casadi::DM& arry, size_t startIndex, size_t endIndex, double startValue, double endValue) {
+        size_t segmentCount = endIndex - startIndex;
+        double delta = (endValue - startValue) / segmentCount;
+        for (int index = 0; index < segmentCount; index++) {
+            arry(startIndex + index) = startValue + index * delta;
         }
     }
 
-    casadi::DM generateInitialTrajectory(const Path& path, size_t nPerTrajectorySegment) {
-        size_t waypointCount = path.Length();
-        casadi::Slice all;
-        casadi::DM X(3, (waypointCount - 1) * nPerTrajectorySegment + 1);
-        for (size_t i = 0; i < waypointCount - 1; i++) {
-            linspace(X, 2, path.GetWaypoint(i).heading, path.GetWaypoint(i + 1).heading, nPerTrajectorySegment);
-            size_t guessPointsCount = path.GetWaypoint(i).initialGuessPoints.size();
-            if (guessPointsCount == 0) {
-                linspace(X, 0, path.GetWaypoint(i).x, path.GetWaypoint(i + 1).x, nPerTrajectorySegment);
-                linspace(X, 1, path.GetWaypoint(i).y, path.GetWaypoint(i + 1).y, nPerTrajectorySegment);
-                linspace(X, 2, path.GetWaypoint(i).heading, path.GetWaypoint(i + 1).heading, nPerTrajectorySegment);
-            } else {
-                size_t segmentsPerGuessSegment = nPerTrajectorySegment / guessPointsCount;
-                linspace(X, 0, path.GetWaypoint(i).x, path.GetWaypoint(i).initialGuessPoints[0].x, segmentsPerGuessSegment);
-                linspace(X, 1, path.GetWaypoint(i).y, path.GetWaypoint(i).initialGuessPoints[0].y, segmentsPerGuessSegment);
-                linspace(X, 2, path.GetWaypoint(i).heading, path.GetWaypoint(i).initialGuessPoints[0].heading, segmentsPerGuessSegment);
-                for (int j = 0; j < guessPointsCount - 1; j++) {
-                    linspace(X, 0, path.GetWaypoint(i).initialGuessPoints[j].x, path.GetWaypoint(i).initialGuessPoints[j + 1].x, segmentsPerGuessSegment);
-                    linspace(X, 1, path.GetWaypoint(i).initialGuessPoints[j].y, path.GetWaypoint(i).initialGuessPoints[j + 1].y, segmentsPerGuessSegment);
-                    linspace(X, 2, path.GetWaypoint(i).initialGuessPoints[j].heading, path.GetWaypoint(i).initialGuessPoints[j + 1].heading, segmentsPerGuessSegment);
-                }
-                linspace(X, 0, path.GetWaypoint(i).initialGuessPoints[guessPointsCount - 1].x, path.GetWaypoint(i + 1).x, nPerTrajectorySegment - guessPointsCount * segmentsPerGuessSegment);
-                linspace(X, 1, path.GetWaypoint(i).initialGuessPoints[guessPointsCount - 1].y, path.GetWaypoint(i + 1).y, nPerTrajectorySegment - guessPointsCount * segmentsPerGuessSegment);
-                linspace(X, 1, path.GetWaypoint(i).initialGuessPoints[guessPointsCount - 1].heading, path.GetWaypoint(i + 1).heading, nPerTrajectorySegment - guessPointsCount * segmentsPerGuessSegment);
-            }
+    casadi::DM generateInitialTrajectory(const Path& path) {
+        if (path.Length() == 0) {
+            return;
         }
-        X(0, (waypointCount - 1) * nPerTrajectorySegment) = path.GetWaypoint(waypointCount - 1).x;
-        X(1, (waypointCount - 1) * nPerTrajectorySegment) = path.GetWaypoint(waypointCount - 1).y;
-        X(2, (waypointCount - 1) * nPerTrajectorySegment) = path.GetWaypoint(waypointCount - 1).heading;
+        size_t waypointCount = path.Length();
+        casadi::DM X(3, path.ControlIntervalTotal() + 1);
+        casadi::DM x = X(0, ALL);
+        casadi::DM y = X(1, ALL);
+        casadi::DM theta = X(2, ALL);
+        size_t sampleIndex = path.GetWaypoint(0).controlIntervalCount;
+        for (size_t waypointIndex = 1; waypointIndex < waypointCount; waypointIndex++) {
+            const Waypoint& previousWaypoint = path.GetWaypoint(waypointIndex - 1);
+            const Waypoint& waypoint = path.GetWaypoint(waypointIndex);
+            size_t intervalCount = waypoint.controlIntervalCount;
+            size_t guessPointCount = waypoint.initialGuessPoints.size();
+            size_t previousWaypointSampleIndex = sampleIndex;
+            size_t waypointSampleIndex = previousWaypointSampleIndex + intervalCount;
+            if (guessPointCount == 0) {
+                linspace(x, previousWaypointSampleIndex, waypointSampleIndex, previousWaypoint.x, waypoint.x);
+                linspace(y, previousWaypointSampleIndex, waypointSampleIndex, previousWaypoint.y, waypoint.y);
+                linspace(theta, previousWaypointSampleIndex, waypointSampleIndex, previousWaypoint.heading, waypoint.heading);
+            } else {
+                size_t guessSegmentIntervalCount = intervalCount / (guessPointCount + 1);
+                linspace(x, previousWaypointSampleIndex, previousWaypointSampleIndex + guessSegmentIntervalCount, previousWaypoint.x, waypoint.initialGuessPoints[0].x);
+                linspace(y, previousWaypointSampleIndex, previousWaypointSampleIndex + guessSegmentIntervalCount, previousWaypoint.y, waypoint.initialGuessPoints[0].y);
+                linspace(theta, previousWaypointSampleIndex, previousWaypointSampleIndex + guessSegmentIntervalCount, previousWaypoint.heading, waypoint.initialGuessPoints[0].heading);
+                size_t firstGuessPointSampleIndex = previousWaypointSampleIndex + guessSegmentIntervalCount;
+                for (int guessPointIndex = 1; guessPointIndex < guessPointCount; guessPointIndex++) {
+                    size_t previousGuessPointSampleIndex = firstGuessPointSampleIndex + (guessPointIndex - 1) * guessSegmentIntervalCount;
+                    size_t guessPointSampleIndex = firstGuessPointSampleIndex + (guessPointIndex) * guessSegmentIntervalCount;
+                    linspace(x, previousGuessPointSampleIndex, guessPointSampleIndex, waypoint.initialGuessPoints[guessPointIndex - 1].x, waypoint.initialGuessPoints[guessPointIndex].x);
+                    linspace(y, previousGuessPointSampleIndex, guessPointSampleIndex, waypoint.initialGuessPoints[guessPointIndex - 1].y, waypoint.initialGuessPoints[guessPointIndex].y);
+                    linspace(theta, previousGuessPointSampleIndex, guessPointSampleIndex, waypoint.initialGuessPoints[guessPointIndex - 1].heading, waypoint.initialGuessPoints[guessPointIndex].heading);
+                }
+                size_t finalGuessPointSampleIndex = previousWaypointSampleIndex + guessPointCount * guessSegmentIntervalCount;
+                linspace(x, finalGuessPointSampleIndex, waypointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 1].x, waypoint.x);
+                linspace(y, finalGuessPointSampleIndex, waypointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 1].y, waypoint.y);
+                linspace(theta, finalGuessPointSampleIndex, waypointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 1].heading, waypoint.heading);
+            }
+            sampleIndex += intervalCount;
+        }
+        x(sampleIndex) = path.GetWaypoint(waypointCount - 1).x;
+        y(sampleIndex) = path.GetWaypoint(waypointCount - 1).y;
+        theta(sampleIndex) = path.GetWaypoint(waypointCount - 1).heading;
 
         return X;
     }
@@ -52,22 +68,6 @@ namespace helixtrajectory {
             std::cout << "        \"x\": " << waypoint.x << ",\n";
             std::cout << "        \"y\": " << waypoint.y << ",\n";
             std::cout << "        \"heading\": " << waypoint.heading << "\n";
-            std::cout << "    },\n";
-        }
-        std::cout << "]" << std::endl;
-    }
-
-    void printHolonomicTrajectory(const HolonomicTrajectory& trajectory) {
-        std::cout << "[\n";
-        for (const HolonomicTrajectorySample& samp : trajectory.samples) {
-            std::cout << "    {\n";
-            std::cout << "        \"ts\": " << samp.ts << ",\n";
-            std::cout << "        \"x\": " << samp.x << ",\n";
-            std::cout << "        \"y\": " << samp.y << ",\n";
-            std::cout << "        \"heading\": " << samp.heading << ",\n";
-            std::cout << "        \"vx\": " << samp.vx << ",\n";
-            std::cout << "        \"vy\": " << samp.vy << ",\n";
-            std::cout << "        \"omega\": " << samp.omega << "\n";
             std::cout << "    },\n";
         }
         std::cout << "]" << std::endl;

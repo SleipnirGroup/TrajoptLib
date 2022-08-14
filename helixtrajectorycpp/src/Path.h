@@ -5,7 +5,6 @@
 #include "Waypoint.h"
 
 namespace helixtrajectory {
-
     class Path {
     public:
         /**
@@ -31,8 +30,20 @@ namespace helixtrajectory {
          * @param index the index
          * @return a const reference to the waypoint
          */
-
         inline virtual const Waypoint& GetWaypoint(size_t index) const = 0;
+        /**
+         * @brief Get the number of control intervals of the entire path.
+         * 
+         * @return the total number of control intervals in the path
+         */
+        inline virtual size_t ControlIntervalTotal() const;
+        /**
+         * @brief Checks if this path is valid. A path is valid if it contains
+         * no waypoints or the first waypoint has zero control intervals and
+         * each waypoint in it is valid.
+         * 
+         * @return true if this path is valid
+         */
         bool IsValid() const noexcept;
     };
 }

@@ -1,4 +1,4 @@
-#include "SwerveDrive.h"
+#include "SwerveDrivetrain.h"
 
 #include <iostream>
 #define _USE_MATH_DEFINES
@@ -7,32 +7,32 @@
 
 #include <casadi/casadi.hpp>
 
-#include "HolonomicDrive.h"
+#include "HolonomicDrivetrain.h"
 #include "Obstacle.h"
-#include "SwerveDrive.h"
+#include "SwerveDrivetrain.h"
 #include "TrajectoryUtil.h"
 
 namespace helixtrajectory {
 
-    SwerveDrive::SwerveDrive(double mass, double moi, const std::vector<SwerveModule>& modules, const Obstacle& bumpers) :
-        HolonomicDrive(mass, moi, bumpers), modules(modules) {
+    SwerveDrivetrain::SwerveDrivetrain(double mass, double momentOfInertia, const std::vector<SwerveModule>& modules, const Obstacle& bumpers) :
+        HolonomicDrivetrain(mass, momentOfInertia, bumpers), modules(modules) {
     }
 
-    SwerveDrive::~SwerveDrive() {
+    SwerveDrivetrain::~SwerveDrivetrain() {
     }
 
-    const casadi::MX SwerveDrive::SolveModulePosition(const casadi::MX& theta, const SwerveModule& module) const {
+    const casadi::MX SwerveDrivetrain::SolveModulePosition(const casadi::MX& theta, const SwerveModule& module) const {
         casadi::MX position(2, 1);
         position(0) = module.GetModuleDiagonal() * cos(module.GetModuleAngle() + theta);
         position(1) = module.GetModuleDiagonal() * sin(module.GetModuleAngle() + theta);
         return position;
     }
 
-    void SwerveDrive::ApplyKinematicsConstraints(casadi::Opti& opti,
+    void SwerveDrivetrain::ApplyKinematicsConstraints(casadi::Opti& opti,
             const casadi::MX& theta, const casadi::MX& vx, const casadi::MX& vy,
             const casadi::MX& omega, const casadi::MX& ax, const casadi::MX& ay,
-            const casadi::MX& alpha, const size_t nTotal) const {
-        for (int i = 0; i < nTotal; i++) {
+            const casadi::MX& alpha, size_t controlIntervalTotal) const {
+        for (int i = 0; i < controlIntervalTotal; i++) {
             // std::cout << "Constraining module kinematics" << std::endl;
             double moduleCount = modules.size();
             casadi::MX forces = opti.variable(2, moduleCount);
@@ -61,8 +61,16 @@ namespace helixtrajectory {
             }
             opti.subject_to(ax(i) * mass == netForceX);
             opti.subject_to(ay(i) * mass == netForceY);
-            opti.subject_to(alpha(i) * moi == netTorque);
+            opti.subject_to(alpha(i) * momentOfInertia == netTorque);
             // std::cout << "Constrained module to kinematics" << std::endl;
         }
+    }
+
+    std::ostream& operator<<(std::ostream& stream, const SwerveDrivetrain& swerveDrivetrain) {
+        return stream << "{\"mass\": " << swerveDrivetrain.mass
+               << ", \"moment_of_inertia\": " << swerveDrivetrain.momentOfInertia
+               << ", \"bumpers\": " << swerveDrivetrain.bumpers
+               << ", \"modules\": " << swerveDrivetrain.modules
+               << "}";
     }
 }

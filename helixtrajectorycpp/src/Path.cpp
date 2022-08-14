@@ -4,26 +4,15 @@
 
 namespace helixtrajectory {
 
-    Waypoint::Waypoint(double x, double y, double heading,
-            bool xConstrained, bool yConstrained, bool headingConstrained,
-            const std::vector<InitialGuessPoint>& initialGuessPoints)
-            : x(x), y(y), heading(heading), xConstrained(xConstrained), yConstrained(yConstrained), headingConstrained(headingConstrained), initialGuessPoints(initialGuessPoints) {
-    }
-
-    Waypoint::~Waypoint() {
-    }
-
-    bool Waypoint::IsValid() const noexcept {
-        return xConstrained || yConstrained;
-    }
-    bool Waypoint::IsPositionStateKnown() const noexcept {
-        return xConstrained && yConstrained && headingConstrained;
-    }
-    bool Waypoint::IsStateKnown() const noexcept {
-        return IsPositionStateKnown() && IsVelocityStateKnown();
-    }
-
     Path::~Path() {
+    }
+
+    size_t Path::ControlIntervalTotal() const {
+        size_t controlIntervalTotal = 0;
+        for (size_t waypointIndex = 1; waypointIndex < Length(); waypointIndex++) {
+            controlIntervalTotal += GetWaypoint(waypointIndex).controlIntervalCount;
+        }
+        return controlIntervalTotal;
     }
 
     bool Path::IsValid() const noexcept {

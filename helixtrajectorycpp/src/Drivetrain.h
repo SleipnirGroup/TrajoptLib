@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 
 #include <casadi/casadi.hpp>
@@ -19,17 +20,16 @@ namespace helixtrajectory {
      * always point in the same directions as the field coordinate system. The robot rotates
      * relative to the nonrotating robot coordinate system.
      * 
-     * The axis of rotation of the robot
-     * pierces through the origin of the robot coordinate system, normal to the 2D plane
-     * spanned by it.
+     * The axis of rotation of the robot pierces through the origin of the robot coordinate
+     * system, normal to the plane of the field.
      * 
-     * Bumpers are represented as an obstacle. A bumper corner is equivalent to an obstacle point
+     * Bumpers are represented as an obstacle. A bumper corner is analogous to an obstacle point
      * on the bumpers. The bumper corner points are specified relative to the robot coordinate
-     * system. Using an obstacle as the robot's bumpers is very powerful. It is possible to create
-     * bumpers with rounded corners, circular bumpers, or rectanglar bumpers with two semi circles
-     * on side.
+     * system. Using an obstacle as the robot's bumpers is very powerful, as it is possible to create
+     * bumpers with rounded corners, circular bumpers, rectanglar bumpers with two semi circles
+     * on side, or many other shapes.
      */
-    class Drive {
+    class Drivetrain {
     private:
         /**
          * @brief Gives an expression for the position of a bumper corner relative
@@ -51,10 +51,10 @@ namespace helixtrajectory {
          * and bumpers. Bumpers are represented as an obstacle.
          * 
          * @param mass the mass of the entire robot
-         * @param moi the moment of inertia of the robot about the center of rotation
+         * @param momentOfInertia the moment of inertia of the robot about the center of rotation
          * @param bumpers the bumpers of the robot represented as an obstacle
          */
-        Drive(double mass, double moi, const Obstacle& bumpers);
+        Drivetrain(double mass, double momentOfInertia, const Obstacle& bumpers);
 
     public:
         /**
@@ -65,28 +65,32 @@ namespace helixtrajectory {
          * @brief moment of inertia of robot about axis of rotation, through
          * center of robot coordinate system
          */
-        double moi;
+        double momentOfInertia;
         /**
          * @brief the boundaries of the robot's bumpers, represented as an Obstacle.
          */
         Obstacle bumpers;
 
-        virtual ~Drive();
+        /**
+         * @brief Destroy the Drivetrain object
+         */
+        virtual ~Drivetrain();
 
         /**
          * @brief Applies constraints that prevent the robot from getting too close to a given obstacle.
          * If the robot's bumpers and an obstacle are made from a single point, a minimum distance constraint
-         * is provided. Otherwise, constraints that prevent a point on the bumpers from getting too close to
+         * is applied. Otherwise, constraints that prevent a point on the bumpers from getting too close to
          * an obstacle line segment and prevent a line segment on the bumpers from getting too close to an obstacle
          * point are created.
          * 
          * @param opti the current optimizer
-         * @param x (nTotal + 1) x 1 column vector of the x-coordinate of the robot for each sample point
-         * @param y (nTotal + 1) x 1 column vector of the y-coordinate of the robot for each sample point
-         * @param theta (nTotal + 1) x 1 column vector of the robot's heading for each sample point
-         * @param nTotal the number of segments in this trajectory (number of sample points - 1)
+         * @param x 1 x (controlIntervalTotal + 1) vector of the x-coordinate of the robot for each sample point
+         * @param y 1 x (controlIntervalTotal + 1) vector of the y-coordinate of the robot for each sample point
+         * @param theta 1 x (controlIntervalTotal + 1) column vector of the robot's heading for each sample point
+         * @param controlIntervalTotal the number of control intervals in this trajectory (number of sample points - 1)
+         * @param obstacles the list of obstacles to apply constraints for
          */
         void ApplyObstacleConstraints(casadi::Opti& opti, const casadi::MX& x, const casadi::MX& y,
-                const casadi::MX& theta, size_t nTotal, const std::vector<Obstacle>& obstacles) const;
+                const casadi::MX& theta, size_t controlIntervalTotal, const std::vector<Obstacle>& obstacles) const;
     };
 }

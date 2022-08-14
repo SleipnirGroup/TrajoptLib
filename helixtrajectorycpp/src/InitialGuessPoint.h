@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 namespace helixtrajectory {
 
     /**
@@ -18,5 +20,7 @@ namespace helixtrajectory {
          * @brief the initial guess of the heading of the robot
          */
         double heading;
+
+        friend std::ostream& operator<<(std::ostream& stream, const InitialGuessPoint& guessPoint);
     };
 }

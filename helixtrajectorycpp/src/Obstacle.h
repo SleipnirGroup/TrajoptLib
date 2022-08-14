@@ -1,22 +1,11 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 
-namespace helixtrajectory {
+#include "ObstaclePoint.h"
 
-    /**
-     * @brief A point of an obstacle, usually representing a vertex of a polygon.
-     */
-    struct ObstaclePoint {
-        /**
-         * @brief the x-coordinate of obstacle point
-         */
-        double x;
-        /**
-         * @brief the y-coordinate of obstacle point
-         */
-        double y;
-    };
+namespace helixtrajectory {
 
     /**
      * @brief Represents a physical obstacle that the robot must avoid by a certain distance.
@@ -41,6 +30,8 @@ namespace helixtrajectory {
          * @param safetyDistance the list of points that make up this obstacle
          * @param waypoints minimum distance from the obstacle the robot must maintain
          */
-        Obstacle(double safetyDistance, const std::vector<ObstaclePoint>& waypoints);
+        Obstacle(double safetyDistance, const std::vector<ObstaclePoint>& points);
+
+        friend std::ostream& operator<<(std::ostream& stream, const Obstacle& obstacle);
     };
 }

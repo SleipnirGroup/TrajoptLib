@@ -1,63 +1,36 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
+
+#include "HolonomicTrajectorySegment.h"
+#include "Trajectory.h"
 
 namespace helixtrajectory {
 
     /**
-     * @brief A sample point cooresponding to the state of the robot at a certain timestamp
-     * during the trajectory. Note that some information about the robot state is missing
-     * since it can be inferred with simple calculations. For example, the rotation of each
-     * swerve module is omitted. State is measured relative to the field coordinate system.
+     * @brief A type of trajectory used for holonomic drivetrain robots. It includes
+     * position and velocity state that can be used for trajectory following.
      */
-    struct HolonomicTrajectorySample {
+    class HolonomicTrajectory : Trajectory {
+    public:
         /**
-         * @brief the amount of time since the beginning of the trajectory
+         * @brief the list of segments that make up this trajectory
          */
-        double ts;
-        /**
-         * @brief the x-coordinate of the robot
-         */
-        double x;
-        /**
-         * @brief the y-coordinate of the robot
-         */
-        double y;
-        /**
-         * @brief the heading of the robot
-         */
-        double heading;
-        /**
-         * @brief the x-coordinate of the robot's velocity
-         */
-        double vx;
-        /**
-         * @brief the y-coordinate of the robot's velocity
-         */
-        double vy;
-        /**
-         * @brief the angular velocity of the robot
-         */
-        double omega;
-    };
-
-    /**
-     * @brief A collection of sequential sample points that make up a trajectory.
-     * This gives the trajectory follower the exact data it needs to make the robot
-     * follow the generated path.
-     */
-    struct HolonomicTrajectory {
+        std::vector<HolonomicTrajectorySegment> holonomicSegments;
 
         /**
-         * @brief the list of sample points that make up this trajectory
-         */
-        std::vector<HolonomicTrajectorySample> samples;
-
-        /**
-         * @brief Construct a new Trajectory object with a list of sample points.
+         * @brief Construct a new Trajectory object with a list of segments.
          * 
-         * @param samples the list of sample points that make up this trajectory
+         * @param samples the list of segments that make up this trajectory
          */
-        HolonomicTrajectory(const std::vector<HolonomicTrajectorySample>& samples);
+        HolonomicTrajectory(const std::vector<HolonomicTrajectorySegment>& holonomicSegments);
+
+        /**
+         * @brief Destroy the Holonomic Trajectory object
+         */
+        virtual ~HolonomicTrajectory();
+
+        friend std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectory& trajectory);
     };
 }

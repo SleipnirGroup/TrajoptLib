@@ -4,8 +4,8 @@
 
 #include <casadi/casadi.hpp>
 
-#include "Drive.h"
-#include "HolonomicDrive.h"
+#include "Drivetrain.h"
+#include "HolonomicDrivetrain.h"
 #include "Path.h"
 #include "Obstacle.h"
 
@@ -15,12 +15,12 @@ namespace helixtrajectory {
      * @brief This class is the superclass for all trajectory generators. It contains the common
      * functionality of all optimizers: waypoint position constraints and obstacle avoidance.
      */
-    class TrajectoryGenerator {
+    class OptimalTrajectoryGenerator {
     protected:
         /**
-         * @brief the drive
+         * @brief the drivetrain
          */
-        const Drive& drive;
+        const Drivetrain& drivetrain;
         /**
          * @brief the path
          */
@@ -39,14 +39,9 @@ namespace helixtrajectory {
          */
         const size_t trajectorySegmentCount;
         /**
-         * @brief the number of segments in a trajectory segment
+         * @brief the total number of control intervals in the trajectory
          */
-        const size_t nPerTrajectorySegment;
-        /**
-         * @brief the total number of segments in the trajectory
-         */
-        const size_t nTotal;
-
+        const size_t controlIntervalTotal;
         /**
          * @brief the optimizer
          */
@@ -57,37 +52,43 @@ namespace helixtrajectory {
          */
         casadi::MX trajectorySegmentTs;
         /**
-         * @brief the list of time differentials of each trajectory segment
+         * @brief the list of time differentials of each trajectory segment,
+         * or the duration of every control interval for each trajectory segment
          */
         casadi::MX trajectorySegmentDts;
 
         /**
-         * @brief The 3 x (nTotal + 1) matrix of robot position state per trajectory sample point.
+         * @brief The 3 x (controlIntervalTotal + 1) matrix of robot position state per trajectory sample point.
          * Each column is a sample point. The first row is the x-coordinate, the second row is
          * the y-coordinate, and the third row is the heading.
          */
         casadi::MX X;
         /**
-         * @brief the 1 x (nTotal + 1) vector of the robot's x-coordinate per trajectory sample point
+         * @brief the 1 x (controlIntervalTotal + 1) vector of the robot's x-coordinate per trajectory sample point
          */
         casadi::MX x;
         /**
-         * @brief the 1 x (nTotal + 1) vector of the robot's y-coordinate per trajectory sample point
+         * @brief the 1 x (controlIntervalTotal + 1) vector of the robot's y-coordinate per trajectory sample point
          */
         casadi::MX y;
         /**
-         * @brief the 1 x (nTotal + 1) vector of the robot's heading per trajectory sample point
+         * @brief the 1 x (controlIntervalTotal + 1) vector of the robot's heading per trajectory sample point
          */
         casadi::MX theta;
 
+        std::vector<casadi::MX> XSegments;
+        std::vector<casadi::MX> xSegments;
+        std::vector<casadi::MX> ySegments;
+        std::vector<casadi::MX> thetaSegments;
+
         /**
-         * @brief Construct a new Trajectory Generator from a drive, path, and list of obstacles.
+         * @brief Construct a new Trajectory Generator from a drivetrain, path, and list of obstacles.
          * 
-         * @param drive the drive
+         * @param drivetrain the drivetrain
          * @param path the path
          * @param obstacles the list of obstacles
          */
-        TrajectoryGenerator(const Drive& drive, const Path& path, const std::vector<Obstacle>& obstacles);
+        OptimalTrajectoryGenerator(const Drivetrain& drivetrain, const Path& path, const std::vector<Obstacle>& obstacles);
 
     private:
         /**
@@ -98,6 +99,9 @@ namespace helixtrajectory {
         void ApplyPathConstraints();
 
     public:
-        virtual ~TrajectoryGenerator();
+        /**
+         * @brief Destroy the Trajectory Generator object
+         */
+        virtual ~OptimalTrajectoryGenerator();
     };
 }

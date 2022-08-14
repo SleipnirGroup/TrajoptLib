@@ -1,16 +1,17 @@
-#include "Drive.h"
+#include "Drivetrain.h"
+
 #include "TrajectoryUtil.h"
 
 namespace helixtrajectory {
 
-    Drive::Drive(double mass, double moi, const Obstacle& bumpers)
-        : mass(mass), moi(moi), bumpers(bumpers) {
+    Drivetrain::Drivetrain(double mass, double momentOfInertia, const Obstacle& bumpers)
+        : mass(mass), momentOfInertia(momentOfInertia), bumpers(bumpers) {
     }
 
-    Drive::~Drive() {
+    Drivetrain::~Drivetrain() {
     }
 
-    const casadi::MX Drive::SolveBumperCornerPosition(const casadi::MX& x, const casadi::MX& y,
+    const casadi::MX Drivetrain::SolveBumperCornerPosition(const casadi::MX& x, const casadi::MX& y,
             const casadi::MX& theta, const ObstaclePoint& bumperCorner) const {
         casadi::MX position(2, 1);
         double cornerDiagonal = hypot(bumperCorner.x, bumperCorner.y);
@@ -20,9 +21,9 @@ namespace helixtrajectory {
         return position;
     }
 
-    void Drive::ApplyObstacleConstraints(casadi::Opti& opti, const casadi::MX& x, const casadi::MX& y,
-            const casadi::MX& theta, size_t nTotal, const std::vector<Obstacle>& obstacles) const {
-        for (size_t i = 0; i < nTotal; i++) {
+    void Drivetrain::ApplyObstacleConstraints(casadi::Opti& opti, const casadi::MX& x, const casadi::MX& y,
+            const casadi::MX& theta, size_t controlIntervalTotal, const std::vector<Obstacle>& obstacles) const {
+        for (size_t i = 0; i < controlIntervalTotal; i++) {
             for (const Obstacle& obstacle : obstacles) {
                 double distSquared = bumpers.safetyDistance + obstacle.safetyDistance;
                 distSquared = distSquared * distSquared;

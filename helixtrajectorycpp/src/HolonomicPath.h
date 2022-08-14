@@ -1,79 +1,40 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 
+#include "HolonomicWaypoint.h"
 #include "Path.h"
 
 namespace helixtrajectory {
 
     /**
-     * @brief A waypoint in a holonomic path. This struct includes additional velocity constraints
-     * specific to holonomic drivetrains.
-     */
-    class HolonomicWaypoint : public Waypoint {
-    public:
-        /**
-         * @brief x-coordinate of robot velocity at waypoint
-         */
-        double vx;
-        /**
-         * @brief y-coordinate of robot velocity at waypoint
-         */
-        double vy;
-        /**
-         * @brief angular velocity of robot at waypoint
-         */
-        double omega;
-        /**
-         * @brief whether or not the optimizer should constrain the x-component of velocity of the robot at waypoint
-         */
-        bool vxConstrained;
-        /**
-         * @brief whether or not the optimizer should constrain the y-component of velocity of the robot at waypoint
-         */
-        bool vyConstrained;
-        /**
-         * @brief whether or not the optimizer should constrain the magnitude of the velocity vector of the robot at waypoint
-         */
-        bool vMagnitudeConstrained;
-        /**
-         * @brief whether or not the optimizer should constrain the angular velocity of the robot at waypoint
-         */
-        bool omegaConstrained;
-
-        HolonomicWaypoint(double x, double y, double heading, double vx, double vy, double omega,
-                bool xConstrained, bool yConstrained, bool headingConstrained,
-                bool vxConstrained, bool vyConstrained,
-                bool vMagnitudeConstrained, bool omegaConstrained,
-                const std::vector<InitialGuessPoint>& initialGuessPoints);
-
-        virtual ~HolonomicWaypoint();
-
-        virtual bool IsVelocityStateKnown() const noexcept;
-    };
-
-    /**
-     * @brief A sequence of holonomic waypoints that make up a path that the robot can follow. Note that,
-     * unlike a path, which is only a loose idea of where the robot should go, a Trajectory is the
-     * detailed output of the optimizer that tells the robot exactly how to move.
+     * @brief A sequence of holonomic waypoints that make up a path that a holonomic drivetrain robot
+     * can follow. Note that, unlike a path, which is only a general idea of where the robot should go,
+     * a Trajectory is the detailed output of the generator that tells the robot exactly how to move.
      */
     class HolonomicPath : public Path {
     public:
         /**
-         * @brief the waypoints that make up this path
+         * @brief the holonomic waypoints that make up this path
          */
-        std::vector<HolonomicWaypoint> waypoints;
+        std::vector<HolonomicWaypoint> holonomicWaypoints;
         /**
          * @brief Construct a HolonomicPath with a list of holonomic waypoints
          * 
          * @param waypoints the holonomic waypoints that make up this path
          */
-        HolonomicPath(const std::vector<HolonomicWaypoint>& waypoints);
+        HolonomicPath(const std::vector<HolonomicWaypoint>& holonomicWaypoints);
 
+        /**
+         * @brief Destroy the Holonomic Path object
+         */
         virtual ~HolonomicPath();
 
         inline virtual size_t Length() const noexcept;
         inline virtual Waypoint& GetWaypoint(size_t index);
         inline virtual const Waypoint& GetWaypoint(size_t index) const;
+
+        friend std::ostream& operator<<(std::ostream& stream, const HolonomicPath& path);
     };
 }

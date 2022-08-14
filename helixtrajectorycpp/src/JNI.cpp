@@ -14,7 +14,7 @@
 
 using namespace helixtrajectory;
 
-std::unique_ptr<HolonomicDrive> holonomicDriveFromJHolonomicDrive(JNIEnv* env, jobject jHolonomicDrive);
+std::unique_ptr<HolonomicDrivetrain> holonomicDriveFromJHolonomicDrive(JNIEnv* env, jobject jHolonomicDrive);
 Obstacle obstacleFromJObstacle(JNIEnv* env, jobject jObstacle);
 
 JNIEXPORT jobject JNICALL Java_org_team2363_helixtrajectory_HolonomicTrajectoryGenerator_generate
@@ -53,8 +53,8 @@ JNIEXPORT jobject JNICALL Java_org_team2363_helixtrajectory_HolonomicTrajectoryG
     jclass jHolonomicTrajectoryClass = env->FindClass("org/team2363/helixtrajectory/HolonomicTrajectory");
     jmethodID jHolonomicTrajectoryClassConstructor = env->GetMethodID(jHolonomicTrajectoryClass, "<init>", "(Lorg/team2363/helixtrajectory/HolonomicTrajectorySample;[])V");
     
-    jclass jHolonomicTrajectoryGeneratorClass = env->FindClass("org/team2363/helixtrajectory/HolonomicTrajectoryGenerator");
-    jfieldID jHolonomicTrajectoryGeneratorClassHolonomicDriveField = env->GetFieldID(jHolonomicTrajectoryGeneratorClass, "holonomicDrive", "Lorg/team2363/helixtrajectory/HolonomicDrive;");
+    jclass jHolonomicTrajectoryGeneratorClass = env->FindClass("org/team2363/helixtrajectory/OptimalHolonomicTrajectoryGenerator");
+    jfieldID jHolonomicTrajectoryGeneratorClassHolonomicDriveField = env->GetFieldID(jHolonomicTrajectoryGeneratorClass, "holonomicDrive", "Lorg/team2363/helixtrajectory/HolonomicDrivetrain;");
     jfieldID jHolonomicTrajectoryGeneratorClassHolonomicPathField = env->GetFieldID(jHolonomicTrajectoryGeneratorClass, "holonomicPath", "Lorg/team2363/helixtrajectory/HolonomicPath;");
     jfieldID jHolonomicTrajectoryGeneratorClassObstaclesField = env->GetFieldID(jHolonomicTrajectoryGeneratorClass, "obstacles", "Ljava/util/List;");
 
@@ -104,7 +104,7 @@ JNIEXPORT jobject JNICALL Java_org_team2363_helixtrajectory_HolonomicTrajectoryG
     }
     HolonomicPath holonomicPath = waypoints;
 
-    const std::unique_ptr<HolonomicDrive> holonomicDrive = holonomicDriveFromJHolonomicDrive(env, jHolonomicDrive);
+    const std::unique_ptr<HolonomicDrivetrain> holonomicDrive = holonomicDriveFromJHolonomicDrive(env, jHolonomicDrive);
 
     size_t obstacleCount = env->CallIntMethod(jObstacles, jListClassSizeMethod);
     std::vector<Obstacle> obstacles;
@@ -114,7 +114,7 @@ JNIEXPORT jobject JNICALL Java_org_team2363_helixtrajectory_HolonomicTrajectoryG
         obstacles.push_back(obstacleFromJObstacle(env, jObstacle));
     }
 
-    HolonomicTrajectoryGenerator generator(*holonomicDrive, holonomicPath, obstacles);
+    OptimalHolonomicTrajectoryGenerator generator(*holonomicDrive, holonomicPath, obstacles);
     std::unique_ptr<HolonomicTrajectory> traj = generator.Generate();
     size_t sampleCount = traj->samples.size();
     jobjectArray jSampleArray = env->NewObjectArray(sampleCount, jHolonomicTrajectorySampleClass, NULL);
@@ -132,17 +132,17 @@ JNIEXPORT jobject JNICALL Java_org_team2363_helixtrajectory_HolonomicTrajectoryG
     return jHolonomicTrajectory;
 }
 
-std::unique_ptr<HolonomicDrive> holonomicDriveFromJHolonomicDrive(JNIEnv* env, jobject jHolonomicDrive) {
+std::unique_ptr<HolonomicDrivetrain> holonomicDriveFromJHolonomicDrive(JNIEnv* env, jobject jHolonomicDrive) {
     jclass jListClass = env->FindClass("java/util/List");
     jmethodID jListClassSizeMethod = env->GetMethodID(jListClass, "size", "()I");
     jmethodID jListClassGetMethod = env->GetMethodID(jListClass, "get", "(I)Ljava/lang/Object;");
 
-    jclass jHolonomicDriveClass = env->FindClass("org/team2363/helixtrajectory/HolonomicDrive");
+    jclass jHolonomicDriveClass = env->FindClass("org/team2363/helixtrajectory/HolonomicDrivetrain");
     jfieldID jHolonomicDriveClassMassField = env->GetFieldID(jHolonomicDriveClass, "mass", "D");
     jfieldID jHolonomicDriveClassMoiField = env->GetFieldID(jHolonomicDriveClass, "moi", "D");
     jfieldID jHolonomicDriveClassBumpersField = env->GetFieldID(jHolonomicDriveClass, "bumpers", "Lorg/team2363/helixtrajectory/Obstacle;");
 
-    jclass jSwerveDriveClass = env->FindClass("org/team2363/helixtrajectory/SwerveDrive");
+    jclass jSwerveDriveClass = env->FindClass("org/team2363/helixtrajectory/SwerveDrivetrain");
     jfieldID jSwerveDriveClassModulesField = env->GetFieldID(jSwerveDriveClass, "modules", "Ljava/util/List;");
 
     jclass jSwerveModuleClass = env->FindClass("org/team2363/helixtrajectory/SwerveModule");
@@ -173,7 +173,7 @@ std::unique_ptr<HolonomicDrive> holonomicDriveFromJHolonomicDrive(JNIEnv* env, j
                 env->CallDoubleMethod(jSwerveModule, jSwerveModuleClassWheelMaxAngularVelocityMethod),
                 env->CallDoubleMethod(jSwerveModule, jSwerveModuleClassWheelMaxTorqueMethod)});
         }
-        return std::unique_ptr<HolonomicDrive>(new SwerveDrive(jHolonomicDriveMass, jHolonomicDriveMoi, modules, bumpers));
+        return std::unique_ptr<HolonomicDrivetrain>(new SwerveDrivetrain(jHolonomicDriveMass, jHolonomicDriveMoi, modules, bumpers));
     } else {
         throw "Only swerve is supported currently";
     }

@@ -1,6 +1,5 @@
 package org.team2363.helixtrajectory;
 
-import java.util.Collections;
 import java.util.List;
 
 public abstract class Waypoint {
@@ -29,6 +28,6 @@ public abstract class Waypoint {
 
         this.controlIntervalCount = controlIntervalCount;
 
-        this.initialGuessPoints = Collections.unmodifiableList(initialGuessPoints);
+        this.initialGuessPoints = initialGuessPoints;
     }
 }

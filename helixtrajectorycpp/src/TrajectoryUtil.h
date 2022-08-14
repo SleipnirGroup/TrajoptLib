@@ -23,9 +23,7 @@ namespace helixtrajectory {
      */
     const casadi::Slice THREE_FOUR_FIVE(3, 6);
 
-    void linspace(casadi::DM& x, size_t row, double start, double end, double n);
-
-    casadi::DM generateInitialTrajectory(const Path& path, size_t nPerTrajectorySegment);
+    casadi::DM generateInitialTrajectory(const Path& path);
     // https://www.desmos.com/calculator/cqmc1tjtsv
     template<typename LineNumberType, typename PointNumberType>
     inline casadi::MX linePointDist(LineNumberType lineStartX, LineNumberType lineStartY, LineNumberType lineEndX, LineNumberType lineEndY,
