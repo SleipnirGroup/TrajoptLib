@@ -31,9 +31,9 @@ namespace helixtrajectory {
          */
         virtual ~HolonomicPath();
 
-        inline virtual size_t Length() const noexcept;
-        inline virtual Waypoint& GetWaypoint(size_t index);
-        inline virtual const Waypoint& GetWaypoint(size_t index) const;
+        virtual size_t Length() const noexcept;
+        virtual Waypoint& GetWaypoint(size_t index);
+        virtual const Waypoint& GetWaypoint(size_t index) const;
 
         friend std::ostream& operator<<(std::ostream& stream, const HolonomicPath& path);
     };

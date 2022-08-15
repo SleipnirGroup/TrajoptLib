@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include <casadi/casadi.hpp>
+
 #include "HolonomicWaypoint.h"
 #include "Path.h"
 

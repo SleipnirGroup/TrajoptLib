@@ -14,6 +14,8 @@ namespace helixtrajectory {
     }
 
     std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectorySegment& segment) {
-        return stream << segment.holonomicSamples;
+        return stream << "{\"dt\": " << segment.dt
+                << ", \"samples\": " << segment.holonomicSamples
+                << "}";
     }
 }

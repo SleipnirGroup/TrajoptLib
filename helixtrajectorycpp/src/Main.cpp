@@ -31,13 +31,12 @@ int main() {
 
     HolonomicPath path({
         HolonomicWaypoint( 4,  0,    0, 0, 0, 0, true, true, true,  true,  true,  true,  true,  0, {}),
-        HolonomicWaypoint( 0,  4, 1.57, 0, 0, 0, true, true, true, false, false, false, false, 40, {}),
-        HolonomicWaypoint(-4,  0,    0, 0, 0, 0, true, true, true, false, false, false, false, 40, {}),
-        HolonomicWaypoint( 0, -4, 3.14, 0, 0, 0, true, true, true, false, false, false, false, 40, {}),
-        HolonomicWaypoint( 4,  0, 4.71, 0, 0, 0, true, true, true,  true,  true,  true,  true, 40, {})
+        HolonomicWaypoint( 0,  4, 1.57, 0, 0, 0, true, true, true, false, false, false, false, 4, {}),
+        HolonomicWaypoint(-4,  0,    0, 0, 0, 0, true, true, true, false, false, false, false, 4, {}),
+        HolonomicWaypoint( 0, -4, 3.14, 0, 0, 0, true, true, true, false, false, false, false, 4, {}),
+        HolonomicWaypoint( 4,  0, 4.71, 0, 0, 0, true, true, true,  true,  true,  true,  true, 4, {})
     });
-    std::vector<Obstacle> obstacles = {Obstacle(0.2, {{0, 0}})};
-
+    std::vector<Obstacle> obstacles;// = {Obstacle(0.2, {{0, 0}})};
     std::cout << "Drivetrain:\n" << drive << "\n"
             << "\nPath:\n" << path << "\n"
             << "\nObstacles:\n" << obstacles << std::endl;
@@ -45,4 +44,5 @@ int main() {
     OptimalHolonomicTrajectoryGenerator optimizer(drive, path, obstacles);
     HolonomicTrajectory trajectory = optimizer.Generate();
     std::cout << "\nTrajectory:\n" << trajectory;
+    std::cout << std::endl;
 }

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include <casadi/casadi.hpp>
+
 namespace helixtrajectory {
 
     HolonomicTrajectory::HolonomicTrajectory(const std::vector<HolonomicTrajectorySegment>& holonomicSegments)

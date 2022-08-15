@@ -65,12 +65,30 @@ namespace helixtrajectory {
          */
         casadi::MX alpha;
 
+        std::vector<casadi::MX> VSegments;
+        std::vector<casadi::MX> vxSegments;
+        std::vector<casadi::MX> vySegments;
+        std::vector<casadi::MX> omegaSegments;
+
+        std::vector<casadi::MX> USegments;
+
         /**
          * @brief Applies the constraints that force the robot's motion to comply
          * with the list of holonomic waypoints provided. This may include constraints on
          * velocity and angular velocity.
          */
         void ApplyHolonomicPathConstraints();
+
+        static void ApplyKinematicsConstraints(casadi::Opti& opti, const std::vector<casadi::MX>& XSegments,
+                const std::vector<casadi::MX>& VSegments, const std::vector<casadi::MX>& USegments,
+                const casadi::MX& segmentDts);
+
+        static HolonomicTrajectory ConstructTrajectory(const casadi::OptiSol& solution,
+                const std::vector<casadi::MX>& xSegments, const std::vector<casadi::MX>& ySegments,
+                const std::vector<casadi::MX>& thetaSegments, const std::vector<casadi::MX>& vxSegments,
+                const std::vector<casadi::MX>& vySegments, const std::vector<casadi::MX>& omegaSegments,
+                const casadi::MX& segmentDts);
+
     public:
         /**
          * @brief Constructs a new OptimalHolonomicTrajectoryGenerator with a holonomic drivetrain,

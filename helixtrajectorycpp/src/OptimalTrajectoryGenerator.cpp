@@ -24,6 +24,10 @@ namespace helixtrajectory {
             trajectorySegmentDts(1, trajectorySegmentCount),
             X(opti.variable(3, controlIntervalTotal + 1)), x(X(0, ALL)), y(X(1, ALL)), theta(X(2, ALL)) {
 
+        if (!path.IsValid()) {
+            throw "path is not valid";
+        }
+
         std::cout << "Number of Total Control Intervals " << controlIntervalTotal << std::endl;
 
         XSegments.reserve(waypointCount);
@@ -31,10 +35,10 @@ namespace helixtrajectory {
         ySegments.reserve(waypointCount);
         thetaSegments.reserve(waypointCount);
         XSegments.push_back(X(ALL, 0));
-        XSegments.push_back(x(ALL, 0));
-        XSegments.push_back(y(ALL, 0));
-        XSegments.push_back(theta(ALL, 0));
-        size_t sampleIndex = 0;
+        xSegments.push_back(x(ALL, 0));
+        ySegments.push_back(y(ALL, 0));
+        thetaSegments.push_back(theta(ALL, 0));
+        size_t sampleIndex = 1;
         for (size_t waypointIndex = 1; waypointIndex < waypointCount; waypointIndex++) {
             size_t controlIntervalCount = path.GetWaypoint(waypointIndex).controlIntervalCount;
             XSegments.push_back(X(ALL, casadi::Slice((int) sampleIndex, (int) (sampleIndex + controlIntervalCount))));

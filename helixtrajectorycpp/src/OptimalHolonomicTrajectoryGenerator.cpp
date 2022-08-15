@@ -22,20 +22,35 @@ namespace helixtrajectory {
             V(opti.variable(3, controlIntervalTotal + 1)), vx(V(0, ALL)), vy(V(1, ALL)), omega(V(2, ALL)),
             U(opti.variable(3, controlIntervalTotal)), ax(U(0, ALL)), ay(U(1, ALL)), alpha(U(2, ALL)) {
 
-        size_t sampleIndex = OptimalHolonomicTrajectoryGenerator::holonomicPath
-                .holonomicWaypoints[0].controlIntervalCount;
+        VSegments.reserve(waypointCount);
+        vxSegments.reserve(waypointCount);
+        vySegments.reserve(waypointCount);
+        omegaSegments.reserve(waypointCount);
+        USegments.reserve(trajectorySegmentCount);
+
+        VSegments.push_back(V(ALL, 0));
+        vxSegments.push_back(vx(ALL, 0));
+        vySegments.push_back(vy(ALL, 0));
+        omegaSegments.push_back(omega(ALL, 0));
+
+        size_t sampleIndex = 1;
         for (size_t waypointIndex = 1; waypointIndex < waypointCount; waypointIndex++) {
-            size_t segmentIntervalCount = OptimalHolonomicTrajectoryGenerator::holonomicPath
+            size_t controlIntervalCount = OptimalHolonomicTrajectoryGenerator::holonomicPath
                     .holonomicWaypoints[waypointIndex].controlIntervalCount;
-            casadi::MX dt = trajectorySegmentDts(waypointIndex - 1);
-            for (size_t segmentSampleIndex = 0; segmentSampleIndex < segmentIntervalCount; segmentSampleIndex++) {
-                casadi::MX XNext = X(ALL, sampleIndex) + V(ALL, sampleIndex) * dt;
-                casadi::MX VNext = V(ALL, sampleIndex) + U(ALL, sampleIndex) * dt;
-                opti.subject_to(X(ALL, sampleIndex + 1) == XNext);
-                opti.subject_to(V(ALL, sampleIndex + 1) == VNext);
-                sampleIndex++;
-            }
+
+            casadi::Slice VSlice((int) sampleIndex, (int) (sampleIndex + controlIntervalCount));
+            casadi::Slice USlice((int) (sampleIndex - 1), (int) (sampleIndex - 1 + controlIntervalCount));
+
+            VSegments.push_back(V(ALL, VSlice));
+            vxSegments.push_back(vx(ALL, VSlice));
+            vySegments.push_back(vy(ALL, VSlice));
+            omegaSegments.push_back(omega(ALL, VSlice));
+            USegments.push_back(U(ALL, USlice));
+
+            sampleIndex += controlIntervalCount;
         }
+
+        OptimalHolonomicTrajectoryGenerator::ApplyKinematicsConstraints(opti, XSegments, VSegments, USegments, trajectorySegmentDts);
         std::cout << "Applied Holonomic Kinematics Constraints" << std::endl;
 
         OptimalHolonomicTrajectoryGenerator::holonomicDrivetrain.ApplyKinematicsConstraints(
@@ -50,74 +65,84 @@ namespace helixtrajectory {
     }
 
     HolonomicTrajectory OptimalHolonomicTrajectoryGenerator::Generate() {
+        size_t controlIntervalTotal = path.ControlIntervalTotal();
+        if (holonomicPath.Length() == 1) {
+            return HolonomicTrajectory({HolonomicTrajectorySegment(0.0, {HolonomicTrajectorySample(
+                    holonomicPath.holonomicWaypoints[0].x,
+                    holonomicPath.holonomicWaypoints[0].y,
+                    holonomicPath.holonomicWaypoints[0].heading,
+                    holonomicPath.holonomicWaypoints[0].velocityX,
+                    holonomicPath.holonomicWaypoints[0].velocityY,
+                    holonomicPath.holonomicWaypoints[0].angularVelocity
+            )})});
+        }
         opti.solver("ipopt");
         std::cout << "Located IPOPT Plugin" << std::endl;
         auto solution = opti.solve();
         std::cout << "Solution Found" << std::endl;
 
-        std::vector<double> solutionTimestamp;
-        solutionTimestamp.reserve(controlIntervalTotal + 1);
-        double cumT = 0.0;
-        for (size_t segmentIndex = 0; segmentIndex < trajectorySegmentCount; segmentIndex++) {
-            double t = static_cast<double>(solution.value(trajectorySegmentTs(segmentIndex)));
-            size_t controlIntervalCount = path.GetWaypoint(segmentIndex + 1).controlIntervalCount;
-            double dt = t / controlIntervalCount;
-            for (size_t intervalIndex = 0; intervalIndex < controlIntervalCount; intervalIndex++) {
-                solutionTimestamp.push_back(cumT + segmentIndex * dt);
+        return ConstructTrajectory(solution, xSegments, ySegments, thetaSegments,
+                vxSegments, vySegments, omegaSegments, trajectorySegmentDts);
+    }
+
+    void OptimalHolonomicTrajectoryGenerator::ApplyKinematicsConstraints(casadi::Opti& opti, const std::vector<casadi::MX>& XSegments,
+            const std::vector<casadi::MX>& VSegments, const std::vector<casadi::MX>& USegments,
+            const casadi::MX& segmentDts) {
+        for (size_t XSegmentIndex = 1; XSegmentIndex < XSegments.size(); XSegmentIndex++) {
+            size_t previousSegmentSampleCount = XSegments[XSegmentIndex - 1].columns();
+            size_t segmentSampleCount = XSegments[XSegmentIndex].columns();
+            casadi::MX dt = segmentDts(XSegmentIndex - 1);
+            opti.subject_to(XSegments[XSegmentIndex - 1](ALL, previousSegmentSampleCount - 1)
+                    + VSegments[XSegmentIndex](ALL, 0) * dt == XSegments[XSegmentIndex](ALL, 0));
+            opti.subject_to(VSegments[XSegmentIndex - 1](ALL, previousSegmentSampleCount - 1)
+                    + USegments[XSegmentIndex - 1](ALL, 0) * dt == VSegments[XSegmentIndex](ALL, 0));
+            for (size_t sampleIndex = 1; sampleIndex < segmentSampleCount; sampleIndex++) {
+                opti.subject_to(XSegments[XSegmentIndex](ALL, sampleIndex - 1) + VSegments[XSegmentIndex](ALL, sampleIndex) * dt
+                        == XSegments[XSegmentIndex](ALL, sampleIndex));
+                opti.subject_to(VSegments[XSegmentIndex](ALL, sampleIndex - 1) + USegments[XSegmentIndex - 1](ALL, sampleIndex) * dt
+                        == VSegments[XSegmentIndex](ALL, sampleIndex));
             }
-            cumT += t;
         }
-        solutionTimestamp.push_back(cumT);
+    }
 
-        auto solutionDts = solution.value(trajectorySegmentDts);
-        auto solutionX = solution.value(x);
-        auto solutionY = solution.value(y);
-        auto solutionTheta = solution.value(theta);
-        auto solutionVX = solution.value(vx);
-        auto solutionVY = solution.value(vy);
-        auto solutionOmega = solution.value(omega);
-
+    HolonomicTrajectory OptimalHolonomicTrajectoryGenerator::ConstructTrajectory(const casadi::OptiSol& solution,
+                const std::vector<casadi::MX>& xSegments, const std::vector<casadi::MX>& ySegments,
+                const std::vector<casadi::MX>& thetaSegments, const std::vector<casadi::MX>& vxSegments,
+                const std::vector<casadi::MX>& vySegments, const std::vector<casadi::MX>& omegaSegments,
+                const casadi::MX& segmentDts) {
+        
         std::vector<HolonomicTrajectorySegment> segments;
-        segments.reserve(waypointCount);
-        const HolonomicWaypoint& firstWaypoint = holonomicPath.holonomicWaypoints[0];
-        segments.push_back(HolonomicTrajectorySegment(0.0,
-                {HolonomicTrajectorySample(static_cast<double>(solutionX(0)), static_cast<double>(solutionY(0)),
-                static_cast<double>(solutionTheta(0)), static_cast<double>(solutionVX(0)),
-                static_cast<double>(solutionVY(0)), static_cast<double>(solutionOmega(0)))}));
+        segments.reserve(xSegments.size());
 
-        size_t sampleIndex = 0;
-        for (size_t waypointIndex = 1; waypointIndex < waypointCount; waypointIndex++) {
-            size_t controlIntervalCount = holonomicPath.holonomicWaypoints[waypointIndex].controlIntervalCount;
-            double dt = static_cast<double>(solutionDts(waypointIndex - 1));
+        for (size_t xSegmentIndex = 0; xSegmentIndex < xSegments.size(); xSegmentIndex++) {
+            size_t segmentSampleCount = xSegments[xSegmentIndex].columns();
+            double dt = xSegmentIndex == 0 ? 0.0 : static_cast<double>(solution.value(segmentDts(xSegmentIndex - 1)));
             std::vector<HolonomicTrajectorySample> samples;
-            samples.reserve(controlIntervalCount);
-            for (size_t segmentSampleIndex = 0; segmentSampleIndex < controlIntervalCount; segmentSampleIndex++) {
-                samples.push_back(HolonomicTrajectorySample(static_cast<double>(solutionX(sampleIndex)), static_cast<double>(solutionY(sampleIndex)),
-                static_cast<double>(solutionTheta(sampleIndex)), static_cast<double>(solutionVX(sampleIndex)),
-                static_cast<double>(solutionVY(sampleIndex)), static_cast<double>(solutionOmega(i))))
+            samples.reserve(segmentSampleCount);
+            for (size_t segmentSampleIndex = 0; segmentSampleIndex < segmentSampleCount; segmentSampleIndex++) {
+                samples.push_back(HolonomicTrajectorySample(
+                        static_cast<double>(solution.value(xSegments[xSegmentIndex](segmentSampleIndex))),
+                        static_cast<double>(solution.value(ySegments[xSegmentIndex](segmentSampleIndex))),
+                        static_cast<double>(solution.value(thetaSegments[xSegmentIndex](segmentSampleIndex))),
+                        static_cast<double>(solution.value(vxSegments[xSegmentIndex](segmentSampleIndex))),
+                        static_cast<double>(solution.value(vySegments[xSegmentIndex](segmentSampleIndex))),
+                        static_cast<double>(solution.value(omegaSegments[xSegmentIndex](segmentSampleIndex)))));
             }
             segments.push_back(HolonomicTrajectorySegment(dt, samples));
         }
 
-        std::vector<HolonomicTrajectorySample> samples;
-        samples.reserve(controlIntervalTotal + 1);
-        for (int i = 0; i < controlIntervalTotal + 1; i++) {
-            samples.push_back(HolonomicTrajectorySample{
-                solutionTimestamp[i], static_cast<double>(solutionX(i)), static_cast<double>(solutionY(i)),
-                static_cast<double>(solutionTheta(i)), static_cast<double>(solutionVX(i)),
-                static_cast<double>(solutionVY(i)), static_cast<double>(solutionOmega(i)) });
-        }
-        return HolonomicTrajectory(samples);
+        return HolonomicTrajectory(segments);
     }
 
     void OptimalHolonomicTrajectoryGenerator::ApplyHolonomicPathConstraints() {
         size_t sampleIndex = 0;
         for (size_t waypointIndex = 0; waypointIndex < waypointCount; waypointIndex++) {
-            const HolonomicWaypoint& waypoint = holonomicPath.waypoints[waypointIndex];
+            const HolonomicWaypoint& waypoint = holonomicPath.holonomicWaypoints[waypointIndex];
             sampleIndex += waypoint.controlIntervalCount;
             if (waypoint.velocityMagnitudeConstrained) {
                 if (waypoint.velocityXConstrained) {
                     opti.subject_to(vx(sampleIndex) == waypoint.velocityX);
+                    // opti.subject_to(vxSegments[waypointIndex](-1) == waypoint.velocityX);
                 }
                 if (waypoint.velocityYConstrained) {
                     opti.subject_to(vy(sampleIndex) == waypoint.velocityY);
@@ -142,7 +167,7 @@ namespace helixtrajectory {
                 }
             }
             if (waypoint.angularVelocityConstrained) {
-                opti.subject_to(omega(sampleIndex) == waypoint.angularVelocityConstrained);
+                opti.subject_to(omega(sampleIndex) == waypoint.angularVelocity);
             }
         }
     }

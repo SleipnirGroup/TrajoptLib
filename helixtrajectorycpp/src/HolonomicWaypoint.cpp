@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include <casadi/casadi.hpp>
+
 #include "InitialGuessPoint.h"
 #include "Waypoint.h"
 
@@ -42,6 +44,8 @@ namespace helixtrajectory {
                 << ", \"velocity_y_constrained\": " << waypoint.velocityYConstrained
                 << ", \"velocity_magnitude_constrained\": " << waypoint.velocityMagnitudeConstrained
                 << ", \"angular_velocity_constrained\": " << waypoint.angularVelocityConstrained
+                << ", \"control_interval_count\": " << waypoint.controlIntervalCount
+                << ", \"initial_guess_points\": " << waypoint.initialGuessPoints
                 << "}";
     }
 }

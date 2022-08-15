@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include <casadi/casadi.hpp>
 
 namespace helixtrajectory {
@@ -51,5 +53,7 @@ namespace helixtrajectory {
         double GetModuleAngle() const {
             return atan2(y, x);
         }
+
+        friend std::ostream& operator<<(std::ostream& stream, const SwerveModule& module);
     };
 }

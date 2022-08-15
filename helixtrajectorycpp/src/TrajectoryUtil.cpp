@@ -14,9 +14,9 @@ namespace helixtrajectory {
     }
 
     casadi::DM generateInitialTrajectory(const Path& path) {
-        if (path.Length() == 0) {
-            return;
-        }
+        // if (path.Length() == 0) {
+        //     return;
+        // }
         size_t waypointCount = path.Length();
         casadi::DM X(3, path.ControlIntervalTotal() + 1);
         casadi::DM x = X(0, ALL);
@@ -63,7 +63,7 @@ namespace helixtrajectory {
 
     void printHolonomicPath(const HolonomicPath& path) {
         std::cout << "[\n";
-        for (const HolonomicWaypoint& waypoint : path.waypoints) {
+        for (const HolonomicWaypoint& waypoint : path.holonomicWaypoints) {
             std::cout << "    {\n";
             std::cout << "        \"x\": " << waypoint.x << ",\n";
             std::cout << "        \"y\": " << waypoint.y << ",\n";

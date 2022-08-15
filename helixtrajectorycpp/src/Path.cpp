@@ -16,19 +16,15 @@ namespace helixtrajectory {
     }
 
     bool Path::IsValid() const noexcept {
-        if (Length() == 0) {
+        if (Length() == 0 || ControlIntervalTotal() == 0
+                || !GetWaypoint(0).IsStateKnown() || !GetWaypoint(Length() - 1).IsStateKnown()) {
             return false;
         }
-        if (!GetWaypoint(0).IsStateKnown()) {
-            return false;
-        }
-        for (int i = 1; i < Length() - 1; i++) {
+
+        for (int i = 1; i < Length(); i++) {
             if (!GetWaypoint(i).IsValid()) {
                 return false;
             }
-        }
-        if (!GetWaypoint(Length() - 1).IsStateKnown()) {
-            return false;
         }
         return true;
     }
