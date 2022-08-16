@@ -12,7 +12,6 @@
 #include "HolonomicTrajectorySegment.h"
 #include "HolonomicWaypoint.h"
 #include "Obstacle.h"
-#include "TrajectoryUtil.h"
 
 namespace helixtrajectory {
 
@@ -53,7 +52,7 @@ namespace helixtrajectory {
         OptimalHolonomicTrajectoryGenerator::ApplyKinematicsConstraints(opti, XSegments, VSegments, USegments, trajectorySegmentDts);
         std::cout << "Applied Holonomic Kinematics Constraints" << std::endl;
 
-        OptimalHolonomicTrajectoryGenerator::holonomicDrivetrain.ApplyKinematicsConstraints(
+        OptimalHolonomicTrajectoryGenerator::holonomicDrivetrain.ApplyDynamicsConstraints(
                 opti, theta, vx, vy, omega, ax, ay, alpha, controlIntervalTotal);
         std::cout << "Applied Swerve Dynamics Constraints" << std::endl;
         
@@ -135,39 +134,37 @@ namespace helixtrajectory {
     }
 
     void OptimalHolonomicTrajectoryGenerator::ApplyHolonomicPathConstraints() {
-        size_t sampleIndex = 0;
         for (size_t waypointIndex = 0; waypointIndex < waypointCount; waypointIndex++) {
             const HolonomicWaypoint& waypoint = holonomicPath.holonomicWaypoints[waypointIndex];
-            sampleIndex += waypoint.controlIntervalCount;
             if (waypoint.velocityMagnitudeConstrained) {
                 if (waypoint.velocityXConstrained) {
-                    opti.subject_to(vx(sampleIndex) == waypoint.velocityX);
-                    // opti.subject_to(vxSegments[waypointIndex](-1) == waypoint.velocityX);
+                    opti.subject_to(vxSegments[waypointIndex](-1) == waypoint.velocityX);
                 }
                 if (waypoint.velocityYConstrained) {
-                    opti.subject_to(vy(sampleIndex) == waypoint.velocityY);
+                    opti.subject_to(vySegments[waypointIndex](-1) == waypoint.velocityY);
                 }
                 if (!waypoint.velocityXConstrained && !waypoint.velocityYConstrained) {
                     if (waypoint.velocityX == 0.0 && waypoint.velocityY == 0.0) {
-                        opti.subject_to(vx(sampleIndex) == 0.0);
-                        opti.subject_to(vy(sampleIndex) == 0.0);
+                        opti.subject_to(vxSegments[waypointIndex](-1) == 0.0);
+                        opti.subject_to(vySegments[waypointIndex](-1) == 0.0);
                     } else {
                         double magnitudeSquared = waypoint.velocityX * waypoint.velocityX + waypoint.velocityY * waypoint.velocityY;
-                        opti.subject_to(vx(sampleIndex) * vx(sampleIndex) + vy(sampleIndex) * vy(sampleIndex) == magnitudeSquared);
+                        opti.subject_to(vxSegments[waypointIndex](-1) * vxSegments[waypointIndex](-1)
+                                + vySegments[waypointIndex](-1) * vySegments[waypointIndex](-1) == magnitudeSquared);
                     }
                 }
             } else if (waypoint.velocityXConstrained && waypoint.velocityYConstrained) {
                 if (waypoint.velocityX == 0.0 && waypoint.velocityY == 0.0) {
-                        opti.subject_to(vx(sampleIndex) == 0.0);
-                        opti.subject_to(vy(sampleIndex) == 0.0);
+                        opti.subject_to(vxSegments[waypointIndex](-1) == 0.0);
+                        opti.subject_to(vySegments[waypointIndex](-1) == 0.0);
                 } else {
                     casadi::MX scalarMultiplier = opti.variable();
-                    opti.subject_to(vx(sampleIndex) == scalarMultiplier * waypoint.velocityX);
-                    opti.subject_to(vy(sampleIndex) == scalarMultiplier * waypoint.velocityY);
+                    opti.subject_to(vxSegments[waypointIndex](-1) == scalarMultiplier * waypoint.velocityX);
+                    opti.subject_to(vySegments[waypointIndex](-1) == scalarMultiplier * waypoint.velocityY);
                 }
             }
             if (waypoint.angularVelocityConstrained) {
-                opti.subject_to(omega(sampleIndex) == waypoint.angularVelocity);
+                opti.subject_to(omegaSegments[waypointIndex](-1) == waypoint.angularVelocity);
             }
         }
     }

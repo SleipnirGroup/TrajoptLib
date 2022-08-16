@@ -29,12 +29,17 @@ int main() {
              {-0.4, -0.4, 2, 70, 2}},
             Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}}));
 
+    // HolonomicPath path({
+    //     HolonomicWaypoint( 4,  0,    0, 0, 0, 0, true, true, true,  true,  true,  true,  true, 0, {}),
+    //     HolonomicWaypoint( 0,  4, 1.57, 0, 0, 0, true, true, true, false, false, false, false, 4, {}),
+    //     HolonomicWaypoint(-4,  0,    0, 0, 0, 0, true, true, true, false, false, false, false, 4, {}),
+    //     HolonomicWaypoint( 0, -4, 3.14, 0, 0, 0, true, true, true, false, false, false, false, 4, {}),
+    //     HolonomicWaypoint( 4,  0, 4.71, 0, 0, 0, true, true, true,  true,  true,  true,  true, 4, {})
+    // });
     HolonomicPath path({
-        HolonomicWaypoint( 4,  0,    0, 0, 0, 0, true, true, true,  true,  true,  true,  true,  0, {}),
-        HolonomicWaypoint( 0,  4, 1.57, 0, 0, 0, true, true, true, false, false, false, false, 4, {}),
-        HolonomicWaypoint(-4,  0,    0, 0, 0, 0, true, true, true, false, false, false, false, 4, {}),
-        HolonomicWaypoint( 0, -4, 3.14, 0, 0, 0, true, true, true, false, false, false, false, 4, {}),
-        HolonomicWaypoint( 4,  0, 4.71, 0, 0, 0, true, true, true,  true,  true,  true,  true, 4, {})
+        HolonomicWaypoint(-4,  0,     0, 0, 0, 0, true, true, true,  true,  true,  true,  true,  0, {}),
+        HolonomicWaypoint( 0,  0, -6.28, 0, 0, 0, true, true, true, false, false, false, false, 20, {}),
+        HolonomicWaypoint( 4,  0,     0, 0, 0, 0, true, true, true,  true,  true,  true,  true, 20, {})
     });
     std::vector<Obstacle> obstacles;// = {Obstacle(0.2, {{0, 0}})};
     std::cout << "Drivetrain:\n" << drive << "\n"

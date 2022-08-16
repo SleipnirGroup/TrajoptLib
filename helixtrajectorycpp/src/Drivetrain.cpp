@@ -1,7 +1,5 @@
 #include "Drivetrain.h"
 
-#include "TrajectoryUtil.h"
-
 namespace helixtrajectory {
 
     Drivetrain::Drivetrain(double mass, double momentOfInertia, const Obstacle& bumpers)
@@ -19,6 +17,24 @@ namespace helixtrajectory {
         position(0) = x + cornerDiagonal * cos(cornerAngle + theta);
         position(1) = y + cornerDiagonal * sin(cornerAngle + theta);
         return position;
+    }
+
+    // https://www.desmos.com/calculator/cqmc1tjtsv
+    template<typename LineNumberType, typename PointNumberType>
+    inline casadi::MX linePointDist(LineNumberType lineStartX, LineNumberType lineStartY, LineNumberType lineEndX, LineNumberType lineEndY,
+            PointNumberType pointX, PointNumberType pointY) {
+        casadi::MX lX = lineEndX - lineStartX;
+        casadi::MX lY = lineEndY - lineStartY;
+        casadi::MX vX = pointX - lineStartX;
+        casadi::MX vY = pointY - lineStartY;
+        casadi::MX dot = vX * lX + vY * lY;
+        casadi::MX lNormSquared = lX * lX + lY * lY;
+        casadi::MX t = dot / lNormSquared;
+        casadi::MX tBounded = fmax(fmin(t, 1), 0);
+        casadi::MX iX = (1 - tBounded) * lineStartX + tBounded * lineEndX;
+        casadi::MX iY = (1 - tBounded) * lineStartY + tBounded * lineEndY;
+        casadi::MX distSquared = (iX - pointX) * (iX - pointX) + (iY - pointY) * (iY - pointY);
+        return distSquared;
     }
 
     void Drivetrain::ApplyObstacleConstraints(casadi::Opti& opti, const casadi::MX& x, const casadi::MX& y,

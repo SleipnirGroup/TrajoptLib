@@ -10,7 +10,6 @@
 #include "HolonomicDrivetrain.h"
 #include "Obstacle.h"
 #include "SwerveDrivetrain.h"
-#include "TrajectoryUtil.h"
 
 namespace helixtrajectory {
 
@@ -28,7 +27,7 @@ namespace helixtrajectory {
         return position;
     }
 
-    void SwerveDrivetrain::ApplyKinematicsConstraints(casadi::Opti& opti,
+    void SwerveDrivetrain::ApplyDynamicsConstraints(casadi::Opti& opti,
             const casadi::MX& theta, const casadi::MX& vx, const casadi::MX& vy,
             const casadi::MX& omega, const casadi::MX& ax, const casadi::MX& ay,
             const casadi::MX& alpha, size_t controlIntervalTotal) const {
@@ -57,7 +56,7 @@ namespace helixtrajectory {
                 // std::cout << "Constrained module forces" << std::endl;
                 netForceX += forces(0, moduleIndex);
                 netForceY += forces(1, moduleIndex);
-                netTorque += torques(ALL, moduleIndex);
+                netTorque += torques(0, moduleIndex);
             }
             opti.subject_to(ax(i) * mass == netForceX);
             opti.subject_to(ay(i) * mass == netForceY);

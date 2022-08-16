@@ -90,13 +90,19 @@ namespace helixtrajectory {
          */
         OptimalTrajectoryGenerator(const Drivetrain& drivetrain, const Path& path, const std::vector<Obstacle>& obstacles);
 
+        static const casadi::Slice ALL;
+
     private:
         /**
          * @brief Applies the constraints that force the robot's motion to comply
          * with the list of waypoints provided. This may include constraints on
          * position and heading.
          */
-        void ApplyPathConstraints();
+        static void ApplyPathConstraints(casadi::Opti& opti,
+                const std::vector<casadi::MX>& xSegments, const std::vector<casadi::MX>& ySegments,
+                const std::vector<casadi::MX>& thetaSegments, const Path& path);
+        
+        static casadi::DM GenerateInitialGuessX(const Path& path);
 
     public:
         /**

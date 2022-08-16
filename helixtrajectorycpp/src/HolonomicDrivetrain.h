@@ -50,7 +50,7 @@ namespace helixtrajectory {
          * @param alpha 1 x (controlIntervalTotal) vector of the robot's angular velocity for each sample point
          * @param controlIntervalTotal the number of segments in this trajectory (number of sample points - 1)
          */
-        virtual void ApplyKinematicsConstraints(casadi::Opti& opti,
+        virtual void ApplyDynamicsConstraints(casadi::Opti& opti,
                 const casadi::MX& theta, const casadi::MX& vx, const casadi::MX& vy,
                 const casadi::MX& omega, const casadi::MX& ax, const casadi::MX& ay,
                 const casadi::MX& alpha, size_t controlIntervalTotal) const = 0;
