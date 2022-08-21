@@ -4,7 +4,7 @@ namespace helixtrajectory {
 
     class TrajectorySegment {
     public:
-        double dt;
+        double intervalDuration;
 
         TrajectorySegment(double dt);
 

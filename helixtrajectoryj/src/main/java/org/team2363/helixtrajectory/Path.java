@@ -10,15 +10,21 @@ public abstract class Path {
         this.waypoints = waypoints;
     }
 
-    public boolean isValid() {
-        if (waypoints.isEmpty()) {
-            return true;
+    public int controlIntervalTotal() {
+        int controlIntervalTotal = 0;
+        for (int waypointIndex = 1; waypointIndex < waypoints.size(); waypointIndex++) {
+            controlIntervalTotal += waypoints.get(waypointIndex).controlIntervalCount;
         }
-        if (waypoints.get(0).controlIntervalCount != 0) {
+        return controlIntervalTotal;
+    }
+
+    public boolean isValid() {
+        if (waypoints.isEmpty() || controlIntervalTotal() == 0
+                || !waypoints.get(0).isInitialWaypoint()) {
             return false;
         }
-        for (int index = 1; index < waypoints.size(); index++) {
-            if (waypoints.get(index).controlIntervalCount <= 0) {
+        for (int index = 0; index < waypoints.size(); index++) {
+            if (!waypoints.get(index).isValid()) {
                 return false;
             }
         }

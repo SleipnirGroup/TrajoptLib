@@ -2,8 +2,8 @@
 
 namespace helixtrajectory {
 
-    TrajectorySegment::TrajectorySegment(double dt)
-            : dt(dt) {
+    TrajectorySegment::TrajectorySegment(double intervalDuration)
+            : intervalDuration(intervalDuration) {
     }
 
     TrajectorySegment::~TrajectorySegment() {

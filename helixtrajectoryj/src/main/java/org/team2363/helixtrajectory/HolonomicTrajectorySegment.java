@@ -1,38 +1,24 @@
 package org.team2363.helixtrajectory;
 
+import static org.team2363.util.ObjectChecker.requireNonNullAndWrapUnmodifiable;
+
 import java.util.List;
 
 public final class HolonomicTrajectorySegment extends TrajectorySegment {
 
-    public final List<HolonomicTrajectorySample> holonomicSamples;
+    public final List<? extends HolonomicTrajectorySample> holonomicSamples;
 
-    private HolonomicTrajectorySegment(List<HolonomicTrajectorySample> holonomicSamples) {
-        super(holonomicSamples);
+    @SuppressWarnings("unchecked")
+    public HolonomicTrajectorySegment(double intervalDuration,
+            List<? extends HolonomicTrajectorySample> holonomicSamples) throws NullPointerException {
+        super(intervalDuration, requireNonNullAndWrapUnmodifiable(holonomicSamples,
+                "List of holonomic samples cannot be null", "Holonomic sample cannot be null"));
 
-        this.holonomicSamples = holonomicSamples;
-    }
-
-    public HolonomicTrajectorySegment(HolonomicTrajectorySample... holonomicSamples) throws NullPointerException {
-        this(List.of(holonomicSamples));
+        this.holonomicSamples = (List<? extends HolonomicTrajectorySample>) samples;
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("[\n");
-        for (HolonomicTrajectorySample holonomicSample : holonomicSamples) {
-            builder.append("    {\n");
-            builder.append("        \"timestamp\": ").append(holonomicSample.timestamp).append(",\n");
-            builder.append("        \"x\": ").append(holonomicSample.x).append(",\n");
-            builder.append("        \"y\": ").append(holonomicSample.y).append(",\n");
-            builder.append("        \"heading\": ").append(holonomicSample.heading).append(",\n");
-            builder.append("        \"velocity_x\": ").append(holonomicSample.velocityX).append(",\n");
-            builder.append("        \"velocity_y\": ").append(holonomicSample.velocityY).append(",\n");
-            builder.append("        \"angular_velocity\": ").append(holonomicSample.angularVelocity).append("\n");
-            builder.append("    },\n");
-        }
-        builder.deleteCharAt(builder.length() - 2);
-        builder.append("]");
-        return builder.toString();
+        return holonomicSamples.toString();
     }
 }

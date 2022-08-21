@@ -1,5 +1,8 @@
 package org.team2363.helixtrajectory;
 
+import static org.team2363.util.ObjectChecker.requireNonNegative;
+import static org.team2363.util.ObjectChecker.requireNonNullAndWrapUnmodifiable;
+
 import java.util.List;
 
 public abstract class Waypoint {
@@ -7,17 +10,22 @@ public abstract class Waypoint {
     public final double x;
     public final double y;
     public final double heading;
+
     public final boolean xConstrained;
     public final boolean yConstrained;
     public final boolean headingConstrained;
+
     public final int controlIntervalCount;
 
     public final List<? extends InitialGuessPoint> initialGuessPoints;
 
+    public final List<? extends Obstacle> obstacles;
+
     protected Waypoint(double x, double y, double heading,
             boolean xConstrained, boolean yConstrained, boolean headingConstrained,
             int controlIntervalCount,
-            List<? extends InitialGuessPoint> initialGuessPoints) {
+            List<? extends InitialGuessPoint> initialGuessPoints,
+            List<? extends Obstacle> obstacles) throws NullPointerException, IllegalArgumentException {
         this.x = x;
         this.y = y;
         this.heading = heading;
@@ -26,8 +34,22 @@ public abstract class Waypoint {
         this.yConstrained = yConstrained;
         this.headingConstrained = headingConstrained;
 
-        this.controlIntervalCount = controlIntervalCount;
+        this.controlIntervalCount = requireNonNegative(controlIntervalCount, "Control interval count cannot be negative");
 
-        this.initialGuessPoints = initialGuessPoints;
+        this.initialGuessPoints = requireNonNullAndWrapUnmodifiable(initialGuessPoints,
+                "List of initial guess points cannot be null", "Initial guess point cannot be null");
+
+        this.obstacles = requireNonNullAndWrapUnmodifiable(obstacles,
+                "List of obstacles cannot be null", "Obstacle cannot be null");
+    }
+
+    public boolean isInitialWaypoint() {
+        return controlIntervalCount == 0;
+    }
+
+    public boolean isValid() {
+        return (xConstrained || yConstrained)
+                && ((isInitialWaypoint() && initialGuessPoints.isEmpty())
+                || (!isInitialWaypoint() && initialGuessPoints.size() < controlIntervalCount));
     }
 }

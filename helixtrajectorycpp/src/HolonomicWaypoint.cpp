@@ -24,10 +24,10 @@ namespace helixtrajectory {
     }
 
     bool HolonomicWaypoint::IsVelocityStateKnown() const noexcept {
-        return (velocityMagnitudeConstrained && velocityXConstrained && velocityYConstrained) || 
-                ((velocityX == 0.0 && velocityY == 0.0) && (
-                (!velocityMagnitudeConstrained && velocityXConstrained && velocityYConstrained) ||
-                (velocityMagnitudeConstrained && !velocityXConstrained && !velocityYConstrained)));
+        return (velocityMagnitudeConstrained && velocityXConstrained && velocityYConstrained)
+                || ((velocityX == 0.0 && velocityY == 0.0)
+                && ((!velocityMagnitudeConstrained && velocityXConstrained && velocityYConstrained)
+                || (velocityMagnitudeConstrained && !velocityXConstrained && !velocityYConstrained)));
     }
 
     std::ostream& operator<<(std::ostream& stream, const HolonomicWaypoint& waypoint) {

@@ -12,7 +12,7 @@ namespace helixtrajectory {
     public:
         std::vector<HolonomicTrajectorySample> holonomicSamples;
 
-        HolonomicTrajectorySegment(double dt, const std::vector<HolonomicTrajectorySample>& holonomicSamples);
+        HolonomicTrajectorySegment(double intervalDuration, const std::vector<HolonomicTrajectorySample>& holonomicSamples);
 
         virtual ~HolonomicTrajectorySegment();
 

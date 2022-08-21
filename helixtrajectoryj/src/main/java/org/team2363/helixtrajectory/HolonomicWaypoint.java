@@ -12,16 +12,17 @@ public final class HolonomicWaypoint extends Waypoint {
     public final boolean velocityYConstrained;
     public final boolean velocityMagnitudeConstrained;
     public final boolean angularVelocityConstrained;
-    
-    private HolonomicWaypoint(double x, double y, double heading,
+
+    public HolonomicWaypoint(double x, double y, double heading,
             double velocityX, double velocityY, double angularVelocity,
             boolean xConstrained, boolean yConstrained, boolean headingConstrained,
             boolean velocityXConstrained, boolean velocityYConstrained,
             boolean velocityMagnitudeConstrained, boolean angularVelocityConstrained,
             int controlIntervalCount,
-            List<? extends InitialGuessPoint> initialGuessPoints) throws NullPointerException {
+            List<? extends InitialGuessPoint> initialGuessPoints,
+            List<? extends Obstacle> obstacles) throws NullPointerException, IllegalArgumentException {
         super(x, y, heading, xConstrained, yConstrained, headingConstrained,
-                controlIntervalCount, initialGuessPoints);
+                controlIntervalCount, initialGuessPoints, obstacles);
 
         this.velocityX = velocityX;
         this.velocityY = velocityY;
@@ -33,18 +34,23 @@ public final class HolonomicWaypoint extends Waypoint {
         this.angularVelocityConstrained = angularVelocityConstrained;
     }
 
-    public HolonomicWaypoint(double x, double y, double heading,
-            double velocityX, double velocityY, double angularVelocity,
-            boolean xConstrained, boolean yConstrained, boolean headingConstrained,
-            boolean velocityXConstrained, boolean velocityYConstrained,
-            boolean velocityMagnitudeConstrained, boolean angularVelocityConstrained,
-            int controlIntervalCount,
-            InitialGuessPoint... initialGuessPoints) throws NullPointerException {
-        this(x, y, heading, velocityX, velocityY, angularVelocity,
-                xConstrained, yConstrained, headingConstrained,
-                velocityXConstrained, velocityYConstrained,
-                velocityMagnitudeConstrained, angularVelocityConstrained,
-                controlIntervalCount,
-                List.of(initialGuessPoints));
+    public String toString() {
+        return "{\"x\": " + x
+                + ", \"y\": " + y
+                + ", \"heading\": " + heading
+                + ", \"velociy_x\": " + velocityX
+                + ", \"velocity_y\": " + velocityY
+                + ", \"angular_velocity\": " + angularVelocity
+                + ", \"x_constrained\": " + xConstrained
+                + ", \"y_constrained\": " + yConstrained
+                + ", \"heading_constrained\": " + headingConstrained
+                + ", \"velocity_x_constrained\": " + velocityXConstrained
+                + ", \"velocity_y_constrained\": " + velocityYConstrained
+                + ", \"velocity_magnitude_constrained\": " + velocityMagnitudeConstrained
+                + ", \"angular_velocity_constrained\": " + angularVelocityConstrained
+                + ", \"control_interval_count\": " + controlIntervalCount
+                + ", \"initial_guess_points\": " + initialGuessPoints
+                + ", \"obstacles\": " + obstacles
+                + "}";
     }
 }

@@ -1,4 +1,21 @@
 package org.team2363.helixtrajectory;
 
-public record InitialGuessPoint (double x, double y, double heading) {
+public final class InitialGuessPoint {
+
+    public final double x;
+    public final double y;
+    public final double heading;
+
+    public InitialGuessPoint(double x, double y, double heading) {
+        this.x = x;
+        this.y = y;
+        this.heading = heading;
+    }
+
+    public String toString() {
+        return "{\"x\": " + x
+                + ", \"y\": " + y
+                + ", \"heading\": " + heading
+                + "}";
+    }
 }

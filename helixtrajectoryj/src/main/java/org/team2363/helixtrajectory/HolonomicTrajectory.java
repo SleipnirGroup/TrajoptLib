@@ -1,18 +1,19 @@
 package org.team2363.helixtrajectory;
 
+import static org.team2363.util.ObjectChecker.requireNonNullAndWrapUnmodifiable;
+
 import java.util.List;
 
 public final class HolonomicTrajectory extends Trajectory {
 
-    public final List<HolonomicTrajectorySegment> holonomicSegments;
+    public final List<? extends HolonomicTrajectorySegment> holonomicSegments;
 
-    private HolonomicTrajectory(List<HolonomicTrajectorySegment> holonomicSegments) {
-        super(holonomicSegments);
+    @SuppressWarnings("unchecked")
+    public HolonomicTrajectory(List<? extends HolonomicTrajectorySegment> holonomicSegments) throws NullPointerException {
+        super(requireNonNullAndWrapUnmodifiable(holonomicSegments,
+                "List of holonomic trajectory segments cannot be null", 
+                "Holonomic trajectory segment cannot be null"));
 
-        this.holonomicSegments = holonomicSegments;
-    }
-
-    public HolonomicTrajectory(HolonomicTrajectorySegment... holonomicSegments) throws NullPointerException {
-        this(List.of(holonomicSegments));
+        this.holonomicSegments = (List<? extends HolonomicTrajectorySegment>) segments;
     }
 }
