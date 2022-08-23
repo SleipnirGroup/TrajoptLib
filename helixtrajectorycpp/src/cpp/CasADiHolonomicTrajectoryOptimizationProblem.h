@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "OptimalTrajectoryGenerator.h"
+#include "CasADiTrajectoryOptimizationProblem.h"
 #include "Obstacle.h"
 #include "HolonomicDrivetrain.h"
 #include "HolonomicPath.h"
@@ -15,7 +15,7 @@ namespace helixtrajectory {
      * to optimize a trajectory for a swerve, mecanum, or omni drivetrain. This is possible since
      * the kinematics and dynamics of the robot as a system are equivalent.
      */
-    class OptimalHolonomicTrajectoryGenerator : public OptimalTrajectoryGenerator {
+    class CasADiHolonomicTrajectoryOptimizationProblem : public CasADiTrajectoryOptimizationProblem {
     private:
         /**
          * @brief the holonomic drivetrain
@@ -98,9 +98,7 @@ namespace helixtrajectory {
          * @param path the holonomic path
          * @param obstacles the list of obstacles
          */
-        OptimalHolonomicTrajectoryGenerator(const HolonomicDrivetrain& holonomicDrivetrain, const HolonomicPath& holonomicPath, const std::vector<Obstacle>& obstacles);
-
-        virtual ~OptimalHolonomicTrajectoryGenerator();
+        CasADiHolonomicTrajectoryOptimizationProblem(const HolonomicDrivetrain& holonomicDrivetrain, const HolonomicPath& holonomicPath);
 
         /**
          * @brief Optimizes the given path using IPOPT. Note this function call

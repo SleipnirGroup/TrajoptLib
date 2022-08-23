@@ -40,11 +40,6 @@ namespace helixtrajectory {
         HolonomicTrajectorySample(double x, double y, double heading,
                 double velocityX, double velocityY, double angularVelocity);
 
-        /**
-         * @brief Destroy the Holonomic Trajectory Sample object
-         */
-        virtual ~HolonomicTrajectorySample();
-
         friend std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectorySample& sample);
     };
 }

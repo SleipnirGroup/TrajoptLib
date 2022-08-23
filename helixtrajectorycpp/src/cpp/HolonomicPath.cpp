@@ -14,9 +14,6 @@ namespace helixtrajectory {
         : holonomicWaypoints(holonomicWaypoints) {
     }
 
-    HolonomicPath::~HolonomicPath() {
-    }
-
     inline size_t HolonomicPath::Length() const noexcept {
         return holonomicWaypoints.size();
     }

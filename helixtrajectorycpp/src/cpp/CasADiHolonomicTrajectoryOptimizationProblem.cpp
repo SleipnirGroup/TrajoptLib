@@ -1,4 +1,4 @@
-#include "OptimalHolonomicTrajectoryGenerator.h"
+#include "CasADiHolonomicTrajectoryOptimizationProblem.h"
 
 #include <iostream>
 #include <vector>
@@ -15,8 +15,9 @@
 
 namespace helixtrajectory {
 
-    OptimalHolonomicTrajectoryGenerator::OptimalHolonomicTrajectoryGenerator(const HolonomicDrivetrain& holonomicDrivetrain, const HolonomicPath& holonomicPath, const std::vector<Obstacle>& obstacles)
-            : OptimalTrajectoryGenerator(holonomicDrivetrain, holonomicPath, obstacles),
+    CasADiHolonomicTrajectoryOptimizationProblem::CasADiHolonomicTrajectoryOptimizationProblem(
+            const HolonomicDrivetrain& holonomicDrivetrain, const HolonomicPath& holonomicPath)
+            : CasADiTrajectoryOptimizationProblem(holonomicDrivetrain, holonomicPath),
             holonomicDrivetrain(holonomicDrivetrain), holonomicPath(holonomicPath),
             V(opti.variable(3, controlIntervalTotal + 1)), vx(V(0, ALL)), vy(V(1, ALL)), omega(V(2, ALL)),
             U(opti.variable(3, controlIntervalTotal)), ax(U(0, ALL)), ay(U(1, ALL)), alpha(U(2, ALL)) {
@@ -34,7 +35,7 @@ namespace helixtrajectory {
 
         size_t sampleIndex = 1;
         for (size_t waypointIndex = 1; waypointIndex < waypointCount; waypointIndex++) {
-            size_t controlIntervalCount = OptimalHolonomicTrajectoryGenerator::holonomicPath
+            size_t controlIntervalCount = CasADiHolonomicTrajectoryOptimizationProblem::holonomicPath
                     .holonomicWaypoints[waypointIndex].controlIntervalCount;
 
             casadi::Slice VSlice((int) sampleIndex, (int) (sampleIndex + controlIntervalCount));
@@ -49,10 +50,10 @@ namespace helixtrajectory {
             sampleIndex += controlIntervalCount;
         }
 
-        OptimalHolonomicTrajectoryGenerator::ApplyKinematicsConstraints(opti, XSegments, VSegments, USegments, trajectorySegmentDts);
+        CasADiHolonomicTrajectoryOptimizationProblem::ApplyKinematicsConstraints(opti, XSegments, VSegments, USegments, trajectorySegmentDts);
         std::cout << "Applied Holonomic Kinematics Constraints" << std::endl;
 
-        OptimalHolonomicTrajectoryGenerator::holonomicDrivetrain.ApplyDynamicsConstraints(
+        CasADiHolonomicTrajectoryOptimizationProblem::holonomicDrivetrain.ApplyDynamicsConstraints(
                 opti, theta, vx, vy, omega, ax, ay, alpha, controlIntervalTotal);
         std::cout << "Applied Swerve Dynamics Constraints" << std::endl;
         
@@ -60,10 +61,7 @@ namespace helixtrajectory {
         std::cout << "Applied Holonomic Path Constraints" << std::endl;
     }
 
-    OptimalHolonomicTrajectoryGenerator::~OptimalHolonomicTrajectoryGenerator() {
-    }
-
-    HolonomicTrajectory OptimalHolonomicTrajectoryGenerator::Generate() {
+    HolonomicTrajectory CasADiHolonomicTrajectoryOptimizationProblem::Generate() {
         size_t controlIntervalTotal = path.ControlIntervalTotal();
         if (holonomicPath.Length() == 1) {
             return HolonomicTrajectory({HolonomicTrajectorySegment(0.0, {HolonomicTrajectorySample(
@@ -84,7 +82,7 @@ namespace helixtrajectory {
                 vxSegments, vySegments, omegaSegments, trajectorySegmentDts);
     }
 
-    void OptimalHolonomicTrajectoryGenerator::ApplyKinematicsConstraints(casadi::Opti& opti, const std::vector<casadi::MX>& XSegments,
+    void CasADiHolonomicTrajectoryOptimizationProblem::ApplyKinematicsConstraints(casadi::Opti& opti, const std::vector<casadi::MX>& XSegments,
             const std::vector<casadi::MX>& VSegments, const std::vector<casadi::MX>& USegments,
             const casadi::MX& segmentDts) {
         for (size_t XSegmentIndex = 1; XSegmentIndex < XSegments.size(); XSegmentIndex++) {
@@ -104,12 +102,12 @@ namespace helixtrajectory {
         }
     }
 
-    HolonomicTrajectory OptimalHolonomicTrajectoryGenerator::ConstructTrajectory(const casadi::OptiSol& solution,
+    HolonomicTrajectory CasADiHolonomicTrajectoryOptimizationProblem::ConstructTrajectory(const casadi::OptiSol& solution,
                 const std::vector<casadi::MX>& xSegments, const std::vector<casadi::MX>& ySegments,
                 const std::vector<casadi::MX>& thetaSegments, const std::vector<casadi::MX>& vxSegments,
                 const std::vector<casadi::MX>& vySegments, const std::vector<casadi::MX>& omegaSegments,
                 const casadi::MX& segmentDts) {
-        
+
         std::vector<HolonomicTrajectorySegment> segments;
         segments.reserve(xSegments.size());
 
@@ -133,7 +131,7 @@ namespace helixtrajectory {
         return HolonomicTrajectory(segments);
     }
 
-    void OptimalHolonomicTrajectoryGenerator::ApplyHolonomicPathConstraints() {
+    void CasADiHolonomicTrajectoryOptimizationProblem::ApplyHolonomicPathConstraints() {
         for (size_t waypointIndex = 0; waypointIndex < waypointCount; waypointIndex++) {
             const HolonomicWaypoint& waypoint = holonomicPath.holonomicWaypoints[waypointIndex];
             if (waypoint.velocityMagnitudeConstrained) {

@@ -28,12 +28,6 @@ namespace helixtrajectory {
         HolonomicDrivetrain(double mass, double momentOfInertia, const Obstacle& bumpers);
 
     public:
-
-        /**
-         * @brief Destroy the Holonomic Drivetrain object
-         */
-        virtual ~HolonomicDrivetrain();
-
         /**
          * @brief Applies the drivetrain-specific constraints to the optimizer. These constraints
          * prevent motors from spinning too fast or with too much power. 

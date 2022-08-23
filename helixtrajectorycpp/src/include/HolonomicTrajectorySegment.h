@@ -14,8 +14,6 @@ namespace helixtrajectory {
 
         HolonomicTrajectorySegment(double intervalDuration, const std::vector<HolonomicTrajectorySample>& holonomicSamples);
 
-        virtual ~HolonomicTrajectorySegment();
-
         friend std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectorySegment& segment);
     };
 }

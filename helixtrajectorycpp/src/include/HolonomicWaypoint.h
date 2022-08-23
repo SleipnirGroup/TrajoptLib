@@ -1,13 +1,16 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 
+#include "InitialGuessPoint.h"
+#include "Obstacle.h"
 #include "Waypoint.h"
 
 namespace helixtrajectory {
 
     /**
-     * @brief A waypoint in a holonomic path. This struct includes additional velocity constraints
+     * @brief A waypoint in a holonomic path. This class includes additional velocity constraints
      * specific to holonomic drivetrains.
      */
     class HolonomicWaypoint : public Waypoint {
@@ -76,12 +79,8 @@ namespace helixtrajectory {
                 bool velocityXConstrained, bool velocityYConstrained,
                 bool velocityMagnitudeConstrained, bool angularVelocityConstrained,
                 size_t controlIntervalCount,
-                const std::vector<InitialGuessPoint>& initialGuessPoints);
-
-        /**
-         * @brief Destroy the Holonomic Waypoint object
-         */
-        virtual ~HolonomicWaypoint();
+                const std::vector<InitialGuessPoint>& initialGuessPoints,
+                const std::vector<Obstacle>& obstacles);
 
         /**
          * @brief Check if the velocity state at this waypoint is known. This
@@ -90,7 +89,7 @@ namespace helixtrajectory {
          * 
          * @return true if the velocity state of the robot is constrained, false otherwise
          */
-        virtual bool IsVelocityStateKnown() const noexcept;
+        bool IsVelocityStateKnown() const noexcept override;
 
         friend std::ostream& operator<<(std::ostream& stream, const HolonomicWaypoint& waypoint);
     };

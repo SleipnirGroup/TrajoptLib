@@ -26,14 +26,9 @@ namespace helixtrajectory {
          */
         HolonomicPath(const std::vector<HolonomicWaypoint>& holonomicWaypoints);
 
-        /**
-         * @brief Destroy the Holonomic Path object
-         */
-        virtual ~HolonomicPath();
-
-        virtual size_t Length() const noexcept;
-        virtual Waypoint& GetWaypoint(size_t index);
-        virtual const Waypoint& GetWaypoint(size_t index) const;
+        size_t Length() const noexcept override;
+        Waypoint& GetWaypoint(size_t index) override;
+        const Waypoint& GetWaypoint(size_t index) const override;
 
         friend std::ostream& operator<<(std::ostream& stream, const HolonomicPath& path);
     };

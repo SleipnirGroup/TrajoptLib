@@ -3,15 +3,19 @@
 #include <vector>
 
 #include "InitialGuessPoint.h"
+#include "Obstacle.h"
+
 namespace helixtrajectory {
 
     Waypoint::Waypoint(double x, double y, double heading,
             bool xConstrained, bool yConstrained, bool headingConstrained,
             size_t controlIntervalCount,
-            const std::vector<InitialGuessPoint>& initialGuessPoints)
+            const std::vector<InitialGuessPoint>& initialGuessPoints,
+            const std::vector<Obstacle>& obstacles)
             : x(x), y(y), heading(heading),
             xConstrained(xConstrained), yConstrained(yConstrained), headingConstrained(headingConstrained),
-            controlIntervalCount(controlIntervalCount), initialGuessPoints(initialGuessPoints) {
+            controlIntervalCount(controlIntervalCount), initialGuessPoints(initialGuessPoints),
+            obstacles(obstacles) {
     }
 
     Waypoint::~Waypoint() {

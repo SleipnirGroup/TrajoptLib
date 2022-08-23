@@ -15,7 +15,7 @@ namespace helixtrajectory {
      * @brief This class is the superclass for all trajectory generators. It contains the common
      * functionality of all optimizers: waypoint position constraints and obstacle avoidance.
      */
-    class OptimalTrajectoryGenerator {
+    class CasADiTrajectoryOptimizationProblem {
     protected:
         /**
          * @brief the drivetrain
@@ -25,10 +25,6 @@ namespace helixtrajectory {
          * @brief the path
          */
         const Path& path;
-        /**
-         * @brief the list of obstacles
-         */
-        const std::vector<Obstacle>& obstacles;
 
         /**
          * @brief the number of waypoints in the path
@@ -88,7 +84,7 @@ namespace helixtrajectory {
          * @param path the path
          * @param obstacles the list of obstacles
          */
-        OptimalTrajectoryGenerator(const Drivetrain& drivetrain, const Path& path, const std::vector<Obstacle>& obstacles);
+        CasADiTrajectoryOptimizationProblem(const Drivetrain& drivetrain, const Path& path);
 
         static const casadi::Slice ALL;
 
@@ -106,8 +102,8 @@ namespace helixtrajectory {
 
     public:
         /**
-         * @brief Destroy the Trajectory Generator object
+         * @brief Destroy the CasADi Trajectory Optimization Problem object
          */
-        virtual ~OptimalTrajectoryGenerator();
+        virtual ~CasADiTrajectoryOptimizationProblem();
     };
 }

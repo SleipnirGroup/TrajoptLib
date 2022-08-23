@@ -20,6 +20,11 @@ namespace helixtrajectory {
          */
         double safetyDistance;
         /**
+         * @brief whether or not to apply obstacle constraints with this obstacle to all
+         * segments of the path or just this segment; this is irrelevant for robot bumpers
+         */
+        bool applyToAllSegments;
+        /**
          * @brief the list of points that make up this obstacle
          */
         std::vector<ObstaclePoint> points;

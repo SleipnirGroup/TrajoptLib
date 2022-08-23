@@ -8,7 +8,7 @@
 namespace helixtrajectory {
 
     HolonomicTrajectory::HolonomicTrajectory(const std::vector<HolonomicTrajectorySegment>& holonomicSegments)
-        : holonomicSegments(holonomicSegments) {
+            : holonomicSegments(holonomicSegments) {
     }
 
     HolonomicTrajectory::~HolonomicTrajectory() {

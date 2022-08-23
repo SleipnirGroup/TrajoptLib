@@ -26,11 +26,6 @@ namespace helixtrajectory {
          */
         HolonomicTrajectory(const std::vector<HolonomicTrajectorySegment>& holonomicSegments);
 
-        /**
-         * @brief Destroy the Holonomic Trajectory object
-         */
-        virtual ~HolonomicTrajectory();
-
         friend std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectory& trajectory);
     };
 }

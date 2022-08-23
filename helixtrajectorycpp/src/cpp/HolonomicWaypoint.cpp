@@ -5,6 +5,7 @@
 #include <casadi/casadi.hpp>
 
 #include "InitialGuessPoint.h"
+#include "Obstacle.h"
 #include "Waypoint.h"
 
 namespace helixtrajectory {
@@ -13,8 +14,10 @@ namespace helixtrajectory {
             bool xConstrained, bool yConstrained, bool headingConstrained,
             bool velocityXConstrained, bool velocityYConstrained,
             bool velocityMagnitudeConstrained, bool angularVelocityConstrained,
-            size_t controlIntervalCount, const std::vector<InitialGuessPoint>& initialGuessPoints)
-            : Waypoint(x, y, heading, xConstrained, yConstrained, headingConstrained, controlIntervalCount, initialGuessPoints),
+            size_t controlIntervalCount, const std::vector<InitialGuessPoint>& initialGuessPoints,
+            const std::vector<Obstacle>& obstacles)
+            : Waypoint(x, y, heading, xConstrained, yConstrained, headingConstrained,
+            controlIntervalCount, initialGuessPoints, obstacles),
             velocityX(velocityX), velocityY(velocityY), angularVelocity(angularVelocity),
             velocityXConstrained(velocityXConstrained), velocityYConstrained(velocityYConstrained),
             velocityMagnitudeConstrained(velocityMagnitudeConstrained), angularVelocityConstrained(angularVelocityConstrained) {

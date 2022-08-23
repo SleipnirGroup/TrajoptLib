@@ -1,0 +1,4 @@
+# add_library(${PROJECT_NAME} SHARED Drivetrain.cpp HolonomicDrivetrain.cpp HolonomicPath.cpp HolonomicTrajectory.cpp HolonomicTrajectorySample.cpp HolonomicTrajectorySegment.cpp HolonomicWaypoint.cpp InitialGuessPoint.cpp Obstacle.cpp ObstaclePoint.cpp OptimalHolonomicTrajectoryGenerator.cpp OptimalTrajectoryGenerator.cpp Path.cpp SwerveDrivetrain.cpp SwerveModule.cpp TrajectorySample.cpp TrajectorySegment.cpp Waypoint.cpp)
+add_executable(${PROJECT_NAME} Drivetrain.cpp HolonomicDrivetrain.cpp HolonomicPath.cpp HolonomicTrajectory.cpp HolonomicTrajectorySample.cpp HolonomicTrajectorySegment.cpp HolonomicWaypoint.cpp InitialGuessPoint.cpp Obstacle.cpp ObstaclePoint.cpp OptimalHolonomicTrajectoryGenerator.cpp OptimalTrajectoryGenerator.cpp Path.cpp SwerveDrivetrain.cpp SwerveModule.cpp TrajectorySample.cpp TrajectorySegment.cpp Waypoint.cpp Main.cpp)
+
+install(TARGETS ${PROJECT_NAME} DESTINATION "lib")

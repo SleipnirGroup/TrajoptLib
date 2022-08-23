@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "InitialGuessPoint.h"
+#include "Obstacle.h"
 
 namespace helixtrajectory {
 
@@ -46,6 +47,10 @@ namespace helixtrajectory {
          * from the last waypoint to this waypoint
          */
         std::vector<InitialGuessPoint> initialGuessPoints;
+        /**
+         * @brief the collection of obstacles that the robot must avoid while approaching this waypoint
+         */
+        std::vector<Obstacle> obstacles;
 
         /**
          * @brief Destroy the Waypoint object
@@ -95,10 +100,12 @@ namespace helixtrajectory {
          * waypoint
          * @param initialGuessPoints the points used to construct the linear initial trajectory guess for the trajectory segment
          * from the last waypoint to this waypoint
+         * @param obstacles the collection of obstacles that the robot must avoid while approaching this waypoint
          */
         Waypoint(double x, double y, double heading,
                 bool xConstrained, bool yConstrained, bool headingConstrained,
                 size_t controlIntervalCount,
-                const std::vector<InitialGuessPoint>& initialGuessPoints);
+                const std::vector<InitialGuessPoint>& initialGuessPoints,
+                const std::vector<Obstacle>& obstacles);
     };
 }
