@@ -12,6 +12,8 @@ namespace helixtrajectory {
      * @brief A sequence of holonomic waypoints that make up a path that a holonomic drivetrain robot
      * can follow. Note that, unlike a path, which is only a general idea of where the robot should go,
      * a Trajectory is the detailed output of the generator that tells the robot exactly how to move.
+     * 
+     * @author Justin Babilino
      */
     class HolonomicPath : public Path {
     public:

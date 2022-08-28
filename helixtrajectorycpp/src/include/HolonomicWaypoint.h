@@ -12,6 +12,8 @@ namespace helixtrajectory {
     /**
      * @brief A waypoint in a holonomic path. This class includes additional velocity constraints
      * specific to holonomic drivetrains.
+     * 
+     * @author Justin Babilino
      */
     class HolonomicWaypoint : public Waypoint {
     public:
@@ -84,7 +86,7 @@ namespace helixtrajectory {
                 const std::vector<Obstacle>& obstacles);
 
         /**
-         * @brief Check if the velocity state at this waypoint is known. This
+         * @brief Check if the velocity state at this holonomic waypoint is known. This
          * means that the velocity vector and angular velocity of the robot
          * is constrained.
          * 

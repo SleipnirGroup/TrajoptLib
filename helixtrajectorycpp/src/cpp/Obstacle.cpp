@@ -1,5 +1,6 @@
 #include "Obstacle.h"
 
+#include <iostream>
 #include <vector>
 
 #include <casadi/casadi.hpp>

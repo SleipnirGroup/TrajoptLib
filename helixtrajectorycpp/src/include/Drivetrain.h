@@ -23,6 +23,8 @@ namespace helixtrajectory {
      * system. Using an obstacle as the robot's bumpers is very powerful, as it is possible to create
      * bumpers with rounded corners, circular bumpers, rectanglar bumpers with two semi circles
      * on side, or many other shapes.
+     * 
+     * @author Justin Babilino
      */
     class Drivetrain {
     protected:

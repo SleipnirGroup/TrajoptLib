@@ -1,16 +1,22 @@
 #pragma once
 
-#include <vector>
-
 #include "Waypoint.h"
 
 namespace helixtrajectory {
+
+    /**
+     * @brief This class represents a sequence of waypoints on a 2D field. These waypoints
+     * must be reached during the course of a trajectory.
+     * 
+     * @author Justin Babilino
+     */
     class Path {
     public:
         /**
          * @brief Destroy the Path object
          */
         virtual ~Path() = default;
+
         /**
          * @brief Get the number of waypoints that make up this path.
          * 
@@ -37,6 +43,7 @@ namespace helixtrajectory {
          * @return the total number of control intervals in the path
          */
         size_t ControlIntervalTotal() const;
+
         /**
          * @brief Checks if this path is valid. A path is valid if it contains
          * no waypoints or the first waypoint has zero control intervals and

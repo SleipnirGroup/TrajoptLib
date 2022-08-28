@@ -10,6 +10,8 @@ namespace helixtrajectory {
     /**
      * @brief A certain state that the robot must have during some instance of the trajectory.
      * Includes options to constrain dynamics like position and velocity during that instance.
+     * 
+     * @author Justin Babilino
      */
     class Waypoint {
     public:

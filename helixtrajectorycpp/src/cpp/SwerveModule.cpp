@@ -1,5 +1,7 @@
 #include "SwerveModule.h"
 
+#include <iostream>
+
 namespace helixtrajectory {
 
     std::ostream& operator<<(std::ostream& stream, const SwerveModule& module) {

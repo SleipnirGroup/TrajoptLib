@@ -1,6 +1,13 @@
 #pragma once
 
 namespace helixtrajectory {
+
+    /**
+     * @brief This class is the parent class for all trajectory samples. It includes
+     * the fields for position state and the time differential field.
+     * 
+     * @author Justin Babilino
+     */
     class TrajectorySample {
     public:
         /**
@@ -20,6 +27,9 @@ namespace helixtrajectory {
          */
         double heading;
 
+        /**
+         * @brief Destroy the Trajectory Sample object
+         */
         virtual ~TrajectorySample() = default;
 
     protected:

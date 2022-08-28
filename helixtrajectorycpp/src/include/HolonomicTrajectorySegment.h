@@ -8,6 +8,12 @@
 
 namespace helixtrajectory {
 
+    /**
+     * @brief This class represents a segment in a holonomic trajectory. It contains a list
+     * of holonomic trajectory sample points.
+     * 
+     * @author Justin Babilino
+     */
     class HolonomicTrajectorySegment : public TrajectorySegment {
     public:
         /**

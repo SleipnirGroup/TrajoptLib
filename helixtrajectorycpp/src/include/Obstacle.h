@@ -12,6 +12,8 @@ namespace helixtrajectory {
      * Arbitrary polygons can be expressed with this class, and circle obstacles can also be
      * created by only using one point with a safety distance. Obstacle points must be wound either
      * clockwise or counterclockwise.
+     * 
+     * @author Justin Babilino
      */
     class Obstacle {
     public:
@@ -37,6 +39,16 @@ namespace helixtrajectory {
          */
         Obstacle(double safetyDistance, const std::vector<ObstaclePoint>& points);
 
+        /**
+         * @brief Append a string representation of an obstacle to an output stream.
+         * A string representation of an obstacle is a json object with a
+         * "safety_distance" numerical field and a "points" array field with the ordered
+         * list of obstacle points.
+         * 
+         * @param stream the stream to append the string representation to
+         * @param sample the obstacle
+         * @return a reference to the given stream
+         */
         friend std::ostream& operator<<(std::ostream& stream, const Obstacle& obstacle);
     };
 }

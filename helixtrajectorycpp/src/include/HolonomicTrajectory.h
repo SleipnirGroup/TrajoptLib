@@ -11,6 +11,8 @@ namespace helixtrajectory {
     /**
      * @brief A type of trajectory used for holonomic drivetrain robots. It includes
      * position and velocity state that can be used for trajectory following.
+     * 
+     * @author Justin Babilino
      */
     class HolonomicTrajectory : Trajectory {
     public:
@@ -22,7 +24,7 @@ namespace helixtrajectory {
         /**
          * @brief Construct a new Trajectory object with a list of holonomic segments.
          * 
-         * @param samples the list of holonomic segments that make up this trajectory
+         * @param holonomicSegments the list of holonomic segments that make up this trajectory
          */
         explicit HolonomicTrajectory(const std::vector<HolonomicTrajectorySegment>& holonomicSegments);
 
@@ -32,7 +34,7 @@ namespace helixtrajectory {
          * is a json array of its trajectory segments' json representations.
          * 
          * @param stream the stream to append the string representation to
-         * @param sample the holonomic trajectory sample
+         * @param trajectory the holonomic trajectory
          * @return a reference to the given stream
          */
         friend std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectory& trajectory);

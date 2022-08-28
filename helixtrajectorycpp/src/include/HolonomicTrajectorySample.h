@@ -9,6 +9,8 @@ namespace helixtrajectory {
     /**
      * @brief A sample point cooresponding to the state of the holonomic drivetrain
      * robot at a certain timestamp during the trajectory.
+     * 
+     * @author Justin Babilino
      */
     class HolonomicTrajectorySample : public TrajectorySample {
     public:
