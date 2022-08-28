@@ -2,10 +2,9 @@
 
 #include <vector>
 
-namespace helixtrajectory {
+#include "Waypoint.h"
 
-    Path::~Path() {
-    }
+namespace helixtrajectory {
 
     size_t Path::ControlIntervalTotal() const {
         size_t controlIntervalTotal = 0;

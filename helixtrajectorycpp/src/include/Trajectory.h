@@ -4,5 +4,7 @@
 
 namespace helixtrajectory {
     class Trajectory {
+    public:
+        virtual ~Trajectory() = default;
     };
 }

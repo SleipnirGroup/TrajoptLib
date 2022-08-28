@@ -1,13 +1,13 @@
 #pragma once
 
-#include "HolonomicDrivetrain.h"
 #include "HolonomicPath.h"
 #include "HolonomicTrajectory.h"
+#include "SwerveDrivetrain.h"
 
 namespace helixtrajectory {
 
     class OptimalTrajectoryGenerator {
     public:
-        static HolonomicTrajectory Generate(const HolonomicDrivetrain& holonomicDrivetrain, const HolonomicPath& holonomicPath);
+        static HolonomicTrajectory Generate(const SwerveDrivetrain& swerveDrivetrain, const HolonomicPath& holonomicPath);
     };
 }

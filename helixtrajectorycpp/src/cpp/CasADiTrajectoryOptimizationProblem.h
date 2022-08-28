@@ -6,8 +6,8 @@
 
 #include "Drivetrain.h"
 #include "HolonomicDrivetrain.h"
-#include "Path.h"
 #include "Obstacle.h"
+#include "Path.h"
 
 namespace helixtrajectory {
 
@@ -44,14 +44,10 @@ namespace helixtrajectory {
         casadi::Opti opti;
 
         /**
-         * @brief the list of durations of each trajectory segment
+         * @brief The 1 x (controlIntervalTotal) vector of the time differentials between sample points.
+         * The nth entry in this vector is the duration of the nth interval in this trajectory.
          */
-        casadi::MX trajectorySegmentTs;
-        /**
-         * @brief the list of time differentials of each trajectory segment,
-         * or the duration of every control interval for each trajectory segment
-         */
-        casadi::MX trajectorySegmentDts;
+        casadi::MX dt;
 
         /**
          * @brief The 3 x (controlIntervalTotal + 1) matrix of robot position state per trajectory sample point.
@@ -72,38 +68,121 @@ namespace helixtrajectory {
          */
         casadi::MX theta;
 
+        /**
+         * @brief the entries of the X matrix, separated into individual trajectory segments
+         */
         std::vector<casadi::MX> XSegments;
+        /**
+         * @brief the entries of the x vector, separated into individual trajectory segments
+         */
         std::vector<casadi::MX> xSegments;
+        /**
+         * @brief the entries of the y vector, separated into individual trajectory segments
+         */
         std::vector<casadi::MX> ySegments;
+        /**
+         * @brief the entries of the theta vector, separated into individual trajectory segments
+         */
         std::vector<casadi::MX> thetaSegments;
 
         /**
-         * @brief Construct a new Trajectory Generator from a drivetrain, path, and list of obstacles.
+         * @brief the entries of the dt vector, separated into individual trajectory segments
+         */
+        std::vector<casadi::MX> dtSegments;
+
+        /**
+         * @brief Construct a new CasADi Trajectory Optimization Problem from a drivetrain, path.
          * 
          * @param drivetrain the drivetrain
          * @param path the path
-         * @param obstacles the list of obstacles
          */
         CasADiTrajectoryOptimizationProblem(const Drivetrain& drivetrain, const Path& path);
 
+        /**
+         * @brief slice all rows/columns of a matrix
+         */
         static const casadi::Slice ALL;
 
     private:
         /**
-         * @brief Applies the constraints that force the robot's motion to comply
-         * with the list of waypoints provided. This may include constraints on
-         * position and heading.
+         * @brief Apply the constraints that force the robot's motion to comply
+         * with the list of waypoints provided. This function only applies constraints
+         * on position and heading while velocity constraints are left up to different
+         * drivetrain optimization problems.
+         * 
+         * @param opti the current optimizer
+         * @param xSegments the x-coordinate of the robot for each sample point, divided into segments
+         * @param ySegments the y-coordinate of the robot for each sample point, divided into segments
+         * @param thetaSegments the heading of the robot for each sample point, divided into segments
+         * @param path the path containing the waypoints to constrain
          */
-        static void ApplyPathConstraints(casadi::Opti& opti,
+        static void ApplyWaypointConstraints(casadi::Opti& opti,
                 const std::vector<casadi::MX>& xSegments, const std::vector<casadi::MX>& ySegments,
                 const std::vector<casadi::MX>& thetaSegments, const Path& path);
-        
-        static casadi::DM GenerateInitialGuessX(const Path& path);
+
+        /**
+         * @brief Get an expression for the position of a bumper corner relative
+         * to the field coordinate system, given the robot's x-coordinate, y-coordinate,
+         * and heading. The first row of the resulting matrix contains the x-coordinate,
+         * and the second row contains the y-coordinate.
+         * 
+         * @param x the instantaneous heading of the robot (scalar)
+         * @param y the instantaneous heading of the robot (scalar)
+         * @param theta the instantaneous heading of the robot (scalar)
+         * @param bumperCorner the bumper corner to find the position for
+         * @return the bumper corner 2 x 1 position vector
+         */
+        static const casadi::MX SolveBumperCornerPosition(const casadi::MX& x, const casadi::MX& y,
+                const casadi::MX& theta, const ObstaclePoint& bumperCorner);
+
+        /**
+         * @brief Apply obstacle constraints for a single obstacle at a single
+         * sample point in the trajectory. If the robot's bumpers and an obstacle
+         * are made from a single point, a minimum distance constraint is applied.
+         * Otherwise, constraints that prevent a point on the bumpers from getting
+         * too close to an obstacle line segment and prevent a line segment on the
+         * bumpers from getting too close to an obstacle point are created.
+         * 
+         * @param opti the current optimizer
+         * @param x the instantaneous heading of the robot (scalar)
+         * @param y the instantaneous heading of the robot (scalar)
+         * @param theta the instantaneous heading of the robot (scalar)
+         * @param bumpers the obstacle that represents the robot's bumpers
+         * @param obstacle the obstacle to apply the constraint for
+         */
+        static void ApplyObstacleConstraint(casadi::Opti& opti, const casadi::MX& x, const casadi::MX& y,
+                const casadi::MX& theta, const Obstacle& bumpers, const Obstacle& obstacle);
+
+        /**
+         * @brief Apply constraints that prevent the robot from getting too close
+         * to obstacles. Constraints are applied to the specified segments
+         * of the path or the entire path if that is specified.
+         * 
+         * @param opti the current optimizer
+         * @param xSegments the x-coordinate of the robot for each sample point, divided into segments
+         * @param ySegments the y-coordinate of the robot for each sample point, divided into segments
+         * @param thetaSegments the heading of the robot for each sample point, divided into segments
+         * @param drivetrain the drivetrain containing the bumpers to apply constraints for
+         * @param path the path containing the obstacles to apply constraints for
+         */
+        static void ApplyObstacleConstraints(casadi::Opti& opti, const std::vector<casadi::MX>& xSegments,
+                const std::vector<casadi::MX>& ySegments, const std::vector<casadi::MX>& thetaSegments,
+                const Drivetrain& drivetrain, const Path& path);
+
+        /**
+         * @brief Generate an initial guess of the position state of the robot throughout
+         * the trajectory. The initial guess is a linear interpolation between the waypoints
+         * and initial guess points.
+         * 
+         * @param path the path to calucluate the linear initial guess for
+         * @return an matrix of augmented column vectors of position state (x, y, heading)
+         */
+        static const casadi::DM GenerateInitialGuessX(const Path& path);
 
     public:
         /**
          * @brief Destroy the CasADi Trajectory Optimization Problem object
          */
-        virtual ~CasADiTrajectoryOptimizationProblem();
+        virtual ~CasADiTrajectoryOptimizationProblem() = default;
     };
 }

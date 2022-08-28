@@ -20,12 +20,21 @@ namespace helixtrajectory {
         std::vector<HolonomicTrajectorySegment> holonomicSegments;
 
         /**
-         * @brief Construct a new Trajectory object with a list of segments.
+         * @brief Construct a new Trajectory object with a list of holonomic segments.
          * 
-         * @param samples the list of segments that make up this trajectory
+         * @param samples the list of holonomic segments that make up this trajectory
          */
-        HolonomicTrajectory(const std::vector<HolonomicTrajectorySegment>& holonomicSegments);
+        explicit HolonomicTrajectory(const std::vector<HolonomicTrajectorySegment>& holonomicSegments);
 
+        /**
+         * @brief Append a string representation of a holonomic trajectory to
+         * an output stream. A string representation of a holonomic trajectory
+         * is a json array of its trajectory segments' json representations.
+         * 
+         * @param stream the stream to append the string representation to
+         * @param sample the holonomic trajectory sample
+         * @return a reference to the given stream
+         */
         friend std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectory& trajectory);
     };
 }

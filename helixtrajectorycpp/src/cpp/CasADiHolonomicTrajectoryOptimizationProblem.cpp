@@ -78,38 +78,30 @@ namespace helixtrajectory {
         auto solution = opti.solve();
         std::cout << "Solution Found" << std::endl;
 
-        return ConstructTrajectory(solution, xSegments, ySegments, thetaSegments,
-                vxSegments, vySegments, omegaSegments, trajectorySegmentDts);
+        return ConstructTrajectory(solution, dtSegments, xSegments, ySegments, thetaSegments,
+                vxSegments, vySegments, omegaSegments);
     }
 
-    void CasADiHolonomicTrajectoryOptimizationProblem::ApplyKinematicsConstraints(casadi::Opti& opti, const std::vector<casadi::MX>& XSegments,
-            const std::vector<casadi::MX>& VSegments, const std::vector<casadi::MX>& USegments,
-            const casadi::MX& segmentDts) {
-        for (size_t XSegmentIndex = 1; XSegmentIndex < XSegments.size(); XSegmentIndex++) {
-            size_t previousSegmentSampleCount = XSegments[XSegmentIndex - 1].columns();
-            size_t segmentSampleCount = XSegments[XSegmentIndex].columns();
-            casadi::MX dt = segmentDts(XSegmentIndex - 1);
-            opti.subject_to(XSegments[XSegmentIndex - 1](ALL, previousSegmentSampleCount - 1)
-                    + VSegments[XSegmentIndex](ALL, 0) * dt == XSegments[XSegmentIndex](ALL, 0));
-            opti.subject_to(VSegments[XSegmentIndex - 1](ALL, previousSegmentSampleCount - 1)
-                    + USegments[XSegmentIndex - 1](ALL, 0) * dt == VSegments[XSegmentIndex](ALL, 0));
-            for (size_t sampleIndex = 1; sampleIndex < segmentSampleCount; sampleIndex++) {
-                opti.subject_to(XSegments[XSegmentIndex](ALL, sampleIndex - 1) + VSegments[XSegmentIndex](ALL, sampleIndex) * dt
-                        == XSegments[XSegmentIndex](ALL, sampleIndex));
-                opti.subject_to(VSegments[XSegmentIndex](ALL, sampleIndex - 1) + USegments[XSegmentIndex - 1](ALL, sampleIndex) * dt
-                        == VSegments[XSegmentIndex](ALL, sampleIndex));
-            }
+    void CasADiHolonomicTrajectoryOptimizationProblem::ApplyKinematicsConstraints(casadi::Opti& opti,
+            const casadi::MX& dt, const casadi::MX& X, const casadi::MX& V, const casadi::MX& U) {
+        size_t sampleTotal = X.columns();
+        for (size_t sampleIndex = 1; sampleIndex < sampleTotal; sampleIndex++) {
+            casadi::MX dt = dt(sampleIndex - 1);
+            opti.subject_to(X(ALL, sampleIndex - 1) + V(ALL, sampleIndex) * dt == X(ALL, sampleIndex));
+            opti.subject_to(V(ALL, sampleIndex - 1) + U(ALL, sampleIndex - 1) * dt == V(ALL, sampleIndex));
         }
     }
 
     HolonomicTrajectory CasADiHolonomicTrajectoryOptimizationProblem::ConstructTrajectory(const casadi::OptiSol& solution,
-                const std::vector<casadi::MX>& xSegments, const std::vector<casadi::MX>& ySegments,
-                const std::vector<casadi::MX>& thetaSegments, const std::vector<casadi::MX>& vxSegments,
-                const std::vector<casadi::MX>& vySegments, const std::vector<casadi::MX>& omegaSegments,
-                const casadi::MX& segmentDts) {
+            const std::vector<casadi::MX>& dtSegments,
+            const std::vector<casadi::MX>& xSegments, const std::vector<casadi::MX>& ySegments,
+            const std::vector<casadi::MX>& thetaSegments, const std::vector<casadi::MX>& vxSegments,
+            const std::vector<casadi::MX>& vySegments, const std::vector<casadi::MX>& omegaSegments) {
 
         std::vector<HolonomicTrajectorySegment> segments;
         segments.reserve(xSegments.size());
+
+        segments.push_back(HolonomicTrajectorySegment())
 
         for (size_t xSegmentIndex = 0; xSegmentIndex < xSegments.size(); xSegmentIndex++) {
             size_t segmentSampleCount = xSegments[xSegmentIndex].columns();

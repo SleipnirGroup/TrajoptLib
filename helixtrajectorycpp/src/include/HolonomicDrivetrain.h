@@ -28,25 +28,6 @@ namespace helixtrajectory {
         HolonomicDrivetrain(double mass, double momentOfInertia, const Obstacle& bumpers);
 
     public:
-        /**
-         * @brief Applies the drivetrain-specific constraints to the optimizer. These constraints
-         * prevent motors from spinning too fast or with too much power. 
-         * 
-         * @param opti the current optimizer upon which constraints will be applied
-         * @param theta 1 x (controlIntervalTotal + 1) vector of the robot's heading for each sample point
-         * @param vx 1 x (controlIntervalTotal + 1) vector of the x-coordinate of the robot's velocity for each sample point
-         * @param vy 1 x (controlIntervalTotal + 1) vector of the y-coordinate of the robot's velocity for each sample point
-         * @param omega 1 x (controlIntervalTotal + 1) vector of the robot's angular velocity for each sample point
-         * @param ax 1 x (controlIntervalTotal) vector of the x-coordinate of the robot's acceleration for each sample
-         *           point
-         * @param ay 1 x (controlIntervalTotal) vector of the y-coordinate of the robot's acceleration for each sample
-         *           point
-         * @param alpha 1 x (controlIntervalTotal) vector of the robot's angular velocity for each sample point
-         * @param controlIntervalTotal the number of segments in this trajectory (number of sample points - 1)
-         */
-        virtual void ApplyDynamicsConstraints(casadi::Opti& opti,
-                const casadi::MX& theta, const casadi::MX& vx, const casadi::MX& vy,
-                const casadi::MX& omega, const casadi::MX& ax, const casadi::MX& ay,
-                const casadi::MX& alpha, size_t controlIntervalTotal) const = 0;
+        
     };
 }

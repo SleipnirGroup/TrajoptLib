@@ -44,8 +44,6 @@ namespace helixtrajectory {
          */
         SwerveDrivetrain(double mass, double momentOfInertia, const std::vector<SwerveModule>& modules, const Obstacle& bumpers);
 
-        virtual ~SwerveDrivetrain();
-
         /**
          * @brief Applies the drivetrain-specific constraints to the optimizer. These constraints
          * prevent motors from spinning too fast or with too much power. For swerve, this applies

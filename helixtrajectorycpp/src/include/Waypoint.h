@@ -55,7 +55,7 @@ namespace helixtrajectory {
         /**
          * @brief Destroy the Waypoint object
          */
-        virtual ~Waypoint();
+        virtual ~Waypoint() = default;
 
         /**
          * @brief Check if this waypoint is valid.

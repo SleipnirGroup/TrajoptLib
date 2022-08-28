@@ -6,9 +6,10 @@
 
 namespace helixtrajectory {
 
-    HolonomicTrajectorySample::HolonomicTrajectorySample(double x, double y, double heading,
+    HolonomicTrajectorySample::HolonomicTrajectorySample(double intervalDuration,
+            double x, double y, double heading,
             double velocityX, double velocityY, double angularVelocity) 
-            : TrajectorySample(x, y, heading),
+            : TrajectorySample(intervalDuration, x, y, heading),
             velocityX(velocityX), velocityY(velocityY), angularVelocity(angularVelocity) {
     }
 

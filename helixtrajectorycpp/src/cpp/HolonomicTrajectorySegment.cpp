@@ -6,7 +6,7 @@
 
 namespace helixtrajectory {
 
-    HolonomicTrajectorySegment::HolonomicTrajectorySegment(double intervalDuration, const std::vector<HolonomicTrajectorySample>& holonomicSamples)
+    HolonomicTrajectorySegment::HolonomicTrajectorySegment(const std::vector<HolonomicTrajectorySample>& holonomicSamples)
             : TrajectorySegment(intervalDuration), holonomicSamples(holonomicSamples) {
     }
 
@@ -14,8 +14,6 @@ namespace helixtrajectory {
     }
 
     std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectorySegment& segment) {
-        return stream << "{\"interval_duration\": " << segment.intervalDuration
-                << ", \"samples\": " << segment.holonomicSamples
-                << "}";
+        return stream << segment.holonomicSamples;
     }
 }

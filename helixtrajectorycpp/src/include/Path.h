@@ -10,9 +10,9 @@ namespace helixtrajectory {
         /**
          * @brief Destroy the Path object
          */
-        virtual ~Path();
+        virtual ~Path() = default;
         /**
-         * @brief Gets the number of waypoints that make up this path.
+         * @brief Get the number of waypoints that make up this path.
          * 
          * @return the length of this path
          */

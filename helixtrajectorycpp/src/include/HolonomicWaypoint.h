@@ -72,6 +72,7 @@ namespace helixtrajectory {
          *                             problem from the previous waypoint to this waypoint
          * @param initialGuessPoints the points used to construct the linear initial trajectory
          *                           guess for the trajectory segment from the last waypoint to this waypoint
+         * @param obstacles the collection of obstacles that the robot must avoid while approaching this waypoint
          */
         HolonomicWaypoint(double x, double y, double heading,
                 double velocityX, double velocityY, double angularVelocity,
@@ -91,6 +92,15 @@ namespace helixtrajectory {
          */
         bool IsVelocityStateKnown() const noexcept override;
 
+        /**
+         * @brief Append a string representation of a holonomic waypoint
+         * to an output stream. A string representation of a holonomic waypoint
+         * is a json object with the same fields as this object.
+         * 
+         * @param stream the stream to append the string representation to
+         * @param waypoint the holonomic waypoint
+         * @return a reference to the given stream
+         */
         friend std::ostream& operator<<(std::ostream& stream, const HolonomicWaypoint& waypoint);
     };
 }
