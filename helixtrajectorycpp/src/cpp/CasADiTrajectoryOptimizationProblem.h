@@ -39,6 +39,11 @@ namespace helixtrajectory {
          */
         const size_t controlIntervalTotal;
         /**
+         * @brief the total number of sample points in the trajectory (controlIntervalTotal + 1)
+         */
+        const size_t sampleTotal;
+
+        /**
          * @brief the optimizer
          */
         casadi::Opti opti;
@@ -67,6 +72,11 @@ namespace helixtrajectory {
          * @brief the 1 x (controlIntervalTotal + 1) vector of the robot's heading per trajectory sample point
          */
         casadi::MX theta;
+        
+        /**
+         * @brief the entries of the dt vector, separated into individual trajectory segments
+         */
+        std::vector<casadi::MX> dtSegments;
 
         /**
          * @brief the entries of the X matrix, separated into individual trajectory segments
@@ -85,10 +95,6 @@ namespace helixtrajectory {
          */
         std::vector<casadi::MX> thetaSegments;
 
-        /**
-         * @brief the entries of the dt vector, separated into individual trajectory segments
-         */
-        std::vector<casadi::MX> dtSegments;
 
         /**
          * @brief Construct a new CasADi Trajectory Optimization Problem from a drivetrain, path.

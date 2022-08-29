@@ -18,18 +18,20 @@ namespace helixtrajectory {
             obstacles(obstacles) {
     }
 
-    Waypoint::~Waypoint() {
+    bool Waypoint::IsInitialWaypoint() const noexcept {
+        return controlIntervalCount == 0;
     }
-
     bool Waypoint::IsValid() const noexcept {
-        return xConstrained || yConstrained &&
-                initialGuessPoints.size() < controlIntervalCount;
-                // ^note this also checks that there is at least one control interval
+        return (IsInitialWaypoint() && initialGuessPoints.size() == 0)
+                || (!IsInitialWaypoint() && initialGuessPoints.size() < controlIntervalCount);
     }
     bool Waypoint::IsPositionStateKnown() const noexcept {
         return xConstrained && yConstrained && headingConstrained;
     }
     bool Waypoint::IsStateKnown() const noexcept {
         return IsPositionStateKnown() && IsVelocityStateKnown();
+    }
+    bool Waypoint::IsSplitWaypoint() const noexcept {
+        return IsInitialWaypoint() || IsStateKnown();
     }
 }

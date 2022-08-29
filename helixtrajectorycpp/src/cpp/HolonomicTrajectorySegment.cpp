@@ -7,10 +7,7 @@
 namespace helixtrajectory {
 
     HolonomicTrajectorySegment::HolonomicTrajectorySegment(const std::vector<HolonomicTrajectorySample>& holonomicSamples)
-            : TrajectorySegment(intervalDuration), holonomicSamples(holonomicSamples) {
-    }
-
-    HolonomicTrajectorySegment::~HolonomicTrajectorySegment() {
+            : holonomicSamples(holonomicSamples) {
     }
 
     std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectorySegment& segment) {

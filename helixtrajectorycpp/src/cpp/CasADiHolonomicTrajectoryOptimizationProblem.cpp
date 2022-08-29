@@ -12,6 +12,7 @@
 #include "HolonomicTrajectorySegment.h"
 #include "HolonomicWaypoint.h"
 #include "Obstacle.h"
+#include "TrajectoryGenerationException.h"
 
 namespace helixtrajectory {
 
@@ -50,45 +51,38 @@ namespace helixtrajectory {
             sampleIndex += controlIntervalCount;
         }
 
-        CasADiHolonomicTrajectoryOptimizationProblem::ApplyKinematicsConstraints(opti, XSegments, VSegments, USegments, trajectorySegmentDts);
+        ApplyKinematicsConstraints(opti, dt, X, V, U);
         std::cout << "Applied Holonomic Kinematics Constraints" << std::endl;
 
-        CasADiHolonomicTrajectoryOptimizationProblem::holonomicDrivetrain.ApplyDynamicsConstraints(
-                opti, theta, vx, vy, omega, ax, ay, alpha, controlIntervalTotal);
         std::cout << "Applied Swerve Dynamics Constraints" << std::endl;
         
-        ApplyHolonomicPathConstraints();
+        ApplyHolonomicWaypointConstraints(opti, vxSegments, vySegments, omegaSegments,
+                CasADiHolonomicTrajectoryOptimizationProblem::holonomicPath);
         std::cout << "Applied Holonomic Path Constraints" << std::endl;
     }
 
     HolonomicTrajectory CasADiHolonomicTrajectoryOptimizationProblem::Generate() {
-        size_t controlIntervalTotal = path.ControlIntervalTotal();
-        if (holonomicPath.Length() == 1) {
-            return HolonomicTrajectory({HolonomicTrajectorySegment(0.0, {HolonomicTrajectorySample(
-                    holonomicPath.holonomicWaypoints[0].x,
-                    holonomicPath.holonomicWaypoints[0].y,
-                    holonomicPath.holonomicWaypoints[0].heading,
-                    holonomicPath.holonomicWaypoints[0].velocityX,
-                    holonomicPath.holonomicWaypoints[0].velocityY,
-                    holonomicPath.holonomicWaypoints[0].angularVelocity
-            )})});
-        }
+        // I don't try-catch this next line since it should always work.
+        // I'm assuming the dynamic lib is on the path and casadi can find it.
         opti.solver("ipopt");
         std::cout << "Located IPOPT Plugin" << std::endl;
-        auto solution = opti.solve();
-        std::cout << "Solution Found" << std::endl;
-
-        return ConstructTrajectory(solution, dtSegments, xSegments, ySegments, thetaSegments,
+        try {
+            auto solution = opti.solve();
+            std::cout << "Solution Found" << std::endl;
+            return ConstructTrajectory(solution, dtSegments, xSegments, ySegments, thetaSegments,
                 vxSegments, vySegments, omegaSegments);
+        } catch (...) {
+            throw TrajectoryGenerationException("Error optimizing trajectory");
+        }
     }
 
     void CasADiHolonomicTrajectoryOptimizationProblem::ApplyKinematicsConstraints(casadi::Opti& opti,
             const casadi::MX& dt, const casadi::MX& X, const casadi::MX& V, const casadi::MX& U) {
         size_t sampleTotal = X.columns();
         for (size_t sampleIndex = 1; sampleIndex < sampleTotal; sampleIndex++) {
-            casadi::MX dt = dt(sampleIndex - 1);
-            opti.subject_to(X(ALL, sampleIndex - 1) + V(ALL, sampleIndex) * dt == X(ALL, sampleIndex));
-            opti.subject_to(V(ALL, sampleIndex - 1) + U(ALL, sampleIndex - 1) * dt == V(ALL, sampleIndex));
+            casadi::MX sampleDT = dt(sampleIndex - 1);
+            opti.subject_to(X(ALL, sampleIndex - 1) + V(ALL, sampleIndex) * sampleDT == X(ALL, sampleIndex));
+            opti.subject_to(V(ALL, sampleIndex - 1) + U(ALL, sampleIndex - 1) * sampleDT == V(ALL, sampleIndex));
         }
     }
 
@@ -101,15 +95,22 @@ namespace helixtrajectory {
         std::vector<HolonomicTrajectorySegment> segments;
         segments.reserve(xSegments.size());
 
-        segments.push_back(HolonomicTrajectorySegment())
+        segments.push_back(HolonomicTrajectorySegment({HolonomicTrajectorySample(
+                0.0,
+                static_cast<double>(solution.value(xSegments[0](0))),
+                static_cast<double>(solution.value(ySegments[0](0))),
+                static_cast<double>(solution.value(thetaSegments[0](0))),
+                static_cast<double>(solution.value(vxSegments[0](0))),
+                static_cast<double>(solution.value(vySegments[0](0))),
+                static_cast<double>(solution.value(omegaSegments[0](0))))}));
 
-        for (size_t xSegmentIndex = 0; xSegmentIndex < xSegments.size(); xSegmentIndex++) {
+        for (size_t xSegmentIndex = 1; xSegmentIndex < xSegments.size(); xSegmentIndex++) {
             size_t segmentSampleCount = xSegments[xSegmentIndex].columns();
-            double dt = xSegmentIndex == 0 ? 0.0 : static_cast<double>(solution.value(segmentDts(xSegmentIndex - 1)));
             std::vector<HolonomicTrajectorySample> samples;
             samples.reserve(segmentSampleCount);
             for (size_t segmentSampleIndex = 0; segmentSampleIndex < segmentSampleCount; segmentSampleIndex++) {
                 samples.push_back(HolonomicTrajectorySample(
+                        static_cast<double>(solution.value(dtSegments[xSegmentIndex - 1](segmentSampleIndex))),
                         static_cast<double>(solution.value(xSegments[xSegmentIndex](segmentSampleIndex))),
                         static_cast<double>(solution.value(ySegments[xSegmentIndex](segmentSampleIndex))),
                         static_cast<double>(solution.value(thetaSegments[xSegmentIndex](segmentSampleIndex))),
@@ -117,13 +118,16 @@ namespace helixtrajectory {
                         static_cast<double>(solution.value(vySegments[xSegmentIndex](segmentSampleIndex))),
                         static_cast<double>(solution.value(omegaSegments[xSegmentIndex](segmentSampleIndex)))));
             }
-            segments.push_back(HolonomicTrajectorySegment(dt, samples));
+            segments.push_back(HolonomicTrajectorySegment(samples));
         }
 
         return HolonomicTrajectory(segments);
     }
 
-    void CasADiHolonomicTrajectoryOptimizationProblem::ApplyHolonomicPathConstraints() {
+    void CasADiHolonomicTrajectoryOptimizationProblem::ApplyHolonomicWaypointConstraints(casadi::Opti& opti,
+            const std::vector<casadi::MX>& vxSegments, const std::vector<casadi::MX>& vySegments,
+            const std::vector<casadi::MX>& omegaSegments, const HolonomicPath& holonomicPath) {
+        size_t waypointCount = vxSegments.size();
         for (size_t waypointIndex = 0; waypointIndex < waypointCount; waypointIndex++) {
             const HolonomicWaypoint& waypoint = holonomicPath.holonomicWaypoints[waypointIndex];
             if (waypoint.velocityMagnitudeConstrained) {

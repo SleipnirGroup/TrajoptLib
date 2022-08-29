@@ -36,26 +36,6 @@ namespace helixtrajectory {
         double wheelMaxTorque;
 
         /**
-         * @brief Calculates the length of the module diagonal, which is the 
-         * distance from the origin of the robot coordinate system to the
-         * center of the module.
-         * 
-         * @return the module diagonal length
-         */
-        double GetModuleDiagonal() const {
-            return hypot(x, y);
-        }
-        /**
-         * @brief Calculates the angle between the x-axis of the robot coordinate
-         * system and the module diagonal
-         * 
-         * @return the module diagonal angle
-         */
-        double GetModuleAngle() const {
-            return atan2(y, x);
-        }
-
-        /**
          * @brief Append a string representation of a swerve module to an output stream.
          * A string representation of a swerve module is a json object with
          * "x", "y", "wheel_radius", "wheel_max_angular_velocity", and "wheel_max_torque"

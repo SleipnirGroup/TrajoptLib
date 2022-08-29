@@ -13,11 +13,9 @@ namespace helixtrajectory {
             velocityX(velocityX), velocityY(velocityY), angularVelocity(angularVelocity) {
     }
 
-    HolonomicTrajectorySample::~HolonomicTrajectorySample() {
-    }
-
     std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectorySample& sample) {
-        return stream << "{\"x\": " << sample.x
+        return stream << "{\"interval_duration\": " << sample.intervalDuration
+                << ", \"x\": " << sample.x
                 << ", \"y\": " << sample.y
                 << ", \"heading\": " << sample.heading
                 << ", \"velocity_x\": " << sample.velocityX

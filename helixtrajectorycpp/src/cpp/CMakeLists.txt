@@ -1,4 +1,13 @@
 # add_library(${PROJECT_NAME} SHARED Drivetrain.cpp HolonomicDrivetrain.cpp HolonomicPath.cpp HolonomicTrajectory.cpp HolonomicTrajectorySample.cpp HolonomicTrajectorySegment.cpp HolonomicWaypoint.cpp InitialGuessPoint.cpp Obstacle.cpp ObstaclePoint.cpp OptimalHolonomicTrajectoryGenerator.cpp OptimalTrajectoryGenerator.cpp Path.cpp SwerveDrivetrain.cpp SwerveModule.cpp TrajectorySample.cpp TrajectorySegment.cpp Waypoint.cpp)
-add_executable(${PROJECT_NAME} Drivetrain.cpp HolonomicDrivetrain.cpp HolonomicPath.cpp HolonomicTrajectory.cpp HolonomicTrajectorySample.cpp HolonomicTrajectorySegment.cpp HolonomicWaypoint.cpp InitialGuessPoint.cpp Obstacle.cpp ObstaclePoint.cpp OptimalHolonomicTrajectoryGenerator.cpp OptimalTrajectoryGenerator.cpp Path.cpp SwerveDrivetrain.cpp SwerveModule.cpp TrajectorySample.cpp TrajectorySegment.cpp Waypoint.cpp Main.cpp)
+add_executable(${PROJECT_NAME} CasADiHolonomicTrajectoryOptimizationProblem.cpp CasADiSwerveTrajectoryOptimizationProblem.cpp CasADiTrajectoryOptimizationProblem.cpp Drivetrain.cpp HolonomicDrivetrain.cpp HolonomicPath.cpp HolonomicTrajectory.cpp HolonomicTrajectorySample.cpp HolonomicTrajectorySegment.cpp HolonomicWaypoint.cpp InitialGuessPoint.cpp InvalidPathException.cpp Obstacle.cpp ObstaclePoint.cpp OptimalTrajectoryGenerator.cpp Path.cpp SwerveDrivetrain.cpp SwerveModule.cpp TrajectoryGenerationException.cpp TrajectorySample.cpp Waypoint.cpp Main.cpp)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/lib/include)
+target_include_directories(${PROJECT_NAME} PRIVATE /Library/Java/JavaVirtualMachines/jdk-16.0.1.jdk/Contents/Home/include)
+target_include_directories(${PROJECT_NAME} PRIVATE /Library/Java/JavaVirtualMachines/jdk-16.0.1.jdk/Contents/Home/include/darwin)
+
+target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE casadi)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/src/include)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION "lib")

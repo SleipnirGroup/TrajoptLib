@@ -7,6 +7,7 @@
 
 #include "HolonomicWaypoint.h"
 #include "Path.h"
+#include "Waypoint.h"
 
 namespace helixtrajectory {
 
@@ -14,7 +15,7 @@ namespace helixtrajectory {
         : holonomicWaypoints(holonomicWaypoints) {
     }
 
-    inline size_t HolonomicPath::Length() const noexcept {
+    size_t HolonomicPath::Length() const noexcept {
         return holonomicWaypoints.size();
     }
     Waypoint& HolonomicPath::GetWaypoint(size_t index) {

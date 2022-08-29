@@ -112,6 +112,8 @@ namespace helixtrajectory {
                 const casadi::MX& moduleFX, const casadi::MX& moduleFY,
                 const SwerveDrivetrain& SwerveDrivetrain);
 
+        void PrintDebug(const casadi::OptiSol& solution);
+
     public:
         /**
          * @brief Construct a new CasADi Swerve Trajectory Optimization Problem

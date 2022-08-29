@@ -10,20 +10,19 @@
 
 namespace helixtrajectory {
 
-    HolonomicWaypoint::HolonomicWaypoint(double x, double y, double heading, double velocityX, double velocityY, double angularVelocity,
+    HolonomicWaypoint::HolonomicWaypoint(double x, double y, double heading,
+            double velocityX, double velocityY, double angularVelocity,
             bool xConstrained, bool yConstrained, bool headingConstrained,
             bool velocityXConstrained, bool velocityYConstrained,
             bool velocityMagnitudeConstrained, bool angularVelocityConstrained,
-            size_t controlIntervalCount, const std::vector<InitialGuessPoint>& initialGuessPoints,
+            size_t controlIntervalCount,
+            const std::vector<InitialGuessPoint>& initialGuessPoints,
             const std::vector<Obstacle>& obstacles)
             : Waypoint(x, y, heading, xConstrained, yConstrained, headingConstrained,
             controlIntervalCount, initialGuessPoints, obstacles),
             velocityX(velocityX), velocityY(velocityY), angularVelocity(angularVelocity),
             velocityXConstrained(velocityXConstrained), velocityYConstrained(velocityYConstrained),
             velocityMagnitudeConstrained(velocityMagnitudeConstrained), angularVelocityConstrained(angularVelocityConstrained) {
-    }
-
-    HolonomicWaypoint::~HolonomicWaypoint() {
     }
 
     bool HolonomicWaypoint::IsVelocityStateKnown() const noexcept {
@@ -49,6 +48,7 @@ namespace helixtrajectory {
                 << ", \"angular_velocity_constrained\": " << waypoint.angularVelocityConstrained
                 << ", \"control_interval_count\": " << waypoint.controlIntervalCount
                 << ", \"initial_guess_points\": " << waypoint.initialGuessPoints
+                << ", \"obstacles\": " << waypoint.obstacles
                 << "}";
     }
 }

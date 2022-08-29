@@ -5,13 +5,12 @@
 
 #include <casadi/casadi.hpp>
 
+#include "HolonomicTrajectorySegment.h"
+
 namespace helixtrajectory {
 
     HolonomicTrajectory::HolonomicTrajectory(const std::vector<HolonomicTrajectorySegment>& holonomicSegments)
             : holonomicSegments(holonomicSegments) {
-    }
-
-    HolonomicTrajectory::~HolonomicTrajectory() {
     }
 
     std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectory& trajectory) {

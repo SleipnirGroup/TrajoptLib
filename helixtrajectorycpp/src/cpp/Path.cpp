@@ -19,7 +19,7 @@ namespace helixtrajectory {
                 || !GetWaypoint(0).IsStateKnown() || !GetWaypoint(Length() - 1).IsStateKnown()) {
             return false;
         }
-        for (int index = 1; index < Length(); index++) {
+        for (int index = 0; index < Length(); index++) {
             if (!GetWaypoint(index).IsValid()) {
                 return false;
             }

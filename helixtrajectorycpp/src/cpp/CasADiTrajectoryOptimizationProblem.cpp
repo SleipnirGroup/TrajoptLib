@@ -17,18 +17,20 @@ namespace helixtrajectory {
 
     const casadi::Slice CasADiTrajectoryOptimizationProblem::ALL = casadi::Slice();
 
-    CasADiTrajectoryOptimizationProblem::CasADiTrajectoryOptimizationProblem(const Drivetrain& drivetrain, const Path& path) :
-            drivetrain(drivetrain), path(path),
+    CasADiTrajectoryOptimizationProblem::CasADiTrajectoryOptimizationProblem(const Drivetrain& drivetrain, const Path& path)
+            : drivetrain(drivetrain), path(path),
             waypointCount(path.Length()), trajectorySegmentCount(waypointCount - 1),
             controlIntervalTotal(path.ControlIntervalTotal()),
-            dt(1, controlIntervalTotal),
-            X(opti.variable(3, controlIntervalTotal + 1)), x(X(0, ALL)), y(X(1, ALL)), theta(X(2, ALL)) {
+            sampleTotal(controlIntervalTotal + 1), opti(),
+            dt(1, controlIntervalTotal), X(opti.variable(3, controlIntervalTotal + 1)),
+            x(X(0, ALL)), y(X(1, ALL)), theta(X(2, ALL)),
+            XSegments(), xSegments(), ySegments(), thetaSegments(),
+            dtSegments() {
 
-        casadi::MX trajectorySegmentDts = opti.variable(1, trajectorySegmentCount);
         casadi::MX totalT = 0;
         size_t intervalIndex = 0;
         for (size_t trajectorySegmentIndex = 0; trajectorySegmentIndex < trajectorySegmentCount; trajectorySegmentIndex++) {
-            casadi::MX segmentDt = trajectorySegmentDts(trajectorySegmentIndex);
+            casadi::MX segmentDt = opti.variable();
             size_t segmentControlIntervalCount = path.GetWaypoint(trajectorySegmentIndex + 1).controlIntervalCount;
             for (size_t segmentIntervalIndex = 0; segmentIntervalIndex < segmentControlIntervalCount; segmentIntervalIndex++) {
                 dt(intervalIndex) = segmentDt;
@@ -68,7 +70,7 @@ namespace helixtrajectory {
         }
 
 
-        ApplyPathConstraints(opti, xSegments, ySegments, thetaSegments, CasADiTrajectoryOptimizationProblem::path);
+        ApplyWaypointConstraints(opti, xSegments, ySegments, thetaSegments, CasADiTrajectoryOptimizationProblem::path);
         std::cout << "Applied Path constraints" << std::endl;
 
         ApplyObstacleConstraints(opti, xSegments, ySegments, thetaSegments,
@@ -79,10 +81,7 @@ namespace helixtrajectory {
         std::cout << "Set Initial Trajectory" << std::endl;
     }
 
-    CasADiTrajectoryOptimizationProblem::~CasADiTrajectoryOptimizationProblem() {
-    }
-
-    void CasADiTrajectoryOptimizationProblem::ApplyPathConstraints(casadi::Opti& opti,
+    void CasADiTrajectoryOptimizationProblem::ApplyWaypointConstraints(casadi::Opti& opti,
                 const std::vector<casadi::MX>& xSegments, const std::vector<casadi::MX>& ySegments,
                 const std::vector<casadi::MX>& thetaSegments, const Path& path) {
         for (int waypointIndex = 0; waypointIndex < path.Length(); waypointIndex++) {
@@ -100,19 +99,37 @@ namespace helixtrajectory {
         }
     }
 
-    casadi::MX CasADiTrajectoryOptimizationProblem::SolveBumperCornerPosition(const casadi::MX& x, const casadi::MX& y,
+    const casadi::MX CasADiTrajectoryOptimizationProblem::SolveBumperCornerPosition(const casadi::MX& x, const casadi::MX& y,
             const casadi::MX& theta, const ObstaclePoint& bumperCorner) {
         casadi::MX position(2, 1);
-        double cornerDiagonal = hypot(bumperCorner.x, bumperCorner.y);
-        double cornerAngle = atan2(bumperCorner.y, bumperCorner.x);
-        if (cornerDiagonal == 0.0) {
+        if (bumperCorner.x == 0.0 && bumperCorner.y == 0.0) {
             position(0) = x;
             position(1) = y;
         } else {
+            double cornerDiagonal = hypot(bumperCorner.x, bumperCorner.y);
+            double cornerAngle = atan2(bumperCorner.y, bumperCorner.x);
             position(0) = x + cornerDiagonal * cos(cornerAngle + theta);
             position(1) = y + cornerDiagonal * sin(cornerAngle + theta);
         }
         return position;
+    }
+
+    // https://www.desmos.com/calculator/cqmc1tjtsv
+    template<typename LineNumberType, typename PointNumberType>
+    casadi::MX linePointDist(LineNumberType lineStartX, LineNumberType lineStartY, LineNumberType lineEndX, LineNumberType lineEndY,
+            PointNumberType pointX, PointNumberType pointY) {
+        casadi::MX lX = lineEndX - lineStartX;
+        casadi::MX lY = lineEndY - lineStartY;
+        casadi::MX vX = pointX - lineStartX;
+        casadi::MX vY = pointY - lineStartY;
+        casadi::MX dot = vX * lX + vY * lY;
+        casadi::MX lNormSquared = lX * lX + lY * lY;
+        casadi::MX t = dot / lNormSquared;
+        casadi::MX tBounded = fmax(fmin(t, 1), 0);
+        casadi::MX iX = (1 - tBounded) * lineStartX + tBounded * lineEndX;
+        casadi::MX iY = (1 - tBounded) * lineStartY + tBounded * lineEndY;
+        casadi::MX distSquared = (iX - pointX) * (iX - pointX) + (iY - pointY) * (iY - pointY);
+        return distSquared;
     }
 
     void CasADiTrajectoryOptimizationProblem::ApplyObstacleConstraint(casadi::Opti& opti, const casadi::MX& x, const casadi::MX& y,
@@ -212,24 +229,6 @@ namespace helixtrajectory {
         }
     }
 
-    // https://www.desmos.com/calculator/cqmc1tjtsv
-    template<typename LineNumberType, typename PointNumberType>
-    casadi::MX linePointDist(LineNumberType lineStartX, LineNumberType lineStartY, LineNumberType lineEndX, LineNumberType lineEndY,
-            PointNumberType pointX, PointNumberType pointY) {
-        casadi::MX lX = lineEndX - lineStartX;
-        casadi::MX lY = lineEndY - lineStartY;
-        casadi::MX vX = pointX - lineStartX;
-        casadi::MX vY = pointY - lineStartY;
-        casadi::MX dot = vX * lX + vY * lY;
-        casadi::MX lNormSquared = lX * lX + lY * lY;
-        casadi::MX t = dot / lNormSquared;
-        casadi::MX tBounded = fmax(fmin(t, 1), 0);
-        casadi::MX iX = (1 - tBounded) * lineStartX + tBounded * lineEndX;
-        casadi::MX iY = (1 - tBounded) * lineStartY + tBounded * lineEndY;
-        casadi::MX distSquared = (iX - pointX) * (iX - pointX) + (iY - pointY) * (iY - pointY);
-        return distSquared;
-    }
-
     void linspace(casadi::DM& arry, size_t startIndex, size_t endIndex, double startValue, double endValue) {
         size_t segmentCount = endIndex - startIndex;
         double delta = (endValue - startValue) / segmentCount;
@@ -238,7 +237,7 @@ namespace helixtrajectory {
         }
     }
 
-    casadi::DM CasADiTrajectoryOptimizationProblem::GenerateInitialGuessX(const Path& path) {
+    const casadi::DM CasADiTrajectoryOptimizationProblem::GenerateInitialGuessX(const Path& path) {
         size_t waypointCount = path.Length();
         casadi::DM X(3, path.ControlIntervalTotal() + 1);
         casadi::DM x = X(0, ALL);

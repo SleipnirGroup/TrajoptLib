@@ -60,11 +60,18 @@ namespace helixtrajectory {
         virtual ~Waypoint() = default;
 
         /**
+         * @brief Check if this waypoint is an initial waypoint. An initial
+         * waypoint is a waypoint that has zero control intervals.
+         * 
+         * @return true if and only if controlIntervalTotal == 0
+         */
+        bool IsInitialWaypoint() const noexcept;
+        /**
          * @brief Check if this waypoint is valid.
          * 
          * @return true if this waypoint is valid, false otherwise
          */
-        virtual bool IsValid() const noexcept;
+        bool IsValid() const noexcept;
         /**
          * @brief Check if the position state at this waypoint is known. This
          * means that the position and heading of the robot is constrained.
@@ -80,12 +87,22 @@ namespace helixtrajectory {
          */
         virtual bool IsVelocityStateKnown() const noexcept = 0;
         /**
-         * @brief Check if the positon and velocity at this waypoint is known.
+         * @brief Check if this waypoint is a known state waypoint. A known
+         * state waypoint is a waypoint with its state fully constrained and known
+         * before generation.
          * 
          * @return true if the position and velocity state of the robot is constrained,
          * false otherwise
          */
         bool IsStateKnown() const noexcept;
+
+        /**
+         * @brief Check if this waypoint is a split waypoint. A split waypoint
+         * is a waypoint that is either an initial waypoint or known state waypoint.
+         * 
+         * @return true if and only if this waypoint is an initial waypoint or a known state waypoint
+         */
+        bool IsSplitWaypoint() const noexcept;
 
     protected:
         /**
