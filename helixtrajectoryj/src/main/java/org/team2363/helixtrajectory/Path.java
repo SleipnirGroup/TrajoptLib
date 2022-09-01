@@ -20,7 +20,7 @@ public abstract class Path {
 
     public boolean isValid() {
         if (waypoints.isEmpty() || controlIntervalTotal() == 0
-                || !waypoints.get(0).isInitialWaypoint()) {
+                || !waypoints.get(0).isStateKnown() || !waypoints.get(waypoints.size() - 1).isStateKnown()) {
             return false;
         }
         for (int index = 0; index < waypoints.size(); index++) {

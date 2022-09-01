@@ -48,8 +48,21 @@ public abstract class Waypoint {
     }
 
     public boolean isValid() {
-        return (xConstrained || yConstrained)
-                && ((isInitialWaypoint() && initialGuessPoints.isEmpty())
-                || (!isInitialWaypoint() && initialGuessPoints.size() < controlIntervalCount));
+        return (isInitialWaypoint() && initialGuessPoints.isEmpty())
+                || (!isInitialWaypoint() && initialGuessPoints.size() < controlIntervalCount);
+    }
+
+    public boolean isPositionStateKnown() {
+        return xConstrained && yConstrained && headingConstrained;
+    }
+
+    public abstract boolean isVelocityStateKnown();
+
+    public boolean isStateKnown() {
+        return isPositionStateKnown() && isVelocityStateKnown();
+    }
+
+    public boolean isSplitWaypoint() {
+        return isInitialWaypoint() && isStateKnown();
     }
 }

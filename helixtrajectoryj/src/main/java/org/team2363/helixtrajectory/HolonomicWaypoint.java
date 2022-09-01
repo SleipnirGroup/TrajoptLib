@@ -34,6 +34,14 @@ public final class HolonomicWaypoint extends Waypoint {
         this.angularVelocityConstrained = angularVelocityConstrained;
     }
 
+    @Override
+    public boolean isVelocityStateKnown() {
+        return (velocityMagnitudeConstrained && velocityXConstrained && velocityYConstrained)
+                || ((velocityX == 0.0 && velocityY == 0.0)
+                && ((!velocityMagnitudeConstrained && velocityXConstrained && velocityYConstrained)
+                || (velocityMagnitudeConstrained && !velocityXConstrained && !velocityYConstrained)));
+    }
+
     public String toString() {
         return "{\"x\": " + x
                 + ", \"y\": " + y
