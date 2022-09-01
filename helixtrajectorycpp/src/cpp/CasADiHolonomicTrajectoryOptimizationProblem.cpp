@@ -1,3 +1,5 @@
+#include "DebugOptions.h"
+
 #include "CasADiHolonomicTrajectoryOptimizationProblem.h"
 
 #include <iostream>
@@ -52,23 +54,36 @@ namespace helixtrajectory {
         }
 
         ApplyKinematicsConstraints(opti, dt, X, V, U);
+#ifdef DEBUG_OUTPUT
         std::cout << "Applied Holonomic Kinematics Constraints" << std::endl;
-
-        std::cout << "Applied Swerve Dynamics Constraints" << std::endl;
-        
+#endif
+  
         ApplyHolonomicWaypointConstraints(opti, vxSegments, vySegments, omegaSegments,
                 CasADiHolonomicTrajectoryOptimizationProblem::holonomicPath);
+#ifdef DEBUG_OUTPUT
         std::cout << "Applied Holonomic Path Constraints" << std::endl;
+#endif
     }
 
     HolonomicTrajectory CasADiHolonomicTrajectoryOptimizationProblem::Generate() {
         // I don't try-catch this next line since it should always work.
         // I'm assuming the dynamic lib is on the path and casadi can find it.
+#ifdef DEBUG_OUTPUT
         opti.solver("ipopt");
         std::cout << "Located IPOPT Plugin" << std::endl;
+#else
+        auto pluginOptions = casadi::Dict();
+        pluginOptions["ipopt.print_level"] = 0;
+        pluginOptions["print_time"] = 0;
+        pluginOptions["ipopt.sb"] = "yes";
+        opti.solver("ipopt", pluginOptions);
+#endif
         try {
             auto solution = opti.solve();
-            std::cout << "Solution Found" << std::endl;
+#ifdef DEBUG_OUTPUT
+            std::cout << "Solution Found:" << std::endl;
+            PrintSolution(solution);
+#endif
             return ConstructTrajectory(solution, dtSegments, xSegments, ySegments, thetaSegments,
                 vxSegments, vySegments, omegaSegments);
         } catch (...) {

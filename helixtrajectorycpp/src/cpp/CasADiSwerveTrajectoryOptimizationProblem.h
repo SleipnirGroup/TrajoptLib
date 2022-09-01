@@ -123,5 +123,7 @@ namespace helixtrajectory {
          * @param holonomicPath the holonomic path
          */
         CasADiSwerveTrajectoryOptimizationProblem(const SwerveDrivetrain& swerveDrivetrain, const HolonomicPath& holonomicPath);
+
+        virtual void PrintSolution(const casadi::OptiSol& solution) const;
     };
 }

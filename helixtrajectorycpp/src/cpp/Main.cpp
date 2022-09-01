@@ -22,11 +22,11 @@ int main() {
     // std::cout << solution.value(x);
     // std::cout << solution.value(y);
     using namespace helixtrajectory;
-    SwerveDrivetrain drive(60, 8,
-            {{+0.4, +0.4, 2, 70, 2},
-             {+0.4, -0.4, 2, 70, 2},
-             {-0.4, +0.4, 2, 70, 2},
-             {-0.4, -0.4, 2, 70, 2}},
+    SwerveDrivetrain drive(45, 6,
+            {{+0.6, +0.6, 0.04, 70, 2},
+             {+0.6, -0.6, 0.04, 70, 2},
+             {-0.6, +0.6, 0.04, 70, 2},
+             {-0.6, -0.6, 0.04, 70, 2}},
             Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}}));
 
     HolonomicPath path(HolonomicPath({
@@ -42,11 +42,11 @@ int main() {
     //     HolonomicWaypoint( 4,  0,     0, 0, 0, 0, true, true, true,  true,  true,  true,  true, 4, {}, {})
     // });
     std::vector<Obstacle> obstacles;// = {Obstacle(0.2, {{0, 0}})};
-    std::cout << "Drivetrain:\n" << drive << "\n"
-            << "\nPath:\n" << path << std::endl;
+    // std::cout << "Drivetrain:\n" << drive << "\n"
+    //         << "\nPath:\n" << path << std::endl;
 
     
     HolonomicTrajectory trajectory = OptimalTrajectoryGenerator::Generate(drive, path);
-    std::cout << "\nTrajectory:\n" << trajectory;
+    std::cout << "\nTrajectory:\n\n" << trajectory;
     std::cout << std::endl;
 }

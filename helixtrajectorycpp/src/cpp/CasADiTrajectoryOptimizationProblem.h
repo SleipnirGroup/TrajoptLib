@@ -190,5 +190,7 @@ namespace helixtrajectory {
          * @brief Destroy the CasADi Trajectory Optimization Problem object
          */
         virtual ~CasADiTrajectoryOptimizationProblem() = default;
+
+        virtual void PrintSolution(const casadi::OptiSol& solution) const = 0;
     };
 }

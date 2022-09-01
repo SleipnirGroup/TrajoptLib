@@ -1,3 +1,5 @@
+#include "DebugOptions.h"
+
 #include "CasADiTrajectoryOptimizationProblem.h"
 
 #include <iostream>
@@ -40,11 +42,13 @@ namespace helixtrajectory {
             opti.subject_to(segmentDt >= 0);
             opti.set_initial(segmentDt, 5.0 / segmentControlIntervalCount);
         }
+#ifdef DEBUG_OUTPUT
         std::cout << "Applied Time Constraints" << std::endl;
+#endif
         opti.minimize(totalT);
+#ifdef DEBUG_OUTPUT
         std::cout << "Set Optimization Objective" << std::endl;
-
-        std::cout << "Number of Total Control Intervals " << controlIntervalTotal << std::endl;
+#endif
 
         dtSegments.reserve(trajectorySegmentCount);
         XSegments.reserve(waypointCount);
@@ -71,14 +75,20 @@ namespace helixtrajectory {
 
 
         ApplyWaypointConstraints(opti, xSegments, ySegments, thetaSegments, CasADiTrajectoryOptimizationProblem::path);
+#ifdef DEBUG_OUTPUT
         std::cout << "Applied Path constraints" << std::endl;
+#endif
 
         ApplyObstacleConstraints(opti, xSegments, ySegments, thetaSegments,
                 CasADiTrajectoryOptimizationProblem::drivetrain, CasADiTrajectoryOptimizationProblem::path);
+#ifdef DEBUG_OUTPUT
         std::cout << "Applied Obstacle constraints" << std::endl;
+#endif
 
         opti.set_initial(X, GenerateInitialGuessX(CasADiTrajectoryOptimizationProblem::path));
+#ifdef DEBUG_OUTPUT
         std::cout << "Set Initial Trajectory" << std::endl;
+#endif
     }
 
     void CasADiTrajectoryOptimizationProblem::ApplyWaypointConstraints(casadi::Opti& opti,
