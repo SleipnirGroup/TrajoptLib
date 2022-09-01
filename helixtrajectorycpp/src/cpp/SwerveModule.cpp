@@ -4,6 +4,10 @@
 
 namespace helixtrajectory {
 
+    SwerveModule::SwerveModule(double x, double y, double wheelRadius, double wheelMaxAngularVelocity, double wheelMaxTorque)
+            : x(x), y(y), wheelRadius(wheelRadius), wheelMaxAngularVelocity(wheelMaxAngularVelocity), wheelMaxTorque(wheelMaxTorque) {
+    }
+
     std::ostream& operator<<(std::ostream& stream, const SwerveModule& module) {
         return stream << "{\"x\": " << module.x
                 << ", \"y\": " << module.y

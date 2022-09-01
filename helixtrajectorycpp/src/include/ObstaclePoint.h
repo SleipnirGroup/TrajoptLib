@@ -9,7 +9,8 @@ namespace helixtrajectory {
      * 
      * @author Justin Babilino
      */
-    struct ObstaclePoint {
+    class ObstaclePoint {
+    public:
         /**
          * @brief the x-coordinate of obstacle point
          */
@@ -18,6 +19,14 @@ namespace helixtrajectory {
          * @brief the y-coordinate of obstacle point
          */
         double y;
+
+        /**
+         * @brief Construct a new Obstacle Point object with its position
+         * 
+         * @param x x-coordinate
+         * @param y y-coordinate
+         */
+        ObstaclePoint(double x, double y);
 
         /**
          * @brief Append a string representation of an obstacle point to an output stream.

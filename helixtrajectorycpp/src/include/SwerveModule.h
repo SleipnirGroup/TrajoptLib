@@ -6,34 +6,46 @@
 namespace helixtrajectory {
 
     /**
-     * @brief This struct represents a single swerve module in a swerve drivetrain.
+     * @brief This class represents a single swerve module in a swerve drivetrain.
      * It is defined by the module diagonal, which is the line connecting the origin
      * of the robot coordinate system to the center of the module. The wheel radius,
      * max speed, and max torque must also be specified per module.
      * 
      * @author Justin Babilino
      */
-    struct SwerveModule {
+    class SwerveModule {
+    public:
         /**
-         * @brief the x-coordinate of the swerve module relative to the robot coordinate system
+         * @brief x-coordinate of swerve module relative to robot coordinate system
          */
         double x;
         /**
-         * @brief the y-coordinate of the swerve module relative to the robot coordinate system
+         * @brief y-coordinate of swerve module relative to robot coordinate system
          */
         double y;
         /**
-         * @brief radius of wheels
+         * @brief radius of wheel
          */
         double wheelRadius;
         /**
-         * @brief maximum angular velocity of wheels
+         * @brief maximum angular velocity of wheel
          */
         double wheelMaxAngularVelocity;
         /**
-         * @brief maximum torque applied to wheels
+         * @brief maximum torque applied to wheel
          */
         double wheelMaxTorque;
+
+        /**
+         * @brief Construct a new Swerve Module object with its position, radius, and constraints.
+         * 
+         * @param x x-coordinate of swerve module
+         * @param y y-coordinate of swerve module
+         * @param wheelRadius radius of wheel
+         * @param wheelMaxAngularVelocity maximum angular velocity of wheel
+         * @param wheelMaxTorque maximum torque applied to wheel
+         */
+        SwerveModule(double x, double y, double wheelRadius, double wheelMaxAngularVelocity, double wheelMaxTorque);
 
         /**
          * @brief Append a string representation of a swerve module to an output stream.
