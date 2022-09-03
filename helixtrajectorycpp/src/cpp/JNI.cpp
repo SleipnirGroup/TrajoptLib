@@ -21,8 +21,6 @@
 
 using namespace helixtrajectory;
 
-// ObstaclePoint obstaclePointFromJObstaclePoint(JNIEnv* env, jobject jObstaclePoint);
-
 template<typename Type, Type(*converter)(JNIEnv* env, jobject jObject)> 
 std::vector<Type> vectorFromJList(JNIEnv* env, jobject jList) {
     jclass jListClass = env->FindClass("java/util/List");
@@ -33,7 +31,7 @@ std::vector<Type> vectorFromJList(JNIEnv* env, jobject jList) {
     std::vector<Type> vect;
     vect.reserve(jListSize);
     for (size_t index = 0; index < jListSize; index++) {
-        jobject jListItem = env->CallObjectMethod(jList, jListClassGetMethod);
+        jobject jListItem = env->CallObjectMethod(jList, jListClassGetMethod, index);
         vect.push_back(converter(env, jListItem));
     }
 

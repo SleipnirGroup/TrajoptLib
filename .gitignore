@@ -10,6 +10,7 @@ casadi-x86_64
 casadi-static
 runlibs
 lib
+*.log
 
 .vscode
 
