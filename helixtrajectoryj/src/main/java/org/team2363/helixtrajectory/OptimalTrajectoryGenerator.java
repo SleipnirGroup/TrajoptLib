@@ -23,13 +23,14 @@ public final class OptimalTrajectoryGenerator {
         loadPlugin();
     }
 
-    private native HolonomicTrajectory generateHolonomicTrajectory(HolonomicDrivetrain holonomicDrivetrain,
+    private native HolonomicTrajectory generateHolonomicTrajectory(SwerveDrivetrain swerveDrivetrain,
             HolonomicPath holonomicPath) throws InvalidPathException, TrajectoryGenerationException;
 
-    public static HolonomicTrajectory generate(HolonomicDrivetrain holonomicDrivetrain, HolonomicPath holonomicPath)
+    public static HolonomicTrajectory generate(SwerveDrivetrain swerveDrivetrain, HolonomicPath holonomicPath)
             throws NullPointerException, InvalidPathException, PluginLoadException, TrajectoryGenerationException {
+
         return new OptimalTrajectoryGenerator().generateHolonomicTrajectory(
-                Objects.requireNonNull(holonomicDrivetrain, "Holonomic Trajectory Generator holonomic drive cannot be null"),
+                Objects.requireNonNull(swerveDrivetrain, "Holonomic Trajectory Generator swerve drivetrain cannot be null"),
                 Objects.requireNonNull(holonomicPath, "Holonomic Trajectory Generator holonomic path cannot be null"));
     }
 }

@@ -33,6 +33,7 @@ namespace helixtrajectory {
     }
 
     std::ostream& operator<<(std::ostream& stream, const HolonomicWaypoint& waypoint) {
+        stream << std::boolalpha;
         return stream << "{\"x\": " << waypoint.x
                 << ", \"y\": " << waypoint.y
                 << ", \"heading\": " << waypoint.heading

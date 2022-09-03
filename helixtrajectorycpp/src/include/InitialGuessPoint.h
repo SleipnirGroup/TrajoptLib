@@ -7,7 +7,8 @@ namespace helixtrajectory {
     /**
      * @brief An initial guess of a possible state the robot may be in during the trajectory.
      */
-    struct InitialGuessPoint {
+    class InitialGuessPoint {
+    public:
         /**
          * @brief the initial guess of the x-coordinate of the robot
          */
@@ -20,6 +21,8 @@ namespace helixtrajectory {
          * @brief the initial guess of the heading of the robot
          */
         double heading;
+
+        InitialGuessPoint(double x, double y, double heading);
 
         friend std::ostream& operator<<(std::ostream& stream, const InitialGuessPoint& guessPoint);
     };

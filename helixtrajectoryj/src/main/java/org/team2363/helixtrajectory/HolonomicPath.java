@@ -15,4 +15,9 @@ public final class HolonomicPath extends Path {
 
         this.holonomicWaypoints = (List<? extends HolonomicWaypoint>) waypoints;
     }
+
+    @Override
+    public String toString() {
+        return holonomicWaypoints.toString();
+    }
 }

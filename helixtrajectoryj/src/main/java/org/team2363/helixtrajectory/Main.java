@@ -1,14 +1,37 @@
-// package org.team2363.helixtrajectory;
+package org.team2363.helixtrajectory;
 
-// public class Main {
+import java.util.List;
 
-//     public static void main(String[] args) {
-//         SwerveDrive drive = new SwerveDrive(0.622, 0.572, 0.954, 0.903, 46.7, 5.6, 70, 1.9, 0.051);
-//         Path path = new Path(
-//                 Waypoint.hardWaypoint(0.0, 0.0, Math.PI / 2),
-//                 Waypoint.hardWaypoint(2.0, 2.0, 0.0),
-//                 Waypoint.hardWaypoint(4.0, 0.0, -Math.PI / 2));
-//         TrajectoryGenerator generator = new TrajectoryGenerator(drive);
-//         System.out.print(generator.generate(path));
-//     }
-// }
+public class Main {
+
+    public static void main(String[] args) throws InvalidPathException, PluginLoadException, TrajectoryGenerationException {
+        SwerveDrivetrain swerveDrivetrain = new SwerveDrivetrain(45, 6,
+            List.of(new SwerveModule(+0.6, +0.6, 0.04, 70, 2),
+             new SwerveModule(+0.6, -0.6, 0.04, 70, 2),
+             new SwerveModule(-0.6, +0.6, 0.04, 70, 2),
+             new SwerveModule(-0.6, -0.6, 0.04, 70, 2)),
+            new Obstacle(0, true, List.of(
+             new ObstaclePoint(+0.5, +0.5),
+             new ObstaclePoint(-0.5, +0.5),
+             new ObstaclePoint(-0.5, -0.5),
+             new ObstaclePoint(+0.5, -0.5))));
+
+        HolonomicPath holonomicPath = new HolonomicPath(List.of(
+            new HolonomicWaypoint( 4,  0,    0, 0, 0, 0, true, true, true,  true,  true,  true,  true,    0, List.of(), List.of()),
+            new HolonomicWaypoint( 0,  4, 1.57, 0, 0, 0, true, true, true, false, false, false, false,   30, List.of(), List.of()),
+            new HolonomicWaypoint(-4,  0,    0, 0, 0, 0, true, true, true, false, false, false, false,   30, List.of(), List.of()),
+            new HolonomicWaypoint( 0, -4, 3.14, 0, 0, 0, true, true, true, false, false, false, false,   30, List.of(), List.of()),
+            new HolonomicWaypoint( 4,  0, 4.71, 0, 0, 0, true, true, true,  true,  true,  true,  true,   30, List.of(), List.of())
+        ));
+
+        System.out.println("Drivetrain:\n");
+        System.out.println(swerveDrivetrain);
+        System.out.println("Path:\n");
+        System.out.println(holonomicPath);
+
+        HolonomicTrajectory holonomicTrajectory = OptimalTrajectoryGenerator.generate(swerveDrivetrain, holonomicPath);
+
+        System.out.println("Trajectory:\n");
+        System.out.println(holonomicTrajectory);
+    }
+}

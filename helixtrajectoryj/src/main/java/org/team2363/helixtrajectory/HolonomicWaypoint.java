@@ -42,23 +42,24 @@ public final class HolonomicWaypoint extends Waypoint {
                 || (velocityMagnitudeConstrained && !velocityXConstrained && !velocityYConstrained)));
     }
 
+    @Override
     public String toString() {
         return "{\"x\": " + x
-                + ", \"y\": " + y
-                + ", \"heading\": " + heading
-                + ", \"velociy_x\": " + velocityX
-                + ", \"velocity_y\": " + velocityY
-                + ", \"angular_velocity\": " + angularVelocity
-                + ", \"x_constrained\": " + xConstrained
-                + ", \"y_constrained\": " + yConstrained
-                + ", \"heading_constrained\": " + headingConstrained
-                + ", \"velocity_x_constrained\": " + velocityXConstrained
-                + ", \"velocity_y_constrained\": " + velocityYConstrained
-                + ", \"velocity_magnitude_constrained\": " + velocityMagnitudeConstrained
-                + ", \"angular_velocity_constrained\": " + angularVelocityConstrained
-                + ", \"control_interval_count\": " + controlIntervalCount
-                + ", \"initial_guess_points\": " + initialGuessPoints
-                + ", \"obstacles\": " + obstacles
-                + "}";
+            + ", \"y\": " + y
+            + ", \"heading\": " + heading
+            + ", \"velociy_x\": " + velocityX
+            + ", \"velocity_y\": " + velocityY
+            + ", \"angular_velocity\": " + angularVelocity
+            + ", \"x_constrained\": " + xConstrained
+            + ", \"y_constrained\": " + yConstrained
+            + ", \"heading_constrained\": " + headingConstrained
+            + ", \"velocity_x_constrained\": " + velocityXConstrained
+            + ", \"velocity_y_constrained\": " + velocityYConstrained
+            + ", \"velocity_magnitude_constrained\": " + velocityMagnitudeConstrained
+            + ", \"angular_velocity_constrained\": " + angularVelocityConstrained
+            + ", \"control_interval_count\": " + controlIntervalCount
+            + ", \"initial_guess_points\": " + initialGuessPoints
+            + ", \"obstacles\": " + obstacles
+            + "}";
     }
 }

@@ -4,13 +4,9 @@ import java.util.List;
 
 public abstract class TrajectorySegment {
 
-    public final double intervalDuration;
-
     public final List<? extends TrajectorySample> samples;
 
-    protected TrajectorySegment(double intervalDuration, List<? extends TrajectorySample> samples) {
-        this.intervalDuration = intervalDuration;
-
+    protected TrajectorySegment(List<? extends TrajectorySample> samples) {
         this.samples = samples;
     }
 }

@@ -16,4 +16,9 @@ public final class HolonomicTrajectory extends Trajectory {
 
         this.holonomicSegments = (List<? extends HolonomicTrajectorySegment>) segments;
     }
+
+    @Override
+    public String toString() {
+        return holonomicSegments.toString();
+    }
 }

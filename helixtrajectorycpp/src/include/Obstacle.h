@@ -35,9 +35,10 @@ namespace helixtrajectory {
          * @brief Construct a new Obstacle object
          * 
          * @param safetyDistance the list of points that make up this obstacle
+         * @param applyToAllSegments whether to apply this obstacle to all trajectory segments
          * @param waypoints minimum distance from the obstacle the robot must maintain
          */
-        Obstacle(double safetyDistance, const std::vector<ObstaclePoint>& points);
+        Obstacle(double safetyDistance, bool applyToAllSegments, const std::vector<ObstaclePoint>& points);
 
         /**
          * @brief Append a string representation of an obstacle to an output stream.

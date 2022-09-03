@@ -9,9 +9,9 @@ public final class HolonomicTrajectorySegment extends TrajectorySegment {
     public final List<? extends HolonomicTrajectorySample> holonomicSamples;
 
     @SuppressWarnings("unchecked")
-    public HolonomicTrajectorySegment(double intervalDuration,
-            List<? extends HolonomicTrajectorySample> holonomicSamples) throws NullPointerException {
-        super(intervalDuration, requireNonNullAndWrapUnmodifiable(holonomicSamples,
+    public HolonomicTrajectorySegment(List<? extends HolonomicTrajectorySample> holonomicSamples)
+            throws NullPointerException {
+        super(requireNonNullAndWrapUnmodifiable(holonomicSamples,
                 "List of holonomic samples cannot be null", "Holonomic sample cannot be null"));
 
         this.holonomicSamples = (List<? extends HolonomicTrajectorySample>) samples;

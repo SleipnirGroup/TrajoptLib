@@ -12,10 +12,11 @@ public final class InitialGuessPoint {
         this.heading = heading;
     }
 
+    @Override
     public String toString() {
         return "{\"x\": " + x
-                + ", \"y\": " + y
-                + ", \"heading\": " + heading
-                + "}";
+            + ", \"y\": " + y
+            + ", \"heading\": " + heading
+            + "}";
     }
 }
