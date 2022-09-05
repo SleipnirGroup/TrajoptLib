@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <casadi/casadi.hpp>
 
 #include "CasADiHolonomicTrajectoryOptimizationProblem.h"
@@ -22,51 +24,56 @@ namespace helixtrajectory {
          * relative to the robot nonrotating coordinate system; each row is a swerve module, each column
          * is a sample point
          */
-        casadi::MX moduleX;
+        std::vector<std::vector<casadi::MX>> moduleX;
         /**
          * @brief the moduleCount x (controlIntervalTotal + 1) matrix of swerve module y-coordinates
          * relative to the robot nonrotating coordinate system; each row is a swerve module, each column
          * is a sample point
          */
-        casadi::MX moduleY;
+        std::vector<std::vector<casadi::MX>> moduleY;
         /**
          * @brief the moduleCount x (controlIntervalTotal + 1) matrix of swerve module x-components
          * of velocity; each row is a swerve module, each column is a sample point
          */
-        casadi::MX moduleVX;
+        std::vector<std::vector<casadi::MX>> moduleVX;
         /**
          * @brief the moduleCount x (controlIntervalTotal + 1) matrix of swerve module y-components
          * of velocity; each row is a swerve module, each column is a sample point
          */
-        casadi::MX moduleVY;
+        std::vector<std::vector<casadi::MX>> moduleVY;
         /**
          * @brief the moduleCount x controlIntervalTotal matrix of swerve module y-components
          * of force; each row is a swerve module, each column is a control interval
          */
-        casadi::MX moduleFX;
+        std::vector<std::vector<casadi::MX>> moduleFX;
         /**
          * @brief the moduleCount x controlIntervalTotal matrix of swerve module y-components
          * of force; each row is a swerve module, each column is a control interval
          */
-        casadi::MX moduleFY;
+        std::vector<std::vector<casadi::MX>> moduleFY;
         /**
          * @brief the moduleCount x controlIntervalTotal matrix of swerve module torques applied
          * about the axis of rotation; each row is a swerve module, each column is a control interval
          */
-        casadi::MX moduleTau;
+        std::vector<std::vector<casadi::MX>> moduleTau;
 
         /**
          * @brief the 1 x controlIntervalTotal vector of the x-component of net force applied to the robot.
          */
-        casadi::MX netFX;
+        std::vector<casadi::MX> netFX;
         /**
          * @brief the 1 x controlIntervalTotal vector of the y-component of net force applied to the robot.
          */
-        casadi::MX netFY;
+        std::vector<casadi::MX> netFY;
         /**
          * @brief the 1 x controlIntervalTotal vector of the net torque applied to the robot.
          */
-        casadi::MX netTau;
+        std::vector<casadi::MX> netTau;
+
+        struct ModulePosition {
+            casadi::MX x;
+            casadi::MX y;
+        };
 
         /**
          * @brief Gives an expression for the position of a swerve module relative
@@ -78,7 +85,7 @@ namespace helixtrajectory {
          * @param module the swerve module to find the position for
          * @return a 2 x 1 vector of positions where each row is a coordinate
          */
-        static const casadi::MX SolveModulePosition(const casadi::MX& theta, const SwerveModule& module);
+        static const ModulePosition SolveModulePosition(const casadi::MX& theta, const SwerveModule& module);
 
         /**
          * @brief Applies the drivetrain-specific constraints to the optimizer. These constraints
@@ -103,14 +110,14 @@ namespace helixtrajectory {
          * @param swerveDrivetrain the swerve drivetrain
          */
         static void ApplyDynamicsConstraints(casadi::Opti& opti,
-                const casadi::MX& ax, const casadi::MX& ay, const casadi::MX& alpha,
-                const casadi::MX& netFX, const casadi::MX& netFY, const casadi::MX& netTau,
+                const std::vector<casadi::MX>& ax, const std::vector<casadi::MX>& ay, const std::vector<casadi::MX>& alpha,
+                const std::vector<casadi::MX>& netFX, const std::vector<casadi::MX>& netFY, const std::vector<casadi::MX>& netTau,
                 const SwerveDrivetrain& swerveDrivetrain);
 
         static void ApplyPowerConstraints(casadi::Opti& opti,
-                const casadi::MX& moduleVX, const casadi::MX& moduleVY,
-                const casadi::MX& moduleFX, const casadi::MX& moduleFY,
-                const SwerveDrivetrain& SwerveDrivetrain);
+                const std::vector<std::vector<casadi::MX>>& moduleVX, const std::vector<std::vector<casadi::MX>>& moduleVY,
+                const std::vector<std::vector<casadi::MX>>& moduleFX, const std::vector<std::vector<casadi::MX>>& moduleFY,
+                const SwerveDrivetrain& swerveDrivetrain);
 
         void PrintDebug(const casadi::OptiSol& solution);
 

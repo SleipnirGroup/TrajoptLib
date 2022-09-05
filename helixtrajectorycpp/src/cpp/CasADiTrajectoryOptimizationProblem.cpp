@@ -2,6 +2,7 @@
 
 #include "CasADiTrajectoryOptimizationProblem.h"
 
+#include <array>
 #include <iostream>
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -24,10 +25,19 @@ namespace helixtrajectory {
             waypointCount(path.Length()), trajectorySegmentCount(waypointCount - 1),
             controlIntervalTotal(path.ControlIntervalTotal()),
             sampleTotal(controlIntervalTotal + 1), opti(),
-            dt(1, controlIntervalTotal), X(opti.variable(3, controlIntervalTotal + 1)),
-            x(X(0, ALL)), y(X(1, ALL)), theta(X(2, ALL)),
-            XSegments(), xSegments(), ySegments(), thetaSegments(),
-            dtSegments() {
+            dt(), x(), y(), theta(),
+            dtSegments(), xSegments(), ySegments(), thetaSegments() {
+
+        dt.reserve(controlIntervalTotal);
+        x.reserve(sampleTotal);
+        y.reserve(sampleTotal);
+        theta.reserve(sampleTotal);
+
+        for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
+            x.push_back(opti.variable());
+            y.push_back(opti.variable());
+            theta.push_back(opti.variable());
+        }
 
         casadi::MX totalT = 0;
         size_t intervalIndex = 0;
@@ -35,7 +45,7 @@ namespace helixtrajectory {
             casadi::MX segmentDt = opti.variable();
             size_t segmentControlIntervalCount = path.GetWaypoint(trajectorySegmentIndex + 1).controlIntervalCount;
             for (size_t segmentIntervalIndex = 0; segmentIntervalIndex < segmentControlIntervalCount; segmentIntervalIndex++) {
-                dt(intervalIndex) = segmentDt;
+                dt.push_back(segmentDt);
                 intervalIndex++;
             }
             totalT += segmentControlIntervalCount * segmentDt;
@@ -51,28 +61,36 @@ namespace helixtrajectory {
 #endif
 
         dtSegments.reserve(trajectorySegmentCount);
-        XSegments.reserve(waypointCount);
         xSegments.reserve(waypointCount);
         ySegments.reserve(waypointCount);
         thetaSegments.reserve(waypointCount);
-        XSegments.push_back(X(ALL, 0));
-        xSegments.push_back(x(ALL, 0));
-        ySegments.push_back(y(ALL, 0));
-        thetaSegments.push_back(theta(ALL, 0));
+        xSegments.push_back({x[0]});
+        ySegments.push_back({y[0]});
+        thetaSegments.push_back({theta[0]});
         size_t sampleIndex = 1;
         for (size_t waypointIndex = 1; waypointIndex < waypointCount; waypointIndex++) {
             size_t controlIntervalCount = CasADiTrajectoryOptimizationProblem::path.GetWaypoint(waypointIndex)
                     .controlIntervalCount;
-            casadi::Slice dtSlice((int) (sampleIndex - 1), (int) (sampleIndex - 1 + controlIntervalCount));
-            casadi::Slice XSlice((int) sampleIndex, (int) (sampleIndex + controlIntervalCount));
-            dtSegments.push_back(dt(ALL, dtSlice));
-            XSegments.push_back(X(ALL, XSlice));
-            xSegments.push_back(x(ALL, XSlice));
-            ySegments.push_back(y(ALL, XSlice));
-            thetaSegments.push_back(theta(ALL, XSlice));
+            std::vector<casadi::MX> dtSegment;
+            std::vector<casadi::MX> xSegment;
+            std::vector<casadi::MX> ySegment;
+            std::vector<casadi::MX> thetaSegment;
+            dtSegment.reserve(controlIntervalCount);
+            xSegment.reserve(controlIntervalCount);
+            ySegment.reserve(controlIntervalCount);
+            thetaSegment.reserve(controlIntervalCount);
+            for (size_t segmentSampleIndex = 0; segmentSampleIndex < controlIntervalCount; segmentSampleIndex++) {
+                dtSegment.push_back(dt[(sampleIndex - 1) + segmentSampleIndex]);
+                xSegment.push_back(x[sampleIndex + segmentSampleIndex]);
+                ySegment.push_back(y[sampleIndex + segmentSampleIndex]);
+                thetaSegment.push_back(theta[sampleIndex + segmentSampleIndex]);
+            }
+            dtSegments.push_back(dtSegment);
+            xSegments.push_back(xSegment);
+            ySegments.push_back(ySegment);
+            thetaSegments.push_back(thetaSegment);
             sampleIndex += controlIntervalCount;
         }
-
 
         ApplyWaypointConstraints(opti, xSegments, ySegments, thetaSegments, CasADiTrajectoryOptimizationProblem::path);
 #ifdef DEBUG_OUTPUT
@@ -85,41 +103,43 @@ namespace helixtrajectory {
         std::cout << "Applied Obstacle constraints" << std::endl;
 #endif
 
-        opti.set_initial(X, GenerateInitialGuessX(CasADiTrajectoryOptimizationProblem::path));
+        ApplyInitialGuessX(opti, x, y, theta, GenerateInitialGuessX(CasADiTrajectoryOptimizationProblem::path));
+        // opti.set_initial(X, GenerateInitialGuessX(CasADiTrajectoryOptimizationProblem::path));
 #ifdef DEBUG_OUTPUT
         std::cout << "Set Initial Trajectory" << std::endl;
 #endif
     }
 
     void CasADiTrajectoryOptimizationProblem::ApplyWaypointConstraints(casadi::Opti& opti,
-                const std::vector<casadi::MX>& xSegments, const std::vector<casadi::MX>& ySegments,
-                const std::vector<casadi::MX>& thetaSegments, const Path& path) {
+            const std::vector<std::vector<casadi::MX>>& xSegments, const std::vector<std::vector<casadi::MX>>& ySegments,
+            const std::vector<std::vector<casadi::MX>>& thetaSegments, const Path& path) {
         for (int waypointIndex = 0; waypointIndex < path.Length(); waypointIndex++) {
             const Waypoint& waypoint = path.GetWaypoint(waypointIndex);
+            size_t sampleIndex = xSegments[waypointIndex].size() - 1;
             if (waypoint.xConstrained) {
-                opti.subject_to(xSegments[waypointIndex](-1) == waypoint.x);
+                opti.subject_to(xSegments[waypointIndex][sampleIndex] == waypoint.x);
             }
             if (waypoint.yConstrained) {
-                opti.subject_to(ySegments[waypointIndex](-1) == waypoint.y);
+                opti.subject_to(ySegments[waypointIndex][sampleIndex] == waypoint.y);
             }
             if (waypoint.headingConstrained) {
                 // opti.subject_to(fmod(thetaSegments[waypointIndex](-1) - waypoint.heading, 2 * M_PI) == 0.0);
-                opti.subject_to(thetaSegments[waypointIndex](-1) == waypoint.heading);
+                opti.subject_to(thetaSegments[waypointIndex][sampleIndex] == waypoint.heading);
             }
         }
     }
 
-    const casadi::MX CasADiTrajectoryOptimizationProblem::SolveBumperCornerPosition(const casadi::MX& x, const casadi::MX& y,
+    const CasADiTrajectoryOptimizationProblem::BumperCornerPosition CasADiTrajectoryOptimizationProblem::SolveBumperCornerPosition(const casadi::MX& x, const casadi::MX& y,
             const casadi::MX& theta, const ObstaclePoint& bumperCorner) {
-        casadi::MX position(2, 1);
+        BumperCornerPosition position{};
         if (bumperCorner.x == 0.0 && bumperCorner.y == 0.0) {
-            position(0) = x;
-            position(1) = y;
+            position.x = x;
+            position.y = y;
         } else {
             double cornerDiagonal = hypot(bumperCorner.x, bumperCorner.y);
             double cornerAngle = atan2(bumperCorner.y, bumperCorner.x);
-            position(0) = x + cornerDiagonal * cos(cornerAngle + theta);
-            position(1) = y + cornerDiagonal * sin(cornerAngle + theta);
+            position.x = x + cornerDiagonal * cos(cornerAngle + theta);
+            position.y = y + cornerDiagonal * sin(cornerAngle + theta);
         }
         return position;
     }
@@ -152,32 +172,32 @@ namespace helixtrajectory {
             // if the bumpers are only one point and the obstacle is also only one point, 
             const ObstaclePoint& bumperCorner = bumpers.points[0];
             const ObstaclePoint& obstaclePoint = obstacle.points[0];
-            casadi::MX bumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumperCorner);
-            casadi::MX deltaX = obstaclePoint.x - bumperCornerPosition(0);
-            casadi::MX deltaY = obstaclePoint.y - bumperCornerPosition(1);
+            const BumperCornerPosition bumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumperCorner);
+            casadi::MX deltaX = obstaclePoint.x - bumperCornerPosition.x;
+            casadi::MX deltaY = obstaclePoint.y - bumperCornerPosition.y;
             casadi::MX pointDistSquared = deltaX * deltaX + deltaY * deltaY;
             opti.subject_to(pointDistSquared >= distSquared);
         } else {
             for (size_t bumperCornerIndex = 0; bumperCornerIndex < bumperCornerCount - 1; bumperCornerIndex++) {
                 // std::cout << "About to solve bumper positions" << std::endl;
-                casadi::MX startBumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumpers.points[bumperCornerIndex]);
-                casadi::MX endBumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumpers.points[bumperCornerIndex + 1]);
+                const BumperCornerPosition startBumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumpers.points[bumperCornerIndex]);
+                const BumperCornerPosition endBumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumpers.points[bumperCornerIndex + 1]);
                 // std::cout << "solved bumper positions" << std::endl;
                 for (const ObstaclePoint& obstaclePoint : obstacle.points) {
                     // std::cout << "Finding line point dist" << std::endl;
-                    casadi::MX dist = linePointDist(startBumperCornerPosition(0), startBumperCornerPosition(1),
-                            endBumperCornerPosition(0), endBumperCornerPosition(1), obstaclePoint.x, obstaclePoint.y);
+                    casadi::MX dist = linePointDist(startBumperCornerPosition.x, startBumperCornerPosition.y,
+                            endBumperCornerPosition.x, endBumperCornerPosition.y, obstaclePoint.x, obstaclePoint.y);
                     // std::cout << "Line point dist found" << std::endl;
                     opti.subject_to(dist >= distSquared);
                     // std::cout << "Constrained line point dist" << std::endl;
                 }
             }
             if (bumperCornerCount >= 3) { // must have at least three points to make a closed polygon
-                casadi::MX startBumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumpers.points[bumperCornerCount - 1]);
-                casadi::MX endBumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumpers.points[0]);
+                const BumperCornerPosition startBumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumpers.points[bumperCornerCount - 1]);
+                const BumperCornerPosition endBumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumpers.points[0]);
                 for (const ObstaclePoint& obstaclePoint : obstacle.points) {
-                    casadi::MX dist = linePointDist(startBumperCornerPosition(0), startBumperCornerPosition(1),
-                            endBumperCornerPosition(0), endBumperCornerPosition(1), obstaclePoint.x, obstaclePoint.y);
+                    casadi::MX dist = linePointDist(startBumperCornerPosition.x, startBumperCornerPosition.y,
+                            endBumperCornerPosition.x, endBumperCornerPosition.y, obstaclePoint.x, obstaclePoint.y);
                     opti.subject_to(dist >= distSquared);
                 }
             }
@@ -188,9 +208,9 @@ namespace helixtrajectory {
                 double endObstacleCornerX = obstacle.points[obstacleCornerIndex + 1].x;
                 double endObstacleCornerY = obstacle.points[obstacleCornerIndex + 1].y;
                 for (const ObstaclePoint& bumperCorner : bumpers.points) {
-                    casadi::MX bumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumperCorner);
+                    const BumperCornerPosition bumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumperCorner);
                     casadi::MX dist = linePointDist(startObstacleCornerX, startObstacleCornerY,
-                            endObstacleCornerX, endObstacleCornerY, bumperCornerPosition(0), bumperCornerPosition(1));
+                            endObstacleCornerX, endObstacleCornerY, bumperCornerPosition.x, bumperCornerPosition.y);
                     opti.subject_to(dist >= bumpers.safetyDistance + obstacle.safetyDistance);
                 }
             }
@@ -200,17 +220,17 @@ namespace helixtrajectory {
                 double endObstacleCornerX = obstacle.points[0].x;
                 double endObstacleCornerY = obstacle.points[0].y;
                 for (const ObstaclePoint& bumperCorner : bumpers.points) {
-                    casadi::MX bumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumperCorner);
+                    const BumperCornerPosition bumperCornerPosition = SolveBumperCornerPosition(x, y, theta, bumperCorner);
                     casadi::MX dist = linePointDist(startObstacleCornerX, startObstacleCornerY,
-                            endObstacleCornerX, endObstacleCornerY, bumperCornerPosition(0), bumperCornerPosition(1));
+                            endObstacleCornerX, endObstacleCornerY, bumperCornerPosition.x, bumperCornerPosition.y);
                     opti.subject_to(dist >= bumpers.safetyDistance + obstacle.safetyDistance);
                 }
             }
         }
     }
 
-    void CasADiTrajectoryOptimizationProblem::ApplyObstacleConstraints(casadi::Opti& opti, const std::vector<casadi::MX>& xSegments,
-            const std::vector<casadi::MX>& ySegments, const std::vector<casadi::MX>& thetaSegments,
+    void CasADiTrajectoryOptimizationProblem::ApplyObstacleConstraints(casadi::Opti& opti, const std::vector<std::vector<casadi::MX>>& xSegments,
+            const std::vector<std::vector<casadi::MX>>& ySegments, const std::vector<std::vector<casadi::MX>>& thetaSegments,
             const Drivetrain& drivetrain, const Path& path) {
         const Obstacle& bumpers = drivetrain.bumpers;
         std::vector<const Obstacle*> allSegmentsObstacles;
@@ -223,36 +243,38 @@ namespace helixtrajectory {
         }
         for (size_t waypointIndex = 0; waypointIndex < path.Length(); waypointIndex++) {
             const Waypoint& waypoint = path.GetWaypoint(waypointIndex);
-            const casadi::MX& xSegment = xSegments[waypointIndex];
-            const casadi::MX& ySegment = ySegments[waypointIndex];
-            const casadi::MX& thetaSegment = thetaSegments[waypointIndex];
-            size_t segmentSampleCount = xSegment.columns();
+            const std::vector<casadi::MX>& xSegment = xSegments[waypointIndex];
+            const std::vector<casadi::MX>& ySegment = ySegments[waypointIndex];
+            const std::vector<casadi::MX>& thetaSegment = thetaSegments[waypointIndex];
+            size_t segmentSampleCount = xSegment.size();
             for (size_t sampleIndex = 0; sampleIndex < segmentSampleCount; sampleIndex++) {
                 for (const Obstacle* obstacle : allSegmentsObstacles) {
-                    ApplyObstacleConstraint(opti, xSegment(sampleIndex), ySegment(sampleIndex), thetaSegment(sampleIndex), bumpers, *obstacle);
+                    ApplyObstacleConstraint(opti, xSegment[sampleIndex], ySegment[sampleIndex], thetaSegment[sampleIndex], bumpers, *obstacle);
                 }
                 for (const Obstacle& obstacle : waypoint.obstacles) {
-                    ApplyObstacleConstraint(opti, xSegment(sampleIndex), ySegment(sampleIndex), thetaSegment(sampleIndex), bumpers, obstacle);
+                    ApplyObstacleConstraint(opti, xSegment[sampleIndex], ySegment[sampleIndex], thetaSegment[sampleIndex], bumpers, obstacle);
                 }
-                
             }
         }
     }
 
-    void linspace(casadi::DM& arry, size_t startIndex, size_t endIndex, double startValue, double endValue) {
+    void linspace(std::vector<double>& arry, size_t startIndex, size_t endIndex, double startValue, double endValue) {
         size_t segmentCount = endIndex - startIndex;
         double delta = (endValue - startValue) / segmentCount;
         for (int index = 0; index < segmentCount; index++) {
-            arry(startIndex + index) = startValue + index * delta;
+            // arry[startIndex + index] = startValue + index * delta;
+            arry.push_back(startValue + index * delta);
         }
     }
 
-    const casadi::DM CasADiTrajectoryOptimizationProblem::GenerateInitialGuessX(const Path& path) {
+    const CasADiTrajectoryOptimizationProblem::InitialGuessX CasADiTrajectoryOptimizationProblem::GenerateInitialGuessX(const Path& path) {
         size_t waypointCount = path.Length();
-        casadi::DM X(3, path.ControlIntervalTotal() + 1);
-        casadi::DM x = X(0, ALL);
-        casadi::DM y = X(1, ALL);
-        casadi::DM theta = X(2, ALL);
+        size_t controlIntervalTotal = path.ControlIntervalTotal();
+        size_t sampleTotal = controlIntervalTotal + 1;
+        InitialGuessX initialGuessX{{}, {}, {}};
+        initialGuessX.x.reserve(sampleTotal);
+        initialGuessX.y.reserve(sampleTotal);
+        initialGuessX.theta.reserve(sampleTotal);
         size_t sampleIndex = path.GetWaypoint(0).controlIntervalCount;
         for (size_t waypointIndex = 1; waypointIndex < waypointCount; waypointIndex++) {
             const Waypoint& previousWaypoint = path.GetWaypoint(waypointIndex - 1);
@@ -262,33 +284,48 @@ namespace helixtrajectory {
             size_t previousWaypointSampleIndex = sampleIndex;
             size_t waypointSampleIndex = previousWaypointSampleIndex + intervalCount;
             if (guessPointCount == 0) {
-                linspace(x, previousWaypointSampleIndex, waypointSampleIndex, previousWaypoint.x, waypoint.x);
-                linspace(y, previousWaypointSampleIndex, waypointSampleIndex, previousWaypoint.y, waypoint.y);
-                linspace(theta, previousWaypointSampleIndex, waypointSampleIndex, previousWaypoint.heading, waypoint.heading);
+                linspace(initialGuessX.x, previousWaypointSampleIndex, waypointSampleIndex, previousWaypoint.x, waypoint.x);
+                linspace(initialGuessX.y, previousWaypointSampleIndex, waypointSampleIndex, previousWaypoint.y, waypoint.y);
+                linspace(initialGuessX.theta, previousWaypointSampleIndex, waypointSampleIndex, previousWaypoint.heading, waypoint.heading);
             } else {
                 size_t guessSegmentIntervalCount = intervalCount / (guessPointCount + 1);
-                linspace(x, previousWaypointSampleIndex, previousWaypointSampleIndex + guessSegmentIntervalCount, previousWaypoint.x, waypoint.initialGuessPoints[0].x);
-                linspace(y, previousWaypointSampleIndex, previousWaypointSampleIndex + guessSegmentIntervalCount, previousWaypoint.y, waypoint.initialGuessPoints[0].y);
-                linspace(theta, previousWaypointSampleIndex, previousWaypointSampleIndex + guessSegmentIntervalCount, previousWaypoint.heading, waypoint.initialGuessPoints[0].heading);
+                linspace(initialGuessX.x, previousWaypointSampleIndex, previousWaypointSampleIndex + guessSegmentIntervalCount, previousWaypoint.x, waypoint.initialGuessPoints[0].x);
+                linspace(initialGuessX.y, previousWaypointSampleIndex, previousWaypointSampleIndex + guessSegmentIntervalCount, previousWaypoint.y, waypoint.initialGuessPoints[0].y);
+                linspace(initialGuessX.theta, previousWaypointSampleIndex, previousWaypointSampleIndex + guessSegmentIntervalCount, previousWaypoint.heading, waypoint.initialGuessPoints[0].heading);
                 size_t firstGuessPointSampleIndex = previousWaypointSampleIndex + guessSegmentIntervalCount;
                 for (int guessPointIndex = 1; guessPointIndex < guessPointCount; guessPointIndex++) {
                     size_t previousGuessPointSampleIndex = firstGuessPointSampleIndex + (guessPointIndex - 1) * guessSegmentIntervalCount;
                     size_t guessPointSampleIndex = firstGuessPointSampleIndex + (guessPointIndex) * guessSegmentIntervalCount;
-                    linspace(x, previousGuessPointSampleIndex, guessPointSampleIndex, waypoint.initialGuessPoints[guessPointIndex - 1].x, waypoint.initialGuessPoints[guessPointIndex].x);
-                    linspace(y, previousGuessPointSampleIndex, guessPointSampleIndex, waypoint.initialGuessPoints[guessPointIndex - 1].y, waypoint.initialGuessPoints[guessPointIndex].y);
-                    linspace(theta, previousGuessPointSampleIndex, guessPointSampleIndex, waypoint.initialGuessPoints[guessPointIndex - 1].heading, waypoint.initialGuessPoints[guessPointIndex].heading);
+                    linspace(initialGuessX.x, previousGuessPointSampleIndex, guessPointSampleIndex, waypoint.initialGuessPoints[guessPointIndex - 1].x, waypoint.initialGuessPoints[guessPointIndex].x);
+                    linspace(initialGuessX.y, previousGuessPointSampleIndex, guessPointSampleIndex, waypoint.initialGuessPoints[guessPointIndex - 1].y, waypoint.initialGuessPoints[guessPointIndex].y);
+                    linspace(initialGuessX.theta, previousGuessPointSampleIndex, guessPointSampleIndex, waypoint.initialGuessPoints[guessPointIndex - 1].heading, waypoint.initialGuessPoints[guessPointIndex].heading);
                 }
                 size_t finalGuessPointSampleIndex = previousWaypointSampleIndex + guessPointCount * guessSegmentIntervalCount;
-                linspace(x, finalGuessPointSampleIndex, waypointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 1].x, waypoint.x);
-                linspace(y, finalGuessPointSampleIndex, waypointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 1].y, waypoint.y);
-                linspace(theta, finalGuessPointSampleIndex, waypointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 1].heading, waypoint.heading);
+                linspace(initialGuessX.x, finalGuessPointSampleIndex, waypointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 1].x, waypoint.x);
+                linspace(initialGuessX.y, finalGuessPointSampleIndex, waypointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 1].y, waypoint.y);
+                linspace(initialGuessX.theta, finalGuessPointSampleIndex, waypointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 1].heading, waypoint.heading);
             }
             sampleIndex += intervalCount;
         }
-        x(sampleIndex) = path.GetWaypoint(waypointCount - 1).x;
-        y(sampleIndex) = path.GetWaypoint(waypointCount - 1).y;
-        theta(sampleIndex) = path.GetWaypoint(waypointCount - 1).heading;
+        initialGuessX.x.push_back(path.GetWaypoint(waypointCount - 1).x);
+        initialGuessX.y.push_back(path.GetWaypoint(waypointCount - 1).y);
+        initialGuessX.theta.push_back(path.GetWaypoint(waypointCount - 1).heading);
 
-        return X;
+        return initialGuessX;
+    }
+
+    void CasADiTrajectoryOptimizationProblem::ApplyInitialGuessX(casadi::Opti& opti, const std::vector<casadi::MX>& x,
+            const std::vector<casadi::MX>& y, const std::vector<casadi::MX>& theta,
+            const InitialGuessX& initialGuessX) {
+
+        std::cout << "\n\nInitial Guess:\n";
+        size_t sampleTotal = x.size();
+        for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
+            std::cout << initialGuessX.x[sampleIndex] << ", " << initialGuessX.y[sampleIndex] << ", " << initialGuessX.theta[sampleIndex] << "\n";
+            opti.set_initial(x[sampleIndex], initialGuessX.x[sampleIndex]);
+            opti.set_initial(y[sampleIndex], initialGuessX.y[sampleIndex]);
+            opti.set_initial(theta[sampleIndex], initialGuessX.theta[sampleIndex]);
+        }
+        std::cout << std::endl;
     }
 }

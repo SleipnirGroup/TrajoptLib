@@ -13,21 +13,60 @@ namespace helixtrajectory {
             const SwerveDrivetrain& swerveDrivetrain, const HolonomicPath& holonomicPath)
             : CasADiHolonomicTrajectoryOptimizationProblem(swerveDrivetrain, holonomicPath),
             swerveDrivetrain(swerveDrivetrain), moduleCount(swerveDrivetrain.modules.size()),
-            moduleX(moduleCount, controlIntervalTotal + 1), moduleY(moduleCount, controlIntervalTotal + 1),
-            moduleVX(moduleCount, controlIntervalTotal + 1), moduleVY(moduleCount, controlIntervalTotal + 1),
-            moduleFX(opti.variable(moduleCount, controlIntervalTotal)), moduleFY(opti.variable(moduleCount, controlIntervalTotal)),
-            moduleTau(moduleCount, controlIntervalTotal), netFX(1, controlIntervalTotal), netFY(1, controlIntervalTotal),
-            netTau(1, controlIntervalTotal) {
+            moduleX(), moduleY(), moduleVX(), moduleVY(),
+            moduleFX(), moduleFY(), moduleTau(),
+            netFX(), netFY(), netTau() {
 
-        for (size_t sampleIndex = 0; sampleIndex < controlIntervalTotal + 1; sampleIndex++) {
-            for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-                const casadi::MX modulePosition = SolveModulePosition(theta(sampleIndex), swerveDrivetrain.modules[moduleIndex]);
-                moduleX(moduleIndex, sampleIndex) = modulePosition(0);
-                moduleY(moduleIndex, sampleIndex) = modulePosition(1);
-                moduleVX(moduleIndex, sampleIndex) = vx(sampleIndex) + moduleX(moduleIndex, sampleIndex) * omega(sampleIndex);
-                moduleVY(moduleIndex, sampleIndex) = vy(sampleIndex) + moduleY(moduleIndex, sampleIndex) * omega(sampleIndex);
+
+        moduleX.reserve(moduleCount);
+        moduleY.reserve(moduleCount);
+        moduleVX.reserve(moduleCount);
+        moduleVY.reserve(moduleCount);
+        moduleFX.reserve(moduleCount);
+        moduleFY.reserve(moduleCount);
+        moduleTau.reserve(moduleCount);
+        netFX.reserve(controlIntervalTotal);
+        netFY.reserve(controlIntervalTotal);
+        netTau.reserve(controlIntervalTotal);
+
+        for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
+            std::vector<casadi::MX> indexModuleX;
+            std::vector<casadi::MX> indexModuleY;
+            std::vector<casadi::MX> indexModuleVX;
+            std::vector<casadi::MX> indexModuleVY;
+            std::vector<casadi::MX> indexModuleFX;
+            std::vector<casadi::MX> indexModuleFY;
+            std::vector<casadi::MX> indexModuleTau;
+            indexModuleX.reserve(sampleTotal);
+            indexModuleY.reserve(sampleTotal);
+            indexModuleVX.reserve(sampleTotal);
+            indexModuleVY.reserve(sampleTotal);
+            indexModuleFX.reserve(controlIntervalTotal);
+            indexModuleFY.reserve(controlIntervalTotal);
+            indexModuleTau.reserve(controlIntervalTotal);
+            for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
+                ModulePosition modulePosition = SolveModulePosition(theta[sampleIndex],
+                        CasADiSwerveTrajectoryOptimizationProblem::swerveDrivetrain.modules[moduleIndex]);
+                indexModuleX.push_back(modulePosition.x);
+                indexModuleY.push_back(modulePosition.y);
+                indexModuleVX.push_back(vx[sampleIndex] - indexModuleY[sampleIndex] * omega[sampleIndex]);
+                indexModuleVY.push_back(vy[sampleIndex] + indexModuleX[sampleIndex] * omega[sampleIndex]);
             }
+            for (size_t intervalIndex = 0; intervalIndex < controlIntervalTotal; intervalIndex++) {
+                indexModuleFX.push_back(opti.variable());
+                indexModuleFY.push_back(opti.variable());
+                indexModuleTau.push_back(indexModuleX[intervalIndex + 1] * indexModuleFY[intervalIndex]
+                        - indexModuleY[intervalIndex + 1] * indexModuleFX[intervalIndex]);
+            }
+            moduleX.push_back(indexModuleX);
+            moduleY.push_back(indexModuleY);
+            moduleVX.push_back(indexModuleVX);
+            moduleVY.push_back(indexModuleVY);
+            moduleFX.push_back(indexModuleFX);
+            moduleFY.push_back(indexModuleFY);
+            moduleTau.push_back(indexModuleTau);
         }
+
 #ifdef DEBUG_OUTPUT
         std::cout << "Set up module position and velocity variables" << std::endl;
 #endif
@@ -37,21 +76,17 @@ namespace helixtrajectory {
             casadi::MX intervalNetFY = 0;
             casadi::MX intervalNetTau = 0;
             for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-                // std::cout << "set up one torque variable" << std::endl;
-                moduleTau(moduleIndex, intervalIndex)
-                        = moduleX(moduleIndex, intervalIndex + 1) * moduleFY(moduleIndex, intervalIndex)
-                        - moduleY(moduleIndex, intervalIndex + 1) * moduleFX(moduleIndex, intervalIndex);
-                intervalNetFX += moduleFX(moduleIndex, intervalIndex);
-                intervalNetFY += moduleFY(moduleIndex, intervalIndex);
-                intervalNetTau += moduleTau(moduleIndex, intervalIndex);
+                intervalNetFX += moduleFX[moduleIndex][intervalIndex];
+                intervalNetFY += moduleFY[moduleIndex][intervalIndex];
+                intervalNetTau += moduleTau[moduleIndex][intervalIndex];
             }
-            netFX(intervalIndex) = intervalNetFX;
-            netFY(intervalIndex) = intervalNetFY;
-            netTau(intervalIndex) = intervalNetTau;
+            netFX.push_back(intervalNetFX);
+            netFY.push_back(intervalNetFY);
+            netTau.push_back(intervalNetTau);
         }
 
 #ifdef DEBUG_OUTPUT
-        std::cout << "Set up swerve force variables" << std::endl;
+        std::cout << "Set up net force and net torque expressions" << std::endl;
 #endif
 
         ApplyDynamicsConstraints(opti, ax, ay, alpha, netFX, netFY, netTau,
@@ -69,43 +104,48 @@ namespace helixtrajectory {
 #endif
     }
 
-    const casadi::MX CasADiSwerveTrajectoryOptimizationProblem::SolveModulePosition(const casadi::MX& theta, const SwerveModule& module) {
-        casadi::MX position(2, 1);
+    const CasADiSwerveTrajectoryOptimizationProblem::ModulePosition CasADiSwerveTrajectoryOptimizationProblem::SolveModulePosition(const casadi::MX& theta, const SwerveModule& module) {
+        ModulePosition position{};
         if (module.x == 0.0 && module.y == 0.0) {
-            position(0) = 0;
-            position(1) = 0;
+            position.x = 0;
+            position.y = 0;
         } else {
             double moduleDiagonal = hypot(module.x, module.y);
             double moduleAngle = atan2(module.y, module.x);
-            position(0) = moduleDiagonal * cos(moduleAngle + theta);
-            position(1) = moduleDiagonal * sin(moduleAngle + theta);
+            position.x = moduleDiagonal * cos(moduleAngle + theta);
+            position.y = moduleDiagonal * sin(moduleAngle + theta);
         }
         return position;
     }
 
     void CasADiSwerveTrajectoryOptimizationProblem::ApplyDynamicsConstraints(casadi::Opti& opti,
-                const casadi::MX& ax, const casadi::MX& ay, const casadi::MX& alpha,
-                const casadi::MX& netFX, const casadi::MX& netFY, const casadi::MX& netTau,
-                const SwerveDrivetrain& swerveDrivetrain) {
-
-        opti.subject_to(netFX == swerveDrivetrain.mass * ax);
-        opti.subject_to(netFY == swerveDrivetrain.mass * ay);
-        opti.subject_to(netTau == swerveDrivetrain.momentOfInertia * alpha);
+            const std::vector<casadi::MX>& ax, const std::vector<casadi::MX>& ay, const std::vector<casadi::MX>& alpha,
+            const std::vector<casadi::MX>& netFX, const std::vector<casadi::MX>& netFY, const std::vector<casadi::MX>& netTau,
+            const SwerveDrivetrain& swerveDrivetrain) {
+        size_t controlIntervalTotal = ax.size();
+        for (size_t intervalIndex = 0; intervalIndex < controlIntervalTotal; intervalIndex++) {
+            opti.subject_to(netFX[intervalIndex]  == swerveDrivetrain.mass            * ax[intervalIndex]);
+            opti.subject_to(netFY[intervalIndex]  == swerveDrivetrain.mass            * ay[intervalIndex]);
+            opti.subject_to(netTau[intervalIndex] == swerveDrivetrain.momentOfInertia * alpha[intervalIndex]);
+        }
     }
 
     void CasADiSwerveTrajectoryOptimizationProblem::ApplyPowerConstraints(casadi::Opti& opti,
-            const casadi::MX& moduleVX, const casadi::MX& moduleVY,
-            const casadi::MX& moduleFX, const casadi::MX& moduleFY,
+            const std::vector<std::vector<casadi::MX>>& moduleVX, const std::vector<std::vector<casadi::MX>>& moduleVY,
+            const std::vector<std::vector<casadi::MX>>& moduleFX, const std::vector<std::vector<casadi::MX>>& moduleFY,
             const SwerveDrivetrain& swerveDrivetrain) {
-
-        size_t controlIntervalTotal = moduleVX.columns() - 1;
         size_t moduleCount = swerveDrivetrain.modules.size();
         for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
+            size_t controlIntervalTotal = moduleVX[moduleIndex].size() - 1;
             const SwerveModule& _module = swerveDrivetrain.modules[moduleIndex];
             double maxWheelVelocity = _module.wheelRadius * _module.wheelMaxAngularVelocity;
             for (size_t sampleIndex = 0; sampleIndex < controlIntervalTotal + 1; sampleIndex++) {
-                opti.subject_to(moduleVX(moduleIndex, sampleIndex) * moduleVX(moduleIndex, sampleIndex)
-                              + moduleVY(moduleIndex, sampleIndex) * moduleVY(moduleIndex, sampleIndex)
+                casadi::MX constraint = moduleVX[moduleIndex][sampleIndex] * moduleVX[moduleIndex][sampleIndex]
+                              + moduleVY[moduleIndex][sampleIndex] * moduleVY[moduleIndex][sampleIndex]
+                             <= maxWheelVelocity * maxWheelVelocity;
+                std::cout << "\n\nMax velocity constraint: " << constraint << std::endl;
+                opti.subject_to(moduleVX[moduleIndex][sampleIndex] * moduleVX[moduleIndex][sampleIndex]
+                              + moduleVY[moduleIndex][sampleIndex] * moduleVY[moduleIndex][sampleIndex]
                              <= maxWheelVelocity * maxWheelVelocity);
                 
                 // std::cout << "Applied module " << moduleIndex << " sample " << sampleIndex << " velocity power constraint of " << maxWheelVelocity << std::endl;
@@ -113,8 +153,8 @@ namespace helixtrajectory {
 
             double maxForce = _module.wheelMaxTorque / _module.wheelRadius;
             for (size_t intervalIndex = 0; intervalIndex < controlIntervalTotal; intervalIndex++) {
-                opti.subject_to(moduleFX(moduleIndex, intervalIndex) * moduleFX(moduleIndex, intervalIndex)
-                              + moduleFY(moduleIndex, intervalIndex) * moduleFY(moduleIndex, intervalIndex)
+                opti.subject_to(moduleFX[moduleIndex][intervalIndex] * moduleFX[moduleIndex][intervalIndex]
+                              + moduleFY[moduleIndex][intervalIndex] * moduleFY[moduleIndex][intervalIndex]
                               <= maxForce * maxForce);
                 // std::cout << "Applied module " << moduleIndex << " interval " << intervalIndex << " force power constraint of " << maxForce << std::endl;
             }
@@ -163,25 +203,25 @@ namespace helixtrajectory {
             std::cout << ", module" << moduleIndex << "fy";
         }
 #ifdef DEBUG_OUTPUT
-        printCSV(horzcat(
-                         horzcat(
-                             vertcat(casadi::DM(1, 1), solution.value(dt).T()),
-                             solution.value(X).T(),
-                             solution.value(V).T(),
-                             vertcat(casadi::DM(1, 3), solution.value(U).T())),
-                         horzcat(
-                            solution.value(moduleX).T(),
-                            solution.value(moduleY).T(),
-                            solution.value(moduleVX).T(),
-                            solution.value(moduleVY).T()),
-                         horzcat(
-                            vertcat(casadi::DM(1, moduleCount), solution.value(moduleFX).T()),
-                            vertcat(casadi::DM(1, moduleCount), solution.value(moduleFY).T()),
-                            vertcat(casadi::DM(1, moduleCount), solution.value(moduleTau).T())),
-                         horzcat(
-                            vertcat(casadi::DM(1, 1), solution.value(netFX).T()),
-                            vertcat(casadi::DM(1, 1), solution.value(netFY).T()),
-                            vertcat(casadi::DM(1, 1), solution.value(netTau).T()))));
+        // printCSV(horzcat(
+        //                  horzcat(
+        //                      vertcat(casadi::DM(1, 1), solution.value(dt).T()),
+        //                      solution.value(X).T(),
+        //                      solution.value(V).T(),
+        //                      vertcat(casadi::DM(1, 3), solution.value(U).T())),
+        //                  horzcat(
+        //                     solution.value(moduleX).T(),
+        //                     solution.value(moduleY).T(),
+        //                     solution.value(moduleVX).T(),
+        //                     solution.value(moduleVY).T()),
+        //                  horzcat(
+        //                     vertcat(casadi::DM(1, moduleCount), solution.value(moduleFX).T()),
+        //                     vertcat(casadi::DM(1, moduleCount), solution.value(moduleFY).T()),
+        //                     vertcat(casadi::DM(1, moduleCount), solution.value(moduleTau).T())),
+        //                  horzcat(
+        //                     vertcat(casadi::DM(1, 1), solution.value(netFX).T()),
+        //                     vertcat(casadi::DM(1, 1), solution.value(netFY).T()),
+        //                     vertcat(casadi::DM(1, 1), solution.value(netTau).T()))));
 #endif
     }
 }

@@ -37,65 +37,43 @@ namespace helixtrajectory {
         const HolonomicPath& holonomicPath;
 
         /**
-         * @brief The 3 x (controlIntervalTotal + 1) matrix of robot velocity state per trajectory sample point.
-         * Each column is a sample point. The first row is the x-component of velocity, the second row is
-         * the y-component of velocity, and the third row is the angular velocity.
-         */
-        casadi::MX V;
-        /**
          * @brief the 1 x (controlIntervalTotal + 1) vector of the robot's x-component of velocity per trajectory sample point
          */
-        casadi::MX vx;
+        std::vector<casadi::MX> vx;
         /**
          * @brief the 1 x (controlIntervalTotal + 1) vector of the robot's y-component of velocity per trajectory sample point
          */
-        casadi::MX vy;
+        std::vector<casadi::MX> vy;
         /**
          * @brief the 1 x (controlIntervalTotal + 1) vector of the robot's angular velocity per trajectory sample point
          */
-        casadi::MX omega;
+        std::vector<casadi::MX> omega;
 
-        /**
-         * @brief The 3 x controlIntervalTotal matrix of robot acceleration state per sample segment
-         * (between two sample points). Each column is a sample segment. The first row
-         * is the x-component of acceleration, the second row is the y-component of acceleration,
-         * and the third row is the angular acceleration.
-         */
-        casadi::MX U;
         /**
          * @brief the 1 x controlIntervalTotal vector of the robot's x-component of acceleration per trajectory sample segment
          */
-        casadi::MX ax;
+        std::vector<casadi::MX> ax;
         /**
          * @brief the 1 x controlIntervalTotal vector of the robot's y-component of acceleration per trajectory sample segment
          */
-        casadi::MX ay;
+        std::vector<casadi::MX> ay;
         /**
          * @brief the 1 x controlIntervalTotal vector of the robot's angular acceleration per trajectory sample segment
          */
-        casadi::MX alpha;
+        std::vector<casadi::MX> alpha;
 
         /**
-         * @brief the entries of the V matrix, separated into individual trajectory segments
+         * @brief the entries of the vx vector, separated into individual trajectory segments
          */
-        std::vector<casadi::MX> VSegments;
+        std::vector<std::vector<casadi::MX>> vxSegments;
         /**
          * @brief the entries of the vx vector, separated into individual trajectory segments
          */
-        std::vector<casadi::MX> vxSegments;
-        /**
-         * @brief the entries of the vx vector, separated into individual trajectory segments
-         */
-        std::vector<casadi::MX> vySegments;
+        std::vector<std::vector<casadi::MX>> vySegments;
         /**
          * @brief the entries of the omega vector, separated into individual trajectory segments
          */
-        std::vector<casadi::MX> omegaSegments;
-
-        /**
-         * @brief the entries of the U matrix, separated into individual trajectory segments
-         */
-        std::vector<casadi::MX> USegments;
+        std::vector<std::vector<casadi::MX>> omegaSegments;
 
         /**
          * @brief Construct a new CasADi Holonomic Trajectory Optimization Problem
@@ -108,6 +86,22 @@ namespace helixtrajectory {
 
     private:
         /**
+         * @brief Apply constraints that relate the first zeroth, first, and second derivatives of
+         * position as a double integrator.
+         * 
+         * @param opti the current optimizer
+         * @param dt the time differential vector
+         * @param X the position matrix (zeroth derivative of position)
+         * @param V the velocity matrix (first derivative of position)
+         * @param U the acceleration matrix (second derivative of position)
+         */
+        static void ApplyKinematicsConstraints(casadi::Opti& opti,
+                const std::vector<casadi::MX>& dt,
+                const std::vector<casadi::MX>& x, const std::vector<casadi::MX>& y, const std::vector<casadi::MX>& theta,
+                const std::vector<casadi::MX>& vx, const std::vector<casadi::MX>& vy, const std::vector<casadi::MX>& omega,
+                const std::vector<casadi::MX>& ax, const std::vector<casadi::MX>& ay, const std::vector<casadi::MX>& alpha);
+
+        /**
          * @brief Apply the constraints that force the robot's motion to comply
          * with the list of holonomic waypoints provided. This function only
          * applies constraints on velocity and angular velocity.
@@ -119,21 +113,8 @@ namespace helixtrajectory {
          * @param holonomicPath the holonomic path to apply constraints for
          */
         static void ApplyHolonomicWaypointConstraints(casadi::Opti& opti,
-                const std::vector<casadi::MX>& vxSegments, const std::vector<casadi::MX>& vySegments,
-                const std::vector<casadi::MX>& omegaSegments, const HolonomicPath& holonomicPath);
-
-        /**
-         * @brief Apply constraints that relate the first zeroth, first, and second derivatives of
-         * position as a double integrator.
-         * 
-         * @param opti the current optimizer
-         * @param dt the time differential vector
-         * @param X the position matrix (zeroth derivative of position)
-         * @param V the velocity matrix (first derivative of position)
-         * @param U the acceleration matrix (second derivative of position)
-         */
-        static void ApplyKinematicsConstraints(casadi::Opti& opti,
-                const casadi::MX& dt, const casadi::MX& X, const casadi::MX& V, const casadi::MX& U);
+                const std::vector<std::vector<casadi::MX>>& vxSegments, const std::vector<std::vector<casadi::MX>>& vySegments,
+                const std::vector<std::vector<casadi::MX>>& omegaSegments, const HolonomicPath& holonomicPath);
 
         /**
          * @brief Applies the drivetrain-specific constraints to the optimizer. There are two
@@ -143,13 +124,11 @@ namespace helixtrajectory {
          * velocity and torque for each motor, but a more accurate model may use the motor equation
          * to prevent the voltages used by each motor from exceeding the available voltage.
          */
-        // virtual void ApplyDynamicsConstraints() = 0;
-
         static HolonomicTrajectory ConstructTrajectory(const casadi::OptiSol& solution,
-                const std::vector<casadi::MX>& dtSegments,
-                const std::vector<casadi::MX>& xSegments, const std::vector<casadi::MX>& ySegments,
-                const std::vector<casadi::MX>& thetaSegments, const std::vector<casadi::MX>& vxSegments,
-                const std::vector<casadi::MX>& vySegments, const std::vector<casadi::MX>& omegaSegments);
+                const std::vector<std::vector<casadi::MX>>& dtSegments,
+                const std::vector<std::vector<casadi::MX>>& xSegments, const std::vector<std::vector<casadi::MX>>& ySegments,
+                const std::vector<std::vector<casadi::MX>>& thetaSegments, const std::vector<std::vector<casadi::MX>>& vxSegments,
+                const std::vector<std::vector<casadi::MX>>& vySegments, const std::vector<std::vector<casadi::MX>>& omegaSegments);
 
     public:
         /**

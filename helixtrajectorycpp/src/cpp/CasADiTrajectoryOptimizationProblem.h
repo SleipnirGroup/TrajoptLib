@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <vector>
 
 #include <casadi/casadi.hpp>
@@ -52,49 +53,38 @@ namespace helixtrajectory {
          * @brief The 1 x (controlIntervalTotal) vector of the time differentials between sample points.
          * The nth entry in this vector is the duration of the nth interval in this trajectory.
          */
-        casadi::MX dt;
+        std::vector<casadi::MX> dt;
 
-        /**
-         * @brief The 3 x (controlIntervalTotal + 1) matrix of robot position state per trajectory sample point.
-         * Each column is a sample point. The first row is the x-coordinate, the second row is
-         * the y-coordinate, and the third row is the heading.
-         */
-        casadi::MX X;
         /**
          * @brief the 1 x (controlIntervalTotal + 1) vector of the robot's x-coordinate per trajectory sample point
          */
-        casadi::MX x;
+        std::vector<casadi::MX> x;
         /**
          * @brief the 1 x (controlIntervalTotal + 1) vector of the robot's y-coordinate per trajectory sample point
          */
-        casadi::MX y;
+        std::vector<casadi::MX> y;
         /**
          * @brief the 1 x (controlIntervalTotal + 1) vector of the robot's heading per trajectory sample point
          */
-        casadi::MX theta;
+        std::vector<casadi::MX> theta;
         
         /**
          * @brief the entries of the dt vector, separated into individual trajectory segments
          */
-        std::vector<casadi::MX> dtSegments;
+        std::vector<std::vector<casadi::MX>> dtSegments;
 
-        /**
-         * @brief the entries of the X matrix, separated into individual trajectory segments
-         */
-        std::vector<casadi::MX> XSegments;
         /**
          * @brief the entries of the x vector, separated into individual trajectory segments
          */
-        std::vector<casadi::MX> xSegments;
+        std::vector<std::vector<casadi::MX>> xSegments;
         /**
          * @brief the entries of the y vector, separated into individual trajectory segments
          */
-        std::vector<casadi::MX> ySegments;
+        std::vector<std::vector<casadi::MX>> ySegments;
         /**
          * @brief the entries of the theta vector, separated into individual trajectory segments
          */
-        std::vector<casadi::MX> thetaSegments;
-
+        std::vector<std::vector<casadi::MX>> thetaSegments;
 
         /**
          * @brief Construct a new CasADi Trajectory Optimization Problem from a drivetrain, path.
@@ -123,8 +113,13 @@ namespace helixtrajectory {
          * @param path the path containing the waypoints to constrain
          */
         static void ApplyWaypointConstraints(casadi::Opti& opti,
-                const std::vector<casadi::MX>& xSegments, const std::vector<casadi::MX>& ySegments,
-                const std::vector<casadi::MX>& thetaSegments, const Path& path);
+                const std::vector<std::vector<casadi::MX>>& xSegments, const std::vector<std::vector<casadi::MX>>& ySegments,
+                const std::vector<std::vector<casadi::MX>>& thetaSegments, const Path& path);
+
+        struct BumperCornerPosition {
+            casadi::MX x;
+            casadi::MX y;
+        };
 
         /**
          * @brief Get an expression for the position of a bumper corner relative
@@ -138,7 +133,7 @@ namespace helixtrajectory {
          * @param bumperCorner the bumper corner to find the position for
          * @return the bumper corner 2 x 1 position vector
          */
-        static const casadi::MX SolveBumperCornerPosition(const casadi::MX& x, const casadi::MX& y,
+        static const BumperCornerPosition SolveBumperCornerPosition(const casadi::MX& x, const casadi::MX& y,
                 const casadi::MX& theta, const ObstaclePoint& bumperCorner);
 
         /**
@@ -171,9 +166,15 @@ namespace helixtrajectory {
          * @param drivetrain the drivetrain containing the bumpers to apply constraints for
          * @param path the path containing the obstacles to apply constraints for
          */
-        static void ApplyObstacleConstraints(casadi::Opti& opti, const std::vector<casadi::MX>& xSegments,
-                const std::vector<casadi::MX>& ySegments, const std::vector<casadi::MX>& thetaSegments,
+        static void ApplyObstacleConstraints(casadi::Opti& opti, const std::vector<std::vector<casadi::MX>>& xSegments,
+                const std::vector<std::vector<casadi::MX>>& ySegments, const std::vector<std::vector<casadi::MX>>& thetaSegments,
                 const Drivetrain& drivetrain, const Path& path);
+
+        struct InitialGuessX {
+            std::vector<double> x;
+            std::vector<double> y;
+            std::vector<double> theta;
+        };
 
         /**
          * @brief Generate an initial guess of the position state of the robot throughout
@@ -183,7 +184,11 @@ namespace helixtrajectory {
          * @param path the path to calucluate the linear initial guess for
          * @return an matrix of augmented column vectors of position state (x, y, heading)
          */
-        static const casadi::DM GenerateInitialGuessX(const Path& path);
+        static const InitialGuessX GenerateInitialGuessX(const Path& path);
+
+        static void ApplyInitialGuessX(casadi::Opti& opti, const std::vector<casadi::MX>& x,
+                const std::vector<casadi::MX>& y, const std::vector<casadi::MX>& theta,
+                const InitialGuessX& initialGuessX);
 
     public:
         /**
