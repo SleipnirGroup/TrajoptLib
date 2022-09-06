@@ -4,13 +4,13 @@
 
 #include <casadi/casadi.hpp>
 
-#include "CasADiHolonomicTrajectoryOptimizationProblem.h"
+#include "HolonomicTrajectoryOptimizationProblem.h"
 #include "HolonomicPath.h"
 #include "SwerveDrivetrain.h"
 
 namespace helixtrajectory {
 
-    class CasADiSwerveTrajectoryOptimizationProblem : public CasADiHolonomicTrajectoryOptimizationProblem {
+    class SwerveTrajectoryOptimizationProblem : public HolonomicTrajectoryOptimizationProblem {
     private:
         /**
          * @brief the swerve drivetrain
@@ -129,7 +129,7 @@ namespace helixtrajectory {
          * @param swerveDrivetrain the swerve drivetrain
          * @param holonomicPath the holonomic path
          */
-        CasADiSwerveTrajectoryOptimizationProblem(const SwerveDrivetrain& swerveDrivetrain, const HolonomicPath& holonomicPath);
+        SwerveTrajectoryOptimizationProblem(const SwerveDrivetrain& swerveDrivetrain, const HolonomicPath& holonomicPath);
 
         virtual void PrintSolution(const casadi::OptiSol& solution) const;
     };

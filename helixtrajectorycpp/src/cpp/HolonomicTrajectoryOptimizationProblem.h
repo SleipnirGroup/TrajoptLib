@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "CasADiTrajectoryOptimizationProblem.h"
+#include "TrajectoryOptimizationProblem.h"
 #include "Obstacle.h"
 #include "HolonomicDrivetrain.h"
 #include "HolonomicPath.h"
@@ -25,7 +25,7 @@ namespace helixtrajectory {
      * model may use the motor equation to prevent the voltages used by each motor from exceeding
      * the available voltage.
      */
-    class CasADiHolonomicTrajectoryOptimizationProblem : public CasADiTrajectoryOptimizationProblem {
+    class HolonomicTrajectoryOptimizationProblem : public TrajectoryOptimizationProblem {
     protected:
         /**
          * @brief the holonomic drivetrain
@@ -82,7 +82,7 @@ namespace helixtrajectory {
          * @param holonomicDrivetrain the holonomic drivetrain
          * @param HolonomicPath the holonomic path
          */
-        CasADiHolonomicTrajectoryOptimizationProblem(const HolonomicDrivetrain& holonomicDrivetrain, const HolonomicPath& holonomicPath);
+        HolonomicTrajectoryOptimizationProblem(const HolonomicDrivetrain& holonomicDrivetrain, const HolonomicPath& holonomicPath);
 
     private:
         /**
