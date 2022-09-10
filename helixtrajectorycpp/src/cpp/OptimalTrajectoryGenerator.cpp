@@ -1,8 +1,10 @@
 #include "OptimalTrajectoryGenerator.h"
 
-#include "CasADiSwerveTrajectoryOptimizationProblem.h"
+#include "CasADiOpti.h"
+#include "DebugOptions.h"
 #include "InvalidPathException.h"
 #include "SwerveDrivetrain.h"
+#include "SwerveTrajectoryOptimizationProblem.h"
 
 namespace helixtrajectory {
 
@@ -26,8 +28,12 @@ namespace helixtrajectory {
         std::vector<HolonomicTrajectorySegment> segments;
         segments.reserve(holonomicPath.holonomicWaypoints.size());
         for (const HolonomicPath& path : paths) {
-            CasADiSwerveTrajectoryOptimizationProblem problem(swerveDrivetrain, holonomicPath);
+            SwerveTrajectoryOptimizationProblem<CasADiOpti> problem(swerveDrivetrain, holonomicPath);
             std::vector<HolonomicTrajectorySegment> solvedSegments = problem.Generate().holonomicSegments;
+#ifdef DEBUG_OUTPUT
+            std::cout << "Solution Found:" << std::endl;
+            problem.PrintSolution();
+#endif
             for (HolonomicTrajectorySegment solvedSegment : solvedSegments) {
                 segments.push_back(solvedSegment);
             }
