@@ -4,7 +4,7 @@
 
 namespace helixtrajectory {
 
-    class CasADiOptimizer {
+    class CasADiOpti {
     public:
         using Expression = casadi::MX;
 
@@ -13,13 +13,13 @@ namespace helixtrajectory {
         casadi::OptiSol* solution;
 
     public:
-        CasADiOptimizer() : opti(), solution(nullptr) {
-        }
+        CasADiOpti();
 
         Expression Variable();
         void Minimize(const Expression& objective);
+        void SubjectTo(const Expression& relation);
         void SetInitial(const Expression& expression, double value);
-        void Generate();
-        double SolutionValue(const Expression& expression);
+        void Solve();
+        double SolutionValue(const Expression& expression) const;
     };
 }

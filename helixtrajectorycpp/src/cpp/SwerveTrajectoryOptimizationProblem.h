@@ -2,18 +2,16 @@
 
 #include <vector>
 
-#include <casadi/casadi.hpp>
-
 #include "HolonomicTrajectoryOptimizationProblem.h"
 #include "HolonomicPath.h"
 #include "SwerveDrivetrain.h"
 
 namespace helixtrajectory {
 
-    template<typename OptimizerType>
-    class SwerveTrajectoryOptimizationProblem : public HolonomicTrajectoryOptimizationProblem<OptimizerType> {
+    template<typename Opti>
+    class SwerveTrajectoryOptimizationProblem : public HolonomicTrajectoryOptimizationProblem<Opti> {
     public:
-        using Expression = typename OptimizerType::Expression;
+        using Expression = typename Opti::Expression;
     private:
         /**
          * @brief the swerve drivetrain
@@ -112,17 +110,15 @@ namespace helixtrajectory {
          * @param alpha controlIntervalTotal x 1 column vector of the robot's angular velocity for each sample point
          * @param swerveDrivetrain the swerve drivetrain
          */
-        static void ApplyDynamicsConstraints(casadi::Opti& opti,
+        static void ApplyDynamicsConstraints(Opti& opti,
                 const std::vector<Expression>& ax, const std::vector<Expression>& ay, const std::vector<Expression>& alpha,
                 const std::vector<Expression>& netFX, const std::vector<Expression>& netFY, const std::vector<Expression>& netTau,
                 const SwerveDrivetrain& swerveDrivetrain);
 
-        static void ApplyPowerConstraints(casadi::Opti& opti,
+        static void ApplyPowerConstraints(Opti& opti,
                 const std::vector<std::vector<Expression>>& moduleVX, const std::vector<std::vector<Expression>>& moduleVY,
                 const std::vector<std::vector<Expression>>& moduleFX, const std::vector<std::vector<Expression>>& moduleFY,
                 const SwerveDrivetrain& swerveDrivetrain);
-
-        void PrintDebug(const casadi::OptiSol& solution);
 
     public:
         /**
@@ -134,6 +130,8 @@ namespace helixtrajectory {
          */
         SwerveTrajectoryOptimizationProblem(const SwerveDrivetrain& swerveDrivetrain, const HolonomicPath& holonomicPath);
 
-        virtual void PrintSolution(const casadi::OptiSol& solution) const;
+#ifdef DEBUG_OUTPUT
+        void PrintSolution() const;
+#endif
     };
 }

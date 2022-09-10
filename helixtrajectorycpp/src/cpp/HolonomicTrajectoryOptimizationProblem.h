@@ -25,10 +25,10 @@ namespace helixtrajectory {
      * model may use the motor equation to prevent the voltages used by each motor from exceeding
      * the available voltage.
      */
-    template<typename OptimizerType>
-    class HolonomicTrajectoryOptimizationProblem : public TrajectoryOptimizationProblem<OptimizerType> {
+    template<typename Opti>
+    class HolonomicTrajectoryOptimizationProblem : public TrajectoryOptimizationProblem<Opti> {
     public:
-        using Expression = typename OptimizerType::Expression;
+        using Expression = typename Opti::Expression;
     protected:
         /**
          * @brief the holonomic drivetrain
@@ -99,7 +99,7 @@ namespace helixtrajectory {
          * @param V the velocity matrix (first derivative of position)
          * @param U the acceleration matrix (second derivative of position)
          */
-        static void ApplyKinematicsConstraints(casadi::Opti& opti,
+        static void ApplyKinematicsConstraints(Opti& opti,
                 const std::vector<Expression>& dt,
                 const std::vector<Expression>& x, const std::vector<Expression>& y, const std::vector<Expression>& theta,
                 const std::vector<Expression>& vx, const std::vector<Expression>& vy, const std::vector<Expression>& omega,
@@ -116,7 +116,7 @@ namespace helixtrajectory {
          * @param omegaSegments the angular velocity of the robot for each sample point, divided into segments
          * @param holonomicPath the holonomic path to apply constraints for
          */
-        static void ApplyHolonomicWaypointConstraints(casadi::Opti& opti,
+        static void ApplyHolonomicWaypointConstraints(Opti& opti,
                 const std::vector<std::vector<Expression>>& vxSegments, const std::vector<std::vector<Expression>>& vySegments,
                 const std::vector<std::vector<Expression>>& omegaSegments, const HolonomicPath& holonomicPath);
 
@@ -128,7 +128,7 @@ namespace helixtrajectory {
          * velocity and torque for each motor, but a more accurate model may use the motor equation
          * to prevent the voltages used by each motor from exceeding the available voltage.
          */
-        static HolonomicTrajectory ConstructTrajectory(const casadi::OptiSol& solution,
+        static HolonomicTrajectory ConstructTrajectory(const Opti& opti,
                 const std::vector<std::vector<Expression>>& dtSegments,
                 const std::vector<std::vector<Expression>>& xSegments, const std::vector<std::vector<Expression>>& ySegments,
                 const std::vector<std::vector<Expression>>& thetaSegments, const std::vector<std::vector<Expression>>& vxSegments,

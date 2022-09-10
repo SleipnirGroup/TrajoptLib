@@ -13,10 +13,14 @@ namespace helixtrajectory {
      * @brief This class is the superclass for all trajectory generators. It contains the common
      * functionality of all optimizers: waypoint position constraints and obstacle avoidance.
      */
-    template<typename OptimizerType>
+    template<typename Opti>
     class TrajectoryOptimizationProblem {
     public:
-        using Expression = typename OptimizerType::Expression;
+        /**
+         * @brief an abstract expression type representing a scalar expression
+         */
+        using Expression = typename Opti::Expression;
+
     protected:
         /**
          * @brief the drivetrain
@@ -47,7 +51,7 @@ namespace helixtrajectory {
         /**
          * @brief the optimizer
          */
-        casadi::Opti opti;
+        Opti opti;
 
         /**
          * @brief The 1 x (controlIntervalTotal) vector of the time differentials between sample points.
@@ -94,11 +98,6 @@ namespace helixtrajectory {
          */
         TrajectoryOptimizationProblem(const Drivetrain& drivetrain, const Path& path);
 
-        /**
-         * @brief slice all rows/columns of a matrix
-         */
-        static const casadi::Slice ALL;
-
     private:
         /**
          * @brief Apply the constraints that force the robot's motion to comply
@@ -112,7 +111,7 @@ namespace helixtrajectory {
          * @param thetaSegments the heading of the robot for each sample point, divided into segments
          * @param path the path containing the waypoints to constrain
          */
-        static void ApplyWaypointConstraints(casadi::Opti& opti,
+        static void ApplyWaypointConstraints(Opti& opti,
                 const std::vector<std::vector<Expression>>& xSegments, const std::vector<std::vector<Expression>>& ySegments,
                 const std::vector<std::vector<Expression>>& thetaSegments, const Path& path);
 
@@ -151,7 +150,7 @@ namespace helixtrajectory {
          * @param bumpers the obstacle that represents the robot's bumpers
          * @param obstacle the obstacle to apply the constraint for
          */
-        static void ApplyObstacleConstraint(casadi::Opti& opti, const Expression& x, const Expression& y,
+        static void ApplyObstacleConstraint(Opti& opti, const Expression& x, const Expression& y,
                 const Expression& theta, const Obstacle& bumpers, const Obstacle& obstacle);
 
         /**
@@ -166,7 +165,7 @@ namespace helixtrajectory {
          * @param drivetrain the drivetrain containing the bumpers to apply constraints for
          * @param path the path containing the obstacles to apply constraints for
          */
-        static void ApplyObstacleConstraints(casadi::Opti& opti, const std::vector<std::vector<Expression>>& xSegments,
+        static void ApplyObstacleConstraints(Opti& opti, const std::vector<std::vector<Expression>>& xSegments,
                 const std::vector<std::vector<Expression>>& ySegments, const std::vector<std::vector<Expression>>& thetaSegments,
                 const Drivetrain& drivetrain, const Path& path);
 
@@ -186,16 +185,14 @@ namespace helixtrajectory {
          */
         static const InitialGuessX GenerateInitialGuessX(const Path& path);
 
-        static void ApplyInitialGuessX(casadi::Opti& opti, const std::vector<Expression>& x,
+        static void ApplyInitialGuessX(Opti& opti, const std::vector<Expression>& x,
                 const std::vector<Expression>& y, const std::vector<Expression>& theta,
                 const InitialGuessX& initialGuessX);
 
     public:
         /**
-         * @brief Destroy the CasADi Trajectory Optimization Problem object
+         * @brief Destroy the Trajectory Optimization Problem object
          */
         virtual ~TrajectoryOptimizationProblem() = default;
-
-        virtual void PrintSolution(const casadi::OptiSol& solution) const = 0;
     };
 }
