@@ -107,6 +107,9 @@ namespace helixtrajectory {
     HolonomicTrajectory HolonomicTrajectoryOptimizationProblem<Opti>::Generate() {
         try {
             TrajectoryOptimizationProblem<Opti>::opti.Solve();
+#ifdef DEBUG_OUTPUT
+            std::cout << "Solution stored" << std::endl;
+#endif
             return ConstructTrajectory(TrajectoryOptimizationProblem<Opti>::opti,
                     TrajectoryOptimizationProblem<Opti>::dtSegments,
                     TrajectoryOptimizationProblem<Opti>::xSegments,
