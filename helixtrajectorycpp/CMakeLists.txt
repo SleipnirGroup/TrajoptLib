@@ -4,6 +4,7 @@ set(CMAKE_BUILD_TYPE Release)
 set(CASADI_DIR ${CMAKE_BINARY_DIR}/external/src/casadi-3.5.5/casadi)
 
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+message (STATUS "Platform: ${CMAKE_SYSTEM_VERSION}")
 if(APPLE)
     message(STATUS "Building for apple")
     set(CMAKE_INSTALL_RPATH "@loader_path/../lib;@loader_path")
