@@ -171,7 +171,8 @@ namespace helixtrajectory {
 #ifdef DEBUG_OUTPUT
     template<typename Opti>
     void SwerveTrajectoryOptimizationProblem<Opti>::PrintSolution() const {
-        std::cout << "dt, x, y, theta, vx, vy, omega, ax, ay, alpha";
+        std::cout << "Printing " << TrajectoryOptimizationProblem<Opti>::sampleTotal << " samples:\n\n";
+        std::cout << "sample, dt, x, y, theta, vx, vy, omega, ax, ay, alpha";
         for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
             std::cout << ", module" << moduleIndex << "x";
         }
@@ -193,10 +194,16 @@ namespace helixtrajectory {
         for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
             std::cout << ", module" << moduleIndex << "tau";
         }
+        std::cout << "\n";
 
         for (size_t sampleIndex = 0; sampleIndex < TrajectoryOptimizationProblem<Opti>::sampleTotal; sampleIndex++) {
-            std::cout << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(TrajectoryOptimizationProblem<Opti>::dt[sampleIndex])
-                    << ", " << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(          TrajectoryOptimizationProblem<Opti>::x[sampleIndex]) << ", " << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(          TrajectoryOptimizationProblem<Opti>::y[sampleIndex]) << ", " << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(         TrajectoryOptimizationProblem<Opti>::theta[sampleIndex])
+            std::cout << sampleIndex;
+            if (sampleIndex == 0) {
+                std::cout << ",";
+            } else {
+                std::cout << ", " << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(TrajectoryOptimizationProblem<Opti>::dt[sampleIndex - 1]);
+            }
+            std::cout << ", " << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(          TrajectoryOptimizationProblem<Opti>::x[sampleIndex]) << ", " << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(          TrajectoryOptimizationProblem<Opti>::y[sampleIndex]) << ", " << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(         TrajectoryOptimizationProblem<Opti>::theta[sampleIndex])
                     << ", " << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(HolonomicTrajectoryOptimizationProblem<Opti>::vx[sampleIndex]) << ", " << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(HolonomicTrajectoryOptimizationProblem<Opti>::vy[sampleIndex]) << ", " << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(HolonomicTrajectoryOptimizationProblem<Opti>::omega[sampleIndex]);
             if (sampleIndex == 0) {
                 std::cout << ",,,";
