@@ -16,6 +16,8 @@ elseif(WIN32)
     set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.5.5/casadi-windows-py39-v3.5.5-64bit.zip)
 endif()
 
+message(STATUS "Downloading CasADi from ${CASADI_URL}")
+
 include(ExternalProject)
 ExternalProject_Add(
     casadi-3.5.5
