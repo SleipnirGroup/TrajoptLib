@@ -37,12 +37,8 @@ jobs:
         working-directory: build/install
         run: cp ../../helixtrajectoryj/build/libs/helixtrajectoryj.jar .
 
-      - name: compress_artifacts
-        run: zip -qq -r HelixTrajectory_${{ matrix.os }}.zip dist include lib helixtrajectoryj.jar
-        working-directory: build/install
-
       - name: upload_artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: HelixTrajectory_${{ matrix.os }}.zip
-          path: build/install/HelixTrajectory_${{ matrix.os }}.zip
+          name: HelixTrajectory_${{ matrix.os }}
+          path: build/install
