@@ -26,7 +26,7 @@ jobs:
 
       - name: build
         working-directory: build
-        run: cmake --build .
+        run: cmake --build . --target install --config Release
 
       - name: compress_artifacts
         uses: vimtor/action-zip@v1
