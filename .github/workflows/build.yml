@@ -42,3 +42,41 @@ jobs:
         with:
           name: HelixTrajectory_${{ matrix.os }}
           path: build/install
+
+  build-windows:
+    name: "Build - Windows"
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up MinGW
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: x64
+
+      - name: Install CMake
+        uses: lukka/get-cmake@v3.23.0
+
+      - name: configure
+        run: mkdir build && cd build && cmake ..
+
+      - name: build
+        working-directory: build
+        run: cmake --build . --target install --config Release
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      
+      - name: build_java
+        run: .\gradlew.bat jar
+
+      - name: copy_jar
+        working-directory: build/install
+        run: copy ../../helixtrajectoryj/build/libs/helixtrajectoryj.jar .
+
+      - name: upload_artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: HelixTrajectory_Windows
+          path: build/install
