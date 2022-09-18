@@ -37,3 +37,10 @@ jobs:
         with:
           name: HelixTrajectory_${{ matrix.os }}
           path: build/install/HelixTrajectory_${{ matrix.os }}.zip
+      
+      - name: java_interface
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+          architecture: ${{ matrix.architecture }}
+        run: ./gradlew jar
