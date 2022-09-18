@@ -57,18 +57,18 @@ jobs:
       # - name: Install CMake
       #   uses: lukka/get-cmake@v3.23.0
 
-      - name: Set up Clang
-        uses: egor-tensin/setup-clang@v1
-        with:
-          version: latest
-          platform: x64
+      # - name: Set up Clang
+      #   uses: egor-tensin/setup-clang@v1
+      #   with:
+      #     version: latest
+      #     platform: x64
 
       - name: configure
         run: mkdir build && cd build && cmake ..
 
       - name: build
         working-directory: build
-        run: cmake --build . --target install --config Release
+        run: cmake -DCMAKE_CXX_COMPILER=C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin\x86_64-w64-mingw32-g++.exe --build . --target install --config Release
 
       - uses: actions/setup-java@v1
         with:
