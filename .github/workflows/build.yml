@@ -30,14 +30,12 @@ jobs:
 
       - name: compress_artifacts
         uses: vimtor/action-zip@v1
-        working-directory: build
         with:
-          files: install
-          dest: HelixTrajectory_${{ matrix.os }}.zip
+          files: build/install
+          dest: build/HelixTrajectory_${{ matrix.os }}.zip
 
       - name: upload_artifacts
         uses: actions/upload-artifact@v3
-        working-directory: build
         with:
           name: HelixTrajectory_${{ matrix.os }}
-          path: HelixTrajectory_${{ matrix.os }}.zip
+          path: build/HelixTrajectory_${{ matrix.os }}.zip
