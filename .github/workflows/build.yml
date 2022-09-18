@@ -1,0 +1,28 @@
+name: BuildLib
+
+on: [pull_request, push]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: Linux
+            flags: ""
+          - os: macOS-11
+            name: macOS
+            container: ""
+            flags: ""
+
+    name: "Build - ${{ matrix.name }}"
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    steps:
+      - name: configure
+        run: mkdir build && cd build && cmake ${{ matrix.flags }} ..
+
+      - name: build
+        working-directory: build
+        run: cmake --build .
