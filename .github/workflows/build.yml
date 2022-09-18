@@ -11,10 +11,9 @@ jobs:
           - os: ubuntu-latest
             name: Linux
             flags: ""
-          # - os: macOS-11
-          #   name: macOS
-          #   container: ""
-          #   flags: ""
+          - os: macOS-11
+            name: macOS
+            flags: ""
 
     name: "Build - ${{ matrix.name }}"
     runs-on: ${{ matrix.os }}
@@ -47,5 +46,5 @@ jobs:
       - name: upload_jar
         uses: actions/upload-artifact@v3
         with:
-          name: HelixTrajectoryJ_${{ matrix.os }}
+          name: HelixTrajectoryJ_${{ matrix.os }}.jar
           path: helixtrajectoryj/build/libs/helixtrajectoryj.jar
