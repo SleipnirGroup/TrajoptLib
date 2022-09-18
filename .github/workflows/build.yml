@@ -56,7 +56,7 @@ jobs:
             git
             base-devel
             mingw-w64-x86_64-gcc
-            mingw-w64-cmake
+            mingw-w64-x86_64-cmake
           update: true
 
       - name: Move Checkout
