@@ -60,9 +60,9 @@ jobs:
       - name: configure
         run: mkdir build && cd build && cmake ..
 
-      - name: build
-        working-directory: build
-        run: cmake --build . --target install --config Release
+      # - name: build
+      #   working-directory: build
+      #   run: cmake --build . --target install --config Release
 
       - uses: actions/setup-java@v1
         with:
