@@ -34,7 +34,7 @@ jobs:
         run: ./gradlew jar
 
       - name: compress_artifacts
-        run: zip -qq -j -r HelixTrajectory_${{ matrix.os }}.zip dist include lib ../../helixtrajectoryj/build/libs/helixtrajectoryj.jar
+        run: zip -qq -r HelixTrajectory_${{ matrix.os }}.zip dist include lib ../../helixtrajectoryj/build/libs/helixtrajectoryj.jar
         working-directory: build/install
 
       - name: upload_artifacts
