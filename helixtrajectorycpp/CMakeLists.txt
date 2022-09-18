@@ -5,7 +5,7 @@ set(CASADI_DIR ${CMAKE_BINARY_DIR}/external/src/casadi-3.5.5/casadi)
 
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 message (STATUS "Platform: ${CMAKE_SYSTEM_NAME}")
-if(${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR WIN32)
+if(${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS" OR WIN32)
     message(STATUS "Building for mingw")
     set(CMAKE_CXX_FLAGS "-static-libgcc -static-libstdc++")
     set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.5.5/casadi-windows-py39-v3.5.5-64bit.zip)

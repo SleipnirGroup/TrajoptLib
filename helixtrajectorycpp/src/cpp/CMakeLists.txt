@@ -3,7 +3,7 @@ add_library(${PROJECT_NAME} SHARED CasADiOpti.cpp Drivetrain.cpp HolonomicDrivet
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CASADI_DIR}/include)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/jni)
-if(${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR WIN32)
+if(${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS" OR WIN32)
     target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/jni/win32)
     install(FILES ${CASADI_DIR}/libcasadi.dll   ${CASADI_DIR}/libstdc++-6.dll ${CASADI_DIR}/libcasadi_nlpsol_ipopt.dll   ${CASADI_DIR}/libgfortran-3.dll             ${CASADI_DIR}/libquadmath-0.dll   ${CASADI_DIR}/libgcc_s_seh-1.dll DESTINATION "lib/")
     install(FILES ${CASADI_DIR}/libcasadi.dll   ${CASADI_DIR}/libstdc++-6.dll ${CASADI_DIR}/libcasadi_nlpsol_ipopt.dll   ${CASADI_DIR}/libgfortran-3.dll             ${CASADI_DIR}/libquadmath-0.dll   ${CASADI_DIR}/libgcc_s_seh-1.dll DESTINATION ${CMAKE_SOURCE_DIR}/helixtrajectoryj/src/main/resources)
