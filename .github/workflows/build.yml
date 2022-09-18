@@ -29,15 +29,11 @@ jobs:
         run: cmake --build . --target install --config Release
 
       - name: compress_artifacts
-        working-directory: build
-        uses: vimtor/action-zip@v1
-        with:
-          files: install
-          recursive: false
-          dest: HelixTrajectory_${{ matrix.os }}.zip
+        run: zip -qq -r HelixTrajectory_${{ matrix.os }}.zip dist include lib
+        working-directory: build/install
 
       - name: upload_artifacts
         uses: actions/upload-artifact@v3
         with:
           name: HelixTrajectory_${{ matrix.os }}
-          path: build/HelixTrajectory_${{ matrix.os }}.zip
+          path: build/install/HelixTrajectory_${{ matrix.os }}.zip
