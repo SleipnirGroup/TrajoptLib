@@ -26,14 +26,11 @@ jobs:
         working-directory: build
         run: cmake --build . --target install --config Release
 
-      - name: compress_artifacts
-        run: zip -qq -r HelixTrajectory_${{ matrix.os }}.zip dist include lib
-        working-directory: build/install
 
       - name: upload_artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: HelixTrajectory_${{ matrix.os }}
+          name: HelixTrajectory_${{ matrix.os }}.zip
           path: build/install/HelixTrajectory_${{ matrix.os }}.zip
       
       - uses: actions/setup-java@v1
@@ -43,8 +40,12 @@ jobs:
       - name: build_java
         run: ./gradlew jar
 
-      - name: upload_jar
+      - name: compress_artifacts
+        run: zip -qq -r HelixTrajectory_${{ matrix.os }}.zip dist include lib ../../helixtrajectoryj/build/libs/helixtrajectoryj.jar
+        working-directory: build/install
+
+      - name: upload_artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: HelixTrajectoryJ_${{ matrix.os }}.jar
-          path: helixtrajectoryj/build/libs/helixtrajectoryj.jar
+          name: HelixTrajectory_${{ matrix.os }}.jar
+          path: build/install/HelixTrajectory_${{ matrix.os }}.zip
