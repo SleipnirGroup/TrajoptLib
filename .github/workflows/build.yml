@@ -54,15 +54,15 @@ jobs:
         with:
           platform: x64
 
-      - name: Install CMake
-        uses: lukka/get-cmake@v3.23.0
+      # - name: Install CMake
+      #   uses: lukka/get-cmake@v3.23.0
 
       - name: configure
         run: mkdir build && cd build && cmake ..
 
-      # - name: build
-      #   working-directory: build
-      #   run: cmake --build . --target install --config Release
+      - name: build
+        working-directory: build
+        run: cmake --build . --target install --config Release
 
       - uses: actions/setup-java@v1
         with:
