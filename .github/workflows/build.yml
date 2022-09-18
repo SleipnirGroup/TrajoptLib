@@ -43,3 +43,9 @@ jobs:
       
       - name: build_java
         run: ./gradlew jar
+
+      - name: upload_jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: HelixTrajectoryJ_${{ matrix.os }}
+          path: helixtrajectoryj/build/helixtrajectoryj.jar
