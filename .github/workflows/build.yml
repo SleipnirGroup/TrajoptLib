@@ -11,14 +11,13 @@ jobs:
           - os: ubuntu-latest
             name: Linux
             flags: ""
-          - os: macOS-11
-            name: macOS
-            container: ""
-            flags: ""
+          # - os: macOS-11
+          #   name: macOS
+          #   container: ""
+          #   flags: ""
 
     name: "Build - ${{ matrix.name }}"
     runs-on: ${{ matrix.os }}
-    container: ${{ matrix.container }}
     steps:
       - uses: actions/checkout@v2
       - name: configure
@@ -41,7 +40,6 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 8
-          architecture: ${{ matrix.architecture }}
       
       - name: build_java
         run: ./gradlew jar
