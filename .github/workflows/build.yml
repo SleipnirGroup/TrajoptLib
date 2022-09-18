@@ -48,4 +48,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: HelixTrajectoryJ_${{ matrix.os }}
-          path: helixtrajectoryj/build/helixtrajectoryj.jar
+          path: helixtrajectoryj/build/libs/helixtrajectoryj.jar
