@@ -32,7 +32,7 @@ jobs:
         uses: vimtor/action-zip@v1
         with:
           files: build/install
-          recursive: true
+          recursive: false
           dest: build/HelixTrajectory_${{ matrix.os }}.zip
 
       - name: upload_artifacts
