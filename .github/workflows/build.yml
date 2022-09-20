@@ -47,30 +47,19 @@ jobs:
     name: "Build - Windows"
     runs-on: windows-2019
     steps:
-      # - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - uses: msys2/setup-msys2@v2
+      - name: Set up MinGW
+        uses: egor-tensin/setup-mingw@v2
         with:
-          msystem: MSYS
-          install: >-
-            git
-            base-devel
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-cmake
-          update: true
+          platform: x64
 
-      - name: Move Checkout
-        run: |
-          Copy-Item -Path ".\temp" -Destination "C:\_" -Recurse
+      - name: configure
+        run: mkdir build && cd build && cmake -DCMAKE_CXX_COMPILER=g++ ..
 
-      - name: configure_build
-        shell: msys2 {0}
-        run: |
-          cd /C/_
-          mkdir build
-          cd build
-          cmake ..
-          cmake --build . --target install --config Release
+      - name: build
+        working-directory: build
+        run: cmake --build . --target install --config Release
 
       - uses: actions/setup-java@v1
         with:
