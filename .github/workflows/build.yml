@@ -10,54 +10,34 @@ jobs:
         include:
           - os: ubuntu-latest
             name: Linux
-            flags: ""
+            cmake_flags: ""
+            gradle_command: "./gradlew"
+
           - os: macOS-11
             name: macOS
-            flags: ""
+            cmake_flags: ""
+            gradle_command: "./gradlew"
+
+          - os: windows-2019
+            name: Windows
+            cmake_flags: "-G \"MinGW Makefiles\" -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
+            gradle_command: ".\\gradlew.bat"
 
     name: "Build - ${{ matrix.name }}"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - name: configure
-        run: mkdir build && cd build && cmake ${{ matrix.flags }} ..
-
-      - name: build
-        working-directory: build
-        run: cmake --build . --target install --config Release
-
-      - uses: actions/setup-java@v1
-        with:
-          java-version: 11
-      
-      - name: build_java
-        run: ./gradlew jar
-
-      - name: copy_jar
-        working-directory: build/install
-        run: cp ../../helixtrajectoryj/build/libs/helixtrajectoryj.jar .
-
-      - name: upload_artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: HelixTrajectory_${{ matrix.os }}
-          path: build/install
-
-  build-windows:
-    name: "Build - Windows"
-    runs-on: windows-2019
-    steps:
-      - uses: actions/checkout@v3
 
       - name: Set up MinGW
+        if: ${{ matrix.name }} == Windows
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: x64
 
-      - name: configure
-        run: mkdir build && cd build && cmake -G "MinGW Makefiles" -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ ..
+      - name: Configure CMake
+        run: mkdir build && cd build && cmake ${{ matrix.cmake_flags }} ..
 
-      - name: build
+      - name: Build Makefile
         working-directory: build
         run: cmake --build . --target install --config Release
 
@@ -65,15 +45,15 @@ jobs:
         with:
           java-version: 11
       
-      - name: build_java
-        run: .\gradlew.bat jar
+      - name: Build Java
+        run: ${{ matrix.gradle_command }} jar
 
-      - name: copy_jar
+      - name: Copy Jar to Install Dir
         working-directory: build/install
-        run: copy ../../helixtrajectoryj/build/libs/helixtrajectoryj.jar .
+        run: cp ../../helixtrajectoryj/build/libs/helixtrajectoryj.jar .
 
-      - name: upload_artifacts
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: HelixTrajectory_Windows
+          name: HelixTrajectory_${{ matrix.os }}
           path: build/install
