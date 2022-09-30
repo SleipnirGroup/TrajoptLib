@@ -25,7 +25,7 @@ public final class RuntimeDetector {
         if (intel32) {
             filePath = "/windows/x86/";
         } else {
-            filePath = "/windows/x86-64/";
+            filePath = "/windows/x86_64/";
         }
         } else if (isMac()) {
         filePrefix = "lib";
@@ -35,7 +35,7 @@ public final class RuntimeDetector {
         } else if (arm64) {
             filePath = "/osx/arm64/";
         } else {
-            filePath = "/osx/x86-64/";
+            filePath = "/osx/x86_64/";
         }
         } else if (isLinux()) {
         filePrefix = "lib";
@@ -43,7 +43,7 @@ public final class RuntimeDetector {
         if (intel32) {
             filePath = "/linux/x86/";
         } else if (intel64) {
-            filePath = "/linux/x86-64/";
+            filePath = "/linux/x86_64/";
         } else if (isArm32()) {
             filePath = "/linux/arm32/";
         } else if (arm64) {

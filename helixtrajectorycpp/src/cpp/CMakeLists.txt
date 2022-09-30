@@ -25,9 +25,8 @@ endif()
 
 target_link_directories(${PROJECT_NAME} PRIVATE ${CASADI_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE casadi)
-
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/helixtrajectorycpp/src/include)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION "")
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_SOURCE_DIR}/helixtrajectoryj/src/main/resources/${JAR_LIB_FILE_PATH})
-install(CODE "file(MD5 ${CMAKE_SOURCE_DIR}/helixtrajectoryj/src/main/resources/${JAR_LIB_FILE_PATH}/${LIB_FILENAME} HT_HASH)\nmessage(STATUS \"HT Hash: \${HT_HASH}\")\nfile(WRITE ${CMAKE_SOURCE_DIR}/helixtrajectoryj/src/main/resources/${JAR_LIB_FILE_PATH}/helixtrajectory.hash \${HT_HASH})")
+install(CODE "file(MD5 ${CMAKE_BINARY_DIR}/install/lib/${LIB_FILENAME} HT_HASH)\nmessage(STATUS \"HT Hash: \${HT_HASH}\")\nfile(WRITE ${CMAKE_SOURCE_DIR}/helixtrajectoryj/src/main/resources/${JAR_LIB_FILE_PATH}/helixtrajectory.hash \${HT_HASH})\nfile(RENAME ${CMAKE_SOURCE_DIR}/helixtrajectoryj/src/main/resources/${JAR_LIB_FILE_PATH}/${LIB_FILENAME} ${CMAKE_SOURCE_DIR}/helixtrajectoryj/src/main/resources/${JAR_LIB_FILE_PATH}/${LIB_FILENAME}.\${HT_HASH})")

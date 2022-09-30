@@ -12,10 +12,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Locale;
 import java.util.Scanner;
 
 public final class RuntimeLoader<T> {
@@ -103,7 +99,7 @@ public final class RuntimeLoader<T> {
                         System.load(jniLibrary.getAbsolutePath());
                     } catch (UnsatisfiedLinkError ule2) {
                         // If extraction failed, extract
-                        try (InputStream resIs = loadClass.getResourceAsStream(resname)) {
+                        try (InputStream resIs = loadClass.getResourceAsStream(resname + "." + hash)) {
                             if (resIs == null) {
                                 throw new IOException(getLoadErrorMessage(ule));
                             }
@@ -124,76 +120,6 @@ public final class RuntimeLoader<T> {
                             System.load(jniLibrary.getAbsolutePath());
                         }
                     }
-                }
-            }
-        }
-    }
-
-    /**
-     * Load a native library by directly hashing the file.
-     *
-     * @throws IOException if the library failed to load
-     */
-    @SuppressWarnings({"PMD.PreserveStackTrace", "PMD.EmptyWhileStmt"})
-    public void loadLibraryHashed() throws IOException {
-        try {
-            // First, try loading path
-            System.loadLibrary(libraryName);
-        } catch (UnsatisfiedLinkError ule) {
-            // Then load the hash from the input file
-            String resname = RuntimeDetector.getLibraryResource(libraryName);
-            String hash;
-            try (InputStream is = loadClass.getResourceAsStream(resname)) {
-                if (is == null) {
-                    throw new IOException(getLoadErrorMessage(ule));
-                }
-                MessageDigest md;
-                try {
-                    md = MessageDigest.getInstance("MD5");
-                } catch (NoSuchAlgorithmException nsae) {
-                    throw new RuntimeException("Weird Hash Algorithm?");
-                }
-                try (DigestInputStream dis = new DigestInputStream(is, md)) {
-                    // Read the entire buffer once to hash
-                    byte[] buffer = new byte[0xFFFF];
-                    while (dis.read(buffer) > -1) {}
-                    MessageDigest digest = dis.getMessageDigest();
-                    byte[] digestOutput = digest.digest();
-                    StringBuilder builder = new StringBuilder();
-                    for (byte b : digestOutput) {
-                        builder.append(String.format("%02X", b));
-                    }
-                    hash = builder.toString().toLowerCase(Locale.ENGLISH);
-                }
-            }
-            if (hash == null) {
-                throw new IOException("Weird Hash?");
-            }
-            File jniLibrary = new File(extractionRoot, resname + "." + hash);
-            try {
-                // Try to load from an already extracted hash
-                System.load(jniLibrary.getAbsolutePath());
-            } catch (UnsatisfiedLinkError ule2) {
-                // If extraction failed, extract
-                try (InputStream resIs = loadClass.getResourceAsStream(resname)) {
-                if (resIs == null) {
-                    throw new IOException(getLoadErrorMessage(ule));
-                }
-
-                var parentFile = jniLibrary.getParentFile();
-                if (parentFile == null) {
-                    throw new IOException("JNI library has no parent file");
-                }
-                parentFile.mkdirs();
-
-                try (OutputStream os = Files.newOutputStream(jniLibrary.toPath())) {
-                    byte[] buffer = new byte[0xFFFF]; // 64K copy buffer
-                    int readBytes;
-                    while ((readBytes = resIs.read(buffer)) != -1) { // NOPMD
-                        os.write(buffer, 0, readBytes);
-                    }
-                }
-                System.load(jniLibrary.getAbsolutePath());
                 }
             }
         }
