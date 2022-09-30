@@ -1,5 +1,6 @@
 package org.team2363.helixtrajectory;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import org.team2363.util.RuntimeLoader;
@@ -15,10 +16,8 @@ public final class OptimalTrajectoryGenerator {
                         "helixtrajectory", null, OptimalTrajectoryGenerator.class);
                 loader.loadLibrary();
                 isPluginLoaded = true;
-            } catch (SecurityException e) {
-                throw new PluginLoadException("Could not load HelixTrajectory: " + e.getMessage());
-            } catch (UnsatisfiedLinkError e) {
-                throw new PluginLoadException("Could not load HelixTrajectory: " + e.getMessage());
+            } catch (IOException ioe) {
+                throw new PluginLoadException("Could not load HelixTrajectory: " + ioe.getMessage(), ioe);
             }
         }
     }
