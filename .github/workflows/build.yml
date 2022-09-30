@@ -60,3 +60,8 @@ jobs:
         with:
           name: HelixTrajectory_${{ matrix.os }}
           path: build/install
+
+      - name: Publish package
+        run: ${{ matrix.gradle_command }} publishMavenPublicationToGithubRepository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
