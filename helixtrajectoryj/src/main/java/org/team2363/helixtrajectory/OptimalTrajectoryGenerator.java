@@ -2,6 +2,8 @@ package org.team2363.helixtrajectory;
 
 import java.util.Objects;
 
+import org.team2363.util.RuntimeLoader;
+
 public final class OptimalTrajectoryGenerator {
 
     private static boolean isPluginLoaded = false;
@@ -9,7 +11,9 @@ public final class OptimalTrajectoryGenerator {
     private static void loadPlugin() throws PluginLoadException {
         if (!isPluginLoaded) {
             try {
-                System.loadLibrary("helixtrajectory");
+                var loader = new RuntimeLoader<OptimalTrajectoryGenerator>(
+                        "helixtrajectory", null, OptimalTrajectoryGenerator.class);
+                loader.loadLibrary();
                 isPluginLoaded = true;
             } catch (SecurityException e) {
                 throw new PluginLoadException("Could not load HelixTrajectory: " + e.getMessage());

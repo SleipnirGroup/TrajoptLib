@@ -4,6 +4,9 @@
 # Ignore Gradle build output directory
 build
 
+# Ignore resources dir which will eventually hold binaries
+resources
+
 casadi
 casadi-aarch64
 casadi-x86_64
