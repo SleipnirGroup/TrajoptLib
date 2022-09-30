@@ -11,6 +11,8 @@ dependencies {
 }
 
 java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 tasks.named<Test>("test") {
