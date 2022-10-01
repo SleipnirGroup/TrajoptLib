@@ -36,6 +36,10 @@ publishing {
             name = "github"
             // id = "github"
             url = uri("https://maven.pkg.github.com/jlbabilino/HelixTrajectory")
+            credentials {
+                username = project.findProperty("gpr.user")
+                password = project.findProperty("gpr.key")
+            }
         }
     }
 }
