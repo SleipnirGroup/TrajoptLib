@@ -57,19 +57,27 @@ jobs:
       matrix:
         include:
           - name: Linux-x86_64
-            needed_native_builds: [Linux-x86_64]
+            containsLinux-x86_64: true
+            containsmacOS-x86_64: false
+            containsWindows-x86_64: false
             platform_id: linux64
 
           - name: macOS-x86_64
-            needed_native_builds: [macOS-x86_64]
+            containsLinux-x86_64: false
+            containsmacOS-x86_64: true
+            containsWindows-x86_64: false
             platform_id: mac64
 
           - name: Windows-x86_64
-            needed_native_builds: [Windows-x86_64]
+            containsLinux-x86_64: false
+            containsmacOS-x86_64: false
+            containsWindows-x86_64: true
             platform_id: windows64
           
           - name: Universal
-            needed_native_builds: [Linux-x86_64, macOS-x86_64, Windows-x86_64]
+            containsLinux-x86_64: true
+            containsmacOS-x86_64: true
+            containsWindows-x86_64: true
             platform_id: ""
 
     needs: build-native
@@ -86,32 +94,32 @@ jobs:
           java-version: 11
 
       - uses: actions/download-artifact@v3
-        if: contains( ${{ matrix.needed_native_builds }} Linux-x86_64 )
+        if: ${{ matrix.containsLinux-x86_64 }}
         with:
           name: HelixTrajectory_Linux-x86_64
           path: native_builds/HelixTrajectory_Linux-x86_64
 
       - uses: actions/download-artifact@v3
-        if: contains( ${{ matrix.needed_native_builds }} macOS-x86_64 )
+        if: ${{ matrix.containsmacOS-x86_64 }}
         with:
           name: HelixTrajectory_macOS-x86_64
           path: native_builds/HelixTrajectory_macOS-x86_64
       
       - uses: actions/download-artifact@v3
-        if: contains( ${{ matrix.needed_native_builds }} Windows-x86_64 )
+        if: ${{ matrix.containsWindows-x86_64 }}
         with:
           name: HelixTrajectory_Windows-x86_64
           path: native_builds/HelixTrajectory_Windows-x86_64
 
       - run: cd native_builds;ls
 
-      - if: contains( ${{ matrix.needed_native_builds }} Linux-x86_64 )
+      - if: ${{ matrix.containsLinux-x86_64 }}
         run: mkdir -p helixtrajectoryj/src/main/resources/linux;cp -R native_builds/HelixTrajectory_Linux-x86_64/lib helixtrajectoryj/src/main/resources/linux;cd helixtrajectoryj/src/main/resources/linux;mv lib x86_64
 
-      - if: contains( ${{ matrix.needed_native_builds }} macOS-x86_64 )
+      - if: ${{ matrix.containsmacOS-x86_64 }}
         run: mkdir -p helixtrajectoryj/src/main/resources/osx;cp -R native_builds/HelixTrajectory_macOS-x86_64/lib helixtrajectoryj/src/main/resources/osx;cd helixtrajectoryj/src/main/resources/osx;mv lib x86_64
 
-      - if: contains( ${{ matrix.needed_native_builds }} Windows-x86_64 )
+      - if: ${{ matrix.containsWindows-x86_64 }}
         run: mkdir -p helixtrajectoryj/src/main/resources/windows;cp -R native_builds/HelixTrajectory_Windows-x86_64/lib helixtrajectoryj/src/main/resources/windows;cd helixtrajectoryj/src/main/resources/windows;mv lib x86_64
       
       - name: Build Java
