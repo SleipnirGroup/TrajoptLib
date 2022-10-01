@@ -37,5 +37,6 @@ publishing {
             // id = "github"
             url = uri("https://maven.pkg.github.com/jlbabilino/HelixTrajectory")
             credentials(PasswordCredentials::class)
+        }
     }
 }
