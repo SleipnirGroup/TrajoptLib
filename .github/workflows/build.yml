@@ -99,6 +99,8 @@ jobs:
           name: HelixTrajectory_Windows-x86_64
           path: native_builds
 
+      - run: cd native_builds;ls
+
       - if: contains( ${{ matrix.needed_native_builds }} Linux-x86_64 )
         run: cp -R native_builds/HelixTrajectory_Linux-x86_64/lib helixtrajectoryj/src/main/resources/linux;cd helixtrajectoryj/src/main/resources/linux;mv lib x86_64
 
