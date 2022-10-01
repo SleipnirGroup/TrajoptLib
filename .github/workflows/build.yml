@@ -58,15 +58,19 @@ jobs:
         include:
           - name: Linux-x86_64
             needed_native_builds: [Linux-x86_64]
+            platform_id: linux64
 
           - name: macOS-x86_64
             needed_native_builds: [macOS-x86_64]
+            platform_id: mac64
 
           - name: Windows-x86_64
             needed_native_builds: [Windows-x86_64]
+            platform_id: windows64
           
           - name: Universal
             needed_native_builds: [Linux-x86_64, macOS-x86_64, Windows-x86_64]
+            platform_id: ""
 
     needs: build-native
     name: "Java: ${{ matrix.name }}"
@@ -85,19 +89,19 @@ jobs:
         if: contains( ${{ matrix.needed_native_builds }} Linux-x86_64 )
         with:
           name: HelixTrajectory_Linux-x86_64
-          path: native_builds
+          path: native_builds/Linux-x86_64
 
       - uses: actions/download-artifact@v3
         if: contains( ${{ matrix.needed_native_builds }} macOS-x86_64 )
         with:
           name: HelixTrajectory_macOS-x86_64
-          path: native_builds
+          path: native_builds/macOS-x86_64
       
       - uses: actions/download-artifact@v3
         if: contains( ${{ matrix.needed_native_builds }} Windows-x86_64 )
         with:
           name: HelixTrajectory_Windows-x86_64
-          path: native_builds
+          path: native_builds/Windows-x86_64
 
       - run: cd native_builds;ls
 
@@ -113,4 +117,4 @@ jobs:
       - name: Build Java
         run: ./gradlew jar
       - name: Publish package
-        run: ./gradlew publishMavenPublicationToGithubRepository -PgithubUsername=$GITHUB_ACTOR -PgithubPassword=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew publishMavenPublicationToGithubRepository -Pplatform_id=${{ matrix.platform_id }} -PgithubUsername=$GITHUB_ACTOR -PgithubPassword=${{ secrets.GITHUB_TOKEN }}
