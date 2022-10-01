@@ -89,19 +89,19 @@ jobs:
         if: contains( ${{ matrix.needed_native_builds }} Linux-x86_64 )
         with:
           name: HelixTrajectory_Linux-x86_64
-          path: native_builds/Linux-x86_64
+          path: native_builds/HelixTrajectory_Linux-x86_64
 
       - uses: actions/download-artifact@v3
         if: contains( ${{ matrix.needed_native_builds }} macOS-x86_64 )
         with:
           name: HelixTrajectory_macOS-x86_64
-          path: native_builds/macOS-x86_64
+          path: native_builds/HelixTrajectory_macOS-x86_64
       
       - uses: actions/download-artifact@v3
         if: contains( ${{ matrix.needed_native_builds }} Windows-x86_64 )
         with:
           name: HelixTrajectory_Windows-x86_64
-          path: native_builds/Windows-x86_64
+          path: native_builds/HelixTrajectory_Windows-x86_64
 
       - run: cd native_builds;ls
 
