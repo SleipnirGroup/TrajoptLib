@@ -66,5 +66,3 @@ jobs:
 
       - name: Publish package
         run: ${{ matrix.gradle_command }} publishMavenPublicationToGithubRepository -PgithubUsername=$GITHUB_ACTOR -PgithubPassword=${{ secrets.GITHUB_TOKEN }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
