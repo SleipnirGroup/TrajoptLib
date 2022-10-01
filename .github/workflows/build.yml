@@ -3,66 +3,112 @@ name: BuildLib
 on: [pull_request, push]
 
 jobs:
-  build:
+  build-native:
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
-            name: Linux
+            name: Linux-x86_64
             mingw: false
             cmake_flags: ""
             gradle_command: "./gradlew"
 
           - os: macOS-11
-            name: macOS
+            name: macOS-x86_64
             mingw: false
             cmake_flags: ""
             gradle_command: "./gradlew"
 
           - os: windows-2019
-            name: Windows
+            name: Windows-x86_64
             mingw: true
-            cmake_flags: "-G \"MinGW Makefiles\" -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
+            cmake_flags: "-G \"MinGW Makefiles\" -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++" # TODO: try removing the cmake compiler part
             gradle_command: ".\\gradlew.bat"
 
-    name: "Build - ${{ matrix.name }}"
+    name: "Native Build: ${{ matrix.name }}"
     runs-on: ${{ matrix.os }}
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up MinGW
+        if: ${{ matrix.mingw }}
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: x64
+
+      - name: Configure CMake
+        run: mkdir build && cd build && cmake ${{ matrix.cmake_flags }} ..
+
+      - name: Build Makefile
+        working-directory: build
+        run: cmake --build . --target install --config Release
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: HelixTrajectory_${{ matrix.name }}
+          path: build/install
+
+  build-java:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux-x86_64
+            needed_native_builds: [Linux-x86_64]
+
+          - name: macOS-x86_64
+            needed_native_builds: [macOS-x86_64]
+
+          - name: Windows-x86_64
+            needed_native_builds: [Windows-x86_64]
+          
+          - name: Universal
+            needed_native_builds: [Linux-x86_64, macOS-x86_64, Windows-x86_64]
+
+    needs: build-native
+    name: "Java: ${{ matrix.name }}"
+
+    runs-on: ubuntu-latest
     permissions: 
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v2
-
-      # - name: Set up MinGW
-      #   if: ${{ matrix.mingw }}
-      #   uses: egor-tensin/setup-mingw@v2
-      #   with:
-      #     platform: x64
-
-      # - name: Configure CMake
-      #   run: mkdir build && cd build && cmake ${{ matrix.cmake_flags }} ..
-
-      # - name: Build Makefile
-      #   working-directory: build
-      #   run: cmake --build . --target install --config Release
-
       - uses: actions/setup-java@v1
         with:
           java-version: 11
+
+      - uses: actions/download-artifact@v3
+        if: contains( ${{ matrix.needed_native_builds }} Linux-x86_64 )
+        with:
+          name: HelixTrajectory_Linux-x86_64
+          path: native_builds
+
+      - uses: actions/download-artifact@v3
+        if: contains( ${{ matrix.needed_native_builds }} macOS-x86_64 )
+        with:
+          name: HelixTrajectory_macOS-x86_64
+          path: native_builds
+      
+      - uses: actions/download-artifact@v3
+        if: contains( ${{ matrix.needed_native_builds }} Windows-x86_64 )
+        with:
+          name: HelixTrajectory_Windows-x86_64
+          path: native_builds
+
+      - if: contains( ${{ matrix.needed_native_builds }} Linux-x86_64 )
+        run: cp -R native_builds/HelixTrajectory_Linux-x86_64/lib helixtrajectoryj/src/main/resources/linux;cd helixtrajectoryj/src/main/resources/linux;mv lib x86_64
+
+      - if: contains( ${{ matrix.needed_native_builds }} macOS-x86_64 )
+        run: cp -R native_builds/HelixTrajectory_macOS-x86_64/lib helixtrajectoryj/src/main/resources/osx;cd helixtrajectoryj/src/main/resources/osx;mv lib x86_64
+
+      - if: contains( ${{ matrix.needed_native_builds }} Windows-x86_64 )
+        run: cp -R native_builds/HelixTrajectory_Windows-x86_64/lib helixtrajectoryj/src/main/resources/windows;cd helixtrajectoryj/src/main/resources/windows;mv lib x86_64
       
       - name: Build Java
-        run: ${{ matrix.gradle_command }} jar
-
-      # - name: Copy Jar to Install Dir
-      #   working-directory: build/install
-      #   run: cp ../../helixtrajectoryj/build/libs/helixtrajectoryj.jar .
-
-      # - name: Upload Artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: HelixTrajectory_${{ matrix.os }}
-      #     path: build/install
-
+        run: ./gradlew jar
       - name: Publish package
-        run: ${{ matrix.gradle_command }} publishMavenPublicationToGithubRepository -PgithubUsername=$GITHUB_ACTOR -PgithubPassword=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew publishMavenPublicationToGithubRepository -PgithubUsername=$GITHUB_ACTOR -PgithubPassword=${{ secrets.GITHUB_TOKEN }}
