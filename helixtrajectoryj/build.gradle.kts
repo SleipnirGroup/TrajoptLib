@@ -26,7 +26,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "org.team2363"
             artifactId = "helixtrajectory" + project.properties["platform_id"];
-            version = "0.0.0-pre1"
+            version = "0.0.0-pre2"
 
             from(components["java"])
         }

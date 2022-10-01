@@ -120,7 +120,7 @@ jobs:
         run: mkdir -p helixtrajectoryj/src/main/resources/osx;cp -R native_builds/HelixTrajectory_macOS-x86_64/lib helixtrajectoryj/src/main/resources/osx;cd helixtrajectoryj/src/main/resources/osx;mv lib x86_64;cd x86_64;HASH=$(md5sum libhelixtrajectory.dylib | cut -c -32);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dylib libhelixtrajectory.dylib.$HASH
 
       - if: ${{ matrix.containsWindows-x86_64 }}
-        run: mkdir -p helixtrajectoryj/src/main/resources/windows;cp -R native_builds/HelixTrajectory_Windows-x86_64/lib helixtrajectoryj/src/main/resources/windows;cd helixtrajectoryj/src/main/resources/windows;mv bin x86_64;cd x86_64;HASH=$(md5sum libhelixtrajectory.dll | cut -c -32);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dll libhelixtrajectory.dll.$HASH
+        run: mkdir -p helixtrajectoryj/src/main/resources/windows;cp -R native_builds/HelixTrajectory_Windows-x86_64/bin helixtrajectoryj/src/main/resources/windows;cd helixtrajectoryj/src/main/resources/windows;mv bin x86_64;cd x86_64;HASH=$(md5sum libhelixtrajectory.dll | cut -c -32);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dll libhelixtrajectory.dll.$HASH
       
       - name: Build Java
         run: ./gradlew jar
