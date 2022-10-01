@@ -20,7 +20,7 @@ public final class RuntimeDetector {
         boolean arm64 = isArm64();
 
         if (isWindows()) {
-        filePrefix = "";
+        filePrefix = "lib";
         fileExtension = ".dll";
         if (intel32) {
             filePath = "/windows/x86/";
@@ -99,6 +99,18 @@ public final class RuntimeDetector {
         computePlatform();
 
         return filePath + filePrefix + libName + fileExtension;
+    }
+
+    /**
+     * Get the path to the requested resource.
+     *
+     * @param libFileName Library file name.
+     * @return The path to the requested resource.
+     */
+    public static synchronized String getLibraryFileResource(String libFileName) {
+        computePlatform();
+
+        return filePath + libFileName;
     }
 
     /**

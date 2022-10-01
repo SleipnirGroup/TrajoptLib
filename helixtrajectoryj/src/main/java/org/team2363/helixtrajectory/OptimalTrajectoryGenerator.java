@@ -13,21 +13,31 @@ public final class OptimalTrajectoryGenerator {
     private static void loadPlugin() throws PluginLoadException {
         if (!isPluginLoaded) {
             try {
-                var casadiLoader = new DependencyExtractor<OptimalTrajectoryGenerator>(
-                        "casadi", RuntimeLoader.getDefaultExtractionRoot(), OptimalTrajectoryGenerator.class);
-                var quadmathLoader = new DependencyExtractor<OptimalTrajectoryGenerator>(
-                        "quadmath.0", RuntimeLoader.getDefaultExtractionRoot(), OptimalTrajectoryGenerator.class);
-                var gfortranLoader = new DependencyExtractor<OptimalTrajectoryGenerator>(
-                        "gfortran.4", RuntimeLoader.getDefaultExtractionRoot(), OptimalTrajectoryGenerator.class);
-                var ipoptLoader = new DependencyExtractor<OptimalTrajectoryGenerator>(
-                        "casadi_nlpsol_ipopt", RuntimeLoader.getDefaultExtractionRoot(), OptimalTrajectoryGenerator.class);
-                var htLoader = new RuntimeLoader<OptimalTrajectoryGenerator>(
-                        "helixtrajectory", RuntimeLoader.getDefaultExtractionRoot(), OptimalTrajectoryGenerator.class);
-                casadiLoader.loadLibrary();
-                quadmathLoader.loadLibrary();
-                gfortranLoader.loadLibrary();
-                ipoptLoader.loadLibrary();
-                htLoader.loadLibrary();
+                String osName = System.getProperty("os.name");
+                switch (osName) {
+                    case "Windows":
+                        for (String libName : new String[]{"libcasadi.dll", "libstdc++-6.dll", "libcasadi_nlpsol_ipopt.dll", "libgfortran-3.dll", "libquadmath-0.dll", "libgcc_s_seh-1.dll"}) {
+                            new DependencyExtractor<OptimalTrajectoryGenerator>(
+                                    libName, RuntimeLoader.getDefaultExtractionRoot(), OptimalTrajectoryGenerator.class).loadLibrary();
+                        }
+                        break;
+                    case "Mac OS X":
+                        for (String libName : new String[]{"libcasadi.dylib", "libc++.1.dylib", "libcasadi_nlpsol_ipopt.dylib", "libgfortran.4.dylib", "libquadmath.0.dylib", "libgcc_s.1.dylib"}) {
+                            new DependencyExtractor<OptimalTrajectoryGenerator>(
+                                    libName, RuntimeLoader.getDefaultExtractionRoot(), OptimalTrajectoryGenerator.class).loadLibrary();
+                        }
+                        break;
+                    case "Linux":
+                        for (String libName : new String[]{"libcasadi.so", "libcasadi_nlpsol_ipopt.so", "libgfortran-ed201abd.so.3.0.0"}) {
+                            new DependencyExtractor<OptimalTrajectoryGenerator>(
+                                    libName, RuntimeLoader.getDefaultExtractionRoot(), OptimalTrajectoryGenerator.class).loadLibrary();
+                        }
+                        break;
+                    default:
+                        throw new PluginLoadException("Unsupported operating system", null);
+                }
+                new RuntimeLoader<OptimalTrajectoryGenerator>(
+                        "helixtrajectory", RuntimeLoader.getDefaultExtractionRoot(), OptimalTrajectoryGenerator.class).loadLibrary();
                 isPluginLoaded = true;
             } catch (IOException ioe) {
                 throw new PluginLoadException("Could not load HelixTrajectory: " + ioe.getMessage(), ioe);

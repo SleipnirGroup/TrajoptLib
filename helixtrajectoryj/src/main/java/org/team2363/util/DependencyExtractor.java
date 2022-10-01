@@ -54,7 +54,7 @@ public final class DependencyExtractor<T> {
      */
     @SuppressWarnings("PMD.PreserveStackTrace")
     public void loadLibrary() throws IOException {
-        String resname = RuntimeDetector.getLibraryResource(libraryName);
+        String resname = RuntimeDetector.getLibraryFileResource(libraryName);
         File dependencyLib = new File(extractionRoot, resname);
         if (!dependencyLib.exists()) {
             // If it hasn't already been extracted:
