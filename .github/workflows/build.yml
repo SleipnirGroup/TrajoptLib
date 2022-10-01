@@ -114,13 +114,13 @@ jobs:
       - run: cd native_builds;ls
 
       - if: ${{ matrix.containsLinux-x86_64 }}
-        run: mkdir -p helixtrajectoryj/src/main/resources/linux;cp -R native_builds/HelixTrajectory_Linux-x86_64/lib helixtrajectoryj/src/main/resources/linux;cd helixtrajectoryj/src/main/resources/linux;mv lib x86_64;cd x86_64;HASH=$(md5sum -q libhelixtrajectory.so);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.so libhelixtrajectory.so.$HASH
+        run: mkdir -p helixtrajectoryj/src/main/resources/linux;cp -R native_builds/HelixTrajectory_Linux-x86_64/lib helixtrajectoryj/src/main/resources/linux;cd helixtrajectoryj/src/main/resources/linux;mv lib x86_64;cd x86_64;HASH=$(md5sum --quiet libhelixtrajectory.so);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.so libhelixtrajectory.so.$HASH
 
       - if: ${{ matrix.containsmacOS-x86_64 }}
-        run: mkdir -p helixtrajectoryj/src/main/resources/osx;cp -R native_builds/HelixTrajectory_macOS-x86_64/lib helixtrajectoryj/src/main/resources/osx;cd helixtrajectoryj/src/main/resources/osx;mv lib x86_64;cd x86_64;HASH=$(md5sum -q libhelixtrajectory.dylib);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dylib libhelixtrajectory.dylib.$HASH
+        run: mkdir -p helixtrajectoryj/src/main/resources/osx;cp -R native_builds/HelixTrajectory_macOS-x86_64/lib helixtrajectoryj/src/main/resources/osx;cd helixtrajectoryj/src/main/resources/osx;mv lib x86_64;cd x86_64;HASH=$(md5sum --quiet libhelixtrajectory.dylib);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dylib libhelixtrajectory.dylib.$HASH
 
       - if: ${{ matrix.containsWindows-x86_64 }}
-        run: mkdir -p helixtrajectoryj/src/main/resources/windows;cp -R native_builds/HelixTrajectory_Windows-x86_64/lib helixtrajectoryj/src/main/resources/windows;cd helixtrajectoryj/src/main/resources/windows;mv bin x86_64;cd x86_64;HASH=$(md5sum -q libhelixtrajectory.dll);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dll libhelixtrajectory.dll.$HASH
+        run: mkdir -p helixtrajectoryj/src/main/resources/windows;cp -R native_builds/HelixTrajectory_Windows-x86_64/lib helixtrajectoryj/src/main/resources/windows;cd helixtrajectoryj/src/main/resources/windows;mv bin x86_64;cd x86_64;HASH=$(md5sum --quiet libhelixtrajectory.dll);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dll libhelixtrajectory.dll.$HASH
       
       - name: Build Java
         run: ./gradlew jar
