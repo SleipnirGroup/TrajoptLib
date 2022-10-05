@@ -2,11 +2,11 @@
 
 namespace helixtrajectory {
 
-    ScalarBound::ScalarBound(double lowerBound, double upperBound)
-            : lowerBound(lowerBound), upperBound(upperBound) {
+    ScalarBound::ScalarBound(double lower, double upper)
+            : lower(lower), upper(lower) {
     }
 
     bool ScalarBound::IsValid() const noexcept {
-        return lowerBound <= upperBound;
+        return lower <= upper;
     }
 }
