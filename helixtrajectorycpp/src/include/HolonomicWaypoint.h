@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 
+#include "HolonomicAccelerationConstraint.h"
+#include "HolonomicVelocityConstraint.h"
 #include "InitialGuessPoint.h"
 #include "Obstacle.h"
 #include "Waypoint.h"
@@ -17,34 +19,13 @@ namespace helixtrajectory {
      */
     class HolonomicWaypoint : public Waypoint {
     public:
-        /**
-         * @brief x-component of robot velocity at this waypoint
-         */
-        double velocityX;
-        /**
-         * @brief y-component of robot velocity at this waypoint
-         */
-        double velocityY;
-        /**
-         * @brief angular velocity of robot at this waypoint
-         */
-        double angularVelocity;
-        /**
-         * @brief whether or not the optimizer should constrain the x-component of velocity of the robot at this waypoint
-         */
-        bool velocityXConstrained;
-        /**
-         * @brief whether or not the optimizer should constrain the y-component of velocity of the robot at this waypoint
-         */
-        bool velocityYConstrained;
-        /**
-         * @brief whether or not the optimizer should constrain the magnitude of the velocity vector of the robot at this waypoint
-         */
-        bool velocityMagnitudeConstrained;
-        /**
-         * @brief whether or not the optimizer should constrain the angular velocity of the robot at this waypoint
-         */
-        bool angularVelocityConstrained;
+        HolonomicVelocityConstraint waypointVelocityConstraint;
+        HolonomicVelocityConstraint segmentVelocityConstraint;
+        bool applySegmentVelocityConstraintAtWaypoint;
+
+        HolonomicAccelerationConstraint waypointAccelerationConstraintSet;
+        HolonomicAccelerationConstraint segmentAccelerationConstraintSet;
+        bool applySegmentAccelerationConstraintAtWaypoint;
 
         /**
          * @brief Construct a new Holonomic Waypoint object with its position and velocity state and
@@ -76,14 +57,14 @@ namespace helixtrajectory {
          *                           guess for the trajectory segment from the last waypoint to this waypoint
          * @param obstacles the collection of obstacles that the robot must avoid while approaching this waypoint
          */
-        HolonomicWaypoint(double x, double y, double heading,
-                double velocityX, double velocityY, double angularVelocity,
-                bool xConstrained, bool yConstrained, bool headingConstrained,
-                bool velocityXConstrained, bool velocityYConstrained,
-                bool velocityMagnitudeConstrained, bool angularVelocityConstrained,
+        HolonomicWaypoint(const HolonomicVelocityConstraint& waypointVelocityConstraint,
+                const HolonomicVelocityConstraint& segmentVelocityConstraint,
+                bool applySegmentVelocityConstraintAtWaypoint,
+                const HolonomicAccelerationConstraint& waypointAccelerationConstraint,
+                const HolonomicAccelerationConstraint& segmentAccelerationConstraint,
+                bool applySegmentAccelerationConstraintAtWaypoint,
                 size_t controlIntervalCount,
-                const std::vector<InitialGuessPoint>& initialGuessPoints,
-                const std::vector<Obstacle>& obstacles);
+                const std::vector<InitialGuessPoint>& initialGuessPoints);
 
         /**
          * @brief Check if the velocity state at this holonomic waypoint is known. This

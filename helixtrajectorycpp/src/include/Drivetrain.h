@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Obstacle.h"
+#include "PositionConstraint.h"
 
 namespace helixtrajectory {
 
@@ -36,7 +37,8 @@ namespace helixtrajectory {
          * @param momentOfInertia the moment of inertia of the robot about the center of rotation
          * @param bumpers the bumpers of the robot
          */
-        Drivetrain(double mass, double momentOfInertia, const Obstacle& bumpers);
+        Drivetrain(double mass, double momentOfInertia, const Obstacle& bumpers,
+                const PositionConstraint& globalPositionConstraint = PositionConstraint());
 
     public:
         /**
@@ -52,6 +54,11 @@ namespace helixtrajectory {
          * @brief the boundaries of the robot's bumpers, represented as an Obstacle.
          */
         Obstacle bumpers;
+        /**
+         * @brief the constraint on position to be applied to all samples in
+         * the trajectory.
+         */
+        PositionConstraint globalPositionConstraint;
 
         /**
          * @brief Destroy the Drivetrain object

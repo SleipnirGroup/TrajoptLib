@@ -86,5 +86,7 @@ namespace helixtrajectory {
          * @return true if and only if this SE2 constraint is valid 
          */
         bool IsValid() const noexcept;
+
+        SE2Constraint Union(const SE2Constraint& otherConstraint) const noexcept;
     };
 }

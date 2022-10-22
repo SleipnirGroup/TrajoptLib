@@ -22,11 +22,6 @@ namespace helixtrajectory {
          */
         double safetyDistance;
         /**
-         * @brief whether or not to apply obstacle constraints with this obstacle to all
-         * segments of the path or just this segment; this is irrelevant for robot bumpers
-         */
-        bool applyToAllSegments;
-        /**
          * @brief the list of points that make up this obstacle
          */
         std::vector<ObstaclePoint> points;
@@ -38,7 +33,7 @@ namespace helixtrajectory {
          * @param applyToAllSegments whether to apply this obstacle to all trajectory segments
          * @param waypoints minimum distance from the obstacle the robot must maintain
          */
-        Obstacle(double safetyDistance, bool applyToAllSegments, const std::vector<ObstaclePoint>& points);
+        Obstacle(double safetyDistance, const std::vector<ObstaclePoint>& points);
 
         /**
          * @brief Append a string representation of an obstacle to an output stream.

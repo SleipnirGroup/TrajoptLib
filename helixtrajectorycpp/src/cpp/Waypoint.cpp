@@ -7,13 +7,15 @@
 
 namespace helixtrajectory {
 
-    Waypoint::Waypoint(double x, double y, double heading,
-            bool xConstrained, bool yConstrained, bool headingConstrained,
+    Waypoint::Waypoint(const HolonomicVectorConstraintSet& waypointPositionConstraintSet,
+            const HolonomicVectorConstraintSet& segmentPositionConstraintSet,
+            bool applySegmentConstraintsToWaypoint,
             size_t controlIntervalCount,
             const std::vector<InitialGuessPoint>& initialGuessPoints,
             const std::vector<Obstacle>& obstacles)
-            : x(x), y(y), heading(heading),
-            xConstrained(xConstrained), yConstrained(yConstrained), headingConstrained(headingConstrained),
+            : waypointPositionConstraintSet(std::move(waypointPositionConstraintSet)),
+            segmentPositionConstraintSet(segmentPositionConstraintSet),
+            applySegmentConstraintsToWaypoint(applySegmentConstraintsToWaypoint),
             controlIntervalCount(controlIntervalCount), initialGuessPoints(initialGuessPoints),
             obstacles(obstacles) {
     }

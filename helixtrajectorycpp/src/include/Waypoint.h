@@ -4,41 +4,40 @@
 
 #include "InitialGuessPoint.h"
 #include "Obstacle.h"
+#include "PositionConstraint.h"
 
 namespace helixtrajectory {
 
     /**
-     * @brief A certain state that the robot must have during some instance of the trajectory.
-     * Includes options to constrain dynamics like position and velocity during that instance.
+     * @brief A certain state that the robot must have at some sample point of the trajectory.
+     * Waypoint includes options to constrain dynamics like position and velocity at the waypoint
+     * sample point. The waypoint sample point is defined as the sample point associated with the
+     * waypoint. The trajectory segment, or segment, is the ordered collection of sample points
+     * that lead up to the waypoint, including the waypoint sample point but not including the
+     * previous waypoint sample point in the path if it exists (if this is not the first waypiont).
      * 
      * @author Justin Babilino
      */
     class Waypoint {
     public:
         /**
-         * @brief the x-coordinate of the robot at this waypoint
+         * @brief the constraint on position for this waypoint; these constraints are applied
+         * only to the sample point associated with the waypoint
          */
-        double x;
+        PositionConstraint waypointPositionConstraint;
         /**
-         * @brief the y-coordinate of the robot at this waypoint
+         * @brief the constraint on position for this segment; these constraints are applied
+         * to the sample points of the segment but are only additionally applied to the waypoint
+         * sample point if applySegmentConstraintsToWaypoint is set to true
          */
-        double y;
+        PositionConstraint segmentPositionConstraint;
         /**
-         * @brief the heading of the robot at this waypoint
+         * @brief whether or not to apply the constraints specified in the segment constraint set to the
+         * sample point at the waypoint in addition to the sample points in the segment; the constraint
+         * at this sample will be the union of the segment and waypint constraints.
          */
-        double heading;
-        /**
-         * @brief whether or not the optimizer should constrain the x-coordinate of the robot at this waypoint
-         */
-        bool xConstrained;
-        /**
-         * @brief whether or not the optimizer should constrain the y-coordinate of the robot at this waypoint
-         */
-        bool yConstrained;
-        /**
-         * @brief whether or not the optimizer should constrain the heading of the robot at this waypoint
-         */
-        bool headingConstrained;
+        bool applySegmentPositionConstraintAtWaypoint;
+
         /**
          * @brief the number of control intervals in the optimization problem from the previous waypoint to this
          * waypoint
@@ -49,10 +48,6 @@ namespace helixtrajectory {
          * from the last waypoint to this waypoint
          */
         std::vector<InitialGuessPoint> initialGuessPoints;
-        /**
-         * @brief the collection of obstacles that the robot must avoid while approaching this waypoint
-         */
-        std::vector<Obstacle> obstacles;
 
         /**
          * @brief Destroy the Waypoint object
@@ -106,25 +101,23 @@ namespace helixtrajectory {
 
     protected:
         /**
-         * @brief Construct a new Waypoint object with its position state, position constraint settings,
-         * control interval count, and initial guess points.
+         * @brief Construct a Waypoint with its position constraint settings, control interval count,
+         * initial guess points, and obstacles.
          * 
-         * @param x the x-coordinate of the robot at this waypoint
-         * @param y the y-coordinate of the robot at this waypoint
-         * @param heading the heading of the robot at this waypoint
-         * @param xConstrained whether or not the optimizer should constrain the x-coordinate of the robot at this waypoint
-         * @param yConstrained whether or not the optimizer should constrain the y-coordinate of the robot at this waypoint
-         * @param headingConstrained whether or not the optimizer should constrain the heading of the robot at this waypoint
+         * @param waypointPositionConstraint the set of constraints on position for this waypoint
+         * @param segmentPositionConstraint the set of constraints on position for this segment
+         * @param applySegmentConstraintAtWaypoint whether or not to apply the constraint specified in
+         * the segment constraint set to the waypoint sample point
          * @param controlIntervalCount the number of control intervals in the optimization problem from the previous waypoint to this
          * waypoint
          * @param initialGuessPoints the points used to construct the linear initial trajectory guess for the trajectory segment
          * from the last waypoint to this waypoint
          * @param obstacles the collection of obstacles that the robot must avoid while approaching this waypoint
          */
-        Waypoint(double x, double y, double heading,
-                bool xConstrained, bool yConstrained, bool headingConstrained,
+        Waypoint(const PositionConstraint& waypointPositionConstraint,
+                const PositionConstraint& segmentPositionConstraint,
+                bool applySegmentConstraintAtWaypoint,
                 size_t controlIntervalCount,
-                const std::vector<InitialGuessPoint>& initialGuessPoints,
-                const std::vector<Obstacle>& obstacles);
+                const std::vector<InitialGuessPoint>& initialGuessPoints);
     };
 }
