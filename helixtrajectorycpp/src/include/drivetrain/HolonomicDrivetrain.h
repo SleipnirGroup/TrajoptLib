@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Drivetrain.h"
+#include "drivetrain/Drivetrain.h"
 
 namespace helixtrajectory {
 

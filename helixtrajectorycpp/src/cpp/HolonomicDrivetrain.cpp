@@ -1,11 +1,11 @@
-#include "HolonomicDrivetrain.h"
+#include "drivetrain/HolonomicDrivetrain.h"
 
-#include "Drivetrain.h"
-#include "Obstacle.h"
+#include "drivetrain/Drivetrain.h"
+#include "obstacle/Obstacle.h"
 
 namespace helixtrajectory {
 
-    HolonomicDrivetrain::HolonomicDrivetrain(double mass, double momentOfInertia, const Obstacle& bumpers)
-        : Drivetrain(mass, momentOfInertia, bumpers) {
+    HolonomicDrivetrain::HolonomicDrivetrain(double mass, double momentOfInertia)
+        : Drivetrain(mass, momentOfInertia) {
     }
 }

@@ -3,8 +3,8 @@
 #include <vector>
 
 #include "HolonomicTrajectoryOptimizationProblem.h"
-#include "HolonomicPath.h"
-#include "SwerveDrivetrain.h"
+#include "path/HolonomicPath.h"
+#include "drivetrain/SwerveDrivetrain.h"
 
 namespace helixtrajectory {
 

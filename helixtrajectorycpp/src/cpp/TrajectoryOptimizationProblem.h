@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "Drivetrain.h"
-#include "HolonomicDrivetrain.h"
-#include "Obstacle.h"
-#include "Path.h"
+#include "drivetrain/Drivetrain.h"
+#include "drivetrain/HolonomicDrivetrain.h"
+#include "obstacle/Obstacle.h"
+#include "path/Path.h"
 
 namespace helixtrajectory {
 

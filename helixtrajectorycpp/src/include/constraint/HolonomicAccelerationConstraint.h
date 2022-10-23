@@ -1,7 +1,7 @@
 #pragma once
 
-#include "PlanarBound.h"
-#include "ScalarBound.h"
+#include "constraint/PlanarBound.h"
+#include "constraint/ScalarBound.h"
 
 namespace helixtrajectory {
 
@@ -11,7 +11,7 @@ namespace helixtrajectory {
         PlanarBound fieldRelativeAccelerationBound;
         PlanarBound robotRelativeAccelerationBound;
 
-        HolonomicAccelerationConstraint(const ScalarBound& angularVelocityBound = ScalarBound(),
+        HolonomicAccelerationConstraint(const ScalarBound& angularAccelerationBound = ScalarBound(),
                 const PlanarBound& fieldRelativeAccelerationBound = PlanarBound(),
                 const PlanarBound& robotRelativeAccelerationBound = PlanarBound());
     };

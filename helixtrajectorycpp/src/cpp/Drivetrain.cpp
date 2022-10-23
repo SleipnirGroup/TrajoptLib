@@ -1,10 +1,8 @@
-#include "Drivetrain.h"
-
-#include <casadi/casadi.hpp>
+#include "drivetrain/Drivetrain.h"
 
 namespace helixtrajectory {
 
-    Drivetrain::Drivetrain(double mass, double momentOfInertia, const Obstacle& bumpers)
-        : mass(mass), momentOfInertia(momentOfInertia), bumpers(bumpers) {
+    Drivetrain::Drivetrain(double mass, double momentOfInertia)
+        : mass(mass), momentOfInertia(momentOfInertia) {
     }
 }

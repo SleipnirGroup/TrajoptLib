@@ -1,4 +1,4 @@
-#include "InitialGuessPoint.h"
+#include "path/InitialGuessPoint.h"
 
 #include <iostream>
 

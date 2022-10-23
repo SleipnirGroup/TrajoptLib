@@ -1,5 +1,6 @@
-#include "PlanarBound.h"
-#include "ScalarBound.h"
+#include "constraint/PlanarBound.h"
+
+#include "constraint/ScalarBound.h"
 
 #include <cmath>
 
@@ -18,19 +19,7 @@ namespace helixtrajectory {
     }
 
     bool PlanarBound::IsCircularlySymmetric() const noexcept {
-        return IsZero() || (IsPolar() && a1.Range() >= 2 * M_PI);
-    }
-
-    bool PlanarBound::IsOnXAxis() const noexcept {
-        return (IsRectangular() && a1.IsZero()) || (IsPolar() && (a1 == -M_PI || a1 == 0.0 || a1 == M_PI));
-    }
-    
-    bool PlanarBound::IsOnYAxis() const noexcept {
-        return (IsRectangular() && a0.IsZero()) || (IsPolar() && (a1 == -M_PI_2 || a1 == M_PI_2));
-    }
-
-    bool PlanarBound::IsLinear() const noexcept {
-        return !IsExact() && ((IsPolar() && a1.IsExact()) || (IsOnXAxis() || IsOnYAxis()));
+        return IsInfinite() || IsZero() || (IsPolar() && a1.Range() >= 2 * M_PI);
     }
 
     bool PlanarBound::IsExact() const noexcept {
@@ -42,10 +31,10 @@ namespace helixtrajectory {
     }
 
     bool PlanarBound::IsInfinite() const noexcept {
-        return a0.IsInfinite() && a1.IsInfinite();
+        return a0.IsInfinite() && ((IsRectangular() && a1.IsInfinite()) || (IsPolar() && a1.Range() >= 2 * M_PI));
     }
 
     bool PlanarBound::IsValid() const noexcept {
-        return a0.IsValid() && a1.IsValid() && (IsRectangular() || (IsPolar() && a0.lower >= 0.0 && a1.lower >= -M_PI && a1.upper <= M_PI));
+        return a0.IsValid() && a1.IsValid() && (IsRectangular() || (IsPolar() && a1.lower >= -M_PI && a1.upper <= M_PI));
     }
 }

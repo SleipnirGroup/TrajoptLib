@@ -3,12 +3,13 @@
 #include "CasADiOpti.h"
 #include "DebugOptions.h"
 #include "InvalidPathException.h"
-#include "SwerveDrivetrain.h"
+#include "drivetrain/SwerveDrivetrain.h"
 #include "SwerveTrajectoryOptimizationProblem.h"
 
 namespace helixtrajectory {
 
-    HolonomicTrajectory OptimalTrajectoryGenerator::Generate(const SwerveDrivetrain& swerveDrivetrain, const HolonomicPath& holonomicPath) {
+    Trajectory OptimalTrajectoryGenerator::Generate(const SwerveDrivetrain& swerveDrivetrain,
+            const HolonomicPath& holonomicPath, const Trajectory* previousSolution) {
         if (!holonomicPath.IsValid()) {
             throw InvalidPathException("Cannot optimize an invalid path.");
         }

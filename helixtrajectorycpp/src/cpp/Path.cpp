@@ -1,10 +1,16 @@
-#include "Path.h"
+#include "path/Path.h"
 
 #include <vector>
 
-#include "Waypoint.h"
+#include "constraint/PositionConstraint.h"
+#include "obstacle/Obstacle.h"
+#include "path/Waypoint.h"
 
 namespace helixtrajectory {
+
+    Path::Path(const Obstacle& bumpers, const PositionConstraint& globalPositionConstraint)
+            : bumpers(bumpers), globalPositionConstraint(globalPositionConstraint) {
+    }
 
     size_t Path::ControlIntervalTotal() const {
         size_t controlIntervalTotal = 0;

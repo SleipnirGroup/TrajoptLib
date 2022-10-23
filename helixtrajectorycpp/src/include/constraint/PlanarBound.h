@@ -2,7 +2,7 @@
 
 #include <limits>
 
-#include "ScalarBound.h"
+#include "constraint/ScalarBound.h"
 
 namespace helixtrajectory {
 
@@ -90,37 +90,9 @@ namespace helixtrajectory {
          * the bound would not change the bound. Therefore, circularly symemetry occurs
          * when the bound is polar and a1 has a range of 2*pi or when this bound is zero.
          * 
-         * @return IsPolar() && a1.upper - a1.lower >= 2*pi
+         * @return IsInfinite() || IsZero() || (IsPolar() && a1.Range() >= 2*pi)
          */
-        bool IsCircularlySymetric() const noexcept;
-
-        /**
-         * @brief Check if this planar bound is contained entirely on the x-axis.
-         * This occurs for cartesian bounds when y is bounded within [0, 0], and
-         * it occurs for polar bounds when theta is bounded within [-pi, -pi],
-         * [0, 0], or [pi, pi].
-         * 
-         * @return true if and only if the bound is contained entirely on the x-axis
-         */
-        bool IsOnXAxis() const noexcept;
-        
-        /**
-         * Check if this planar bound is contained entirely on the y-axis.
-         * This occurs for rectangular bounds when x is bounded within [0, 0], and
-         * it occurs for polar bounds when theta is bounded within [-pi/2, -pi/2]
-         * or [pi/2, pi/2].
-         * 
-         * @return true if and only if the bound is contained entirely on the x-axis
-         */
-        bool IsOnYAxis() const noexcept;
-
-        /**
-         * @brief Check if this planar bound is contained entirely on a straight line
-         * containing more than one point.
-         * 
-         * @return 
-         */
-        bool IsLinear() const noexcept;
+        bool IsCircularlySymmetric() const noexcept;
 
         /**
          * @brief Check if this planar bound only contains one point. This

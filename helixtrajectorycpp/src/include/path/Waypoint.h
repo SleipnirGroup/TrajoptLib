@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "InitialGuessPoint.h"
-#include "Obstacle.h"
-#include "PositionConstraint.h"
+#include "path/InitialGuessPoint.h"
+#include "obstacle/Obstacle.h"
+#include "constraint/PositionConstraint.h"
 
 namespace helixtrajectory {
 
@@ -31,12 +31,6 @@ namespace helixtrajectory {
          * sample point if applySegmentConstraintsToWaypoint is set to true
          */
         PositionConstraint segmentPositionConstraint;
-        /**
-         * @brief whether or not to apply the constraints specified in the segment constraint set to the
-         * sample point at the waypoint in addition to the sample points in the segment; the constraint
-         * at this sample will be the union of the segment and waypint constraints.
-         */
-        bool applySegmentPositionConstraintAtWaypoint;
 
         /**
          * @brief the number of control intervals in the optimization problem from the previous waypoint to this
@@ -116,7 +110,6 @@ namespace helixtrajectory {
          */
         Waypoint(const PositionConstraint& waypointPositionConstraint,
                 const PositionConstraint& segmentPositionConstraint,
-                bool applySegmentConstraintAtWaypoint,
                 size_t controlIntervalCount,
                 const std::vector<InitialGuessPoint>& initialGuessPoints);
     };

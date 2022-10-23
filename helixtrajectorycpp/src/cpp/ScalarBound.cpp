@@ -1,4 +1,4 @@
-#include "ScalarBound.h"
+#include "constraint/ScalarBound.h"
 
 #include <limits>
 
@@ -18,6 +18,10 @@ namespace helixtrajectory {
 
     bool ScalarBound::operator==(const ScalarBound& other) const noexcept {
         return lower == other.lower && upper == other.upper;
+    }
+
+    double SclarBound::Range() const noexcept {
+        return upper - lower;
     }
 
     bool ScalarBound::IsExact() const noexcept {

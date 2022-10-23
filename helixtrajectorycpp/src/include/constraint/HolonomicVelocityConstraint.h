@@ -1,7 +1,7 @@
 #pragma once
 
-#include "PlanarBound.h"
-#include "ScalarBound.h"
+#include "constraint/PlanarBound.h"
+#include "constraint/ScalarBound.h"
 
 namespace helixtrajectory {
 

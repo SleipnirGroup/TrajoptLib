@@ -1,22 +1,21 @@
-#include "Obstacle.h"
+#include "obstacle/Obstacle.h"
 
 #include <iostream>
 #include <vector>
 
 #include <casadi/casadi.hpp>
 
-#include "ObstaclePoint.h"
+#include "obstacle/ObstaclePoint.h"
 
 namespace helixtrajectory {
 
-    Obstacle::Obstacle(double safetyDistance, bool applyToAllSegments, const std::vector<ObstaclePoint>& points)
-        : safetyDistance(safetyDistance), applyToAllSegments(applyToAllSegments), points(points) {
+    Obstacle::Obstacle(double safetyDistance, const std::vector<ObstaclePoint>& points)
+        : safetyDistance(safetyDistance), points(points) {
     }
 
     std::ostream& operator<<(std::ostream& stream, const Obstacle& obstacle) {
         stream << std::boolalpha;
         return stream << "{\"safety_distance\": " << obstacle.safetyDistance
-                << ", \"apply_to_all_segments\": " << obstacle.applyToAllSegments
                 << ", \"points\": " << obstacle.points
                 << "}";
     }

@@ -1,23 +1,21 @@
-#include "Waypoint.h"
+#include "path/Waypoint.h"
 
 #include <vector>
 
-#include "InitialGuessPoint.h"
-#include "Obstacle.h"
+#include "constraint/PositionConstraint.h"
+#include "path/InitialGuessPoint.h"
+#include "obstacle/Obstacle.h"
 
 namespace helixtrajectory {
 
-    Waypoint::Waypoint(const HolonomicVectorConstraintSet& waypointPositionConstraintSet,
-            const HolonomicVectorConstraintSet& segmentPositionConstraintSet,
-            bool applySegmentConstraintsToWaypoint,
-            size_t controlIntervalCount,
-            const std::vector<InitialGuessPoint>& initialGuessPoints,
-            const std::vector<Obstacle>& obstacles)
-            : waypointPositionConstraintSet(std::move(waypointPositionConstraintSet)),
-            segmentPositionConstraintSet(segmentPositionConstraintSet),
-            applySegmentConstraintsToWaypoint(applySegmentConstraintsToWaypoint),
-            controlIntervalCount(controlIntervalCount), initialGuessPoints(initialGuessPoints),
-            obstacles(obstacles) {
+    Waypoint::Waypoint(const PositionConstraint& waypointPositionConstraint,
+                const PositionConstraint& segmentPositionConstraint,
+                size_t controlIntervalCount,
+                const std::vector<InitialGuessPoint>& initialGuessPoints)
+            : waypointPositionConstraint(waypointPositionConstraint),
+            segmentPositionConstraint(segmentPositionConstraint),
+            controlIntervalCount(controlIntervalCount),
+            initialGuessPoints(initialGuessPoints) {
     }
 
     bool Waypoint::IsInitialWaypoint() const noexcept {
@@ -28,7 +26,8 @@ namespace helixtrajectory {
                 || (!IsInitialWaypoint() && initialGuessPoints.size() < controlIntervalCount);
     }
     bool Waypoint::IsPositionStateKnown() const noexcept {
-        return xConstrained && yConstrained && headingConstrained;
+        return waypointPositionConstraint.headingBound.IsExact()
+                && waypointPositionConstraint.fieldRelativePositionBound.IsExact();
     }
     bool Waypoint::IsStateKnown() const noexcept {
         return IsPositionStateKnown() && IsVelocityStateKnown();

@@ -1,18 +1,25 @@
-#include "HolonomicPath.h"
+#include "path/HolonomicPath.h"
 
 #include <iostream>
 #include <vector>
 
 #include <casadi/casadi.hpp>
 
-#include "HolonomicWaypoint.h"
-#include "Path.h"
-#include "Waypoint.h"
+#include "path/HolonomicWaypoint.h"
+#include "path/Path.h"
+#include "path/Waypoint.h"
 
 namespace helixtrajectory {
 
-    HolonomicPath::HolonomicPath(const std::vector<HolonomicWaypoint>& holonomicWaypoints)
-        : holonomicWaypoints(holonomicWaypoints) {
+    HolonomicPath::HolonomicPath(const std::vector<HolonomicWaypoint>& holonomicWaypoints,
+            const Obstacle& bumpers,
+            const PositionConstraint& globalPositionConstraint,
+            const HolonomicVelocityConstraint& globalVelocityConstraint,
+            const HolonomicAccelerationConstraint& globalAccelerationConstraint)
+            : Path(bumpers, globalPositionConstraint),
+            holonomicWaypoints(holonomicWaypoints),
+            globalVelocityConstraint(globalVelocityConstraint),
+            globalAccelerationConstraint(globalAccelerationConstraint) {
     }
 
     size_t HolonomicPath::Length() const noexcept {

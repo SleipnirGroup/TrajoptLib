@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 
-#include "HolonomicWaypoint.h"
-#include "Path.h"
+#include "path/HolonomicWaypoint.h"
+#include "path/Path.h"
 
 namespace helixtrajectory {
 

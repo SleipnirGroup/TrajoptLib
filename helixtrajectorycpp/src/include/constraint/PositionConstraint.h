@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "Obstacle.h"
-#include "PlanarBound.h"
-#include "ScalarBound.h"
+#include "obstacle/Obstacle.h"
+#include "constraint/PlanarBound.h"
+#include "constraint/ScalarBound.h"
 
 namespace helixtrajectory {
 

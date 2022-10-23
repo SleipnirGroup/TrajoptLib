@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Waypoint.h"
+#include "constraint/PositionConstraint.h"
+#include "obstacle/Obstacle.h"
+#include "path/Waypoint.h"
 
 namespace helixtrajectory {
 

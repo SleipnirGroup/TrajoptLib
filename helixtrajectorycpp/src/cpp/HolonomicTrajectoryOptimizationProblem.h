@@ -3,10 +3,10 @@
 #include <memory>
 
 #include "TrajectoryOptimizationProblem.h"
-#include "Obstacle.h"
-#include "HolonomicDrivetrain.h"
-#include "HolonomicPath.h"
-#include "HolonomicTrajectory.h"
+#include "drivetrain/HolonomicDrivetrain.h"
+#include "obstacle/Obstacle.h"
+#include "path/HolonomicPath.h"
+#include "trajectory/Trajectory.h"
 
 namespace helixtrajectory {
 

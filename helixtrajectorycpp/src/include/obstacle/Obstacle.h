@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-#include "ObstaclePoint.h"
+#include "obstacle/ObstaclePoint.h"
 
 namespace helixtrajectory {
 

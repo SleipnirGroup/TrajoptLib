@@ -1,4 +1,4 @@
-#include "ObstaclePoint.h"
+#include "obstacle/ObstaclePoint.h"
 
 #include <iostream>
 

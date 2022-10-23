@@ -5,18 +5,16 @@
 
 #include <jni.h>
 
-#include "HolonomicPath.h"
-#include "HolonomicTrajectory.h"
-#include "HolonomicTrajectorySample.h"
-#include "HolonomicTrajectorySegment.h"
-#include "HolonomicWaypoint.h"
-#include "InitialGuessPoint.h"
+#include "path/HolonomicPath.h"
+#include "trajectory/Trajectory.h"
+#include "path/HolonomicWaypoint.h"
+#include "path/InitialGuessPoint.h"
 #include "InvalidPathException.h"
-#include "Obstacle.h"
-#include "ObstaclePoint.h"
+#include "obstacle/Obstacle.h"
+#include "obstacle/ObstaclePoint.h"
 #include "OptimalTrajectoryGenerator.h"
-#include "SwerveDrivetrain.h"
-#include "SwerveModule.h"
+#include "drivetrain/SwerveDrivetrain.h"
+#include "drivetrain/SwerveModule.h"
 #include "TrajectoryGenerationException.h"
 
 using namespace helixtrajectory;

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "TrajectorySample.h"
+#include "trajectory/TrajectorySample.h"
 
 namespace helixtrajectory {
 

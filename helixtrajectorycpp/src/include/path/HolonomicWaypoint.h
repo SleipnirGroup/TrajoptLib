@@ -3,11 +3,11 @@
 #include <iostream>
 #include <vector>
 
-#include "HolonomicAccelerationConstraint.h"
-#include "HolonomicVelocityConstraint.h"
-#include "InitialGuessPoint.h"
-#include "Obstacle.h"
-#include "Waypoint.h"
+#include "constraint/HolonomicAccelerationConstraint.h"
+#include "constraint/HolonomicVelocityConstraint.h"
+#include "path/InitialGuessPoint.h"
+#include "obstacle/Obstacle.h"
+#include "path/Waypoint.h"
 
 namespace helixtrajectory {
 
@@ -21,11 +21,9 @@ namespace helixtrajectory {
     public:
         HolonomicVelocityConstraint waypointVelocityConstraint;
         HolonomicVelocityConstraint segmentVelocityConstraint;
-        bool applySegmentVelocityConstraintAtWaypoint;
 
-        HolonomicAccelerationConstraint waypointAccelerationConstraintSet;
-        HolonomicAccelerationConstraint segmentAccelerationConstraintSet;
-        bool applySegmentAccelerationConstraintAtWaypoint;
+        HolonomicAccelerationConstraint waypointAccelerationConstraint;
+        HolonomicAccelerationConstraint segmentAccelerationConstraint;
 
         /**
          * @brief Construct a new Holonomic Waypoint object with its position and velocity state and
@@ -57,14 +55,15 @@ namespace helixtrajectory {
          *                           guess for the trajectory segment from the last waypoint to this waypoint
          * @param obstacles the collection of obstacles that the robot must avoid while approaching this waypoint
          */
-        HolonomicWaypoint(const HolonomicVelocityConstraint& waypointVelocityConstraint,
-                const HolonomicVelocityConstraint& segmentVelocityConstraint,
-                bool applySegmentVelocityConstraintAtWaypoint,
-                const HolonomicAccelerationConstraint& waypointAccelerationConstraint,
-                const HolonomicAccelerationConstraint& segmentAccelerationConstraint,
-                bool applySegmentAccelerationConstraintAtWaypoint,
-                size_t controlIntervalCount,
-                const std::vector<InitialGuessPoint>& initialGuessPoints);
+        HolonomicWaypoint(
+                const PositionConstraint& waypointPositionConstraint,
+                const PositionConstraint& segmentPositionConstraint = PositionConstraint(),
+                const HolonomicVelocityConstraint& waypointVelocityConstraint = HolonomicVelocityConstraint(),
+                const HolonomicVelocityConstraint& segmentVelocityConstraint = HolonomicVelocityConstraint(),
+                const HolonomicAccelerationConstraint& waypointAccelerationConstraint = HolonomicAccelerationConstraint(),
+                const HolonomicAccelerationConstraint& segmentAccelerationConstraint = HolonomicAccelerationConstraint(),
+                size_t controlIntervalCount = 100,
+                const std::vector<InitialGuessPoint>& initialGuessPoints = {});
 
         /**
          * @brief Check if the velocity state at this holonomic waypoint is known. This
