@@ -1,10 +1,6 @@
 #pragma once
 
 #include "Drivetrain.h"
-#include "HolonomicAccelerationConstraint.h"
-#include "HolonomicVelocityConstraint.h"
-#include "Obstacle.h"
-#include "PositionConstraint.h"
 
 namespace helixtrajectory {
 
@@ -27,13 +23,6 @@ namespace helixtrajectory {
          * @param momentOfInertia the moment of inertia of the robot about the center of rotation, which 
          * @param bumpers the bumpers of the robot represented as an obstacle
          */
-        HolonomicDrivetrain(double mass, double momentOfInertia, const Obstacle& bumpers,
-                const PositionConstraint& globalPositionConstraint = PositionConstraint(),
-                const HolonomicVelocityConstraint& globalVelocityConstraint = HolonomicVelocityConstraint(),
-                const HolonomicAccelerationConstraint& globalAccelerationConstraint = HolonomicAccelerationConstraint());
-
-    public:
-        HolonomicVelocityConstraint globalVelocityConstraint;
-        HolonomicAccelerationConstraint globalAccelerationConstraint;
+        HolonomicDrivetrain(double mass, double momentOfInertia);
     };
 }

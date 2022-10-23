@@ -1,20 +1,31 @@
 #pragma once
 
-#include "Obstacle.h"
-#include "PositionConstraint.h"
 
 namespace helixtrajectory {
 
     /**
-     * @brief This class represents an abstract robot with bumpers. The underlying robot
+     * @brief This class represents an abstract robot with bumpers. The underlying
      * drivetrain could be differential, swerve, mecanum, omni, etc. This class provides
      * the common obstacle avoidance constraints and mass and moment of inertia fields.
-     * Related to the 2D coordinate system of the field called the field coordinate system,
-     * the robot coordinate system is defined with its center as the center of the robot,
-     * and it rotates as the robot rotates. The nonrotating robot coordinate system is defined
-     * with the same center as the robot coordinate system, but it does not rotate and its axes
-     * always point in the same directions as the field coordinate system. The robot rotates
-     * relative to the nonrotating robot coordinate system.
+     * 
+     * The field coordinate system is the base system that is fixed to the field with
+     * some arbitrary center. Other coordinate systems defined do not have a relative
+     * velocity to the field coordinate system, but their position and orientation depends
+     * on the current position of the robot. For example, if the robot is spinning,
+     * then the robot has angular velocity relative to all the systems defined here, and
+     * the magnitude of the robot's velocity is the same in all the systems but the
+     * direction varies.
+     * 
+     * We define these other systems: the robot coordinate system, the
+     * robot nonrotating coordinate system, and the robot velocity coordinate system.
+     * The robot coordinate system is centered on and oriented with the front of the
+     * robot towards the x-axis. The robot nonrotating coordinate system is centered
+     * on the robot but is oriented with the field. The robot velocity coordinate system
+     * is centered on the robot and it is oriented with the robot's velocity in the
+     * x-direction.
+     * 
+     * Note that in differential drivetrains, the robot coordinate system
+     * is equivalent ot the robot velocity coordinate system.
      * 
      * The axis of rotation of the robot pierces through the origin of the robot coordinate
      * system and is normal to the plane of the field.
@@ -30,15 +41,14 @@ namespace helixtrajectory {
     class Drivetrain {
     protected:
         /**
-         * @brief Construct a new Drive object with the robot's mass, moment of inertia,
-         * and bumpers. Bumpers are represented as an obstacle.
+         * @brief Construct a Drivetrain object with the robot's mass, moment of inertia,
+         * and bumpers.
          * 
          * @param mass the mass of the entire robot
-         * @param momentOfInertia the moment of inertia of the robot about the center of rotation
+         * @param momentOfInertia the moment of inertia of the robot about the axis of rotation
          * @param bumpers the bumpers of the robot
          */
-        Drivetrain(double mass, double momentOfInertia, const Obstacle& bumpers,
-                const PositionConstraint& globalPositionConstraint = PositionConstraint());
+        Drivetrain(double mass, double momentOfInertia);
 
     public:
         /**
@@ -50,15 +60,6 @@ namespace helixtrajectory {
          * center of robot coordinate system
          */
         double momentOfInertia;
-        /**
-         * @brief the boundaries of the robot's bumpers, represented as an Obstacle.
-         */
-        Obstacle bumpers;
-        /**
-         * @brief the constraint on position to be applied to all samples in
-         * the trajectory.
-         */
-        PositionConstraint globalPositionConstraint;
 
         /**
          * @brief Destroy the Drivetrain object

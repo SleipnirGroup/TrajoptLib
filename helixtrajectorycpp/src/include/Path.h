@@ -11,7 +11,19 @@ namespace helixtrajectory {
      * @author Justin Babilino
      */
     class Path {
+    protected:
+        Path(const Obstacle& bumpers, const PositionConstraint& globalPositionConstraint);
     public:
+        /**
+         * @brief the boundaries of the robot's bumpers, represented as an Obstacle.
+         */
+        Obstacle bumpers;
+        /**
+         * @brief the constraint on position to be applied to all samples in
+         * the trajectory.
+         */
+        PositionConstraint globalPositionConstraint;
+
         /**
          * @brief Destroy the Path object
          */

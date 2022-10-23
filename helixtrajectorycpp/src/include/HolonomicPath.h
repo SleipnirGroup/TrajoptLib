@@ -17,16 +17,23 @@ namespace helixtrajectory {
      */
     class HolonomicPath : public Path {
     public:
+        HolonomicVelocityConstraint globalVelocityConstraint;
+        HolonomicAccelerationConstraint globalAccelerationConstraint;
         /**
          * @brief the holonomic waypoints that make up this path
          */
         std::vector<HolonomicWaypoint> holonomicWaypoints;
+
         /**
          * @brief Construct a Holonomic Path with a list of holonomic waypoints
          * 
          * @param waypoints the holonomic waypoints that make up this path
          */
-        explicit HolonomicPath(const std::vector<HolonomicWaypoint>& holonomicWaypoints);
+        HolonomicPath(const std::vector<HolonomicWaypoint>& holonomicWaypoints,
+                const Obstacle& bumpers,
+                const PositionConstraint& globalPositionConstraint = PositionConstraint(),
+                const HolonomicVelocityConstraint& globalVelocityConstraint = HolonomicVelocityConstraint(),
+                const HolonomicAccelerationConstraint& globalAccelerationConstraint = HolonomicAccelerationConstraint());
 
         /**
          * @brief Get the number of holonomic waypoints that
