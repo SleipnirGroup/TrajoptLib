@@ -3,17 +3,19 @@
 #include "TrajectoryOptimizationProblem.h"
 
 #include <array>
-#include <iostream>
-#define _USE_MATH_DEFINES
 #include <cmath>
+#include <iostream>
+#include <limits>
 #include <vector>
 
 #include "CasADiOpti.h"
-#include "Drivetrain.h"
-#include "HolonomicPath.h"
-#include "HolonomicTrajectory.h"
-#include "Obstacle.h"
-#include "Path.h"
+#include "constraint/PlanarBound.h"
+#include "constraint/ScalarBound.h"
+#include "drivetrain/Drivetrain.h"
+#include "path/HolonomicPath.h"
+#include "trajectory/Trajectory.h"
+#include "obstacle/Obstacle.h"
+#include "path/Path.h"
 
 namespace helixtrajectory {
 
@@ -107,14 +109,68 @@ namespace helixtrajectory {
         std::cout << "Set Initial Trajectory" << std::endl;
 #endif
     }
+    
+    template<typename Opti>
+    void TrajectoryOptimizationProblem<Opti>::ApplyScalarBoundConstraint(Opti& opti, const Expression& scalar, const ScalarBound& scalarBound) {
+        if (scalarBound.IsExact()) {
+            opti.SubjectTo(scalar == scalarBound.lower);
+        } else {
+            if (planarBound.a0.lower >= -std::numeric_limits<double>::infinity()) {
+                opti.SubjectTo(scalar >= planarBound.a0.lower);
+            }
+            if (planarBound.a0.upper <= +std::numeric_limits<double>::infinity()) {
+                opti.SubjectTo(scalar <= planarBound.a0.upper);
+            }
+        }
+    }
+
+    template<typename Opti>
+    void TrajectoryOptimizationProblem<Opti>::ApplyPlanarBoundConstraint(Opti& opti, const Expression& vectorX,
+            const Expression& vectorY, const PlanarBound& planarBound) {
+        if (planarBound.IsZero()) {
+            opti.SubjectTo(vectorX == 0.0);
+            opti.SubjectTo(vectorY == 0.0);
+        } else {
+            switch (planarBound.coordinateType) {
+                case PlanarBound::CoordinateType::kRectangular:
+                    ApplyScalarBoundConstraint(opti, vectorX, planarBound.a0);
+                    ApplyScalarBoundConstraint(opti, vectorY, planarBound.a1);
+                    break;
+                case PlanarBound::CoordinateType::kPolar:
+                    if (planarBound.IsExact()) {
+                        double exactR = planarBound.a0.lower;
+                        double exactTheta = planarBound.a0.lower;
+                        double exactX = exactR * std::cos(exactTheta);
+                        double exactY = exactR * std::sin(exactTheta);
+                        opti.SubjectTo(vectorX == exactX);
+                        opti.SubjectTo(vectorY == exactY);
+                    } else if (planarBound.a1.IsExact()) {
+
+                    }
+                    if (planarBound.IsCircularlySymmetric()) {
+                        double maxR2 = std::max(std::abs(planarBound.a0.lower), std::abs(planarBound.a0.upper));
+                        maxR2 = maxR2 * maxR2;
+                        opti.SubjectTo(vectorX * vectorX + vectorY * vectorY <= maxR2);
+                    } else if (planarBound.IsExact()) {
+                        double exactR = planarBound.a0.
+                    }
+                    break;
+            }
+        }
+    }
 
     template<typename Opti>
     void TrajectoryOptimizationProblem<Opti>::ApplyWaypointConstraints(Opti& opti,
             const std::vector<std::vector<Expression>>& xSegments, const std::vector<std::vector<Expression>>& ySegments,
             const std::vector<std::vector<Expression>>& thetaSegments, const Path& path) {
-        for (int waypointIndex = 0; waypointIndex < path.Length(); waypointIndex++) {
+        for (size_t waypointIndex = 0; waypointIndex < path.Length(); waypointIndex++) {
             const Waypoint& waypoint = path.GetWaypoint(waypointIndex);
-            size_t sampleIndex = xSegments[waypointIndex].size() - 1;
+            size_t segmentSampleCount = waypoint.controlIntervalCount;
+            size_t waypointSampleIndex = segmentSampleCount - 1;
+
+            for (size_t segmentSampleIndex = 0; segmentSampleIndex < segmentSampleCount - 1; segmentSampleIndex++) {
+                opti.SubjectTo(thetaSegments[waypointIndex][segmentSampleIndex] <= waypoint.waypointPositionConstraint.fieldRelativePositionBound.);
+            }
             if (waypoint.xConstrained) {
                 opti.SubjectTo(xSegments[waypointIndex][sampleIndex] == waypoint.x);
             }

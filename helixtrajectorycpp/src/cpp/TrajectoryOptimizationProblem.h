@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "constraint/PlanarBound.h"
+#include "constraint/ScalarBound.h"
 #include "drivetrain/Drivetrain.h"
 #include "drivetrain/HolonomicDrivetrain.h"
 #include "obstacle/Obstacle.h"
@@ -97,6 +99,10 @@ namespace helixtrajectory {
          * @param path the path
          */
         TrajectoryOptimizationProblem(const Drivetrain& drivetrain, const Path& path);
+
+        void ApplyScalarBoundConstraint(Opti& opti, const Expression& scalar, const ScalarBound& scalarBound);
+        void ApplyPlanarBoundConstraint(Opti& opti, const Expression& vectorX, const Expression& vectorY,
+                const PlanarBound& planarBound);
 
     private:
         /**
