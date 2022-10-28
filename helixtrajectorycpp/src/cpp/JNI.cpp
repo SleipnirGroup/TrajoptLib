@@ -162,11 +162,22 @@ HolonomicWaypoint holonomicWaypointFromJHolonomicWaypoint(JNIEnv* env, jobject j
     std::vector<InitialGuessPoint> initialGuessPoints = vectorFromJList<InitialGuessPoint, initialGuessPointFromJInitialGuessPoint>(env, jHolonomicWaypointInitialGuessPoints);
     std::vector<Obstacle> obstacles = vectorFromJList<Obstacle, obstacleFromJObstacle>(env, jHolonomicWaypointObstacles);
 
-    return HolonomicWaypoint(jHolonomicWaypointX, jHolonomicWaypointY, jHolonomicWaypointHeading,
-            jHolonomicWaypointVelocityX, jHolonomicWaypointY, jHolonomicWaypointAngularVelocity,
-            jHolonomicWaypointXConstrained, jHolonomicWaypointYConstrained, jHolonomicWaypointHeadingConstrained,
-            jHolonomicWaypointVelocityXConstrained, jHolonomicWaypointVelocityYConstrained, jHolonomicWaypointVelocityMagnitudeConstrained,
-            jHolonomicWaypointAngularVelocityConstrained, jHolonomicWaypointControlIntervalCount, initialGuessPoints, obstacles);
+    return HolonomicWaypoint(
+            jHolonomicWaypointX,
+            jHolonomicWaypointY,
+            jHolonomicWaypointHeading,
+            jHolonomicWaypointVelocityX,
+            jHolonomicWaypointVelocityY,
+            jHolonomicWaypointAngularVelocity,
+            jHolonomicWaypointXConstrained,
+            jHolonomicWaypointYConstrained,
+            jHolonomicWaypointHeadingConstrained,
+            jHolonomicWaypointVelocityXConstrained,
+            jHolonomicWaypointVelocityYConstrained,
+            jHolonomicWaypointVelocityMagnitudeConstrained,
+            jHolonomicWaypointAngularVelocityConstrained,
+            jHolonomicWaypointControlIntervalCount,
+            initialGuessPoints, obstacles);
 }
 
 HolonomicPath holonomicPathFromJHolonomicPath(JNIEnv* env, jobject jHolonomicPath) {
