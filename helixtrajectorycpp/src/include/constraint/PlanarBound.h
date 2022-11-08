@@ -1,8 +1,9 @@
 #pragma once
 
-#include <limits>
+#include <variant>
 
-#include "constraint/ScalarBound.h"
+#include "constraint/PolarBound.h"
+#include "constraint/RectangularBound.h"
 
 namespace helixtrajectory {
 
@@ -27,105 +28,5 @@ namespace helixtrajectory {
      * 
      * @author Justin Babilino
      */
-    class PlanarBound {
-    public:
-        /**
-         * @brief Enumerates the supported coordinate system types for planar bounds.
-         * This includes rectangular (Cartesian, x-y) and polar coordinates (r-theta).
-         */
-        enum class CoordinateType {
-            /**
-             * @brief indicates rectangular coordinates in planar bounds
-             */
-            kRectangular,
-            /**
-             * @brief indicates polar coordinates in planar bounds
-             */
-            kPolar
-        };
-
-        /**
-         * @brief the first abstract coordinate of the planar bound, indicating either
-         * the rectangular x-coordinate bound or the polar r-coordinate bound
-         */
-        ScalarBound a0;
-        /**
-         * @brief the bounds on the second abstract coordinate of the planar bound,
-         * indicating either the rectangular y-coordinate bound or the polar
-         * theta-coordinate bound
-         */
-        ScalarBound a1;
-        /**
-         * @brief the coordinate type to use when interpreting a0 and a1
-         */
-        CoordinateType coordinateType;
-
-        /**
-         * @brief Construct a Planar Bound with the boundaries of abstract coordinates
-         * a0 and a1 and the type of coordinates. By default, an infinite bound is created.
-         * 
-         * @param a0 the bounds on the first abstract coordinate
-         * @param a1 the bounds on the second abstract coordinate
-         * @param coordinateType the coordinate type
-         */
-        PlanarBound(const ScalarBound& a0 = ScalarBound(), const ScalarBound& a1 = ScalarBound(),
-                CoordinateType coordinateType = CoordinateType::kRectangular);
-
-        /**
-         * @brief Check if this bound is rectangular.
-         * 
-         * @return coordinateType == CoordinateType::kRectangular
-         */
-        bool IsRectangular() const noexcept;
-        /**
-         * @brief Check if this bound is polar.
-         * 
-         * @return coordinateType == CoordinateType::kPolar
-         */
-        bool IsPolar() const noexcept;
-
-        /**
-         * @brief Check if this planar bound is circularly symmetric. A planar bound is
-         * circularly symmetric if applying a rotation transformation about the origin to
-         * the bound would not change the bound. Therefore, circularly symemetry occurs
-         * when the bound is polar and a1 has a range of 2*pi or when this bound is zero.
-         * 
-         * @return IsInfinite() || IsZero() || (IsPolar() && a1.Range() >= 2*pi)
-         */
-        bool IsCircularlySymmetric() const noexcept;
-
-        /**
-         * @brief Check if this planar bound only contains one point. This
-         * occurs when a0 and a1 are exact.
-         * 
-         * @return a0.IsExact() && a1.IsExact()
-         */
-        bool IsExact() const noexcept;
-
-        /**
-         * @brief Check if this planar bound only contains the origin. This
-         * occurs for rectangular bounds when a0 and a1 are both zero and for
-         * polar bounds when a0 is zero.
-         * 
-         * @return a0.IsZero() && (!IsRectangular() || a1.IsZero())
-         */
-        bool IsZero() const noexcept;
-
-        /**
-         * @brief Check if this planar bound is infinite. This occurs for rectangular
-         * bounds when a0 and a1 are infinite and for polar bounds when a0 contains
-         * the interval [0, inf].
-         */
-        bool IsInfinite() const noexcept;
-
-        /**
-         * @brief Check if this planar bound is valid. A planar bound is valid when the bounds
-         * on a0 and a1 are valid, and additionally for planar bounds, a0 is contained within
-         * the interval [0, inf] and a1 is contained within
-         * the interval [-pi, pi].
-         * 
-         * @return true if and only if this planar bound is valid
-         */
-        bool IsValid() const noexcept;
-    };
+    using PlanarBound = std::variant<RectangularBound, PolarBound>;
 }

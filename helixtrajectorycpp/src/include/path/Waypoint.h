@@ -4,7 +4,7 @@
 
 #include "path/InitialGuessPoint.h"
 #include "obstacle/Obstacle.h"
-#include "constraint/PositionConstraint.h"
+#include "constraint/Constraint.h"
 
 namespace helixtrajectory {
 
@@ -24,13 +24,13 @@ namespace helixtrajectory {
          * @brief the constraint on position for this waypoint; these constraints are applied
          * only to the sample point associated with the waypoint
          */
-        PositionConstraint waypointPositionConstraint;
+        std::vector<Constraint> waypointConstraints;
         /**
          * @brief the constraint on position for this segment; these constraints are applied
          * to the sample points of the segment but are only additionally applied to the waypoint
          * sample point if applySegmentConstraintsToWaypoint is set to true
          */
-        PositionConstraint segmentPositionConstraint;
+        std::vector<Constraint> segmentConstraints;
 
         /**
          * @brief the number of control intervals in the optimization problem from the previous waypoint to this
@@ -108,8 +108,8 @@ namespace helixtrajectory {
          * from the last waypoint to this waypoint
          * @param obstacles the collection of obstacles that the robot must avoid while approaching this waypoint
          */
-        Waypoint(const PositionConstraint& waypointPositionConstraint,
-                const PositionConstraint& segmentPositionConstraint,
+        Waypoint(const std::vector<Constraint>& waypointConstraints,
+                const std::vector<Constraint>& segmentConstraints,
                 size_t controlIntervalCount,
                 const std::vector<InitialGuessPoint>& initialGuessPoints);
     };

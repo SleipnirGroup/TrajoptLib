@@ -17,8 +17,7 @@ namespace helixtrajectory {
      */
     class HolonomicPath : public Path {
     public:
-        HolonomicVelocityConstraint globalVelocityConstraint;
-        HolonomicAccelerationConstraint globalAccelerationConstraint;
+        std::vector<HolonomicConstraint> globalHolonomicConstraints;
         /**
          * @brief the holonomic waypoints that make up this path
          */
@@ -31,9 +30,8 @@ namespace helixtrajectory {
          */
         HolonomicPath(const std::vector<HolonomicWaypoint>& holonomicWaypoints,
                 const Obstacle& bumpers,
-                const PositionConstraint& globalPositionConstraint = PositionConstraint(),
-                const HolonomicVelocityConstraint& globalVelocityConstraint = HolonomicVelocityConstraint(),
-                const HolonomicAccelerationConstraint& globalAccelerationConstraint = HolonomicAccelerationConstraint());
+                const std::vector<Constraint>& globalConstraints = {},
+                const std::vector<HolonomicConstraint>& globalHolonomicConstraints = {});
 
         /**
          * @brief Get the number of holonomic waypoints that

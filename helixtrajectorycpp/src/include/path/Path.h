@@ -1,6 +1,8 @@
 #pragma once
 
-#include "constraint/PositionConstraint.h"
+#include <vector>
+
+#include "constraint/Constraint.h"
 #include "obstacle/Obstacle.h"
 #include "path/Waypoint.h"
 
@@ -13,8 +15,6 @@ namespace helixtrajectory {
      * @author Justin Babilino
      */
     class Path {
-    protected:
-        Path(const Obstacle& bumpers, const PositionConstraint& globalPositionConstraint);
     public:
         /**
          * @brief the boundaries of the robot's bumpers, represented as an Obstacle.
@@ -24,12 +24,7 @@ namespace helixtrajectory {
          * @brief the constraint on position to be applied to all samples in
          * the trajectory.
          */
-        PositionConstraint globalPositionConstraint;
-
-        /**
-         * @brief Destroy the Path object
-         */
-        virtual ~Path() = default;
+        std::vector<Constraint> globalConstraints;
 
         /**
          * @brief Get the number of waypoints that make up this path.
@@ -66,5 +61,13 @@ namespace helixtrajectory {
          * @return true if this path is valid
          */
         bool IsValid() const noexcept;
+        
+        /**
+         * @brief Destroy the Path object
+         */
+        virtual ~Path() = default;
+
+    protected:
+        Path(const Obstacle& bumpers, const std::vector<Constraint>& globalConstraints);
     };
 }

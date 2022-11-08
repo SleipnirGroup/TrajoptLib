@@ -25,19 +25,23 @@ namespace helixtrajectory {
          * @param lower the lower bound
          * @param upper the upper bound
          */
-        ScalarBound(double lower, double upper);
+        constexpr ScalarBound(double lower, double upper);
         /**
          * @brief Construct a Scalar Bound that represents the interval
          * [value, value].
          * 
          * @param value the value to bound the number between
          */
-        ScalarBound(double value);
+        constexpr ScalarBound(double value);
+
         /**
-         * @brief Construct Scalar Bound including all numbers from
-         * negative infinity to positive infinity.
+         * @return a scalar bound from 0 to positive infinity
          */
-        ScalarBound();
+        static constexpr ScalarBound PositiveValues();
+        /**
+         * @return a scalar bound from -pi to pi
+         */
+        static constexpr ScalarBound ThetaValues();
 
         /**
          * @brief Check if this scalar bound is equivalent to another scalar bound.
@@ -89,5 +93,6 @@ namespace helixtrajectory {
          * @return lower <= upper
          */
         bool IsValid() const noexcept;
+
     };
 }

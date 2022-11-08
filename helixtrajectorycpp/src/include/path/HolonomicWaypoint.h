@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 
-#include "constraint/HolonomicAccelerationConstraint.h"
-#include "constraint/HolonomicVelocityConstraint.h"
+#include "constraint/HolonomicConstraint.h"
+#include "constraint/Constraint.h"
 #include "path/InitialGuessPoint.h"
 #include "obstacle/Obstacle.h"
 #include "path/Waypoint.h"
@@ -19,11 +19,8 @@ namespace helixtrajectory {
      */
     class HolonomicWaypoint : public Waypoint {
     public:
-        HolonomicVelocityConstraint waypointVelocityConstraint;
-        HolonomicVelocityConstraint segmentVelocityConstraint;
-
-        HolonomicAccelerationConstraint waypointAccelerationConstraint;
-        HolonomicAccelerationConstraint segmentAccelerationConstraint;
+        std::vector<HolonomicConstraint> waypointHolonomicConstraints;
+        std::vector<HolonomicConstraint> segmentHolonomicConstraints;
 
         /**
          * @brief Construct a new Holonomic Waypoint object with its position and velocity state and
@@ -56,12 +53,10 @@ namespace helixtrajectory {
          * @param obstacles the collection of obstacles that the robot must avoid while approaching this waypoint
          */
         HolonomicWaypoint(
-                const PositionConstraint& waypointPositionConstraint,
-                const PositionConstraint& segmentPositionConstraint = PositionConstraint(),
-                const HolonomicVelocityConstraint& waypointVelocityConstraint = HolonomicVelocityConstraint(),
-                const HolonomicVelocityConstraint& segmentVelocityConstraint = HolonomicVelocityConstraint(),
-                const HolonomicAccelerationConstraint& waypointAccelerationConstraint = HolonomicAccelerationConstraint(),
-                const HolonomicAccelerationConstraint& segmentAccelerationConstraint = HolonomicAccelerationConstraint(),
+                const std::vector<Constraint>& waypointConstraints,
+                const std::vector<Constraint>& segmentConstraints = {},
+                const std::vector<HolonomicConstraint>& waypointHolonomicConstraints = {},
+                const std::vector<HolonomicConstraint>& segmentHolonomicConstraints = {},
                 size_t controlIntervalCount = 100,
                 const std::vector<InitialGuessPoint>& initialGuessPoints = {});
 
