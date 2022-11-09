@@ -28,5 +28,5 @@ namespace helixtrajectory {
      * 
      * @author Justin Babilino
      */
-    using PlanarBound = std::variant<RectangularBound, PolarBound>;
+    using Set2d = std::variant<, PolarBound>;
 }

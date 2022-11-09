@@ -2,16 +2,16 @@
 
 #include <limits>
 
-#include "constraint/ScalarBound.h"
+#include "set/IntervalSet1d.h"
 
 namespace helixtrajectory {
 
-    class RectangularBound {
+    class RectangularSet2d {
     public:
-        ScalarBound x;
-        ScalarBound y;
+        IntervalSet2d x;
+        IntervalSet2d y;
 
-        constexpr RectangularBound(const ScalarBound& x, const ScalarBound& y);
+        RectangularSet2d(const ScalarBound& x, const ScalarBound& y);
 
         /**
          * @brief Check if this planar bound is valid. A planar bound is valid when the bounds

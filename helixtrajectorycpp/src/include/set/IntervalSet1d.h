@@ -8,7 +8,7 @@ namespace helixtrajectory {
      * 
      * @author Justin Babilino
      */
-    class ScalarBound {
+    class IntervalSet1d {
     public:
         /**
          * @brief the lower bound 
@@ -25,23 +25,23 @@ namespace helixtrajectory {
          * @param lower the lower bound
          * @param upper the upper bound
          */
-        constexpr ScalarBound(double lower, double upper);
+        IntervalSet1d(double lower, double upper);
         /**
          * @brief Construct a Scalar Bound that represents the interval
          * [value, value].
          * 
          * @param value the value to bound the number between
          */
-        constexpr ScalarBound(double value);
+        IntervalSet1d(double value);
 
-        /**
-         * @return a scalar bound from 0 to positive infinity
-         */
-        static constexpr ScalarBound PositiveValues();
-        /**
-         * @return a scalar bound from -pi to pi
-         */
-        static constexpr ScalarBound ThetaValues();
+        // /**
+        //  * @return a scalar bound from 0 to positive infinity
+        //  */
+        // static constexpr ScalarInterval PositiveValues();
+        // /**
+        //  * @return a scalar bound from -pi to pi
+        //  */
+        // static constexpr ScalarInterval ThetaValues();
 
         /**
          * @brief Check if this scalar bound is equivalent to another scalar bound.
@@ -52,7 +52,7 @@ namespace helixtrajectory {
          * @param other the other scalar bound
          * @return lower == other.lower && upper == other.upper
          */
-        bool operator==(const ScalarBound& other) const noexcept;
+        bool operator==(const IntervalSet1d& other) const noexcept;
 
         /**
          * @brief Calculate the range of this scalar bound, which is the difference
@@ -77,13 +77,9 @@ namespace helixtrajectory {
          * @return lower == 0.0 && upper == 0.0
          */
         bool IsZero() const noexcept;
-        /**
-         * @brief Check if this scalar bound is infinite. A scalar bound is
-         * infinite if contains all numbers.
-         * 
-         * @return lower <= -inf && upper >= inf
-         */
-        bool IsInfinite() const noexcept;
+
+        bool IsLowerBounded() const noexcept;
+        bool IsUpperBounded() const noexcept;
 
         /**
          * @brief Check if this scalar bound is valid. A scalar bound is valid
@@ -93,6 +89,5 @@ namespace helixtrajectory {
          * @return lower <= upper
          */
         bool IsValid() const noexcept;
-
     };
 }
