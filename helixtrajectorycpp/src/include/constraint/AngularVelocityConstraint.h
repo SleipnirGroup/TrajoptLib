@@ -1,13 +1,13 @@
 #pragma once
 
-#include "constraint/ScalarBound.h"
+#include "constraint/IntervalSet1d.h"
 
 namespace helixtrajectory {
 
     class AngularVelocityConstraint {
     public:
-        ScalarBound angularVelocityBound;
+        IntervalSet1d angularVelocityBound;
 
-        AngularVelocityConstraint(const ScalarBound& angularVelocityBound);
+        AngularVelocityConstraint(const IntervalSet1d& angularVelocityBound);
     };
 }

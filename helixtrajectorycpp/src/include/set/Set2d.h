@@ -2,8 +2,10 @@
 
 #include <variant>
 
-#include "constraint/PolarBound.h"
-#include "constraint/RectangularBound.h"
+#include "constraint/ConeSet2d.h"
+#include "constraint/EllipticalSet2d.h"
+#include "constraint/LinearSet2d.h"
+#include "constraint/RectangularSet2d.h"
 
 namespace helixtrajectory {
 
@@ -28,5 +30,5 @@ namespace helixtrajectory {
      * 
      * @author Justin Babilino
      */
-    using Set2d = std::variant<, PolarBound>;
+    using Set2d = std::variant<RectangularSet2d, LinearSet2d, EllipticalSet2d, ConeSet2d>;
 }

@@ -1,17 +1,13 @@
 #pragma once
 
-#include <vector>
-
-#include "obstacle/Obstacle.h"
-#include "constraint/PlanarBound.h"
-#include "constraint/ScalarBound.h"
+#include "set/Set2d.h"
 
 namespace helixtrajectory {
 
-    class PositionConstraint {
+    class TranslationConstraint {
     public:
-        PlanarBound translationBound;
+        Set2d translationBound;
 
-        TranslationConstraint(const PlanarBound& fieldRelativePositionBound);
+        TranslationConstraint(const Set2d& translationBound);
     };
 }
