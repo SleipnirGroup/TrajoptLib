@@ -4,7 +4,7 @@
 
 namespace helixtrajectory {
 
-    class PositionConstraint {
+    class HeadingConstraint {
     public:
         IntervalSet1d headingBound;
 
