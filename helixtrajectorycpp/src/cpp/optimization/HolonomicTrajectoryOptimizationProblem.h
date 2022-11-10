@@ -2,8 +2,9 @@
 
 #include <memory>
 
-#include "TrajectoryOptimizationProblem.h"
+#include "optimization/TrajectoryOptimizationProblem.h"
 #include "drivetrain/HolonomicDrivetrain.h"
+#include "constraint/HolonomicConstraint.h"
 #include "obstacle/Obstacle.h"
 #include "path/HolonomicPath.h"
 #include "trajectory/Trajectory.h"
@@ -105,6 +106,11 @@ namespace helixtrajectory {
                 const std::vector<Expression>& vx, const std::vector<Expression>& vy, const std::vector<Expression>& omega,
                 const std::vector<Expression>& ax, const std::vector<Expression>& ay, const std::vector<Expression>& alpha);
 
+        static void ApplyHolonomicConstraint(Opti& opti,
+                const Expression& vx, const Expression& vy, const Expression& omega,
+                const Expression& ax, const Expression& ay, const Expression& alpha,
+                const HolonomicConstraint& constraint);
+
         /**
          * @brief Apply the constraints that force the robot's motion to comply
          * with the list of holonomic waypoints provided. This function only
@@ -116,9 +122,14 @@ namespace helixtrajectory {
          * @param omegaSegments the angular velocity of the robot for each sample point, divided into segments
          * @param holonomicPath the holonomic path to apply constraints for
          */
-        static void ApplyHolonomicWaypointConstraints(Opti& opti,
-                const std::vector<std::vector<Expression>>& vxSegments, const std::vector<std::vector<Expression>>& vySegments,
-                const std::vector<std::vector<Expression>>& omegaSegments, const HolonomicPath& holonomicPath);
+        static void ApplyHolonomicPathConstraints(Opti& opti,
+                const std::vector<std::vector<Expression>>& vxSegments,
+                const std::vector<std::vector<Expression>>& vySegments,
+                const std::vector<std::vector<Expression>>& omegaSegments,
+                const std::vector<std::vector<Expression>>& axSegments,
+                const std::vector<std::vector<Expression>>& aySegments,
+                const std::vector<std::vector<Expression>>& alphaSegments,
+                const HolonomicPath& holonomicPath);
 
         /**
          * @brief Applies the drivetrain-specific constraints to the optimizer. There are two
@@ -128,20 +139,13 @@ namespace helixtrajectory {
          * velocity and torque for each motor, but a more accurate model may use the motor equation
          * to prevent the voltages used by each motor from exceeding the available voltage.
          */
-        static HolonomicTrajectory ConstructTrajectory(const Opti& opti,
+        static Trajectory ConstructTrajectory(const Opti& opti,
                 const std::vector<std::vector<Expression>>& dtSegments,
-                const std::vector<std::vector<Expression>>& xSegments, const std::vector<std::vector<Expression>>& ySegments,
-                const std::vector<std::vector<Expression>>& thetaSegments, const std::vector<std::vector<Expression>>& vxSegments,
-                const std::vector<std::vector<Expression>>& vySegments, const std::vector<std::vector<Expression>>& omegaSegments);
-
-    public:
-        /**
-         * @brief Optimizes the given path using IPOPT. Note this function call
-         * may take a long time to complete. It may also fail, and throw a
-         * CasadiException.
-         * 
-         * @return a holonomic trajectory
-         */
-        HolonomicTrajectory Generate();
+                const std::vector<std::vector<Expression>>& xSegments,
+                const std::vector<std::vector<Expression>>& ySegments,
+                const std::vector<std::vector<Expression>>& thetaSegments,
+                const std::vector<std::vector<Expression>>& vxSegments,
+                const std::vector<std::vector<Expression>>& vySegments,
+                const std::vector<std::vector<Expression>>& omegaSegments);
     };
 }

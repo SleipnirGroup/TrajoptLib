@@ -54,8 +54,8 @@ namespace helixtrajectory {
          */
         HolonomicWaypoint(
                 const std::vector<Constraint>& waypointConstraints,
-                const std::vector<Constraint>& segmentConstraints = {},
                 const std::vector<HolonomicConstraint>& waypointHolonomicConstraints = {},
+                const std::vector<Constraint>& segmentConstraints = {},
                 const std::vector<HolonomicConstraint>& segmentHolonomicConstraints = {},
                 size_t controlIntervalCount = 100,
                 const std::vector<InitialGuessPoint>& initialGuessPoints = {});

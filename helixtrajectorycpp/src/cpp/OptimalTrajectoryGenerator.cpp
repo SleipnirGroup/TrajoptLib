@@ -1,10 +1,10 @@
 #include "OptimalTrajectoryGenerator.h"
 
-#include "CasADiOpti.h"
+#include "optimization/CasADiOpti.h"
 #include "DebugOptions.h"
 #include "InvalidPathException.h"
 #include "drivetrain/SwerveDrivetrain.h"
-#include "SwerveTrajectoryOptimizationProblem.h"
+#include "optimization/SwerveTrajectoryOptimizationProblem.h"
 
 namespace helixtrajectory {
 
@@ -22,23 +22,23 @@ namespace helixtrajectory {
                 for (size_t splitPathIndex = splitIndex; splitPathIndex <= waypointIndex; splitPathIndex++) {
                     splitPathWaypoints.push_back(holonomicPath.holonomicWaypoints[splitPathIndex]);
                 }
-                paths.push_back(HolonomicPath(splitPathWaypoints));
+                paths.push_back(HolonomicPath(splitPathWaypoints, holonomicPath.bumpers));
                 splitIndex = waypointIndex;
             }
         }
-        std::vector<HolonomicTrajectorySegment> segments;
-        segments.reserve(holonomicPath.holonomicWaypoints.size());
+        std::vector<TrajectorySample> samples;
+        samples.reserve(holonomicPath.ControlIntervalTotal() + 1);
         for (const HolonomicPath& path : paths) {
             SwerveTrajectoryOptimizationProblem<CasADiOpti> problem(swerveDrivetrain, holonomicPath);
-            std::vector<HolonomicTrajectorySegment> solvedSegments = problem.Generate().holonomicSegments;
+            std::vector<TrajectorySample> solvedSamples = problem.Generate().samples;
 #ifdef DEBUG_OUTPUT
             std::cout << "Solution Found:" << std::endl;
             problem.PrintSolution();
 #endif
-            for (HolonomicTrajectorySegment solvedSegment : solvedSegments) {
-                segments.push_back(solvedSegment);
+            for (TrajectorySample solvedSample : solvedSamples) {
+                samples.push_back(solvedSample);
             }
         }
-        return HolonomicTrajectory(segments);
+        return Trajectory(samples);
     }
 }

@@ -10,25 +10,22 @@
 
 namespace helixtrajectory {
 
-    HolonomicWaypoint::HolonomicWaypoint(const PositionConstraint& waypointPositionConstraint,
-            const PositionConstraint& segmentPositionConstraint,
-            const HolonomicVelocityConstraint& waypointVelocityConstraint,
-            const HolonomicVelocityConstraint& segmentVelocityConstraint,
-            const HolonomicAccelerationConstraint& waypointAccelerationConstraint,
-            const HolonomicAccelerationConstraint& segmentAccelerationConstraint,
-            size_t controlIntervalCount,
-            const std::vector<InitialGuessPoint>& initialGuessPoints)
-            : Waypoint(waypointPositionConstraint, segmentPositionConstraint, controlIntervalCount, initialGuessPoints),
-            waypointVelocityConstraint(waypointVelocityConstraint),
-            segmentVelocityConstraint(segmentVelocityConstraint),
-            waypointAccelerationConstraint(waypointAccelerationConstraint),
-            segmentAccelerationConstraint(segmentAccelerationConstraint) {
+    HolonomicWaypoint::HolonomicWaypoint(const std::vector<Constraint>& waypointConstraints,
+                const std::vector<HolonomicConstraint>& waypointHolonomicConstraints,
+                const std::vector<Constraint>& segmentConstraints,
+                const std::vector<HolonomicConstraint>& segmentHolonomicConstraints,
+                size_t controlIntervalCount,
+                const std::vector<InitialGuessPoint>& initialGuessPoints)
+            : Waypoint(waypointConstraints, segmentConstraints, controlIntervalCount, initialGuessPoints),
+            waypointHolonomicConstraints(waypointHolonomicConstraints),
+            segmentHolonomicConstraints(segmentHolonomicConstraints) {
     }
 
     bool HolonomicWaypoint::IsVelocityStateKnown() const noexcept {
-        return waypointVelocityConstraint.angularVelocityBound.IsExact()
-                && waypointVelocityConstraint.fieldRelativeVelocityBound.IsExact()
-                && waypointVelocityConstraint.robotRelativeVelocityBound.IsExact();
+        // return waypointVelocityConstraint.angularVelocityBound.IsExact()
+        //         && waypointVelocityConstraint.fieldRelativeVelocityBound.IsExact()
+        //         && waypointVelocityConstraint.robotRelativeVelocityBound.IsExact();
+        return false;
     }
 
     std::ostream& operator<<(std::ostream& stream, const HolonomicWaypoint& waypoint) {

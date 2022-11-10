@@ -1,10 +1,10 @@
 #include "constraint/HeadingConstraint.h"
 
-#include "set/IntervalSet2d.h"
+#include "set/IntervalSet1d.h"
 
 namespace helixtrajectory {
 
-HeadingConstraint::HeadingConstraint(const IntervalSet2d& headingBound)
+HeadingConstraint::HeadingConstraint(const IntervalSet1d& headingBound)
         : headingBound(headingBound) {
 }
 }

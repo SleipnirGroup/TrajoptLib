@@ -12,14 +12,12 @@
 namespace helixtrajectory {
 
     HolonomicPath::HolonomicPath(const std::vector<HolonomicWaypoint>& holonomicWaypoints,
-            const Obstacle& bumpers,
-            const PositionConstraint& globalPositionConstraint,
-            const HolonomicVelocityConstraint& globalVelocityConstraint,
-            const HolonomicAccelerationConstraint& globalAccelerationConstraint)
-            : Path(bumpers, globalPositionConstraint),
+                const Obstacle& bumpers,
+                const std::vector<Constraint>& globalConstraints,
+                const std::vector<HolonomicConstraint>& globalHolonomicConstraints)
+            : Path(bumpers, globalConstraints),
             holonomicWaypoints(holonomicWaypoints),
-            globalVelocityConstraint(globalVelocityConstraint),
-            globalAccelerationConstraint(globalAccelerationConstraint) {
+            globalHolonomicConstraints(globalHolonomicConstraints) {
     }
 
     size_t HolonomicPath::Length() const noexcept {

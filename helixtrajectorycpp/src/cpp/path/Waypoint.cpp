@@ -2,18 +2,18 @@
 
 #include <vector>
 
-#include "constraint/PositionConstraint.h"
+#include "constraint/Constraint.h"
 #include "path/InitialGuessPoint.h"
 #include "obstacle/Obstacle.h"
 
 namespace helixtrajectory {
 
-    Waypoint::Waypoint(const PositionConstraint& waypointPositionConstraint,
-                const PositionConstraint& segmentPositionConstraint,
-                size_t controlIntervalCount,
-                const std::vector<InitialGuessPoint>& initialGuessPoints)
-            : waypointPositionConstraint(waypointPositionConstraint),
-            segmentPositionConstraint(segmentPositionConstraint),
+    Waypoint::Waypoint(const std::vector<Constraint>& waypointConstraints,
+            const std::vector<Constraint>& segmentConstraints,
+            size_t controlIntervalCount,
+            const std::vector<InitialGuessPoint>& initialGuessPoints)
+            : waypointConstraints(waypointConstraints),
+            segmentConstraints(segmentConstraints),
             controlIntervalCount(controlIntervalCount),
             initialGuessPoints(initialGuessPoints) {
     }
@@ -22,12 +22,12 @@ namespace helixtrajectory {
         return controlIntervalCount == 0;
     }
     bool Waypoint::IsValid() const noexcept {
-        return (IsInitialWaypoint() && initialGuessPoints.size() == 0)
-                || (!IsInitialWaypoint() && initialGuessPoints.size() < controlIntervalCount);
+        return initialGuessPoints.size() <= controlIntervalCount;
     }
     bool Waypoint::IsPositionStateKnown() const noexcept {
-        return waypointPositionConstraint.headingBound.IsExact()
-                && waypointPositionConstraint.fieldRelativePositionBound.IsExact();
+        // return waypointPositionConstraint.headingBound.IsExact()
+        //         && waypointPositionConstraint.fieldRelativePositionBound.IsExact();
+        return false;
     }
     bool Waypoint::IsStateKnown() const noexcept {
         return IsPositionStateKnown() && IsVelocityStateKnown();

@@ -1,18 +1,17 @@
 #include "DebugOptions.h"
 
-#include "HolonomicTrajectoryOptimizationProblem.h"
+#include "optimization/HolonomicTrajectoryOptimizationProblem.h"
 
 #include <iostream>
 #include <vector>
 
 #include "CasADiOpti.h"
-#include "HolonomicDrivetrain.h"
-#include "HolonomicPath.h"
-#include "HolonomicTrajectory.h"
-#include "HolonomicTrajectorySample.h"
-#include "HolonomicTrajectorySegment.h"
-#include "HolonomicWaypoint.h"
-#include "Obstacle.h"
+#include "drivetrain/HolonomicDrivetrain.h"
+#include "path/HolonomicPath.h"
+#include "trajectory/Trajectory.h"
+#include "trajectory/TrajectorySample.h"
+#include "path/HolonomicWaypoint.h"
+#include "obstacle/Obstacle.h"
 #include "TrajectoryGenerationException.h"
 
 namespace helixtrajectory {
@@ -92,11 +91,14 @@ namespace helixtrajectory {
         std::cout << "Applied Holonomic Kinematics Constraints" << std::endl;
 #endif
 
-        ApplyHolonomicWaypointConstraints(
+        ApplyHolonomicPathConstraints(
                 TrajectoryOptimizationProblem<Opti>::opti,
                 vxSegments,
                 vySegments,
                 omegaSegments,
+                axSegments,
+                aySegments,
+                alphaSegments,
                 HolonomicTrajectoryOptimizationProblem::holonomicPath);
 #ifdef DEBUG_OUTPUT
         std::cout << "Applied Holonomic Path Constraints" << std::endl;
@@ -104,7 +106,7 @@ namespace helixtrajectory {
     }
 
     template<typename Opti>
-    HolonomicTrajectory HolonomicTrajectoryOptimizationProblem<Opti>::Generate() {
+    Trajectory HolonomicTrajectoryOptimizationProblem<Opti>::Generate() {
         try {
             TrajectoryOptimizationProblem<Opti>::opti.Solve();
 #ifdef DEBUG_OUTPUT
@@ -138,9 +140,24 @@ namespace helixtrajectory {
             opti.SubjectTo(omega[sampleIndex - 1] + alpha[sampleIndex - 1] * sampleDT == omega[sampleIndex]);
         }
     }
+
+    template<typename Opti>
+    void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicConstraint(Opti& opti,
+            const Expression& vx, const Expression& vy, const Expression& omega,
+            const Expression& ax, const Expression& ay, const Expression& alpha,
+            const HolonomicConstraint& holonomicConstraint) {
+        
+        if (std::holds_alternative<VelocityHolonomicConstraint>(holonomicConstraint)) {
+            const auto& velocityHolonomicConstraint = std::get<VelocityHolonomicConstraint>(holonomicConstraint);
+            ApplySet2dConstraint(opti, vx, vy, velocityHolonomicConstraint.velocityBound);
+        } else if (std::holds_alternative<AngularVelocityConstraint>(holonomicConstraint)) {
+            const auto& angularVelocityConstraint = std::get<AngularVelocityConstraint>(holonomicConstraint);
+            ApplyIntervalSet1dConstraint(opti, omega, angularVelocityConstraint.angularVelocityBound);
+        }
+    }
     
     template<typename Opti>
-    void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicWaypointConstraints(Opti& opti,
+    void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicPathConstraints(Opti& opti,
             const std::vector<std::vector<Expression>>& vxSegments, const std::vector<std::vector<Expression>>& vySegments,
             const std::vector<std::vector<Expression>>& omegaSegments, const HolonomicPath& holonomicPath) {
         size_t waypointCount = vxSegments.size();
@@ -182,7 +199,7 @@ namespace helixtrajectory {
     }
 
     template<typename Opti>
-    HolonomicTrajectory HolonomicTrajectoryOptimizationProblem<Opti>::ConstructTrajectory(const Opti& opti,
+    Trajectory HolonomicTrajectoryOptimizationProblem<Opti>::ConstructTrajectory(const Opti& opti,
             const std::vector<std::vector<Expression>>& dtSegments,
             const std::vector<std::vector<Expression>>& xSegments, const std::vector<std::vector<Expression>>& ySegments,
             const std::vector<std::vector<Expression>>& thetaSegments, const std::vector<std::vector<Expression>>& vxSegments,

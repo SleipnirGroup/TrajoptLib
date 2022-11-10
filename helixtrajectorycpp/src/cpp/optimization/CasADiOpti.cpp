@@ -1,4 +1,4 @@
-#include "CasADiOpti.h"
+#include "optimization/CasADiOpti.h"
 
 #include "DebugOptions.h"
 

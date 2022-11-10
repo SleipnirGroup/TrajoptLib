@@ -1,16 +1,16 @@
 #include "DebugOptions.h"
 
-#include "TrajectoryOptimizationProblem.h"
+#include "optimization/TrajectoryOptimizationProblem.h"
 
-#include <array>
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <variant>
 #include <vector>
 
 #include "CasADiOpti.h"
-#include "constraint/PlanarBound.h"
-#include "constraint/ScalarBound.h"
+#include "set/Set2d.h"
+#include "set/IntervalSet1d.h"
 #include "drivetrain/Drivetrain.h"
 #include "path/HolonomicPath.h"
 #include "trajectory/Trajectory.h"
@@ -92,13 +92,13 @@ namespace helixtrajectory {
             sampleIndex += controlIntervalCount;
         }
 
-        ApplyWaypointConstraints(opti, xSegments, ySegments, thetaSegments, TrajectoryOptimizationProblem::path);
+        ApplyPathConstraints(opti, xSegments, ySegments, thetaSegments, TrajectoryOptimizationProblem::path);
 #ifdef DEBUG_OUTPUT
         std::cout << "Applied Path constraints" << std::endl;
 #endif
 
-        ApplyObstacleConstraints(opti, xSegments, ySegments, thetaSegments,
-                TrajectoryOptimizationProblem::drivetrain, TrajectoryOptimizationProblem::path);
+        // ApplyObstacleConstraints(opti, xSegments, ySegments, thetaSegments,
+        //         TrajectoryOptimizationProblem::drivetrain, TrajectoryOptimizationProblem::path);
 #ifdef DEBUG_OUTPUT
         std::cout << "Applied Obstacle constraints" << std::endl;
 #endif
@@ -111,81 +111,55 @@ namespace helixtrajectory {
     }
     
     template<typename Opti>
-    void TrajectoryOptimizationProblem<Opti>::ApplyScalarBoundConstraint(Opti& opti, const Expression& scalar, const ScalarBound& scalarBound) {
-        if (scalarBound.IsExact()) {
+    void TrajectoryOptimizationProblem<Opti>::ApplyIntervalSet1dConstraint(Opti& opti, const Expression& scalar, const IntervalSet1d& set1d) {
+        if (set1d.IsExact()) {
             opti.SubjectTo(scalar == scalarBound.lower);
         } else {
-            if (planarBound.a0.lower >= -std::numeric_limits<double>::infinity()) {
-                opti.SubjectTo(scalar >= planarBound.a0.lower);
+            if (set1d.IsLowerBounded()) {
+                opti.SubjectTo(scalar >= set1d.lower);
             }
-            if (planarBound.a0.upper <= +std::numeric_limits<double>::infinity()) {
-                opti.SubjectTo(scalar <= planarBound.a0.upper);
+            if (set1d.IsUpperBounded()) {
+                opti.SubjectTo(scalar <= set1d.upper);
             }
         }
     }
 
     template<typename Opti>
-    void TrajectoryOptimizationProblem<Opti>::ApplyPlanarBoundConstraint(Opti& opti, const Expression& vectorX,
-            const Expression& vectorY, const PlanarBound& planarBound) {
-        if (planarBound.IsZero()) {
-            opti.SubjectTo(vectorX == 0.0);
-            opti.SubjectTo(vectorY == 0.0);
-        } else {
-            switch (planarBound.coordinateType) {
-                case PlanarBound::CoordinateType::kRectangular:
-                    ApplyScalarBoundConstraint(opti, vectorX, planarBound.a0);
-                    ApplyScalarBoundConstraint(opti, vectorY, planarBound.a1);
+    void TrajectoryOptimizationProblem<Opti>::ApplySet2dConstraint(Opti& opti,
+            const Expression& vectorX, const Expression& vectorY, const Set2d& set2d) {
+        if (std::holds_alternative<RectangularSet2d>(set2d)) {
+            const RectangularSet2d& rectangularSet2d = std::get<RectangularSet2d>(set2d);
+            ApplyIntervalSet1dConstraint(opti, vectorX, rectangularSet2d.xBound);
+            ApplyIntervalSet1dConstraint(opti, vectorY, rectangularSet2d.yBound);
+        } else if (std::holds_alternative<LinearSet2d>(set2d)) {
+            const LinearSet2d& linearSet2d = std::get<LinearSet2d>(set2d);
+            opti.SubjectTo(vectorX * sin(linearSet2d.theta) == vectorY * cos(linearSet2d.theta));
+        } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
+            const EllipticalSet2d& ellipticalSet2d = std::get<EllipticalSet2d>(set2d);
+            const Expression scaledVectorX = vectorX / ellipticalSet2d.xRadius;
+            const Expression scaledVectorY = vectorY / ellipticalSet2d.yRadius;
+            const Expression lhs = scaledVectorX * scaledVectorX + scaledVectorY * scaledVectorY;
+            switch (ellipticalSet2d.direction) {
+                case EllipticalSet2d::Direction::kInside:
+                    opti.SubjectTo(lhs <= 1.0);
                     break;
-                case PlanarBound::CoordinateType::kPolar:
-                    if (planarBound.IsExact()) {
-                        double exactR = planarBound.a0.lower;
-                        double exactTheta = planarBound.a0.lower;
-                        double exactX = exactR * std::cos(exactTheta);
-                        double exactY = exactR * std::sin(exactTheta);
-                        opti.SubjectTo(vectorX == exactX);
-                        opti.SubjectTo(vectorY == exactY);
-                    } else if (planarBound.a1.IsExact()) {
-
-                    }
-                    if (planarBound.IsCircularlySymmetric()) {
-                        double maxR2 = std::max(std::abs(planarBound.a0.lower), std::abs(planarBound.a0.upper));
-                        maxR2 = maxR2 * maxR2;
-                        opti.SubjectTo(vectorX * vectorX + vectorY * vectorY <= maxR2);
-                    } else if (planarBound.IsExact()) {
-                        double exactR = planarBound.a0.
-                    }
+                case EllipticalSet2d::Direction::kCentered:
+                    opti.SubjectTo(lhs == 1.0);
+                    break;
+                case EllipticalSet2d::Direction::kOutside:
+                    opti.SubjectTo(lhs >= 1.0);
                     break;
             }
+        } else if (std::holds_alternative<ConeSet2d>(set2d)) {
+            const ConeSet2d& coneSet2d = std::get<ConeSet2d>(set2d);
+            opti.SubjectTo(vectorX * sin(linearSet2d.thetaBound.upper) >= vectorY * cos(linearSet2d.thetaBound.upper));
+            opti.SubjectTo(vectorX * sin(linearSet2d.thetaBound.lower) <= vectorY * cos(linearSet2d.thetaBound.lower));
         }
     }
 
     template<typename Opti>
-    void TrajectoryOptimizationProblem<Opti>::ApplyWaypointConstraints(Opti& opti,
-            const std::vector<std::vector<Expression>>& xSegments, const std::vector<std::vector<Expression>>& ySegments,
-            const std::vector<std::vector<Expression>>& thetaSegments, const Path& path) {
-        for (size_t waypointIndex = 0; waypointIndex < path.Length(); waypointIndex++) {
-            const Waypoint& waypoint = path.GetWaypoint(waypointIndex);
-            size_t segmentSampleCount = waypoint.controlIntervalCount;
-            size_t waypointSampleIndex = segmentSampleCount - 1;
-
-            for (size_t segmentSampleIndex = 0; segmentSampleIndex < segmentSampleCount - 1; segmentSampleIndex++) {
-                opti.SubjectTo(thetaSegments[waypointIndex][segmentSampleIndex] <= waypoint.waypointPositionConstraint.fieldRelativePositionBound.);
-            }
-            if (waypoint.xConstrained) {
-                opti.SubjectTo(xSegments[waypointIndex][sampleIndex] == waypoint.x);
-            }
-            if (waypoint.yConstrained) {
-                opti.SubjectTo(ySegments[waypointIndex][sampleIndex] == waypoint.y);
-            }
-            if (waypoint.headingConstrained) {
-                // opti.SubjectTo(fmod(thetaSegments[waypointIndex](-1) - waypoint.heading, 2 * M_PI) == 0.0);
-                opti.SubjectTo(thetaSegments[waypointIndex][sampleIndex] == waypoint.heading);
-            }
-        }
-    }
-
-    template<typename Opti>
-    const typename TrajectoryOptimizationProblem<Opti>::BumperCornerPosition TrajectoryOptimizationProblem<Opti>::SolveBumperCornerPosition(const Expression& x, const Expression& y,
+    const typename TrajectoryOptimizationProblem<Opti>::BumperCornerPosition
+            TrajectoryOptimizationProblem<Opti>::SolveBumperCornerPosition(const Expression& x, const Expression& y,
             const Expression& theta, const ObstaclePoint& bumperCorner) {
         BumperCornerPosition position{};
         if (bumperCorner.x == 0.0 && bumperCorner.y == 0.0) {
@@ -286,33 +260,101 @@ namespace helixtrajectory {
         }
     }
 
+    // template<typename Opti>
+    // void TrajectoryOptimizationProblem<Opti>::ApplyObstacleConstraints(Opti& opti, const std::vector<std::vector<Expression>>& xSegments,
+    //         const std::vector<std::vector<Expression>>& ySegments, const std::vector<std::vector<Expression>>& thetaSegments,
+    //         const Drivetrain& drivetrain, const Path& path) {
+    //     const Obstacle& bumpers = drivetrain.bumpers;
+    //     std::vector<const Obstacle*> allSegmentsObstacles;
+    //     for (size_t waypointIndex = 0; waypointIndex < path.Length(); waypointIndex++) {
+    //         for (const Obstacle& obstacle : path.GetWaypoint(waypointIndex).obstacles) {
+    //             if (obstacle.applyToAllSegments) {
+    //                 allSegmentsObstacles.push_back(&obstacle);
+    //             }
+    //         }
+    //     }
+    //     for (size_t waypointIndex = 0; waypointIndex < path.Length(); waypointIndex++) {
+    //         const Waypoint& waypoint = path.GetWaypoint(waypointIndex);
+    //         const std::vector<Expression>& xSegment = xSegments[waypointIndex];
+    //         const std::vector<Expression>& ySegment = ySegments[waypointIndex];
+    //         const std::vector<Expression>& thetaSegment = thetaSegments[waypointIndex];
+    //         size_t segmentSampleCount = xSegment.size();
+    //         for (size_t sampleIndex = 0; sampleIndex < segmentSampleCount; sampleIndex++) {
+    //             for (const Obstacle* obstacle : allSegmentsObstacles) {
+    //                 ApplyObstacleConstraint(opti, xSegment[sampleIndex], ySegment[sampleIndex], thetaSegment[sampleIndex], bumpers, *obstacle);
+    //             }
+    //             for (const Obstacle& obstacle : waypoint.obstacles) {
+    //                 ApplyObstacleConstraint(opti, xSegment[sampleIndex], ySegment[sampleIndex], thetaSegment[sampleIndex], bumpers, obstacle);
+    //             }
+    //         }
+    //     }
+    // }
+
     template<typename Opti>
-    void TrajectoryOptimizationProblem<Opti>::ApplyObstacleConstraints(Opti& opti, const std::vector<std::vector<Expression>>& xSegments,
-            const std::vector<std::vector<Expression>>& ySegments, const std::vector<std::vector<Expression>>& thetaSegments,
-            const Drivetrain& drivetrain, const Path& path) {
-        const Obstacle& bumpers = drivetrain.bumpers;
-        std::vector<const Obstacle*> allSegmentsObstacles;
-        for (size_t waypointIndex = 0; waypointIndex < path.Length(); waypointIndex++) {
-            for (const Obstacle& obstacle : path.GetWaypoint(waypointIndex).obstacles) {
-                if (obstacle.applyToAllSegments) {
-                    allSegmentsObstacles.push_back(&obstacle);
-                }
-            }
+    void TrajectoryOptimizationProblem<Opti>::ApplyConstraint(Opti& opti, const Expression& x,
+            const Expression& y, const Expression& theta, const Obstacle& bumpers, const Constraint& constraint) {
+        if (std::holds_alternative<TranslationConstraint>(constraint)) {
+            const TranslationConstraint& translationConstraint = std::get<TranslationConstraint>(constraint);
+            ApplySet2dConstraint(opti, x, y, translationConstraint.translationBound);
+        } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
+            const HeadingConstraint& headingConstraint = std::get<HeadingConstraint>(constraint);
+            ApplyIntervalSet1dConstraint(opti, theta, headingConstraint.headingBound);
+        } else if (std::holds_alternative<PoseConstraint>(constraint)) {
+            const PoseConstraint& poseConstraint = std::get<PoseConstraint>(constraint);
+            auto translationConstraint = static_cast<TranslationConstraint>(poseConstraint);
+            auto headingConstraint = static_cast<HeadingConstraint>(poseConstraint);
+            ApplyConstraint(opti, x, y, theta, bumpers, translationConstraint);
+            ApplyConstraint(opti, x, y, theta, bumpers, headingConstraint);
+        } else if (std::holds_alternative<ObstacleConstraint>(constraint)) {
+            const ObstacleConstraint& obstacleConstraint = std::get<ObstacleConstraint>(constraint);
+            ApplyObstacleConstraint(opti, x, y, theta, bumpers, obstacleConstraint.obstacle);
         }
+    }
+
+    template<typename Opti>
+    void ApplyConstraints(Opti& opti, const Expression& x,
+            const Expression& y, const Expression& theta, const Obstacle& bumpers, const std::vector<Constraint>& constraints) {
+        for (const Constraint& constraint : constraints) {
+            ApplyConstraint(opti, x, y, theta, bumpers, constraint);
+        }
+    }
+
+    template<typename Opti>
+    void TrajectoryOptimizationProblem<Opti>::ApplyPathConstraints(Opti& opti,
+            const std::vector<std::vector<Expression>>& xSegments, const std::vector<std::vector<Expression>>& ySegments,
+            const std::vector<std::vector<Expression>>& thetaSegments, const Path& path) {
+
         for (size_t waypointIndex = 0; waypointIndex < path.Length(); waypointIndex++) {
             const Waypoint& waypoint = path.GetWaypoint(waypointIndex);
-            const std::vector<Expression>& xSegment = xSegments[waypointIndex];
-            const std::vector<Expression>& ySegment = ySegments[waypointIndex];
-            const std::vector<Expression>& thetaSegment = thetaSegments[waypointIndex];
-            size_t segmentSampleCount = xSegment.size();
-            for (size_t sampleIndex = 0; sampleIndex < segmentSampleCount; sampleIndex++) {
-                for (const Obstacle* obstacle : allSegmentsObstacles) {
-                    ApplyObstacleConstraint(opti, xSegment[sampleIndex], ySegment[sampleIndex], thetaSegment[sampleIndex], bumpers, *obstacle);
-                }
-                for (const Obstacle& obstacle : waypoint.obstacles) {
-                    ApplyObstacleConstraint(opti, xSegment[sampleIndex], ySegment[sampleIndex], thetaSegment[sampleIndex], bumpers, obstacle);
-                }
+            size_t segmentSampleCount = waypoint.controlIntervalCount;
+            size_t waypointSampleIndex = segmentSampleCount - 1;
+            for (size_t segmentSampleIndex = 0; segmentSampleIndex < segmentSampleCount - 1; segmentSampleIndex++) {
+                ApplyConstraints(opti,
+                        xSegments[waypointIndex][segmentSampleIndex],
+                        ySegments[waypointIndex][segmentSampleIndex],
+                        thetaSegments[waypointIndex][segmentSampleIndex],
+                        bumpers,
+                        path.globalConstraints);
+                ApplyConstraints(opti,
+                        xSegments[waypointIndex][segmentSampleIndex],
+                        ySegments[waypointIndex][segmentSampleIndex],
+                        thetaSegments[waypointIndex][segmentSampleIndex],
+                        bumpers,
+                        waypoint.segmentConstraints);
             }
+            ApplyConstraints(opti,
+                    xSegments[waypointIndex][waypointSampleIndex],
+                    ySegments[waypointIndex][waypointSampleIndex],
+                    thetaSegments[waypointIndex][waypointSampleIndex],
+                    bumpers,
+                    path.globalConstraints);
+            ApplyConstraints(opti,
+                    xSegments[waypointIndex][waypointSampleIndex],
+                    ySegments[waypointIndex][waypointSampleIndex],
+                    thetaSegments[waypointIndex][waypointSampleIndex],
+                    bumpers,
+                    waypoint.waypointConstraints);
+            
         }
     }
 

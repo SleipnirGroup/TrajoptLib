@@ -1,6 +1,6 @@
 #pragma once
 
-#include "constraint/IntervalSet1d.h"
+#include "set/IntervalSet1d.h"
 
 namespace helixtrajectory {
 

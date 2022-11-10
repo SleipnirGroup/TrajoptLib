@@ -2,10 +2,10 @@
 
 #include <variant>
 
-#include "constraint/ConeSet2d.h"
-#include "constraint/EllipticalSet2d.h"
-#include "constraint/LinearSet2d.h"
-#include "constraint/RectangularSet2d.h"
+#include "set/ConeSet2d.h"
+#include "set/EllipticalSet2d.h"
+#include "set/LinearSet2d.h"
+#include "set/RectangularSet2d.h"
 
 namespace helixtrajectory {
 

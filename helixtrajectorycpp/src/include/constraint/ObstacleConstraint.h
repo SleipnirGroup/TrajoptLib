@@ -9,5 +9,5 @@ namespace helixtrajectory {
         Obstacle obstacle;
 
         ObstacleConstraint(const Obstacle& obstacle);
-    }
+    };
 }

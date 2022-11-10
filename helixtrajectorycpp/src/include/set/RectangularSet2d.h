@@ -8,10 +8,10 @@ namespace helixtrajectory {
 
     class RectangularSet2d {
     public:
-        IntervalSet2d x;
-        IntervalSet2d y;
+        IntervalSet1d xBound;
+        IntervalSet1d yBound;
 
-        RectangularSet2d(const ScalarBound& x, const ScalarBound& y);
+        RectangularSet2d(const IntervalSet1d& xBound, const IntervalSet1d& yBound);
 
         /**
          * @brief Check if this planar bound is valid. A planar bound is valid when the bounds

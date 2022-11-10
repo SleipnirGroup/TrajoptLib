@@ -4,11 +4,11 @@
 
 namespace helixtrajectory {
 
-    RectangularSet2d::RectangularSet2d(const ScalarBound& x, const ScalarBound& y)
-            : x(x), y(y) {
+    RectangularSet2d::RectangularSet2d(const IntervalSet1d& xBound, const IntervalSet1d& yBound)
+            : xBound(xBound), yBound(yBound) {
     }
 
-    RectangularSet2d::IsValid() const noexcept {
-        return x.IsValid() && y.IsValid();
+    bool RectangularSet2d::IsValid() const noexcept {
+        return xBound.IsValid() && yBound.IsValid();
     }
 }

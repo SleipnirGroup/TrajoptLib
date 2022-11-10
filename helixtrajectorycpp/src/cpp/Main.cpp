@@ -28,12 +28,12 @@ int main() {
              SwerveModule(-0.6, -0.6, 0.04, 70, 2)});
 
     HolonomicPath holonomicPath(HolonomicPath({
-        HolonomicWaypoint(PositionConstraint(0,    { 4,  0}), PositionConstraint(), HolonomicVelocityConstraint(0.0, {0.0, 0.0})),
-        HolonomicWaypoint(PositionConstraint(1.57, { 0,  4})),
-        HolonomicWaypoint(PositionConstraint(1.57, {-4,  0})),
-        HolonomicWaypoint(PositionConstraint(1.57, { 0, -4})),
-        HolonomicWaypoint(PositionConstraint(1.57, { 4,  0}), PositionConstraint(), HolonomicVelocityConstraint(0.0, {0.0, 0.0}))
-    }, Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}})));
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{4, 0}, 0.0)}, {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{0, 4}, 1.57)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{-4, 0}, 0.0)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{0, -4}, -1.57)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{4, 0}, 0.0)}, {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)})
+        }, Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}})));
 
     // HolonomicPath holonomicPath(HolonomicPath({
     //     HolonomicWaypoint(0, 0, 0, 0, 0, 0, true, true, true,  true,  true,  true,  true,    0, {}, {}),

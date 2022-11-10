@@ -10,6 +10,6 @@ namespace helixtrajectory {
         Set2d velocityBound;
         CoordinateSystem coordinateSystem;
 
-        HolonomicVelocityConstraint(const Set2d& velocityBound, CoordinateSystem coordinateSystem = CoordinateSystem::kField);
+        VelocityHolonomicConstraint(const Set2d& velocityBound, CoordinateSystem coordinateSystem = CoordinateSystem::kField);
     };
 }

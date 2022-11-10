@@ -1,10 +1,10 @@
 #include "constraint/AngularVelocityConstraint.h"
 
-#include "set/IntervalSet2d.h"
+#include "set/IntervalSet1d.h"
 
 namespace helixtrajectory {
 
-AngularVelocityConstraint::AngularVelocityConstraint(const IntervalSet2d& angularVelocityBound)
+AngularVelocityConstraint::AngularVelocityConstraint(const IntervalSet1d& angularVelocityBound)
         : angularVelocityBound(angularVelocityBound) {
 }
 }
