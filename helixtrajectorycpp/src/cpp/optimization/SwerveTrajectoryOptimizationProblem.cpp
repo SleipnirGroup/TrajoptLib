@@ -1,12 +1,12 @@
 #include "DebugOptions.h"
 
-#include "SwerveTrajectoryOptimizationProblem.h"
+#include "optimization/SwerveTrajectoryOptimizationProblem.h"
 
 #include <iostream>
 
-#include "CasADiOpti.h"
-#include "HolonomicPath.h"
-#include "SwerveDrivetrain.h"
+#include "optimization/CasADiOpti.h"
+#include "path/HolonomicPath.h"
+#include "drivetrain/SwerveDrivetrain.h"
 
 namespace helixtrajectory {
 

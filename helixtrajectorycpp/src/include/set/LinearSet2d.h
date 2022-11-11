@@ -3,15 +3,18 @@
 #include <limits>
 
 #include "set/IntervalSet1d.h"
+#include "set/RectangularSet2d.h"
 
 namespace helixtrajectory {
 
 class LinearSet2d {
 public:
     double theta;
-    IntervalSet1d rBound;
 
-    LinearSet2d(double theta, const IntervalSet1d& rBound =
-            {-std::numeric_limits<double>::infinity(), +std::numeric_limits<double>::infinity()});
+    LinearSet2d(double theta);
+
+    static RectangularSet2d TransformRBound(double theta, const IntervalSet1d& rBound);
+
+    bool IsValid() const noexcept;
 };
 }

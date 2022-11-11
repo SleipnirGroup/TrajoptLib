@@ -4,11 +4,11 @@
 
 #include "constraint/Constraint.h"
 #include "drivetrain/Drivetrain.h"
-#include "drivetrain/HolonomicDrivetrain.h"
 #include "obstacle/Obstacle.h"
 #include "path/Path.h"
 #include "set/IntervalSet1d.h"
 #include "set/Set2d.h"
+#include "trajectory/Trajectory.h"
 
 namespace helixtrajectory {
 
@@ -27,10 +27,6 @@ public:
      * @return a holonomic trajectory
      */
     Trajectory Generate();
-    /**
-     * @brief Destroy the Trajectory Optimization Problem object
-     */
-    virtual ~TrajectoryOptimizationProblem() = default;
 
 protected:
     /**
@@ -63,6 +59,11 @@ protected:
      * @brief the optimizer
      */
     Opti opti;
+
+    /**
+     * @brief an abstract expression type representing a scalar expression
+     */
+    using Expression = typename Opti::Expression;
 
     /**
      * @brief The 1 x (controlIntervalTotal) vector of the time differentials between sample points.
@@ -110,8 +111,7 @@ protected:
     TrajectoryOptimizationProblem(const Drivetrain& drivetrain, const Path& path);
 
     static void ApplyIntervalSet1dConstraint(Opti& opti, const Expression& scalar, const IntervalSet1d& set1d);
-    static void ApplySet2dConstraint(Opti& opti, const Expression& vectorX, const Expression& vectorY,
-            const Set2d& set2d);
+    static void ApplySet2dConstraint(Opti& opti, const Expression& vectorX, const Expression& vectorY, const Set2d& set2d);
 
 private:
     struct BumperCornerPosition {
@@ -133,6 +133,7 @@ private:
      */
     static const BumperCornerPosition SolveBumperCornerPosition(const Expression& x, const Expression& y,
             const Expression& theta, const ObstaclePoint& bumperCorner);
+
     /**
      * @brief Apply obstacle constraints for a single obstacle at a single
      * sample point in the trajectory. If the robot's bumpers and an obstacle
@@ -167,24 +168,10 @@ private:
      * @param path the path containing the waypoints to constrain
      */
     static void ApplyPathConstraints(Opti& opti,
-            const std::vector<std::vector<Expression>>& xSegments, const std::vector<std::vector<Expression>>& ySegments,
-            const std::vector<std::vector<Expression>>& thetaSegments, const Path& path);
-
-    // /**
-    //  * @brief Apply constraints that prevent the robot from getting too close
-    //  * to obstacles. Constraints are applied to the specified segments
-    //  * of the path or the entire path if that is specified.
-    //  * 
-    //  * @param opti the current optimizer
-    //  * @param xSegments the x-coordinate of the robot for each sample point, divided into segments
-    //  * @param ySegments the y-coordinate of the robot for each sample point, divided into segments
-    //  * @param thetaSegments the heading of the robot for each sample point, divided into segments
-    //  * @param drivetrain the drivetrain containing the bumpers to apply constraints for
-    //  * @param path the path containing the obstacles to apply constraints for
-    //  */
-    // static void ApplyObstacleConstraints(Opti& opti, const std::vector<std::vector<Expression>>& xSegments,
-    //         const std::vector<std::vector<Expression>>& ySegments, const std::vector<std::vector<Expression>>& thetaSegments,
-    //         const Drivetrain& drivetrain, const Path& path);
+            const std::vector<std::vector<Expression>>& xSegments,
+            const std::vector<std::vector<Expression>>& ySegments,
+            const std::vector<std::vector<Expression>>& thetaSegments,
+            const Path& path);
 
     struct InitialGuessX {
         std::vector<double> x;
@@ -202,19 +189,22 @@ private:
      */
     static const InitialGuessX GenerateInitialGuessX(const Path& path);
 
-    static void ApplyInitialGuessX(Opti& opti, const std::vector<Expression>& x,
-            const std::vector<Expression>& y, const std::vector<Expression>& theta,
+    static void ApplyInitialGuessX(Opti& opti,
+            const std::vector<Expression>& x,
+            const std::vector<Expression>& y,
+            const std::vector<Expression>& theta,
             const InitialGuessX& initialGuessX);
 
     static Trajectory ConstructTrajectory(const Opti& opti,
-            const std::vector<std::vector<Expression>>& dtSegments,
-            const std::vector<std::vector<Expression>>& xSegments,
-            const std::vector<std::vector<Expression>>& ySegments,
-            const std::vector<std::vector<Expression>>& thetaSegments);
+            const std::vector<Expression>& dt,
+            const std::vector<Expression>& x,
+            const std::vector<Expression>& y,
+            const std::vector<Expression>& theta);
 
+public:
     /**
-     * @brief an abstract expression type representing a scalar expression
+     * @brief Destroy the Trajectory Optimization Problem object
      */
-    using Expression = typename Opti::Expression;
+    virtual ~TrajectoryOptimizationProblem() = default;
 };
 }

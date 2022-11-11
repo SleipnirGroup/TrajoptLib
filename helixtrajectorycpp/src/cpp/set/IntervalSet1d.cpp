@@ -1,4 +1,4 @@
-#include "constraint/IntervalSet1d.h"
+#include "set/IntervalSet1d.h"
 
 #include <limits>
 
@@ -12,11 +12,17 @@ namespace helixtrajectory {
             : lower(value), upper(value) {
     }
 
+    IntervalSet1d IntervalSet1d::R1() {
+        return IntervalSet1d(
+                -std::numeric_limits<double>::infinity(),
+                +std::numeric_limits<double>::infinity());
+    }
+
     bool IntervalSet1d::operator==(const IntervalSet1d& other) const noexcept {
         return lower == other.lower && upper == other.upper;
     }
 
-    double SclarBound::Range() const noexcept {
+    double IntervalSet1d::Range() const noexcept {
         return upper - lower;
     }
 

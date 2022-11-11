@@ -12,6 +12,8 @@ namespace helixtrajectory {
         IntervalSet1d yBound;
 
         RectangularSet2d(const IntervalSet1d& xBound, const IntervalSet1d& yBound);
+        static RectangularSet2d PolarExactSet2d(double r, double theta);
+        static RectangularSet2d R2();
 
         /**
          * @brief Check if this planar bound is valid. A planar bound is valid when the bounds

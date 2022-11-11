@@ -72,13 +72,26 @@ namespace helixtrajectory {
          */
         std::vector<std::vector<Expression>> vxSegments;
         /**
-         * @brief the entries of the vx vector, separated into individual trajectory segments
+         * @brief the entries of the vy vector, separated into individual trajectory segments
          */
         std::vector<std::vector<Expression>> vySegments;
         /**
          * @brief the entries of the omega vector, separated into individual trajectory segments
          */
         std::vector<std::vector<Expression>> omegaSegments;
+
+        /**
+         * @brief the entries of the ax vector, separated into individual trajectory segments
+         */
+        std::vector<std::vector<Expression>> axSegments;
+        /**
+         * @brief the entries of the ay vector, separated into individual trajectory segments
+         */
+        std::vector<std::vector<Expression>> aySegments;
+        /**
+         * @brief the entries of the alpha vector, separated into individual trajectory segments
+         */
+        std::vector<std::vector<Expression>> alphaSegments;
 
         /**
          * @brief Construct a new CasADi Holonomic Trajectory Optimization Problem
@@ -130,22 +143,5 @@ namespace helixtrajectory {
                 const std::vector<std::vector<Expression>>& aySegments,
                 const std::vector<std::vector<Expression>>& alphaSegments,
                 const HolonomicPath& holonomicPath);
-
-        /**
-         * @brief Applies the drivetrain-specific constraints to the optimizer. There are two
-         * main constraints applied: first, constraints that correlate the forces applied by
-         * the motors to the dyanmics of the holonomic system and second, constraints that
-         * prevent motors from using more power than is available. A simple model may set a maximum
-         * velocity and torque for each motor, but a more accurate model may use the motor equation
-         * to prevent the voltages used by each motor from exceeding the available voltage.
-         */
-        static Trajectory ConstructTrajectory(const Opti& opti,
-                const std::vector<std::vector<Expression>>& dtSegments,
-                const std::vector<std::vector<Expression>>& xSegments,
-                const std::vector<std::vector<Expression>>& ySegments,
-                const std::vector<std::vector<Expression>>& thetaSegments,
-                const std::vector<std::vector<Expression>>& vxSegments,
-                const std::vector<std::vector<Expression>>& vySegments,
-                const std::vector<std::vector<Expression>>& omegaSegments);
     };
 }

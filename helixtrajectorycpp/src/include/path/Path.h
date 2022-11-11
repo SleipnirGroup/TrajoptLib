@@ -61,7 +61,7 @@ namespace helixtrajectory {
          * @return true if this path is valid
          */
         bool IsValid() const noexcept;
-        
+
         /**
          * @brief Destroy the Path object
          */

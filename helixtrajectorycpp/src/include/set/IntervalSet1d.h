@@ -34,14 +34,7 @@ namespace helixtrajectory {
          */
         IntervalSet1d(double value);
 
-        // /**
-        //  * @return a scalar bound from 0 to positive infinity
-        //  */
-        // static constexpr ScalarInterval PositiveValues();
-        // /**
-        //  * @return a scalar bound from -pi to pi
-        //  */
-        // static constexpr ScalarInterval ThetaValues();
+        static IntervalSet1d R1();
 
         /**
          * @brief Check if this scalar bound is equivalent to another scalar bound.

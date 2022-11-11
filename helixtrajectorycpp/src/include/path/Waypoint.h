@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <vector>
 
 #include "path/InitialGuessPoint.h"
@@ -42,11 +43,6 @@ namespace helixtrajectory {
          * from the last waypoint to this waypoint
          */
         std::vector<InitialGuessPoint> initialGuessPoints;
-
-        /**
-         * @brief Destroy the Waypoint object
-         */
-        virtual ~Waypoint() = default;
 
         /**
          * @brief Check if this waypoint is an initial waypoint. An initial
@@ -92,6 +88,11 @@ namespace helixtrajectory {
          * @return true if and only if this waypoint is an initial waypoint or a known state waypoint
          */
         bool IsSplitWaypoint() const noexcept;
+
+        /**
+         * @brief Destroy the Waypoint object
+         */
+        virtual ~Waypoint() = default;
 
     protected:
         /**

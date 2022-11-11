@@ -4,12 +4,12 @@ namespace helixtrajectory {
 
 class EllipticalSet2d {
 public:
-
     enum class Direction {
         kInside,
         kCentered,
         kOutside
     };
+
     double xRadius;
     double yRadius;
     Direction direction;
@@ -19,6 +19,7 @@ public:
 
     bool IsCircular() const noexcept;
     bool IsR2() const noexcept;
+
     bool IsValid() const noexcept;
 };
 }
