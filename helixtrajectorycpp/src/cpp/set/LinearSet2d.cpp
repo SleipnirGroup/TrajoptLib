@@ -7,8 +7,8 @@
 
 namespace helixtrajectory {
 
-LinearSet2d::LinearSet2d(double theta, const IntervalSet1d& rBound)
-        : theta(theta), rBound(rBound) {
+LinearSet2d::LinearSet2d(double theta)
+        : theta(theta) {
 }
 
 RectangularSet2d LinearSet2d::TransformRBound(double theta, const IntervalSet1d& rBound) {
@@ -31,9 +31,5 @@ RectangularSet2d LinearSet2d::TransformRBound(double theta, const IntervalSet1d&
         double upperVectorX = rBound.lower * cosTheta;
         return RectangularSet2d({lowerVectorX, upperVectorX}, IntervalSet1d::R1());
     }
-}
-
-bool LinearSet2d::IsValid() const noexcept {
-    return rBound.IsValid() && rBound.Range() > 0.0;
 }
 }

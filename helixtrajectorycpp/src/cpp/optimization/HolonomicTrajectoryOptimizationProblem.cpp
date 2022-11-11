@@ -147,15 +147,15 @@ void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicConstraint(Opti
     
     if (std::holds_alternative<VelocityHolonomicConstraint>(holonomicConstraint)) {
         const auto& velocityHolonomicConstraint = std::get<VelocityHolonomicConstraint>(holonomicConstraint);
-        ApplySet2dConstraint(opti, vx, vy, velocityHolonomicConstraint.velocityBound);
+        TrajectoryOptimizationProblem<Opti>::ApplySet2dConstraint(opti, vx, vy, velocityHolonomicConstraint.velocityBound);
     } else if (std::holds_alternative<AngularVelocityConstraint>(holonomicConstraint)) {
         const auto& angularVelocityConstraint = std::get<AngularVelocityConstraint>(holonomicConstraint);
-        ApplyIntervalSet1dConstraint(opti, omega, angularVelocityConstraint.angularVelocityBound);
+        TrajectoryOptimizationProblem<Opti>::ApplyIntervalSet1dConstraint(opti, omega, angularVelocityConstraint.angularVelocityBound);
     }
 }
 
 template<typename Opti>
-void ApplyHolonomicConstraints(Opti& opti,
+void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicConstraints(Opti& opti,
         const typename Opti::Expression& vx,
         const typename Opti::Expression& vy,
         const typename Opti::Expression& omega,
@@ -164,7 +164,7 @@ void ApplyHolonomicConstraints(Opti& opti,
         const typename Opti::Expression& alpha,
         const std::vector<HolonomicConstraint>& constraints) {
     for (const auto& constraint : constraints) {
-        HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicConstraint(opti, vx, vy, omega, ax, ay, alpha, constraint);
+        ApplyHolonomicConstraint(opti, vx, vy, omega, ax, ay, alpha, constraint);
     }
 }
 

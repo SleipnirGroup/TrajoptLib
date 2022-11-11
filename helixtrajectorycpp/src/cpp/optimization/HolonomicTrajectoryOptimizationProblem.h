@@ -28,8 +28,6 @@ namespace helixtrajectory {
      */
     template<typename Opti>
     class HolonomicTrajectoryOptimizationProblem : public TrajectoryOptimizationProblem<Opti> {
-    public:
-        using Expression = typename Opti::Expression;
     protected:
         /**
          * @brief the holonomic drivetrain
@@ -40,6 +38,7 @@ namespace helixtrajectory {
          */
         const HolonomicPath& holonomicPath;
 
+        using Expression = typename Opti::Expression;
         /**
          * @brief 
          * 
@@ -123,6 +122,11 @@ namespace helixtrajectory {
                 const Expression& vx, const Expression& vy, const Expression& omega,
                 const Expression& ax, const Expression& ay, const Expression& alpha,
                 const HolonomicConstraint& constraint);
+
+        static void ApplyHolonomicConstraints(Opti& opti,
+                const Expression& vx, const Expression& vy, const Expression& omega,
+                const Expression& ax, const Expression& ay, const Expression& alpha,
+                const std::vector<HolonomicConstraint>& constraints);
 
         /**
          * @brief Apply the constraints that force the robot's motion to comply

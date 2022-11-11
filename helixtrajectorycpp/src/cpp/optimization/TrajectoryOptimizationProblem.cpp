@@ -16,6 +16,7 @@
 #include "trajectory/Trajectory.h"
 #include "obstacle/Obstacle.h"
 #include "path/Path.h"
+#include "TrajectoryGenerationException.h"
 
 namespace helixtrajectory {
 
@@ -126,7 +127,7 @@ TrajectoryOptimizationProblem<Opti>::TrajectoryOptimizationProblem(const Drivetr
 template<typename Opti>
 void TrajectoryOptimizationProblem<Opti>::ApplyIntervalSet1dConstraint(Opti& opti, const Expression& scalar, const IntervalSet1d& set1d) {
     if (set1d.IsExact()) {
-        opti.SubjectTo(scalar == scalarBound.lower);
+        opti.SubjectTo(scalar == set1d.lower);
     } else {
         if (set1d.IsLowerBounded()) {
             opti.SubjectTo(scalar >= set1d.lower);
@@ -168,8 +169,8 @@ void TrajectoryOptimizationProblem<Opti>::ApplySet2dConstraint(Opti& opti,
         }
     } else if (std::holds_alternative<ConeSet2d>(set2d)) {
         const ConeSet2d& coneSet2d = std::get<ConeSet2d>(set2d);
-        opti.SubjectTo(vectorX * sin(linearSet2d.thetaBound.upper) >= vectorY * cos(linearSet2d.thetaBound.upper));
-        opti.SubjectTo(vectorX * sin(linearSet2d.thetaBound.lower) <= vectorY * cos(linearSet2d.thetaBound.lower));
+        opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.upper) >= vectorY * cos(coneSet2d.thetaBound.upper));
+        opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.lower) <= vectorY * cos(coneSet2d.thetaBound.lower));
     }
 }
 
@@ -298,7 +299,7 @@ void TrajectoryOptimizationProblem<Opti>::ApplyConstraint(Opti& opti, const Expr
 }
 
 template<typename Opti>
-void ApplyConstraints(Opti& opti,
+void TrajectoryOptimizationProblem<Opti>::ApplyConstraints(Opti& opti,
         const typename Opti::Expression& x,
         const typename Opti::Expression& y,
         const typename Opti::Expression& theta,
@@ -325,26 +326,26 @@ void TrajectoryOptimizationProblem<Opti>::ApplyPathConstraints(Opti& opti,
                     xSegments[waypointIndex][segmentSampleIndex],
                     ySegments[waypointIndex][segmentSampleIndex],
                     thetaSegments[waypointIndex][segmentSampleIndex],
-                    bumpers,
+                    path.bumpers,
                     path.globalConstraints);
             ApplyConstraints(opti,
                     xSegments[waypointIndex][segmentSampleIndex],
                     ySegments[waypointIndex][segmentSampleIndex],
                     thetaSegments[waypointIndex][segmentSampleIndex],
-                    bumpers,
+                    path.bumpers,
                     waypoint.segmentConstraints);
         }
         ApplyConstraints(opti,
                 xSegments[waypointIndex][waypointSampleIndex],
                 ySegments[waypointIndex][waypointSampleIndex],
                 thetaSegments[waypointIndex][waypointSampleIndex],
-                bumpers,
+                path.bumpers,
                 path.globalConstraints);
         ApplyConstraints(opti,
                 xSegments[waypointIndex][waypointSampleIndex],
                 ySegments[waypointIndex][waypointSampleIndex],
                 thetaSegments[waypointIndex][waypointSampleIndex],
-                bumpers,
+                path.bumpers,
                 waypoint.waypointConstraints);
         
     }
@@ -370,7 +371,7 @@ const typename TrajectoryOptimizationProblem<Opti>::InitialGuessX TrajectoryOpti
     initialGuessX.theta.reserve(sampleTotal);
     initialGuessX.x.push_back(path.GetWaypoint(0).initialGuessPoints[0].x);
     initialGuessX.y.push_back(path.GetWaypoint(0).initialGuessPoints[0].y);
-    initialGuessX.theta.push_back(path.GetWaypoint(0).initialGuessPoints[0].theta);
+    initialGuessX.theta.push_back(path.GetWaypoint(0).initialGuessPoints[0].heading);
     size_t sampleIndex = 1;
     for (size_t waypointIndex = 1; waypointIndex < waypointCount; waypointIndex++) {
         const Waypoint& previousWaypoint = path.GetWaypoint(waypointIndex - 1);
@@ -395,7 +396,7 @@ const typename TrajectoryOptimizationProblem<Opti>::InitialGuessX TrajectoryOpti
             size_t finalGuessPointSampleIndex = sampleIndex + intervalCount;
             linspace(initialGuessX.x, secondToLastGuessPointSampleIndex, finalGuessPointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 2].x, waypoint.initialGuessPoints[guessPointCount - 1].x);
             linspace(initialGuessX.y, secondToLastGuessPointSampleIndex, finalGuessPointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 2].y, waypoint.initialGuessPoints[guessPointCount - 1].y);
-            linspace(initialGuessX.heading, secondToLastGuessPointSampleIndex, finalGuessPointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 2].heading, waypoint.initialGuessPoints[guessPointCount - 1].heading);
+            linspace(initialGuessX.theta, secondToLastGuessPointSampleIndex, finalGuessPointSampleIndex, waypoint.initialGuessPoints[guessPointCount - 2].heading, waypoint.initialGuessPoints[guessPointCount - 1].heading);
         }
         sampleIndex += intervalCount;
     }
@@ -448,7 +449,7 @@ Trajectory TrajectoryOptimizationProblem<Opti>::ConstructTrajectory(const Opti& 
                 static_cast<double>(opti.SolutionValue(theta[sampleIndex]))));
     }
 
-    return HolonomicTrajectory(segments);
+    return Trajectory(samples);
 }
 
 // TODO: do this in CasADiOpti.cpp:

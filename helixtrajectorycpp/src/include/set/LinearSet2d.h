@@ -14,7 +14,5 @@ public:
     LinearSet2d(double theta);
 
     static RectangularSet2d TransformRBound(double theta, const IntervalSet1d& rBound);
-
-    bool IsValid() const noexcept;
 };
 }

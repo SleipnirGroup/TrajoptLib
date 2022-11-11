@@ -28,12 +28,6 @@ namespace helixtrajectory {
         double heading;
 
         /**
-         * @brief Destroy the Trajectory Sample object
-         */
-        virtual ~TrajectorySample() = default;
-
-    protected:
-        /**
          * @brief Construct a new Trajectory Sample object with the duration of the
          * control interval, position, and heading.
          * 

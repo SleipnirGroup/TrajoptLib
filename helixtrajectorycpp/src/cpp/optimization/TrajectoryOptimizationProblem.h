@@ -155,6 +155,9 @@ private:
     static void ApplyConstraint(Opti& opti, const Expression& x, const Expression& y,
             const Expression& theta, const Obstacle& bumpers, const Constraint& constraint);
 
+    static void ApplyConstraints(Opti& opti, const Expression& x, const Expression& y,
+            const Expression& theta, const Obstacle& bumpers, const std::vector<Constraint>& constraint);
+
     /**
      * @brief Apply the constraints that force the robot's motion to comply
      * with the list of waypoints provided. This function only applies constraints
