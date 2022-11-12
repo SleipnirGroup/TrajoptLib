@@ -1,5 +1,7 @@
-# add_executable(${PROJECT_NAME} CasADiOpti.cpp Drivetrain.cpp HolonomicDrivetrain.cpp HolonomicPath.cpp HolonomicTrajectory.cpp HolonomicTrajectoryOptimizationProblem.cpp HolonomicTrajectorySample.cpp HolonomicTrajectorySegment.cpp HolonomicWaypoint.cpp InitialGuessPoint.cpp InvalidPathException.cpp Obstacle.cpp ObstaclePoint.cpp OptimalTrajectoryGenerator.cpp Path.cpp SwerveDrivetrain.cpp SwerveModule.cpp SwerveTrajectoryOptimizationProblem.cpp TrajectoryGenerationException.cpp TrajectoryOptimizationProblem.cpp TrajectorySample.cpp Waypoint.cpp Main.cpp)
-add_library(${PROJECT_NAME} SHARED CasADiOpti.cpp Drivetrain.cpp HolonomicDrivetrain.cpp HolonomicPath.cpp HolonomicTrajectory.cpp HolonomicTrajectoryOptimizationProblem.cpp HolonomicTrajectorySample.cpp HolonomicTrajectorySegment.cpp HolonomicWaypoint.cpp InitialGuessPoint.cpp InvalidPathException.cpp Obstacle.cpp ObstaclePoint.cpp OptimalTrajectoryGenerator.cpp Path.cpp SwerveDrivetrain.cpp SwerveModule.cpp SwerveTrajectoryOptimizationProblem.cpp TrajectoryGenerationException.cpp TrajectoryOptimizationProblem.cpp TrajectorySample.cpp Waypoint.cpp JNI.cpp)
+# add_library(${PROJECT_NAME} SHARED CasADiOpti.cpp Drivetrain.cpp HolonomicAccelerationConstraint.cpp HolonomicDrivetrain.cpp HolonomicPath.cpp HolonomicTrajectoryOptimizationProblem.cpp HolonomicVelocityConstraint.cpp HolonomicWaypoint.cpp InitialGuessPoint.cpp InvalidPathException.cpp Obstacle.cpp ObstaclePoint.cpp OptimalTrajectoryGenerator.cpp Path.cpp PlanarBound.cpp PositionConstraint.cpp ScalarBound.cpp SwerveDrivetrain.cpp SwerveModule.cpp SwerveTrajectoryOptimizationProblem.cpp TrajectoryGenerationException.cpp TrajectoryOptimizationProblem.cpp TrajectorySample.cpp Waypoint.cpp JNI.cpp)
+
+file(GLOB_RECURSE src *.cpp)
+add_executable(${PROJECT_NAME} ${src})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CASADI_DIR}/include)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/jni)
@@ -26,6 +28,7 @@ endif()
 target_link_directories(${PROJECT_NAME} PRIVATE ${CASADI_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE casadi)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/helixtrajectorycpp/src/include)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/helixtrajectorycpp/src/cpp)
 
 # if(${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS" OR WIN32)
 #     install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "lib")
