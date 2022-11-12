@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 namespace helixtrajectory {
 
     /**
@@ -37,5 +39,7 @@ namespace helixtrajectory {
          * @param heading the heading of the robot
          */
         TrajectorySample(double intervalDuration, double x, double y, double heading);
+
+        friend std::ostream& operator<<(std::ostream& stream, const TrajectorySample& sample);
     };
 }
