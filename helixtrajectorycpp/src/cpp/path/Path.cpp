@@ -21,8 +21,7 @@ namespace helixtrajectory {
     }
 
     bool Path::IsValid() const noexcept {
-        if (Length() == 0 || ControlIntervalTotal() == 0
-                || !GetWaypoint(0).IsStateKnown() || !GetWaypoint(Length() - 1).IsStateKnown()) {
+        if (Length() == 0 || ControlIntervalTotal() == 0) {
             return false;
         }
         for (int index = 0; index < Length(); index++) {

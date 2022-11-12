@@ -178,7 +178,24 @@ void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicPathConstraints
         const std::vector<std::vector<Expression>>& alphaSegments,
         const HolonomicPath& holonomicPath) {
     
-    for (size_t waypointIndex = 0; waypointIndex < holonomicPath.holonomicWaypoints.size(); waypointIndex++) {
+    ApplyHolonomicConstraints(opti,
+            vxSegments[0][0],
+            vySegments[0][0],
+            omegaSegments[0][0],
+            axSegments[0][0],
+            aySegments[0][0],
+            alphaSegments[0][0],
+            holonomicPath.globalHolonomicConstraints);
+    ApplyHolonomicConstraints(opti,
+            vxSegments[0][0],
+            vySegments[0][0],
+            omegaSegments[0][0],
+            axSegments[0][0],
+            aySegments[0][0],
+            alphaSegments[0][0],
+            holonomicPath.holonomicWaypoints[0].waypointHolonomicConstraints);
+
+    for (size_t waypointIndex = 1; waypointIndex < holonomicPath.holonomicWaypoints.size(); waypointIndex++) {
         const auto& holonomicWaypoint = holonomicPath.holonomicWaypoints[waypointIndex];
         size_t segmentSampleCount = holonomicWaypoint.controlIntervalCount;
         size_t waypointSampleIndex = segmentSampleCount - 1;

@@ -83,7 +83,7 @@ TrajectoryOptimizationProblem<Opti>::TrajectoryOptimizationProblem(const Drivetr
     thetaSegments.push_back({theta[0]});
     size_t sampleIndex = 1;
     for (size_t waypointIndex = 1; waypointIndex < waypointCount; waypointIndex++) {
-        size_t controlIntervalCount = TrajectoryOptimizationProblem::path.GetWaypoint(waypointIndex)
+        size_t controlIntervalCount = TrajectoryOptimizationProblem<Opti>::path.GetWaypoint(waypointIndex)
                 .controlIntervalCount;
         std::vector<Expression> dtSegment;
         std::vector<Expression> xSegment;
@@ -105,8 +105,9 @@ TrajectoryOptimizationProblem<Opti>::TrajectoryOptimizationProblem(const Drivetr
         thetaSegments.push_back(thetaSegment);
         sampleIndex += controlIntervalCount;
     }
+    std::cout << "Set up Decision Variables" << std::endl;
 
-    ApplyPathConstraints(opti, xSegments, ySegments, thetaSegments, TrajectoryOptimizationProblem::path);
+    ApplyPathConstraints(opti, xSegments, ySegments, thetaSegments, TrajectoryOptimizationProblem<Opti>::path);
 #ifdef DEBUG_OUTPUT
     std::cout << "Applied Path constraints" << std::endl;
 #endif
@@ -317,11 +318,25 @@ void TrajectoryOptimizationProblem<Opti>::ApplyPathConstraints(Opti& opti,
         const std::vector<std::vector<Expression>>& thetaSegments,
         const Path& path) {
 
-    for (size_t waypointIndex = 0; waypointIndex < path.Length(); waypointIndex++) {
+    ApplyConstraints(opti,
+            xSegments[0][0],
+            ySegments[0][0],
+            thetaSegments[0][0],
+            path.bumpers,
+            path.globalConstraints);
+    ApplyConstraints(opti,
+            xSegments[0][0],
+            ySegments[0][0],
+            thetaSegments[0][0],
+            path.bumpers,
+            path.GetWaypoint(0).waypointConstraints);
+
+    for (size_t waypointIndex = 1; waypointIndex < path.Length(); waypointIndex++) {
         const Waypoint& waypoint = path.GetWaypoint(waypointIndex);
         size_t segmentSampleCount = waypoint.controlIntervalCount;
         size_t waypointSampleIndex = segmentSampleCount - 1;
         for (size_t segmentSampleIndex = 0; segmentSampleIndex < segmentSampleCount - 1; segmentSampleIndex++) {
+            std::cout << "hellow?" << std::endl;
             ApplyConstraints(opti,
                     xSegments[waypointIndex][segmentSampleIndex],
                     ySegments[waypointIndex][segmentSampleIndex],

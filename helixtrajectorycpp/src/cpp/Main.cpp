@@ -5,6 +5,7 @@
 
 #include "path/HolonomicPath.h"
 #include "drivetrain/SwerveDrivetrain.h"
+#include "path/InitialGuessPoint.h"
 #include "obstacle/Obstacle.h"
 #include "OptimalTrajectoryGenerator.h"
 
@@ -28,12 +29,12 @@ int main() {
              SwerveModule(-0.6, -0.6, 0.04, 70, 2)});
 
     HolonomicPath holonomicPath(HolonomicPath({
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{4, 0}, 0.0)}, {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{0, 4}, 1.57)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{-4, 0}, 0.0)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{0, -4}, -1.57)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{4, 0}, 0.0)}, {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)})
-        }, Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}})));
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {},   0, {InitialGuessPoint( 4,  0,  0.00)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  4},  1.57)},     {},                                                                                    {}, {}, 100, {InitialGuessPoint( 0,  4,  1.57)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{-4,  0},  0.00)},     {},                                                                                    {}, {}, 100, {InitialGuessPoint(-4,  0,  0.00)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0, -4}, -1.57)},     {},                                                                                    {}, {}, 100, {InitialGuessPoint( 0, -4, -1.57)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {}, 100, {InitialGuessPoint( 4,  0,  0.00)})},
+        Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}})));
 
     // HolonomicPath holonomicPath(HolonomicPath({
     //     HolonomicWaypoint(0, 0, 0, 0, 0, 0, true, true, true,  true,  true,  true,  true,    0, {}, {}),
