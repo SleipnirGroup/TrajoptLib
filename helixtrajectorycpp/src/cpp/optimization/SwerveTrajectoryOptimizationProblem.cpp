@@ -26,9 +26,9 @@ namespace helixtrajectory {
         moduleFX.reserve(moduleCount);
         moduleFY.reserve(moduleCount);
         moduleTau.reserve(moduleCount);
-        netFX.reserve(TrajectoryOptimizationProblem<Opti>::controlIntervalTotal);
-        netFY.reserve(TrajectoryOptimizationProblem<Opti>::controlIntervalTotal);
-        netTau.reserve(TrajectoryOptimizationProblem<Opti>::controlIntervalTotal);
+        netFX.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
+        netFY.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
+        netTau.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
 
         for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
             std::vector<Expression> indexModuleX;
@@ -42,9 +42,9 @@ namespace helixtrajectory {
             indexModuleY.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
             indexModuleVX.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
             indexModuleVY.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
-            indexModuleFX.reserve(TrajectoryOptimizationProblem<Opti>::controlIntervalTotal);
-            indexModuleFY.reserve(TrajectoryOptimizationProblem<Opti>::controlIntervalTotal);
-            indexModuleTau.reserve(TrajectoryOptimizationProblem<Opti>::controlIntervalTotal);
+            indexModuleFX.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
+            indexModuleFY.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
+            indexModuleTau.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
             for (size_t sampleIndex = 0; sampleIndex < TrajectoryOptimizationProblem<Opti>::sampleTotal; sampleIndex++) {
                 ModulePosition modulePosition = SolveModulePosition(TrajectoryOptimizationProblem<Opti>::theta[sampleIndex],
                         SwerveTrajectoryOptimizationProblem::swerveDrivetrain.modules[moduleIndex]);
@@ -52,12 +52,11 @@ namespace helixtrajectory {
                 indexModuleY.push_back(modulePosition.y);
                 indexModuleVX.push_back(HolonomicTrajectoryOptimizationProblem<Opti>::vx[sampleIndex] - indexModuleY[sampleIndex] * HolonomicTrajectoryOptimizationProblem<Opti>::omega[sampleIndex]);
                 indexModuleVY.push_back(HolonomicTrajectoryOptimizationProblem<Opti>::vy[sampleIndex] + indexModuleX[sampleIndex] * HolonomicTrajectoryOptimizationProblem<Opti>::omega[sampleIndex]);
-            }
-            for (size_t intervalIndex = 0; intervalIndex < TrajectoryOptimizationProblem<Opti>::controlIntervalTotal; intervalIndex++) {
+                
                 indexModuleFX.push_back(TrajectoryOptimizationProblem<Opti>::opti.Variable());
                 indexModuleFY.push_back(TrajectoryOptimizationProblem<Opti>::opti.Variable());
-                indexModuleTau.push_back(indexModuleX[intervalIndex + 1] * indexModuleFY[intervalIndex]
-                        - indexModuleY[intervalIndex + 1] * indexModuleFX[intervalIndex]);
+                indexModuleTau.push_back(indexModuleX[sampleIndex] * indexModuleFY[sampleIndex]
+                                       - indexModuleY[sampleIndex] * indexModuleFX[sampleIndex]);
             }
             moduleX.push_back(indexModuleX);
             moduleY.push_back(indexModuleY);
@@ -72,14 +71,14 @@ namespace helixtrajectory {
         std::cout << "Set up module position and velocity variables" << std::endl;
 #endif
 
-        for (size_t intervalIndex = 0; intervalIndex < TrajectoryOptimizationProblem<Opti>::controlIntervalTotal; intervalIndex++) {
+        for (size_t sampleIndex = 0; sampleIndex < TrajectoryOptimizationProblem<Opti>::sampleTotal; sampleIndex++) {
             Expression intervalNetFX = 0;
             Expression intervalNetFY = 0;
             Expression intervalNetTau = 0;
             for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-                intervalNetFX += moduleFX[moduleIndex][intervalIndex];
-                intervalNetFY += moduleFY[moduleIndex][intervalIndex];
-                intervalNetTau += moduleTau[moduleIndex][intervalIndex];
+                intervalNetFX += moduleFX[moduleIndex][sampleIndex];
+                intervalNetFY += moduleFY[moduleIndex][sampleIndex];
+                intervalNetTau += moduleTau[moduleIndex][sampleIndex];
             }
             netFX.push_back(intervalNetFX);
             netFY.push_back(intervalNetFY);
@@ -128,11 +127,11 @@ namespace helixtrajectory {
             const std::vector<Expression>& ax, const std::vector<Expression>& ay, const std::vector<Expression>& alpha,
             const std::vector<Expression>& netFX, const std::vector<Expression>& netFY, const std::vector<Expression>& netTau,
             const SwerveDrivetrain& swerveDrivetrain) {
-        size_t controlIntervalTotal = ax.size();
-        for (size_t intervalIndex = 0; intervalIndex < controlIntervalTotal; intervalIndex++) {
-            opti.SubjectTo(netFX[intervalIndex]  == swerveDrivetrain.mass            * ax[intervalIndex]);
-            opti.SubjectTo(netFY[intervalIndex]  == swerveDrivetrain.mass            * ay[intervalIndex]);
-            opti.SubjectTo(netTau[intervalIndex] == swerveDrivetrain.momentOfInertia * alpha[intervalIndex]);
+        size_t sampleTotal = ax.size();
+        for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
+            opti.SubjectTo(netFX[sampleIndex]  == swerveDrivetrain.mass            * ax[sampleIndex]);
+            opti.SubjectTo(netFY[sampleIndex]  == swerveDrivetrain.mass            * ay[sampleIndex]);
+            opti.SubjectTo(netTau[sampleIndex] == swerveDrivetrain.momentOfInertia * alpha[sampleIndex]);
         }
     }
 
@@ -143,10 +142,11 @@ namespace helixtrajectory {
             const SwerveDrivetrain& swerveDrivetrain) {
         size_t moduleCount = swerveDrivetrain.modules.size();
         for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-            size_t controlIntervalTotal = moduleVX[moduleIndex].size() - 1;
+            size_t sampleTotal = moduleVX[moduleIndex].size();
             const SwerveModule& _module = swerveDrivetrain.modules[moduleIndex];
             double maxWheelVelocity = _module.wheelRadius * _module.wheelMaxAngularVelocity;
-            for (size_t sampleIndex = 0; sampleIndex < controlIntervalTotal + 1; sampleIndex++) {
+            double maxForce = _module.wheelMaxTorque / _module.wheelRadius;
+            for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
                 Expression constraint = moduleVX[moduleIndex][sampleIndex] * moduleVX[moduleIndex][sampleIndex]
                               + moduleVY[moduleIndex][sampleIndex] * moduleVY[moduleIndex][sampleIndex]
                              <= maxWheelVelocity * maxWheelVelocity;
@@ -155,15 +155,11 @@ namespace helixtrajectory {
                               + moduleVY[moduleIndex][sampleIndex] * moduleVY[moduleIndex][sampleIndex]
                              <= maxWheelVelocity * maxWheelVelocity);
                 
-                // std::cout << "Applied module " << moduleIndex << " sample " << sampleIndex << " velocity power constraint of " << maxWheelVelocity << std::endl;
-            }
-
-            double maxForce = _module.wheelMaxTorque / _module.wheelRadius;
-            for (size_t intervalIndex = 0; intervalIndex < controlIntervalTotal; intervalIndex++) {
-                opti.SubjectTo(moduleFX[moduleIndex][intervalIndex] * moduleFX[moduleIndex][intervalIndex]
-                              + moduleFY[moduleIndex][intervalIndex] * moduleFY[moduleIndex][intervalIndex]
+                opti.SubjectTo(moduleFX[moduleIndex][sampleIndex] * moduleFX[moduleIndex][sampleIndex]
+                              + moduleFY[moduleIndex][sampleIndex] * moduleFY[moduleIndex][sampleIndex]
                               <= maxForce * maxForce);
-                // std::cout << "Applied module " << moduleIndex << " interval " << intervalIndex << " force power constraint of " << maxForce << std::endl;
+                
+                // std::cout << "Applied module " << moduleIndex << " sample " << sampleIndex << " velocity power constraint of " << maxWheelVelocity << std::endl;
             }
         }
     }
