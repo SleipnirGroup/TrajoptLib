@@ -5,6 +5,7 @@
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <exception>
 #include <variant>
 #include <vector>
 
@@ -28,8 +29,8 @@ Trajectory TrajectoryOptimizationProblem<Opti>::Generate() {
         std::cout << "Solution stored" << std::endl;
 #endif
         return ConstructTrajectory(opti, dt, x, y, theta);
-    } catch (...) {
-        throw TrajectoryGenerationException("Error optimizing trajectory!");
+    } catch (const std::exception& e) {
+        throw TrajectoryGenerationException("Error optimizing trajectory" + std::string(e.what()));
     }
 }
 
