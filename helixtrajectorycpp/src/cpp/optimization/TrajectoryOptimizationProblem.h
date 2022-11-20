@@ -8,7 +8,6 @@
 #include "path/Path.h"
 #include "set/IntervalSet1d.h"
 #include "set/Set2d.h"
-#include "trajectory/Trajectory.h"
 
 namespace helixtrajectory {
 
@@ -18,16 +17,6 @@ namespace helixtrajectory {
  */
 template<typename Opti>
 class TrajectoryOptimizationProblem {
-public:
-    /**
-     * @brief Optimizes the given path using IPOPT. Note this function call
-     * may take a long time to complete. It may also fail, and throw a
-     * CasadiException.
-     * 
-     * @return a holonomic trajectory
-     */
-    Trajectory Generate();
-
 protected:
     /**
      * @brief the drivetrain
@@ -197,12 +186,6 @@ private:
             const std::vector<Expression>& y,
             const std::vector<Expression>& theta,
             const InitialGuessX& initialGuessX);
-
-    static Trajectory ConstructTrajectory(const Opti& opti,
-            const std::vector<Expression>& dt,
-            const std::vector<Expression>& x,
-            const std::vector<Expression>& y,
-            const std::vector<Expression>& theta);
 
 public:
     /**

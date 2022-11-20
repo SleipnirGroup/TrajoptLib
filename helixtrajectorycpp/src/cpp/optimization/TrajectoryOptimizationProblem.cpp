@@ -14,25 +14,11 @@
 #include "set/IntervalSet1d.h"
 #include "drivetrain/Drivetrain.h"
 #include "path/HolonomicPath.h"
-#include "trajectory/Trajectory.h"
 #include "obstacle/Obstacle.h"
 #include "path/Path.h"
 #include "TrajectoryGenerationException.h"
 
 namespace helixtrajectory {
-
-template<typename Opti>
-Trajectory TrajectoryOptimizationProblem<Opti>::Generate() {
-    try {
-        TrajectoryOptimizationProblem<Opti>::opti.Solve();
-#ifdef DEBUG_OUTPUT
-        std::cout << "Solution stored" << std::endl;
-#endif
-        return ConstructTrajectory(opti, dt, x, y, theta);
-    } catch (const std::exception& e) {
-        throw TrajectoryGenerationException("Error optimizing trajectory" + std::string(e.what()));
-    }
-}
 
 template<typename Opti>
 TrajectoryOptimizationProblem<Opti>::TrajectoryOptimizationProblem(const Drivetrain& drivetrain, const Path& path)
@@ -439,33 +425,6 @@ void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuessX(Opti& opti, const s
 #ifdef DEBUG_OUTPUT
     std::cout << std::endl;
 #endif
-}
-
-template<typename Opti>
-Trajectory TrajectoryOptimizationProblem<Opti>::ConstructTrajectory(const Opti& opti,
-        const std::vector<Expression>& dt,
-        const std::vector<Expression>& x,
-        const std::vector<Expression>& y,
-        const std::vector<Expression>& theta) {
-
-    std::vector<TrajectorySample> samples;
-    samples.reserve(x.size());
-
-    samples.push_back(TrajectorySample( // TODO: check if emplace_back works?
-            0.0,
-            static_cast<double>(opti.SolutionValue(x[0])),
-            static_cast<double>(opti.SolutionValue(y[0])),
-            static_cast<double>(opti.SolutionValue(theta[0]))));
-
-    for (size_t sampleIndex = 1; sampleIndex < x.size(); sampleIndex++) {
-        samples.push_back(TrajectorySample( // TODO: check if emplace_back works?
-                static_cast<double>(opti.SolutionValue(dt[sampleIndex - 1])),
-                static_cast<double>(opti.SolutionValue(x[sampleIndex])),
-                static_cast<double>(opti.SolutionValue(y[sampleIndex])),
-                static_cast<double>(opti.SolutionValue(theta[sampleIndex]))));
-    }
-
-    return Trajectory(samples);
 }
 
 // TODO: do this in CasADiOpti.cpp:

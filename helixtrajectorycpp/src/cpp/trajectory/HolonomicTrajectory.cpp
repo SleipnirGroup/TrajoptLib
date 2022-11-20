@@ -8,13 +8,13 @@
 
 namespace helixtrajectory {
 
-HolonomicTrajectory::HolonomicTrajectory(const HolonomicState initialState, const std::vector<HolonomicTrajectorySample>& samples)
+HolonomicTrajectory::HolonomicTrajectory(const HolonomicState& initialState, const std::vector<HolonomicTrajectorySample>& samples)
         : initialState(initialState), samples(samples) {
 }
 
 std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectory& trajectory) {
-    return stream << "{\"initial_state\": " << sample.initialState
-            << ", \"samples\": " << sample.samples
+    return stream << "{\"initial_state\": " << trajectory.initialState
+            << ", \"samples\": " << trajectory.samples
             << "}";
     // stream << "[";
     // double ts = 0.0;

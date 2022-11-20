@@ -8,13 +8,38 @@
 #include "optimization/CasADiOpti.h"
 #include "drivetrain/HolonomicDrivetrain.h"
 #include "path/HolonomicPath.h"
-#include "trajectory/Trajectory.h"
-#include "trajectory/TrajectorySample.h"
+#include "trajectory/HolonomicTrajectory.h"
+#include "trajectory/HolonomicState.h"
+#include "trajectory/HolonomicTrajectorySample.h"
 #include "path/HolonomicWaypoint.h"
 #include "obstacle/Obstacle.h"
 #include "TrajectoryGenerationException.h"
 
 namespace helixtrajectory {
+
+template<typename Opti>
+HolonomicTrajectory HolonomicTrajectoryOptimizationProblem<Opti>::Generate() {
+    try {
+        TrajectoryOptimizationProblem<Opti>::opti.Solve();
+#ifdef DEBUG_OUTPUT
+        std::cout << "Solution stored" << std::endl;
+#endif
+        return ConstructTrajectory(
+                TrajectoryOptimizationProblem<Opti>::opti,
+                TrajectoryOptimizationProblem<Opti>::dt,
+                TrajectoryOptimizationProblem<Opti>::x,
+                TrajectoryOptimizationProblem<Opti>::y,
+                TrajectoryOptimizationProblem<Opti>::theta,
+                vx,
+                vy,
+                omega,
+                ax,
+                ay,
+                alpha);
+    } catch (const std::exception& e) {
+        throw TrajectoryGenerationException("Error optimizing trajectory" + std::string(e.what()));
+    }
+}
 
 template<typename Opti>
 HolonomicTrajectoryOptimizationProblem<Opti>::HolonomicTrajectoryOptimizationProblem(
@@ -236,6 +261,53 @@ void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicPathConstraints
                 holonomicWaypoint.waypointHolonomicConstraints);
         
     }
+}
+
+template<typename Opti>
+HolonomicTrajectory HolonomicTrajectoryOptimizationProblem<Opti>::ConstructTrajectory(const Opti& opti,
+        const std::vector<Expression>& dt,
+        const std::vector<Expression>& x,
+        const std::vector<Expression>& y,
+        const std::vector<Expression>& theta,
+        const std::vector<Expression>& vx,
+        const std::vector<Expression>& vy,
+        const std::vector<Expression>& omega,
+        const std::vector<Expression>& ax,
+        const std::vector<Expression>& ay,
+        const std::vector<Expression>& alpha) {
+
+    HolonomicState initialState(
+            static_cast<double>(opti.SolutionValue(x[0])),
+            static_cast<double>(opti.SolutionValue(y[0])),
+            static_cast<double>(opti.SolutionValue(theta[0])),
+            static_cast<double>(opti.SolutionValue(vx[0])),
+            static_cast<double>(opti.SolutionValue(vy[0])),
+            static_cast<double>(opti.SolutionValue(omega[0])),
+            static_cast<double>(opti.SolutionValue(ax[0])),
+            static_cast<double>(opti.SolutionValue(ay[0])),
+            static_cast<double>(opti.SolutionValue(alpha[0])));
+
+    std::vector<HolonomicTrajectorySample> samples;
+    samples.reserve(x.size() - 1);
+
+    for (size_t sampleIndex = 1; sampleIndex < x.size(); sampleIndex++) {
+        // TODO: check if emplace_back works?
+        samples.push_back(HolonomicTrajectorySample(
+                static_cast<double>(opti.SolutionValue(dt[sampleIndex - 1])),
+                HolonomicState(
+                    static_cast<double>(opti.SolutionValue(x[sampleIndex])),
+                    static_cast<double>(opti.SolutionValue(y[sampleIndex])),
+                    static_cast<double>(opti.SolutionValue(theta[sampleIndex])),
+                    static_cast<double>(opti.SolutionValue(vx[sampleIndex])),
+                    static_cast<double>(opti.SolutionValue(vy[sampleIndex])),
+                    static_cast<double>(opti.SolutionValue(omega[sampleIndex])),
+                    static_cast<double>(opti.SolutionValue(ax[sampleIndex])),
+                    static_cast<double>(opti.SolutionValue(ay[sampleIndex])),
+                    static_cast<double>(opti.SolutionValue(alpha[sampleIndex]))
+                )));
+    }
+
+    return HolonomicTrajectory(initialState, samples);
 }
 
 template class HolonomicTrajectoryOptimizationProblem<CasADiOpti>;
