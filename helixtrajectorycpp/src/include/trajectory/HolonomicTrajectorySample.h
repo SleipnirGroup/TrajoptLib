@@ -13,6 +13,8 @@ public:
 
     HolonomicTrajectorySample(double intervalDuration, const HolonomicState& state);
 
+    void CheckKinematics(const HolonomicState& previousState) const;
+
     friend std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectorySample& sample);
 };
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 
 #include "trajectory/HolonomicState.h"
@@ -20,6 +21,8 @@ public:
 
     HolonomicTrajectory(const HolonomicState& initialState, const std::vector<HolonomicTrajectorySample>& samples);
     // HolonomicTrajectory(std::vector<HolonomicTrajectorySample>&& samples);
+
+    void CheckKinematics() const;
 
     /**
      * @brief Append a string representation of a holonomic trajectory to

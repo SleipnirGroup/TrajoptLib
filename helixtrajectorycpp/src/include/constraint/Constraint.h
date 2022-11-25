@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+#include <cmath>
 #include <variant>
 
 #include "constraint/HeadingConstraint.h"
@@ -40,6 +42,16 @@ namespace helixtrajectory {
          */
         kRobot,
     };
+
+    inline std::array<double, 2> ApplyRotation(std::array<double, 2> vect, double heading) {
+        if (vect[0] == 0.0 && vect[1] == 0.0) {
+            return {0.0, 0.0};
+        } else {
+            auto cosHeading = cos(heading);
+            auto sinHeading = sin(heading);
+            return {cosHeading * vect[0] - sinHeading * vect[1], sinHeading * vect[0] + cosHeading * vect[1]};
+        }
+    }
 
     using Constraint = std::variant<TranslationConstraint, HeadingConstraint, PoseConstraint, ObstacleConstraint>;
 }

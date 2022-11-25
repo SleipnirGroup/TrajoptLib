@@ -12,6 +12,7 @@
 #include "constraint/ObstacleConstraint.h"
 #include "constraint/TranslationConstraint.h"
 #include "trajectory/HolonomicTrajectory.h"
+#include "IncompatibleTrajectoryException.h"
 
 int main() {
 
@@ -34,10 +35,10 @@ int main() {
 
     HolonomicPath holonomicPath(HolonomicPath({
         HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {},   0, {InitialGuessPoint( 4,  0,  0.00)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  4},  1.57)},     {},                                                                                    {}, {}, 100, {InitialGuessPoint( 0,  4,  1.57)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{-4,  0},  0.00)},     {},                                                                                    {}, {}, 100, {InitialGuessPoint(-4,  0,  0.00)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0, -4}, -1.57)},     {},                                                                                    {}, {}, 100, {InitialGuessPoint( 0, -4, -1.57)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {}, 100, {InitialGuessPoint( 4,  0,  0.00)})},
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  4},  1.57)},     {},                                                                                    {}, {},  30, {InitialGuessPoint( 0,  4,  1.57)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{-4,  0},  0.00)},     {},                                                                                    {}, {},  30, {InitialGuessPoint(-4,  0,  0.00)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0, -4}, -1.57)},     {},                                                                                    {}, {},  30, {InitialGuessPoint( 0, -4, -1.57)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {},  30, {InitialGuessPoint( 4,  0,  0.00)})},
         Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}})));
 
     // const Obstacle initialBoundary = Obstacle(0.0, {{1.524, -1.524}, {1.524, -3.048}, {0.000, -3.048}, {0.000, -1.524}});
@@ -73,6 +74,15 @@ int main() {
 
     HolonomicTrajectory trajectory = OptimalTrajectoryGenerator::Generate(swerveDrivetrain, holonomicPath);
 
-    std::cout << "\nTrajectory:\n\n" << trajectory;
+    std::cout << "\nTrajectory:\n\n" << trajectory << std::endl;
+
+    try {
+        swerveDrivetrain.CheckTrajectory(trajectory);
+        trajectory.CheckKinematics();
+        std::cout << "traj is valid!!";
+    } catch (const IncompatibleTrajectoryException& exception) {
+        std::cout << exception.what();
+    }
+
     std::cout << std::endl;
 }
