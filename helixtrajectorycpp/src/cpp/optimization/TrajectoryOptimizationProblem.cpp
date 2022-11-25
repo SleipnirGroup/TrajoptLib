@@ -130,17 +130,17 @@ template<typename Opti>
 void TrajectoryOptimizationProblem<Opti>::ApplySet2dConstraint(Opti& opti,
         const Expression& vectorX, const Expression& vectorY, const Set2d& set2d) {
 
-    if (std::holds_alternative<RectangularSet2d>(set2d)) {
-        const RectangularSet2d& rectangularSet2d = std::get<RectangularSet2d>(set2d);
+    if (set2d.IsRectangular()) {
+        const RectangularSet2d& rectangularSet2d = set2d.GetRectangular();
         ApplyIntervalSet1dConstraint(opti, vectorX, rectangularSet2d.xBound);
         ApplyIntervalSet1dConstraint(opti, vectorY, rectangularSet2d.yBound);
-    } else if (std::holds_alternative<LinearSet2d>(set2d)) {
-        const LinearSet2d& linearSet2d = std::get<LinearSet2d>(set2d);
+    } else if (set2d.IsLinear()) {
+        const LinearSet2d& linearSet2d = set2d.GetLinear();
         double sinTheta = sin(linearSet2d.theta);
         double cosTheta = cos(linearSet2d.theta);
         opti.SubjectTo(vectorX * sinTheta == vectorY * cosTheta);
-    } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
-        const EllipticalSet2d& ellipticalSet2d = std::get<EllipticalSet2d>(set2d);
+    } else if (set2d.IsElliptical()) {
+        const EllipticalSet2d& ellipticalSet2d = set2d.GetElliptical();
         const Expression scaledVectorXSquared = (vectorX * vectorX) / (ellipticalSet2d.xRadius * ellipticalSet2d.xRadius);
         const Expression scaledVectorYSquared = (vectorY * vectorY) / (ellipticalSet2d.yRadius * ellipticalSet2d.yRadius);
         const Expression lhs = scaledVectorXSquared + scaledVectorYSquared;
@@ -155,8 +155,8 @@ void TrajectoryOptimizationProblem<Opti>::ApplySet2dConstraint(Opti& opti,
                 opti.SubjectTo(lhs >= 1.0);
                 break;
         }
-    } else if (std::holds_alternative<ConeSet2d>(set2d)) {
-        const ConeSet2d& coneSet2d = std::get<ConeSet2d>(set2d);
+    } else if (set2d.IsCone()) {
+        const ConeSet2d& coneSet2d = set2d.GetCone();
         opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.upper) >= vectorY * cos(coneSet2d.thetaBound.upper));
         opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.lower) <= vectorY * cos(coneSet2d.thetaBound.lower));
     }

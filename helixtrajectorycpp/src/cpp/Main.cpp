@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <limits>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "trajectory/HolonomicTrajectory.h"
 #include "IncompatibleTrajectoryException.h"
 #include "set/ConeSet2d.h"
+#include "TestUtil.h"
 
 int main() {
 
@@ -36,10 +38,10 @@ int main() {
 
     HolonomicPath holonomicPath(HolonomicPath({
         HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {},   0, {InitialGuessPoint( 4,  0,  0.00)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  4},  1.57)},     {},                                                                                    {}, {},  30, {InitialGuessPoint( 0,  4,  1.57)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{-4,  0},  0.00)},     {},                                                                                    {}, {},  30, {InitialGuessPoint(-4,  0,  0.00)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0, -4}, -1.57)},     {},                                                                                    {}, {},  30, {InitialGuessPoint( 0, -4, -1.57)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {},  30, {InitialGuessPoint( 4,  0,  0.00)})},
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  4},  1.57)},     {},                                                                                    {}, {},  10, {InitialGuessPoint( 0,  4,  1.57)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{-4,  0},  0.00)},     {},                                                                                    {}, {},  10, {InitialGuessPoint(-4,  0,  0.00)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0, -4}, -1.57)},     {},                                                                                    {}, {},  10, {InitialGuessPoint( 0, -4, -1.57)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {},  10, {InitialGuessPoint( 4,  0,  0.00)})},
         Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}})));
 
     // const Obstacle initialBoundary = Obstacle(0.0, {{1.524, -1.524}, {1.524, -3.048}, {0.000, -3.048}, {0.000, -1.524}});
@@ -95,12 +97,27 @@ int main() {
     //     std::cout << exception.what();
     // }
 
-    ConeSet2d set2d = IntervalSet1d(0, 1.57/2);
-    try {
-        set2d.CheckVector(1,0);
-        set2d.CheckVector(1,0.5);
-        set2d.CheckVector(0.5,1);
-    } catch (const IncompatibleTrajectoryException& exception) {
-        std::cout << exception.what();
-    }
+    // ConeSet2d set2d = IntervalSet1d(0, 1.57/2);
+    // try {
+    //     set2d.CheckVector(1,0);
+    //     set2d.CheckVector(1,0.5);
+    //     set2d.CheckVector(0.5,1);
+    // } catch (const IncompatibleTrajectoryException& exception) {
+    //     std::cout << exception.what();
+    // }
+
+    // casadi::Opti opti;
+    // opti.solver("ipopt");
+    // auto x = opti.variable();
+    // // opti.subject_to(x >= 0 && x <= 1);
+    // opti.subject_to(x >= 0);
+    // opti.subject_to(x <= 1);
+    // opti.minimize(-2 * x * x);
+    // auto sol = opti.solve();
+    // std::cout << "Solver value: " << static_cast<double>(sol.value(x)) << std::endl;
+    ConeSet2d set(IntervalSet1d(0, 0.78));
+    std::array<bool, 2> carry = set.GetConstraints(2., -1.);
+    std::cout << std::boolalpha;
+    std::cout << carry[0] << ", " << carry[1] << std::endl;
+
 }

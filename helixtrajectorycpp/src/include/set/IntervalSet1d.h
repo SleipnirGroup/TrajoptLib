@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 namespace helixtrajectory {
 
     /**
@@ -74,7 +76,23 @@ namespace helixtrajectory {
         bool IsLowerBounded() const noexcept;
         bool IsUpperBounded() const noexcept;
 
-        void CheckScalar(double value) const;
+        template<typename Expression>
+        std::vector<decltype(Expression() == Expression())> GetConstraints(const Expression& scalar) const {
+            if (IsExact()) {
+                return {scalar == lower};
+            } else {
+                std::vector<decltype(Expression() == Expression())> constraints;
+                if (IsLowerBounded()) {
+                    constraints.push_back(scalar >= lower);
+                }
+                if (IsUpperBounded()) {
+                    constraints.push_back(scalar <= upper);
+                }
+                return constraints;
+            }
+        }
+
+        void CheckScalar(double scalar) const;
 
         /**
          * @brief Check if this scalar bound is valid. A scalar bound is valid

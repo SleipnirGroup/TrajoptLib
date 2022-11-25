@@ -45,10 +45,13 @@ namespace helixtrajectory {
         return upper < +std::numeric_limits<double>::infinity();
     }
 
-    void IntervalSet1d::CheckScalar(double value) const {
-        if (value < lower || value > upper) {
-            throw IncompatibleTrajectoryException(
-                    fmt::format("{} is outside bound [{}, {}]", value, lower, upper));
+    void IntervalSet1d::CheckScalar(double scalar) const {
+        std::vector<bool> checks = GetConstraints(scalar);
+        for (bool check : checks) {
+            if (!check) {
+                throw IncompatibleTrajectoryException(
+                        fmt::format("{} is outside bound [{}, {}]", scalar, lower, upper));
+            }
         }
     }
 

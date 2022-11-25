@@ -16,9 +16,8 @@ LinearSet2d::LinearSet2d(double theta)
 }
 
 void LinearSet2d::CheckVector(double x, double y) const {
-    double sinTheta = sin(theta);
-    double cosTheta = cos(theta);
-    if (!WithinPrecision(x * sinTheta, y * cosTheta, 1e-3)) {
+    bool check = GetConstraint<LooseDouble>(x, y);
+    if (!check) {
         throw IncompatibleTrajectoryException(
                 fmt::format("({}, {}) is not on line defined by θ = {}", x, y, theta));
     }

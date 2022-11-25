@@ -28,32 +28,23 @@ bool EllipticalSet2d::IsR2() const noexcept {
 }
 
 void EllipticalSet2d::CheckVector(double x, double y) const {
-    auto scaledVectorXSquared = (x * x) / (xRadius * xRadius);
-    auto scaledVectorYSquared = (y * y) / (yRadius * yRadius);
-    auto lhs = scaledVectorXSquared + scaledVectorYSquared;
-    switch (direction) {
+    bool isCompatible = GetConstraint(x, y);
+    if (!isCompatible) {
+        switch (direction) {
             case Direction::kInside:
-                if (!(lhs <= 1.0)) {
-                    throw IncompatibleTrajectoryException(
-                            fmt::format("({}, {}) is not on or inside an ellipse with x radius of {} and y radius of {}",
-                            x, y, xRadius, yRadius));
-                }
-                break;
+                throw IncompatibleTrajectoryException(
+                        fmt::format("({}, {}) is not on or inside an ellipse with x radius of {} and y radius of {}",
+                        x, y, xRadius, yRadius));
             case Direction::kCentered:
-                if (!WithinPrecision(lhs, 1.0, 1e-3)) {
-                    throw IncompatibleTrajectoryException(
-                            fmt::format("({}, {}) is not on an ellipse with x radius of {} and y radius of {}",
-                            x, y, xRadius, yRadius));
-                }
-                break;
+                throw IncompatibleTrajectoryException(
+                        fmt::format("({}, {}) is not on an ellipse with x radius of {} and y radius of {}",
+                        x, y, xRadius, yRadius));
             case Direction::kOutside:
-                if (!(lhs >= 1.0)) {
-                    throw IncompatibleTrajectoryException(
-                            fmt::format("({}, {}) is not on or outside an ellipse with x radius of {} and y radius of {}",
-                            x, y, xRadius, yRadius));
-                }
-                break;
+                throw IncompatibleTrajectoryException(
+                        fmt::format("({}, {}) is not on or outside an ellipse with x radius of {} and y radius of {}",
+                        x, y, xRadius, yRadius));
         }
+    }
 }
 
 bool EllipticalSet2d::IsValid() const noexcept {
