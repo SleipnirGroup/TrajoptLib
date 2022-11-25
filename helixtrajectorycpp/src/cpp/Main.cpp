@@ -4,6 +4,8 @@
 #include <vector>
 
 #include <casadi/casadi.hpp>
+#include <sleipnir/autodiff/Variable.hpp>
+#include <sleipnir/optimization/OptimizationProblem.hpp>
 
 #include "path/HolonomicPath.h"
 #include "drivetrain/SwerveDrivetrain.h"
@@ -115,9 +117,18 @@ int main() {
     // opti.minimize(-2 * x * x);
     // auto sol = opti.solve();
     // std::cout << "Solver value: " << static_cast<double>(sol.value(x)) << std::endl;
-    ConeSet2d set(IntervalSet1d(0, 0.78));
-    std::array<bool, 2> carry = set.GetConstraints(2., -1.);
-    std::cout << std::boolalpha;
-    std::cout << carry[0] << ", " << carry[1] << std::endl;
+    // ConeSet2d set(IntervalSet1d(0, 0.78));
+    // std::array<bool, 2> carry = set.GetConstraints(2., -1.);
+    // std::cout << std::boolalpha;
+    // std::cout << carry[0] << ", " << carry[1] << std::endl;
+
+    sleipnir::OptimizationProblem problem;
+    const sleipnir::VariableMatrix vari = problem.DecisionVariable();
+    problem.SubjectTo(vari >= 3);
+    // vari = 1;
+    problem.Minimize(vari * vari);
+    problem.SubjectTo(Max(vari, 1) == 0.0);
+    problem.Solve();
+    std::cout << "Variable is: " << vari.Value();
 
 }

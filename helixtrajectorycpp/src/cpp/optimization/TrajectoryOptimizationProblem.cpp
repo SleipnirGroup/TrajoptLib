@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "optimization/CasADiOpti.h"
+#include "optimization/SleipnirOpti.h"
 #include "set/Set2d.h"
 #include "set/IntervalSet1d.h"
 #include "drivetrain/Drivetrain.h"
@@ -429,4 +430,5 @@ void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuessX(Opti& opti, const s
 
 // TODO: do this in CasADiOpti.cpp:
 template class TrajectoryOptimizationProblem<CasADiOpti>;
+template class TrajectoryOptimizationProblem<SleipnirOpti>;
 }

@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "optimization/CasADiOpti.h"
+#include "optimization/SleipnirOpti.h"
 #include "path/HolonomicPath.h"
 #include "drivetrain/SwerveDrivetrain.h"
 
@@ -109,7 +110,7 @@ namespace helixtrajectory {
 
     template<typename Opti>
     const typename SwerveTrajectoryOptimizationProblem<Opti>::ModulePosition SwerveTrajectoryOptimizationProblem<Opti>::SolveModulePosition(const Expression& theta, const SwerveModule& module) {
-        ModulePosition position{};
+        ModulePosition position{0.0, 0.0};
         if (module.x == 0.0 && module.y == 0.0) {
             position.x = 0;
             position.y = 0;
@@ -147,7 +148,7 @@ namespace helixtrajectory {
             double maxWheelVelocity = _module.wheelRadius * _module.wheelMaxAngularVelocity;
             double maxForce = _module.wheelMaxTorque / _module.wheelRadius;
             for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
-                Expression constraint = moduleVX[moduleIndex][sampleIndex] * moduleVX[moduleIndex][sampleIndex]
+                auto constraint = moduleVX[moduleIndex][sampleIndex] * moduleVX[moduleIndex][sampleIndex]
                               + moduleVY[moduleIndex][sampleIndex] * moduleVY[moduleIndex][sampleIndex]
                              <= maxWheelVelocity * maxWheelVelocity;
                 // std::cout << "\n\nMax velocity constraint: " << constraint << std::endl;
@@ -243,4 +244,5 @@ namespace helixtrajectory {
 #endif
 
     template class SwerveTrajectoryOptimizationProblem<CasADiOpti>;
+    template class SwerveTrajectoryOptimizationProblem<SleipnirOpti>;
 }

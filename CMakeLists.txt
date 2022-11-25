@@ -90,7 +90,7 @@ elseif(UNIX)
 endif()
 
 target_link_directories(helixtrajectory PRIVATE ${CASADI_DIR})
-target_link_libraries(helixtrajectory PRIVATE casadi fmt)
+target_link_libraries(helixtrajectory PRIVATE casadi fmt Sleipnir)
 target_include_directories(helixtrajectory PUBLIC ${CMAKE_SOURCE_DIR}/helixtrajectorycpp/src/include)
 target_include_directories(helixtrajectory PRIVATE ${CMAKE_SOURCE_DIR}/helixtrajectorycpp/src/cpp)
 

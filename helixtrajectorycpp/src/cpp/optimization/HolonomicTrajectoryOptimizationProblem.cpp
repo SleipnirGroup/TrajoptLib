@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "optimization/CasADiOpti.h"
+#include "optimization/SleipnirOpti.h"
 #include "drivetrain/HolonomicDrivetrain.h"
 #include "path/HolonomicPath.h"
 #include "trajectory/HolonomicTrajectory.h"
@@ -311,4 +312,5 @@ HolonomicTrajectory HolonomicTrajectoryOptimizationProblem<Opti>::ConstructTraje
 }
 
 template class HolonomicTrajectoryOptimizationProblem<CasADiOpti>;
+template class HolonomicTrajectoryOptimizationProblem<SleipnirOpti>;
 }
