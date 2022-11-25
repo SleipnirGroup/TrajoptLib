@@ -4,10 +4,12 @@
 
 namespace helixtrajectory {
 
-    class AngularVelocityConstraint {
-    public:
-        IntervalSet1d angularVelocityBound;
+class AngularVelocityConstraint {
+public:
+    IntervalSet1d angularVelocityBound;
 
-        AngularVelocityConstraint(const IntervalSet1d& angularVelocityBound);
-    };
+    AngularVelocityConstraint(const IntervalSet1d& angularVelocityBound);
+
+    void CheckAngularVelocity(double angularVelocity) const;
+};
 }

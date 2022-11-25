@@ -7,9 +7,9 @@
 
 namespace helixtrajectory {
 
-    class PoseConstraint : public TranslationConstraint, public HeadingConstraint {
-    public:
-        PoseConstraint(const Set2d& translationBound,
-                const IntervalSet1d& headingBound);
-    };
+class PoseConstraint : public TranslationConstraint, public HeadingConstraint {
+public:
+    PoseConstraint(const Set2d& translationBound,
+            const IntervalSet1d& headingBound);
+};
 }

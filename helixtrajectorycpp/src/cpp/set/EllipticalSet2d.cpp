@@ -35,21 +35,21 @@ void EllipticalSet2d::CheckVector(double x, double y) const {
             case Direction::kInside:
                 if (!(lhs <= 1.0)) {
                     throw IncompatibleTrajectoryException(
-                            fmt::format("of ({}, {}) is not on or inside an ellipse with x radius of {} and y radius of {}",
+                            fmt::format("({}, {}) is not on or inside an ellipse with x radius of {} and y radius of {}",
                             x, y, xRadius, yRadius));
                 }
                 break;
             case Direction::kCentered:
                 if (!WithinPrecision(lhs, 1.0, 1e-3)) {
                     throw IncompatibleTrajectoryException(
-                            fmt::format("of ({}, {}) is not on an ellipse with x radius of {} and y radius of {}",
+                            fmt::format("({}, {}) is not on an ellipse with x radius of {} and y radius of {}",
                             x, y, xRadius, yRadius));
                 }
                 break;
             case Direction::kOutside:
                 if (!(lhs >= 1.0)) {
                     throw IncompatibleTrajectoryException(
-                            fmt::format("of ({}, {}) is not on or outside an ellipse with x radius of {} and y radius of {}",
+                            fmt::format("({}, {}) is not on or outside an ellipse with x radius of {} and y radius of {}",
                             x, y, xRadius, yRadius));
                 }
                 break;

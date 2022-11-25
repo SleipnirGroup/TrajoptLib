@@ -4,10 +4,12 @@
 
 namespace helixtrajectory {
 
-    class TranslationConstraint {
-    public:
-        Set2d translationBound;
+class TranslationConstraint {
+public:
+    Set2d translationBound;
 
-        TranslationConstraint(const Set2d& translationBound);
-    };
+    TranslationConstraint(const Set2d& translationBound);
+
+    void CheckTranslation(double x, double y) const;
+};
 }

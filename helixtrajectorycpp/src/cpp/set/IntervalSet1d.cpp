@@ -9,7 +9,7 @@
 namespace helixtrajectory {
 
     IntervalSet1d::IntervalSet1d(double lower, double upper)
-            : lower(lower), upper(lower) {
+            : lower(lower), upper(upper) {
     }
 
     IntervalSet1d::IntervalSet1d(double value)

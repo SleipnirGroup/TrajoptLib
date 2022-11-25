@@ -20,7 +20,7 @@ void LinearSet2d::CheckVector(double x, double y) const {
     double cosTheta = cos(theta);
     if (!WithinPrecision(x * sinTheta, y * cosTheta, 1e-3)) {
         throw IncompatibleTrajectoryException(
-                fmt::format("of ({}, {}) is not on line defined by θ = {}", x, y, theta));
+                fmt::format("({}, {}) is not on line defined by θ = {}", x, y, theta));
     }
 }
 

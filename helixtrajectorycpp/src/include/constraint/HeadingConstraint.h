@@ -4,10 +4,12 @@
 
 namespace helixtrajectory {
 
-    class HeadingConstraint {
-    public:
-        IntervalSet1d headingBound;
+class HeadingConstraint {
+public:
+    IntervalSet1d headingBound;
 
-        HeadingConstraint(const IntervalSet1d& headingBound);
-    };
+    HeadingConstraint(const IntervalSet1d& headingBound);
+
+    void CheckHeading(double heading) const;
+};
 }

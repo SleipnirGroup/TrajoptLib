@@ -16,7 +16,7 @@ void ConeSet2d::CheckVector(double x, double y) const {
     if (!(x * std::sin(thetaBound.upper) >= y * std::cos(thetaBound.upper) &&
           x * std::sin(thetaBound.lower) <= y * std::cos(thetaBound.lower))) {
         throw IncompatibleTrajectoryException(
-                fmt::format("of ({}, {}) is not inside a cone with a theta bound of [{} rad, {} rad]",
+                fmt::format("({}, {}) is not inside a cone with a theta bound of [{} rad, {} rad]",
                 x, y, thetaBound.lower, thetaBound.upper));
     }
 }

@@ -13,6 +13,7 @@
 #include "constraint/TranslationConstraint.h"
 #include "trajectory/HolonomicTrajectory.h"
 #include "IncompatibleTrajectoryException.h"
+#include "set/ConeSet2d.h"
 
 int main() {
 
@@ -85,4 +86,21 @@ int main() {
     }
 
     std::cout << std::endl;
+
+
+    // AngularVelocityConstraint constraint = IntervalSet1d(1, 2);
+    // try {
+    //     constraint.CheckAngularVelocity(-1);
+    // } catch (const IncompatibleTrajectoryException& exception) {
+    //     std::cout << exception.what();
+    // }
+
+    ConeSet2d set2d = IntervalSet1d(0, 1.57/2);
+    try {
+        set2d.CheckVector(1,0);
+        set2d.CheckVector(1,0.5);
+        set2d.CheckVector(0.5,1);
+    } catch (const IncompatibleTrajectoryException& exception) {
+        std::cout << exception.what();
+    }
 }

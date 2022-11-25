@@ -25,12 +25,12 @@ namespace helixtrajectory {
         try {
             xBound.CheckScalar(x);
         } catch (const IncompatibleTrajectoryException& exception) {
-            throw IncompatibleTrajectoryException(fmt::format("x of {}", exception));
+            throw IncompatibleTrajectoryException(fmt::format("x of {}", exception.what()));
         }
         try {
             yBound.CheckScalar(y);
         } catch (const IncompatibleTrajectoryException& exception) {
-            throw IncompatibleTrajectoryException(fmt::format("y of {}", exception));
+            throw IncompatibleTrajectoryException(fmt::format("y of {}", exception.what()));
         }
     }
 
