@@ -10,6 +10,8 @@ public:
 
     ConeSet2d(const IntervalSet1d& thetaBound);
 
+    void CheckVector(double x, double y) const;
+
     bool IsValid() const noexcept;
 };
 }

@@ -74,6 +74,8 @@ namespace helixtrajectory {
         bool IsLowerBounded() const noexcept;
         bool IsUpperBounded() const noexcept;
 
+        void CheckScalar(double value) const;
+
         /**
          * @brief Check if this scalar bound is valid. A scalar bound is valid
          * if and only if the lower bound is less than or equal to the upper

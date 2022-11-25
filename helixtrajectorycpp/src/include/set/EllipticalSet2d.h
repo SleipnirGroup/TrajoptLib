@@ -20,6 +20,8 @@ public:
     bool IsCircular() const noexcept;
     bool IsR2() const noexcept;
 
+    void CheckVector(double x, double y) const;
+
     bool IsValid() const noexcept;
 };
 }

@@ -2,7 +2,10 @@
 
 #include <cmath>
 
+#include <fmt/format.h>
+
 #include "set/IntervalSet1d.h"
+#include "IncompatibleTrajectoryException.h"
 
 namespace helixtrajectory {
 
@@ -16,6 +19,19 @@ namespace helixtrajectory {
 
     RectangularSet2d RectangularSet2d::R2() {
         return RectangularSet2d(IntervalSet1d::R1(), IntervalSet1d::R1());
+    }
+
+    void RectangularSet2d::CheckVector(double x, double y) const {
+        try {
+            xBound.CheckScalar(x);
+        } catch (const IncompatibleTrajectoryException& exception) {
+            throw IncompatibleTrajectoryException(fmt::format("x of {}", exception));
+        }
+        try {
+            yBound.CheckScalar(y);
+        } catch (const IncompatibleTrajectoryException& exception) {
+            throw IncompatibleTrajectoryException(fmt::format("y of {}", exception));
+        }
     }
 
     bool RectangularSet2d::IsValid() const noexcept {

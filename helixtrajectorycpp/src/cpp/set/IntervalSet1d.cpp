@@ -2,6 +2,10 @@
 
 #include <limits>
 
+#include <fmt/format.h>
+
+#include "IncompatibleTrajectoryException.h"
+
 namespace helixtrajectory {
 
     IntervalSet1d::IntervalSet1d(double lower, double upper)
@@ -39,6 +43,13 @@ namespace helixtrajectory {
     }
     bool IntervalSet1d::IsUpperBounded() const noexcept {
         return upper < +std::numeric_limits<double>::infinity();
+    }
+
+    void IntervalSet1d::CheckScalar(double value) const {
+        if (value < lower || value > upper) {
+            throw IncompatibleTrajectoryException(
+                    fmt::format("{} is outside bound [{}, {}]", value, lower, upper));
+        }
     }
 
     bool IntervalSet1d::IsValid() const noexcept {

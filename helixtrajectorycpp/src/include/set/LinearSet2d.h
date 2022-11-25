@@ -13,6 +13,8 @@ public:
 
     LinearSet2d(double theta);
 
+    void CheckVector(double x, double y) const;
+
     static RectangularSet2d TransformRBound(double theta, const IntervalSet1d& rBound);
 };
 }

@@ -2,13 +2,26 @@
 
 #include <cmath>
 
+#include <fmt/format.h>
+
+#include "IncompatibleTrajectoryException.h"
 #include "set/IntervalSet1d.h"
 #include "set/RectangularSet2d.h"
+#include "TestUtil.h"
 
 namespace helixtrajectory {
 
 LinearSet2d::LinearSet2d(double theta)
         : theta(theta) {
+}
+
+void LinearSet2d::CheckVector(double x, double y) const {
+    double sinTheta = sin(theta);
+    double cosTheta = cos(theta);
+    if (!WithinPrecision(x * sinTheta, y * cosTheta, 1e-3)) {
+        throw IncompatibleTrajectoryException(
+                fmt::format("of ({}, {}) is not on line defined by θ = {}", x, y, theta));
+    }
 }
 
 RectangularSet2d LinearSet2d::TransformRBound(double theta, const IntervalSet1d& rBound) {
