@@ -42,7 +42,7 @@ namespace helixtrajectory {
 //             }
 //         }
 //         return Trajectory(samples);
-        SwerveTrajectoryOptimizationProblem<SleipnirOpti> problem(swerveDrivetrain, holonomicPath);
+        SwerveTrajectoryOptimizationProblem<CasADiOpti> problem(swerveDrivetrain, holonomicPath);
         return problem.Generate();
     }
 }

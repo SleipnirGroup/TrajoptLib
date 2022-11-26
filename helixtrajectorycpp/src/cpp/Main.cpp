@@ -59,8 +59,8 @@ int main() {
     };
     Obstacle cone(0.8, {{2.0, 0.0}});
     HolonomicPath holonomicPath({
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  0},  0.00)}, {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {                        }, {},   0, {InitialGuessPoint( 0,  0,  0.00)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  0}, -M_PI)}, {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {ObstacleConstraint(cone)}, {}, 100, {InitialGuessPoint( 0,  0,  -M_PI)})},
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  0},  0.00)}, {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {                        }, {},   0, {InitialGuessPoint( 0,  0,   0.00)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  0}, -M_PI)}, {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {ObstacleConstraint(cone)}, {}, 100,                             guesses)},
         bumpers);
 
     // const Obstacle initialBoundary = Obstacle(0.0, {{1.524, -1.524}, {1.524, -3.048}, {0.000, -3.048}, {0.000, -1.524}});
