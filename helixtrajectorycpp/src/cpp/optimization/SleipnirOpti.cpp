@@ -1,5 +1,6 @@
 #include "optimization/SleipnirOpti.h"
 
+#include <memory>
 #include <vector>
 
 #include <sleipnir/autodiff/Variable.hpp>
@@ -21,18 +22,18 @@ namespace helixtrajectory {
         opti.Minimize(objective);
     }
 
-    void SleipnirOpti::SubjectTo(const sleipnir::VariableMatrix& relation) {
-        opti.SubjectTo(relation);
-    }
+    // void SleipnirOpti::SubjectTo(const sleipnir::VariableMatrix& relation) {
+    //     opti.SubjectTo(relation);
+    // }
 
     void SleipnirOpti::SubjectTo(sleipnir::InequalityConstraints&& relations) {
-        opti.SubjectTo(relations);
+        opti.SubjectTo(std::move(relations));
     }
     void SleipnirOpti::SubjectTo(sleipnir::EqualityConstraints&& relations) {
-        opti.SubjectTo(relations);
+        opti.SubjectTo(std::move(relations));
     }
 
-    void SleipnirOpti::SetInitial(const sleipnir::VariableMatrix& expression, double value) {
+    void SleipnirOpti::SetInitial(sleipnir::VariableMatrix& expression, double value) {
         expression = value;
     }
 
@@ -40,7 +41,7 @@ namespace helixtrajectory {
         opti.Solve();
     }
 
-    double Sleipnir::SolutionValue(const sleipnir::VariableMatrix& expression) const {
-        return expression;
+    double SleipnirOpti::SolutionValue(const sleipnir::VariableMatrix& expression) const {
+        return expression.Value(0);
     }
 }

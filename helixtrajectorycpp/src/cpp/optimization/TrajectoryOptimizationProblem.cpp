@@ -167,7 +167,7 @@ template<typename Opti>
 const typename TrajectoryOptimizationProblem<Opti>::BumperCornerPosition
         TrajectoryOptimizationProblem<Opti>::SolveBumperCornerPosition(const Expression& x, const Expression& y,
         const Expression& theta, const ObstaclePoint& bumperCorner) {
-    BumperCornerPosition position{};
+    BumperCornerPosition position{0.0, 0.0};
     if (bumperCorner.x == 0.0 && bumperCorner.y == 0.0) {
         position.x = x;
         position.y = y;
@@ -191,7 +191,8 @@ Expression linePointDist(LineNumberType lineStartX, LineNumberType lineStartY, L
     Expression dot = vX * lX + vY * lY;
     Expression lNormSquared = lX * lX + lY * lY;
     Expression t = dot / lNormSquared;
-    Expression tBounded = fmax(fmin(t, 1), 0);
+    // Expression tBounded = fmax(fmin(t, 1), 0);
+    Expression tBounded = t;
     Expression iX = (1 - tBounded) * lineStartX + tBounded * lineEndX;
     Expression iY = (1 - tBounded) * lineStartY + tBounded * lineEndY;
     Expression distSquared = (iX - pointX) * (iX - pointX) + (iY - pointY) * (iY - pointY);
@@ -407,8 +408,8 @@ const typename TrajectoryOptimizationProblem<Opti>::InitialGuessX TrajectoryOpti
 }
 
 template<typename Opti>
-void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuessX(Opti& opti, const std::vector<Expression>& x,
-        const std::vector<Expression>& y, const std::vector<Expression>& theta,
+void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuessX(Opti& opti, std::vector<Expression>& x,
+        std::vector<Expression>& y, std::vector<Expression>& theta,
         const InitialGuessX& initialGuessX) {
 
 #ifdef DEBUG_OUTPUT

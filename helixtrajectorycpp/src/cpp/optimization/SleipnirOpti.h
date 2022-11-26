@@ -23,7 +23,7 @@ namespace helixtrajectory {
         void SubjectTo(const Expression& relation);
         void SubjectTo(sleipnir::EqualityConstraints&& relations);
         void SubjectTo(sleipnir::InequalityConstraints&& relations);
-        void SetInitial(const Expression& expression, double value);
+        void SetInitial(Expression& expression, double value);
         void Solve();
         double SolutionValue(const Expression& expression) const;
     };

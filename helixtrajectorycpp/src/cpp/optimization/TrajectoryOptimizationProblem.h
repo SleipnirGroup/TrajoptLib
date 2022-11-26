@@ -182,9 +182,9 @@ private:
     static const InitialGuessX GenerateInitialGuessX(const Path& path);
 
     static void ApplyInitialGuessX(Opti& opti,
-            const std::vector<Expression>& x,
-            const std::vector<Expression>& y,
-            const std::vector<Expression>& theta,
+            std::vector<Expression>& x,
+            std::vector<Expression>& y,
+            std::vector<Expression>& theta,
             const InitialGuessX& initialGuessX);
 
 public:

@@ -123,11 +123,10 @@ int main() {
     // std::cout << carry[0] << ", " << carry[1] << std::endl;
 
     sleipnir::OptimizationProblem problem;
-    const sleipnir::VariableMatrix vari = problem.DecisionVariable();
+    sleipnir::VariableMatrix vari = problem.DecisionVariable();
     problem.SubjectTo(vari >= 3);
-    // vari = 1;
     problem.Minimize(vari * vari);
-    problem.SubjectTo(Max(vari, 1) == 0.0);
+    // problem.SubjectTo(Max(vari, 1) == 0.0);
     problem.Solve();
     std::cout << "Variable is: " << vari.Value();
 
