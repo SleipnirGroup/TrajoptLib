@@ -38,7 +38,9 @@ namespace helixtrajectory {
     }
 
     void SleipnirOpti::Solve() {
-        opti.Solve();
+        static sleipnir::SolverConfig config;
+        config.diagnostics = true;
+        opti.Solve(config);
     }
 
     double SleipnirOpti::SolutionValue(const sleipnir::VariableMatrix& expression) const {
