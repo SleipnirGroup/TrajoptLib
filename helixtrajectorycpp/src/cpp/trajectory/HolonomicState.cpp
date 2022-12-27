@@ -1,6 +1,7 @@
 #include "trajectory/HolonomicState.h"
 
 #include <iostream>
+#include <fmt/format.h>
 
 namespace helixtrajectory {
 
@@ -13,15 +14,10 @@ HolonomicState::HolonomicState(double x, double y, double heading,
 }
 
 std::ostream& operator<<(std::ostream& stream, const HolonomicState& state) {
-    return stream << "{\"x\": " << state.x
-            << ", \"y\": " << state.y
-            << ", \"heading\": " << state.heading
-            << ", \"velocity_x\": " << state.velocityX
-            << ", \"velocity_y\": " << state.velocityY
-            << ", \"angular_velocity\": " << state.angularVelocity
-            << ", \"acceleration_x\": " << state.accelerationX
-            << ", \"acceleration_y\": " << state.accelerationY
-            << ", \"angular_acceleration\": " << state.angularAcceleration
-            << "}";
+    return stream << fmt::format(
+            "{{\"x\": {}, \"y\": {}, \"heading\": {}, \"velocity_x\": {}, \"velocity_y\": {}, \"angular_velocity\": {}, \"acceleration_x\": {}, \"acceleration_y\": {}, \"angular_acceleration\": {}}}",
+            state.x, state.y, state.heading,
+            state.velocityX, state.velocityY, state.angularVelocity,
+            state.accelerationX, state.accelerationY, state.angularAcceleration);
 }
 }
