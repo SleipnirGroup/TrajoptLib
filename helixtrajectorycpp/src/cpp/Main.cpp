@@ -96,15 +96,7 @@ int main() {
 
     HolonomicTrajectory trajectory = OptimalTrajectoryGenerator::Generate(swerveDrivetrain, holonomicPath);
 
-    std::cout << "\nTrajectory:\n\n" << trajectory << std::endl;
-
-    try {
-        swerveDrivetrain.CheckTrajectory(trajectory);
-        trajectory.CheckKinematics();
-        std::cout << "traj is valid!!";
-    } catch (const IncompatibleTrajectoryException& exception) {
-        std::cout << exception.what();
-    }
+    // std::cout << "\nTrajectory:\n\n" << trajectory << std::endl;
 
     std::cout << std::endl;
 

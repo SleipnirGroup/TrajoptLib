@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "constraint/Constraint.h"
-#include "trajectory/HolonomicState.h"
+// #include "trajectory/HolonomicState.h"
 
 namespace helixtrajectory {
 
@@ -50,12 +50,12 @@ namespace helixtrajectory {
          */
         SwerveModule(double x, double y, double wheelRadius, double wheelMaxAngularVelocity, double wheelMaxTorque);
 
-        std::array<double, 2> CalculateVelocity(double velocityX, double velocityY, double angularVelocity) const noexcept {
-            std::array<double, 2> velocity;
-            velocity[0] = velocityX - y * angularVelocity;
-            velocity[1] = velocityY + x * angularVelocity;
-            return velocity;
-        }
+        // std::array<double, 2> CalculateVelocity(double velocityX, double velocityY, double angularVelocity) const noexcept {
+        //     std::array<double, 2> velocity;
+        //     velocity[0] = velocityX - y * angularVelocity;
+        //     velocity[1] = velocityY + x * angularVelocity;
+        //     return velocity;
+        // }
 
         /**
          * @brief Append a string representation of a swerve module to an output stream.

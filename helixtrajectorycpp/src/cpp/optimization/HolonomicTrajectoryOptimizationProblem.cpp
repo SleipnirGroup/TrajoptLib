@@ -10,7 +10,7 @@
 #include "drivetrain/HolonomicDrivetrain.h"
 #include "path/HolonomicPath.h"
 #include "trajectory/HolonomicTrajectory.h"
-#include "trajectory/HolonomicState.h"
+// #include "trajectory/HolonomicState.h"
 #include "trajectory/HolonomicTrajectorySample.h"
 #include "path/HolonomicWaypoint.h"
 #include "obstacle/Obstacle.h"

@@ -3,19 +3,16 @@
 #include <iostream>
 #include <vector>
 
-#include "trajectory/SwerveState.h"
-#include "trajectory/SwerveTrajectorySample.h"
+#include "trajectory/HolonomicTrajectorySample.h"
 
 namespace helixtrajectory {
 
-class SwerveTrajectory {
+class HolonomicTrajectory {
 public:
     std::vector<HolonomicTrajectorySample> samples;
 
-    SwerveTrajectory(const std::vector<HolonomicTrajectorySample>& samples);
+    HolonomicTrajectory(const std::vector<HolonomicTrajectorySample>& samples);
     HolonomicTrajectory(std::vector<HolonomicTrajectorySample>&& samples);
-
-    void CheckKinematics() const;
 
     /**
      * @brief Append a string representation of a holonomic trajectory to
@@ -26,6 +23,15 @@ public:
      * @param trajectory the holonomic trajectory
      * @return a reference to the given stream
      */
-    friend std::ostream& operator<<(std::ostream& stream, const SwerveTrajectory& trajectory);
+    // friend std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectory& trajectory);
 };
 }
+
+// template<>
+// struct fmt::formatter<HolonomicTrajectorySample> : fmt::formatter<std::vector>> {
+//     template<typename ParseContext>
+//     constexpr auto parse(ParseContext& ctx);
+
+//     template<typename FormatContext>
+//     auto format(const HolonomicTrajectorySample& sample, FormatContext& ctx);
+// };
