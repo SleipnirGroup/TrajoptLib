@@ -1,5 +1,6 @@
 #include "set/IntervalSet1d.h"
 
+#include <cmath>
 #include <limits>
 #include <optional>
 
@@ -47,8 +48,12 @@ bool IntervalSet1d::IsUpperBounded() const noexcept {
 }
 
 std::optional<SolutionError> IntervalSet1d::CheckScalar(double scalar, const SolutionTolerances& tolerances) const noexcept {
-    if (scalar < lower || scalar > upper) {
-        return SolutionError(fmt::format("{} is outside bound [{}, {}]", scalar, lower, upper));
+    if (IsExact()) {
+        if (std::abs(scalar - lower) > tolerances.errorMargin) {
+            return SolutionError(fmt::format("|{} - {}| ≰ {}", scalar, lower, tolerances.errorMargin));
+        }
+    } else if (scalar < lower || scalar > upper) {
+        return SolutionError(fmt::format("{} ∉ [{}, {}]", scalar, lower, upper));
     }
     return std::nullopt;
 }
