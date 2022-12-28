@@ -7,6 +7,6 @@ struct SolutionError {
     std::string errorMessage;
 };
 
-struct Tolerances {
+struct SolutionTolerances {
     double errorMargin;
 };

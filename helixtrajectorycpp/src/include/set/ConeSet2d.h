@@ -1,10 +1,9 @@
 #pragma once
 
-#include <array>
-
-#include <casadi/casadi.hpp>
+#include <optional>
 
 #include "set/IntervalSet1d.h"
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
@@ -14,13 +13,7 @@ public:
 
     ConeSet2d(const IntervalSet1d& thetaBound);
 
-    template<typename Expression>
-    std::array<decltype(Expression() == Expression()), 2> GetConstraints(const Expression& x, const Expression& y) const {
-        return {x * sin(thetaBound.upper) >= y * cos(thetaBound.upper),
-                x * sin(thetaBound.lower) <= y * cos(thetaBound.lower)};
-    }
-
-    void CheckVector(double x, double y) const;
+    std::optional<SolutionError> CheckVector(double xComp, double yComp, const SolutionTolerances& tolerances) const noexcept;
 
     bool IsValid() const noexcept;
 };
