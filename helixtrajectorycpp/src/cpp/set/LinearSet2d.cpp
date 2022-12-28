@@ -1,13 +1,13 @@
 #include "set/LinearSet2d.h"
 
 #include <cmath>
+#include <optional>
 
 #include <fmt/format.h>
 
-#include "IncompatibleTrajectoryException.h"
 #include "set/IntervalSet1d.h"
 #include "set/RectangularSet2d.h"
-#include "TestUtil.h"
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
@@ -15,15 +15,14 @@ LinearSet2d::LinearSet2d(double theta)
         : theta(theta) {
 }
 
-void LinearSet2d::CheckVector(double x, double y) const {
-    bool check = GetConstraint<LooseDouble>(x, y);
-    if (!check) {
-        throw IncompatibleTrajectoryException(
-                fmt::format("({}, {}) is not on line defined by θ = {}", x, y, theta));
+std::optional<SolutionError> LinearSet2d::CheckVector(double xComp, double yComp, const SolutionTolerances& tolerances) const noexcept {
+    if (std::abs(xComp * std::sin(theta) - yComp * std::cos(theta))
+            > tolerances.errorMargin) {
+        return SolutionError(fmt::format("({}, {}) is not on line defined by θ = {}", xComp, yComp, theta));
     }
 }
 
-RectangularSet2d LinearSet2d::TransformRBound(double theta, const IntervalSet1d& rBound) {
+RectangularSet2d LinearSet2d::RBoundToRectangular(double theta, const IntervalSet1d& rBound) {
     double sinTheta = sin(theta);
     double cosTheta = cos(theta);
     if (sinTheta > abs(cosTheta)) { // y > |x|, up cone

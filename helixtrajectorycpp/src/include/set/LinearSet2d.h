@@ -1,10 +1,10 @@
 #pragma once
 
-#include <cmath>
-#include <limits>
+#include <optional>
 
 #include "set/IntervalSet1d.h"
 #include "set/RectangularSet2d.h"
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
@@ -14,15 +14,8 @@ public:
 
     LinearSet2d(double theta);
 
-    template<typename Expression>
-    decltype(Expression() == Expression()) GetConstraint(const Expression& x, const Expression& y) const {
-        double sinTheta = std::sin(theta);
-        double cosTheta = std::cos(theta);
-        return x * sinTheta == y * cosTheta;
-    }
+    std::optional<SolutionError> CheckVector(double xComp, double yComp, const SolutionTolerances& tolerances) const noexcept;
 
-    void CheckVector(double x, double y) const;
-
-    static RectangularSet2d TransformRBound(double theta, const IntervalSet1d& rBound);
+    static RectangularSet2d RBoundToRectangular(double theta, const IntervalSet1d& rBound);
 };
 }
