@@ -1,11 +1,13 @@
 #pragma once
 
+#include <optional>
 #include <variant>
 
 #include "set/ConeSet2d.h"
 #include "set/EllipticalSet2d.h"
 #include "set/LinearSet2d.h"
 #include "set/RectangularSet2d.h"
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
@@ -34,17 +36,17 @@ using Set2dVariant = std::variant<RectangularSet2d, LinearSet2d, EllipticalSet2d
 
 class Set2d {
 public:
-    Set2d(const RectangularSet2d& rectangularSet2d)
-            : set2d(rectangularSet2d) {
-    }
-    Set2d(const LinearSet2d& linearSet2d)
-            : set2d(linearSet2d) {
-    }
-    Set2d(const EllipticalSet2d& ellipticalSet2d)
-            : set2d(ellipticalSet2d) {
-    }
-    Set2d(const ConeSet2d& coneSet2d)
-            : set2d(coneSet2d) {
+    std::optional<SolutionError> CheckVector(double xComp, double yComp,
+            const SolutionTolerances& tolerances) {
+        if (IsRectangular()) {
+            return GetRectangular().CheckVector(xComp, yComp, tolerances);
+        } else if (IsLinear()) {
+            return GetLinear().CheckVector(xComp, yComp, tolerances);
+        } else if (IsElliptical()) {
+            return GetElliptical().CheckVector(xComp, yComp, tolerances);
+        } else if (IsCone()) {
+            return GetCone().CheckVector(xComp, yComp, tolerances);
+        }
     }
 
     bool IsRectangular() const {
@@ -83,6 +85,19 @@ public:
     }
     ConeSet2d& GetCone() {
         return std::get<ConeSet2d>(set2d);
+    }
+
+    Set2d(const RectangularSet2d& rectangularSet2d)
+            : set2d(rectangularSet2d) {
+    }
+    Set2d(const LinearSet2d& linearSet2d)
+            : set2d(linearSet2d) {
+    }
+    Set2d(const EllipticalSet2d& ellipticalSet2d)
+            : set2d(ellipticalSet2d) {
+    }
+    Set2d(const ConeSet2d& coneSet2d)
+            : set2d(coneSet2d) {
     }
 
 private:
