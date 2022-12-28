@@ -3,8 +3,10 @@
 #include <optional>
 #include <string>
 
-// using TrajectoryError = std::string;
-
-struct TrajectoryError {
+struct SolutionError {
     std::string errorMessage;
+};
+
+struct Tolerances {
+    double errorMargin;
 };
