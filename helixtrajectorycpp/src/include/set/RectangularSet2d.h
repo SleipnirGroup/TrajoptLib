@@ -1,9 +1,9 @@
 #pragma once
 
-#include <limits>
-#include <vector>
+#include <optional>
 
 #include "set/IntervalSet1d.h"
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
@@ -16,22 +16,7 @@ public:
     static RectangularSet2d PolarExactSet2d(double r, double theta);
     static RectangularSet2d R2();
 
-    template<typename Expression>
-    std::vector<decltype(Expression() == Expression())> GetConstraints(const Expression& x, const Expression& y) const {
-        std::vector<decltype(Expression() == Expression())> constraints;
-        std::vector<decltype(Expression() == Expression())> xConstraints = xBound.GetConstraints(x);
-        std::vector<decltype(Expression() == Expression())> yConstraints = yBound.GetConstraints(y);
-        constraints.reserve(xConstraints.size() + yConstraints.size());
-        for (auto& xConstraint : xConstraints) {
-            constraints.push_back(xConstraint);
-        }
-        for (auto& yConstraint : yConstraints) {
-            constraints.push_back(yConstraint);
-        }
-        return constraints;
-    }
-
-    void CheckVector(double x, double y) const;
+    std::optional<SolutionError> CheckVector(double xComp, double yComp, const SolutionTolerances& tolerances) const noexcept;
 
     /**
      * @brief Check if this planar bound is valid. A planar bound is valid when the bounds
