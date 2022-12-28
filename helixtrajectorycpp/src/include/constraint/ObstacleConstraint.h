@@ -4,10 +4,10 @@
 
 namespace helixtrajectory {
 
-    class ObstacleConstraint {
-    public:
-        Obstacle obstacle;
+class ObstacleConstraint {
+public:
+    Obstacle obstacle;
 
-        ObstacleConstraint(const Obstacle& obstacle);
-    };
+    ObstacleConstraint(const Obstacle& obstacle);
+};
 }

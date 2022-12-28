@@ -1,6 +1,9 @@
 #pragma once
 
+#include <optional>
+
 #include "set/Set2d.h"
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
@@ -10,6 +13,6 @@ public:
 
     TranslationConstraint(const Set2d& translationBound);
 
-    void CheckTranslation(double x, double y) const;
+    std::optional<SolutionError> CheckTranslation(double x, double y, const SolutionTolerances& tolerances) const noexcept;
 };
 }

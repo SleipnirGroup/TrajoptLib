@@ -7,5 +7,5 @@
 
 namespace helixtrajectory {
 
-    using HolonomicConstraint = std::variant<VelocityHolonomicConstraint, AngularVelocityConstraint>;
+using HolonomicConstraint = std::variant<VelocityHolonomicConstraint, AngularVelocityConstraint>;
 }

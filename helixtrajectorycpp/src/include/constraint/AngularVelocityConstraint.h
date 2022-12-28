@@ -1,6 +1,9 @@
 #pragma once
 
+#include <optional>
+
 #include "set/IntervalSet1d.h"
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
@@ -10,6 +13,7 @@ public:
 
     AngularVelocityConstraint(const IntervalSet1d& angularVelocityBound);
 
-    void CheckAngularVelocity(double angularVelocity) const;
+    std::optional<SolutionError> CheckAngularVelocity(double angularVelocity,
+            const SolutionTolerances& tolerances) const noexcept;
 };
 }

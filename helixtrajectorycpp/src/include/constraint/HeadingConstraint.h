@@ -1,6 +1,9 @@
 #pragma once
 
+#include <optional>
+
 #include "set/IntervalSet1d.h"
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
@@ -10,6 +13,7 @@ public:
 
     HeadingConstraint(const IntervalSet1d& headingBound);
 
-    void CheckHeading(double heading) const;
+    std::optional<SolutionError> CheckHeading(double heading,
+            const SolutionTolerances& tolerances) const noexcept;
 };
 }

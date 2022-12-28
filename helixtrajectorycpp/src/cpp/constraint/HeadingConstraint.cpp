@@ -1,9 +1,11 @@
 #include "constraint/HeadingConstraint.h"
 
+#include <optional>
+
 #include <fmt/format.h>
 
-#include "IncompatibleTrajectoryException.h"
 #include "set/IntervalSet1d.h"
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
@@ -11,11 +13,12 @@ HeadingConstraint::HeadingConstraint(const IntervalSet1d& headingBound)
         : headingBound(headingBound) {
 }
 
-void HeadingConstraint::CheckHeading(double heading) const {
-    try {
-        headingBound.CheckScalar(heading);
-    } catch (const IncompatibleTrajectoryException& exception) {
-        throw IncompatibleTrajectoryException(fmt::format("heading of {}", exception.what()));
+std::optional<SolutionError> HeadingConstraint::CheckHeading(double heading,
+        const SolutionTolerances& tolerances) const noexcept {
+    auto check = headingBound.CheckScalar(heading, tolerances);
+    if (check.has_value()) {
+        return SolutionError(fmt::format("θ = {}: {}", heading, check->errorMessage));
     }
+    return std::nullopt;
 }
 }

@@ -1,9 +1,11 @@
 #include "constraint/AngularVelocityConstraint.h"
 
+#include <optional>
+
 #include <fmt/format.h>
 
-#include "IncompatibleTrajectoryException.h"
 #include "set/IntervalSet1d.h"
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
@@ -11,11 +13,12 @@ AngularVelocityConstraint::AngularVelocityConstraint(const IntervalSet1d& angula
         : angularVelocityBound(angularVelocityBound) {
 }
 
-void AngularVelocityConstraint::CheckAngularVelocity(double angularVelocity) const {
-    try {
-        angularVelocityBound.CheckScalar(angularVelocity);
-    } catch (const IncompatibleTrajectoryException& exception) {
-        throw IncompatibleTrajectoryException(fmt::format("angular velocity of {}", exception.what()));
+std::optional<SolutionError> AngularVelocityConstraint::CheckAngularVelocity(
+        double angularVelocity, const SolutionTolerances& tolerances) const noexcept {
+    auto check = angularVelocityBound.CheckScalar(angularVelocity, tolerances);
+    if (check.has_value()) {
+        return SolutionError(fmt::format("ω = {}: {}", angularVelocity, check->errorMessage));
     }
+    return std::nullopt;
 }
 }
