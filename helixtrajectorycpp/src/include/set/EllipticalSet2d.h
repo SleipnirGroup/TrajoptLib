@@ -1,5 +1,9 @@
 #pragma once
 
+#include <optional>
+
+#include "solution/SolutionChecking.h"
+
 namespace helixtrajectory {
 
 class EllipticalSet2d {
@@ -20,19 +24,7 @@ public:
     bool IsCircular() const noexcept;
     bool IsR2() const noexcept;
 
-    template<typename Expression>
-    decltype(Expression() == Expression()) GetConstraint(const Expression& x, const Expression& y) const {
-        auto scaledVectorXSquared = (x * x) / (xRadius * xRadius);
-        auto scaledVectorYSquared = (y * y) / (yRadius * yRadius);
-        auto lhs = scaledVectorXSquared + scaledVectorYSquared;
-        switch (direction) {
-            case Direction::kInside:   return lhs <= 1.0;
-            case Direction::kCentered: return lhs == 1.0;
-            case Direction::kOutside:  return lhs >= 1.0;
-        }
-    }
-
-    void CheckVector(double x, double y) const;
+    std::optional<SolutionError> CheckVector(double xComp, double yComp, const SolutionTolerances& tolerances) const noexcept;
 
     bool IsValid() const noexcept;
 };

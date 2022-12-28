@@ -2,11 +2,11 @@
 
 #include <cmath>
 #include <limits>
+#include <optional>
 
 #include <fmt/format.h>
 
-#include "IncompatibleTrajectoryException.h"
-#include "TestUtil.h"
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
@@ -27,24 +27,36 @@ bool EllipticalSet2d::IsR2() const noexcept {
         && yRadius >= std::numeric_limits<double>::infinity();
 }
 
-void EllipticalSet2d::CheckVector(double x, double y) const {
-    bool isCompatible = GetConstraint(x, y);
-    if (!isCompatible) {
-        switch (direction) {
-            case Direction::kInside:
-                throw IncompatibleTrajectoryException(
-                        fmt::format("({}, {}) is not on or inside an ellipse with x radius of {} and y radius of {}",
-                        x, y, xRadius, yRadius));
-            case Direction::kCentered:
-                throw IncompatibleTrajectoryException(
-                        fmt::format("({}, {}) is not on an ellipse with x radius of {} and y radius of {}",
-                        x, y, xRadius, yRadius));
-            case Direction::kOutside:
-                throw IncompatibleTrajectoryException(
-                        fmt::format("({}, {}) is not on or outside an ellipse with x radius of {} and y radius of {}",
-                        x, y, xRadius, yRadius));
-        }
+std::optional<SolutionError> EllipticalSet2d::CheckVector(
+        double xComp, double yComp,
+        const SolutionTolerances& tolerances) const noexcept {
+    auto scaledVectorXSquared = (xComp * xComp) / (xRadius * xRadius);
+    auto scaledVectorYSquared = (yComp * yComp) / (yRadius * yRadius);
+    auto lhs = scaledVectorXSquared + scaledVectorYSquared;
+    switch (direction) {
+        case Direction::kInside:
+            if (lhs <= 1.0) {
+                return SolutionError(fmt::format(
+                        "({}, {}) is not on or inside an ellipse with x radius of {} and y radius of {}",
+                        xComp, yComp, xRadius, yRadius));
+            }
+            break;
+        case Direction::kCentered:
+            if (std::abs(lhs - 1.0) <= tolerances.errorMargin) {
+                return SolutionError(fmt::format(
+                        "({}, {}) is not on an ellipse with x radius of {} and y radius of {}",
+                        xComp, yComp, xRadius, yRadius));
+            }
+            break;
+        case Direction::kOutside:
+            if (lhs >= 1.0) {
+                return SolutionError(fmt::format(
+                        "({}, {}) is not on or outside an ellipse with x radius of {} and y radius of {}",
+                        xComp, yComp, xRadius, yRadius));
+            }
+            break;
     }
+    return std::nullopt;
 }
 
 bool EllipticalSet2d::IsValid() const noexcept {
