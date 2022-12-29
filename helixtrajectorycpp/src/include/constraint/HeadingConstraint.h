@@ -13,7 +13,7 @@ public:
 
     HeadingConstraint(const IntervalSet1d& headingBound);
 
-    std::optional<SolutionError> CheckHeading(double heading,
+    std::optional<SolutionError> CheckHeading(double theta,
             const SolutionTolerances& tolerances) const noexcept;
 };
 }

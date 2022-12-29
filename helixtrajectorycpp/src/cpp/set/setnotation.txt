@@ -1,0 +1,59 @@
+Interval Set 1d:
+    format_string =
+        if exact:
+            "= {lower}"
+        else:
+            "∈ [{lower}, {upper}]"
+    violation_string = "= {scalar}"
+
+Rectangular Set 2d:
+    format_string = "x {xBound}, y {yBound}""
+    voilation_string =
+        if xBound violated:
+            "x {xBound violation_string}"
+        else if yBound violated:
+            "y {yBound violation_string}"
+
+Linear Set 2d:
+    format_string = "polar line: θ = {theta}"
+    violation_string = "(r, θ) = ({hypot(xComp, yComp)}, {atan2(yComp, xComp)}"
+
+Cone Set 2d:
+    format_string = "cone: θ {thetaBound}"
+    violation_string = "(x, y) = ({xComp}, {yComp})"
+
+Elliptical Set 2d:
+    format_string = "<shape>: <direction>, rₓ = {xRadius}, rᵧ = {yRadius}"
+        <shape> = circle, ellipse
+        <direction> = inside, centered, outside
+    violation_string = "(x, y) = ({xComp}, {yComp})"
+
+Set 2d:
+    format_string = "2D {set2d}"
+    violation_string = "{set2d violation_string}
+
+HeadingConstraint:
+    format_string = "constraint heading: {headingBound}"
+    violation_string = "heading {headingBound violation_string}"
+
+TranslationConstraint:
+    format_string = "translation: {translationBound}"
+    violation_string = "constraint (translation {translationBound}) violated: translation = ({x}, {y})"
+
+PoseConstraint:
+    format_string = 
+    violation_string =
+        if heading violated: "{heading violation_string}"
+        else if translation violated: "{translation violation_string}"
+
+VelocityHolonomicConstraint:
+    format_string = 
+    "constraint (velocity {velocityBound}) violated: velocity = ({velocityX}, {velocityY})"
+
+AngularVelocityHolonmicConstraint:
+    format_string = "angular velocity {angularVelocityBound}"
+    violation_string = "
+
+Constraint:
+    format_string = "constraint {constraint}"
+    violation_string = "constraint ({constraint}) violated: {constraint violation_string}"

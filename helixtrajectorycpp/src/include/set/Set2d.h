@@ -37,7 +37,7 @@ using Set2dVariant = std::variant<RectangularSet2d, LinearSet2d, EllipticalSet2d
 class Set2d {
 public:
     std::optional<SolutionError> CheckVector(double xComp, double yComp,
-            const SolutionTolerances& tolerances) {
+            const SolutionTolerances& tolerances) const {
         if (IsRectangular()) {
             return GetRectangular().CheckVector(xComp, yComp, tolerances);
         } else if (IsLinear()) {
