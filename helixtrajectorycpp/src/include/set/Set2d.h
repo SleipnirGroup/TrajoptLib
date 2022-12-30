@@ -46,10 +46,13 @@ public:
 
     const RectangularSet2d& GetRectangular() const;
     RectangularSet2d& GetRectangular();
+
     const LinearSet2d& GetLinear() const;
     LinearSet2d& GetLinear();
+
     const EllipticalSet2d& GetElliptical() const;
     EllipticalSet2d& GetElliptical();
+
     const ConeSet2d& GetCone() const;
     ConeSet2d& GetCone();
 

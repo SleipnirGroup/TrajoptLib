@@ -17,3 +17,13 @@ public:
             const SolutionTolerances& tolerances) const noexcept;
 };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::HeadingConstraint> {
+
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx);
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::HeadingConstraint& headingConstraint, FormatContext& ctx);
+};

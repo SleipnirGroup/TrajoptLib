@@ -22,3 +22,16 @@ std::optional<SolutionError> HeadingConstraint::CheckHeading(double theta,
     return std::nullopt;
 }
 }
+
+template<typename ParseContext>
+constexpr auto fmt::formatter<helixtrajectory::HeadingConstraint>::parse(
+        ParseContext& ctx) {
+    return ctx.begin();
+}
+
+template<typename FormatContext>
+auto fmt::formatter<helixtrajectory::HeadingConstraint>::format(
+        const helixtrajectory::HeadingConstraint& headingConstraint,
+        FormatContext& ctx) {
+    return fmt::format_to(ctx.out(), "heading {}", headingConstraint.headingBound);
+}

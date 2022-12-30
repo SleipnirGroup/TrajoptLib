@@ -2,6 +2,8 @@
 
 #include <optional>
 
+#include <fmt/format.h>
+
 #include "set/IntervalSet1d.h"
 #include "solution/SolutionChecking.h"
 
@@ -17,3 +19,14 @@ public:
             const SolutionTolerances& tolerances) const noexcept;
 };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::AngularVelocityConstraint> {
+
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx);
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::AngularVelocityConstraint& angularVelocityConstraint,
+            FormatContext& ctx);
+};

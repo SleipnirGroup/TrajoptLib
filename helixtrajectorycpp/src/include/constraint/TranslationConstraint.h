@@ -16,3 +16,14 @@ public:
     std::optional<SolutionError> CheckTranslation(double x, double y, const SolutionTolerances& tolerances) const noexcept;
 };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::TranslationConstraint> {
+
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx);
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::TranslationConstraint& translationConstraint,
+            FormatContext& ctx);
+};

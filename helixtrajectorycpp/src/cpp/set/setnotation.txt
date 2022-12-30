@@ -33,15 +33,15 @@ Set 2d:
     violation_string = "{set2d violation_string}
 
 HeadingConstraint:
-    format_string = "constraint heading: {headingBound}"
+    format_string = "heading {headingBound}"
     violation_string = "heading {headingBound violation_string}"
 
 TranslationConstraint:
-    format_string = "translation: {translationBound}"
-    violation_string = "constraint (translation {translationBound}) violated: translation = ({x}, {y})"
+    format_string = "translation {translationBound}"
+    violation_string = "translation {translationBound violation_string}"
 
 PoseConstraint:
-    format_string = 
+    format_string = "{translationBound}, {headingBound}"
     violation_string =
         if heading violated: "{heading violation_string}"
         else if translation violated: "{translation violation_string}"
@@ -55,5 +55,5 @@ AngularVelocityHolonmicConstraint:
     violation_string = "
 
 Constraint:
-    format_string = "constraint {constraint}"
-    violation_string = "constraint ({constraint}) violated: {constraint violation_string}"
+    format_string = "constraint: {constraint}"
+    violation_string = "({constraint}) violated: {constraint violation_string}"

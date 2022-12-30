@@ -15,6 +15,6 @@ public:
     PoseConstraint(const Set2d& translationBound,
             const IntervalSet1d& headingBound);
 
-    std::optional<SolutionError> CheckPose(double x, double y, double theta, const SolutionTolerances& tolerances);
+    std::optional<SolutionError> CheckPose(double x, double y, double heading, const SolutionTolerances& tolerances);
 };
 }
