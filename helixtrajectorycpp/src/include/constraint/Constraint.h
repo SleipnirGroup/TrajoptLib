@@ -60,7 +60,7 @@ using ConstraintVariant = std::variant<TranslationConstraint, HeadingConstraint,
 class Constraint {
 public:
     std::optional<SolutionError> CheckState(double x, double y,
-            double heading, const SolutionTolerances& tolerances) const;
+            double heading, const SolutionTolerances& tolerances) const noexcept;
 
     bool IsTranslationConstraint() const;
     bool IsHeadingConstraint() const;

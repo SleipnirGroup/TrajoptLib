@@ -14,29 +14,29 @@ namespace helixtrajectory {
 std::optional<SolutionError> HolonomicConstraint::CheckHolonomicState(double x, double y, double heading,
             double velocityX, double velocityY, double angularVelocity,
             double accelerationX, double accelerationY, double angularAcceleration,
-            const SolutionTolerances& tolerances) const {
+            const SolutionTolerances& tolerances) const noexcept {
     if (IsVelocityConstraint()) {
         std::optional<SolutionError> check = GetVelocityConstraint()
                 .CheckVelocity(velocityX, velocityY, tolerances);
         if (check.has_value()) {
-            return fmt::format("({}) violated: {}",
-                    *this, check->errorMessage);
+            return SolutionError{fmt::format("({}) violated: {}",
+                    "*this", check->errorMessage)};
         }
     } else if (IsAngularVelocityConstraint()) {
         std::optional<SolutionError> check = GetAngularVelocityConstraint()
                 .CheckAngularVelocity(angularVelocity, tolerances);
         if (check.has_value()) {
-            return fmt::format("({}) violated: {}",
-                    *this, check->errorMessage);
+            return SolutionError{fmt::format("({}) violated: {}",
+                    "*this", check->errorMessage)};
         }
     }
     return std::nullopt;
 }
 
-bool HolonomicConstraint::IsVelocityConstraint() const {
+bool HolonomicConstraint::IsVelocityConstraint() const noexcept {
     return std::holds_alternative<VelocityConstraint>(constraint);
 }
-bool HolonomicConstraint::IsAngularVelocityConstraint() const {
+bool HolonomicConstraint::IsAngularVelocityConstraint() const noexcept {
     return std::holds_alternative<AngularVelocityConstraint>(constraint);
 }
 
@@ -72,10 +72,9 @@ template<typename FormatContext>
 auto fmt::formatter<helixtrajectory::HolonomicConstraint>::format(
         const helixtrajectory::HolonomicConstraint& constraint,
         FormatContext& ctx) {
-    using namespace helixtrajectory;
     if (constraint.IsVelocityConstraint()) {
         return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetVelocityConstraint());
-    } else if (constraint.IsHeadingConstraint()) {
+    } else /*if (constraint.IsHeadingConstraint())*/ {
         return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetAngularVelocityConstraint());
     }
 }

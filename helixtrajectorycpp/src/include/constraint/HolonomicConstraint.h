@@ -10,26 +10,26 @@
 
 namespace helixtrajectory {
 
-using HolonomicConstraintVariant = std::variant<VelocityHolonomicConstraint, AngularVelocityConstraint>;
+using HolonomicConstraintVariant = std::variant<VelocityConstraint, AngularVelocityConstraint>;
 
 class HolonomicConstraint {
 public:
     std::optional<SolutionError> CheckHolonomicState(double x, double y, double heading,
             double velocityX, double velocityY, double angularVelocity,
             double accelerationX, double accelerationY, double angularAcceleration,
-            const SolutionTolerances& tolerances) const;
+            const SolutionTolerances& tolerances) const noexcept;
 
     bool IsVelocityConstraint() const noexcept;
     bool IsAngularVelocityConstraint() const noexcept;
 
-    const VelocityHolonomicConstraint& GetVelocityConstraint() const;
-    VelocityHolonomicConstraint& GetVelocityConstraint();
+    const VelocityConstraint& GetVelocityConstraint() const;
+    VelocityConstraint& GetVelocityConstraint();
 
     const AngularVelocityConstraint& GetAngularVelocityConstraint() const;
     AngularVelocityConstraint& GetAngularVelocityConstraint();
 
     HolonomicConstraint(const VelocityConstraint& translationConstraint);
-    HolonomicConstraint(const HeadingConstraint& headingConstraint);
+    HolonomicConstraint(const AngularVelocityConstraint& headingConstraint);
 
 private:
     HolonomicConstraintVariant constraint;

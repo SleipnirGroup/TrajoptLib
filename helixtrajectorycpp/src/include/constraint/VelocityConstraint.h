@@ -4,6 +4,7 @@
 
 #include <fmt/format.h>
 
+#include "constraint/Constraint.h"
 #include "set/Set2d.h"
 #include "solution/SolutionChecking.h"
 
@@ -12,7 +13,7 @@ namespace helixtrajectory {
 class VelocityConstraint {
 public:
     Set2d velocityBound;
-    CoordinateSystem coordinateSystem;
+        CoordinateSystem coordinateSystem;
 
     VelocityConstraint(const Set2d& velocityBound, CoordinateSystem coordinateSystem
             = CoordinateSystem::kField);

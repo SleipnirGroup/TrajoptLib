@@ -41,27 +41,34 @@ int main() {
 
     Obstacle bumpers(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}});
 
-    // HolonomicPath holonomicPath(HolonomicPath({
-    //     HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {},   0, {InitialGuessPoint( 4,  0,  0.00)}),
-    //     HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  4},  1.57)},     {},                                                                                    {}, {},  10, {InitialGuessPoint( 0,  4,  1.57)}),
-    //     HolonomicWaypoint({PoseConstraint(RectangularSet2d{-4,  0},  0.00)},     {},                                                                                    {}, {},  10, {InitialGuessPoint(-4,  0,  0.00)}),
-    //     HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0, -4}, -1.57)},     {},                                                                                    {}, {},  10, {InitialGuessPoint( 0, -4, -1.57)}),
-    //     HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {},  10, {InitialGuessPoint( 4,  0,  0.00)})},
-    //     Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}})));
+    HolonomicPath holonomicPath(HolonomicPath({
+        HolonomicWaypoint(
+            {Constraint(PoseConstraint(RectangularSet2d{ 4,  0},  0.00))},
+            {HolonomicConstraint(VelocityConstraint{RectangularSet2d(0, 0)}), HolonomicConstraint(AngularVelocityConstraint(0.0))},
+            {},
+            {},
+            0,
+            {InitialGuessPoint( 4,  0,  0.00)}),
+        HolonomicWaypoint(
+            {PoseConstraint(RectangularSet2d{ 0,  4},  1.57)},     {},                                                                                    {}, {},  10, {InitialGuessPoint( 0,  4,  1.57)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{-4,  0},  0.00)},     {},                                                                                    {}, {},  10, {InitialGuessPoint(-4,  0,  0.00)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0, -4}, -1.57)},     {},                                                                                    {}, {},  10, {InitialGuessPoint( 0, -4, -1.57)}),
+        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityConstraint{RectangularSet2d{0, 0}}, AngularVelocityConstraint(0.0)}, {}, {},  10, {InitialGuessPoint( 4,  0,  0.00)})},
+        Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}})));
 
     // OBSTACLE TEST:
-    const std::vector<InitialGuessPoint> guesses = {
-        { 0.00,  0.00, 0.00},
-        { 2.00,  1.50, 0.00},
-        { 3.60,  0.00, -M_PI_2},
-        { 2.00, -1.50, -M_PI},
-        { 0.00,  0.00, -M_PI}
-    };
-    Obstacle cone(0.8, {{2.0, 0.0}});
-    HolonomicPath holonomicPath({
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  0},  0.00)}, {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {                        }, {},   0, {InitialGuessPoint( 0,  0,   0.00)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  0}, -M_PI)}, {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {ObstacleConstraint(cone)}, {}, 100,                             guesses)},
-        bumpers);
+    // const std::vector<InitialGuessPoint> guesses = {
+    //     { 0.00,  0.00, 0.00},
+    //     { 2.00,  1.50, 0.00},
+    //     { 3.60,  0.00, -M_PI_2},
+    //     { 2.00, -1.50, -M_PI},
+    //     { 0.00,  0.00, -M_PI}
+    // };
+    // Obstacle cone(0.8, {{2.0, 0.0}});
+    // HolonomicPath holonomicPath({
+    //     HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  0},  0.00)}, {VelocityConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {                        }, {},   0, {InitialGuessPoint( 0,  0,   0.00)}),
+    //     HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  0}, -M_PI)}, {VelocityConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {ObstacleConstraint(cone)}, {}, 100,                             guesses)},
+    //     bumpers);
 
     // const Obstacle initialBoundary = Obstacle(0.0, {{1.524, -1.524}, {1.524, -3.048}, {0.000, -3.048}, {0.000, -1.524}});
     // const Obstacle d5 = Obstacle(0.1, {{3.81, -3.048}});
@@ -82,7 +89,7 @@ int main() {
     //     {0.762, -2.286, 0.0}
     // };
     // constexpr double inf = std::numeric_limits<double>::infinity();
-    // const std::vector<HolonomicConstraint> zeroVelocityConstraints = {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)};
+    // const std::vector<HolonomicConstraint> zeroVelocityConstraints = {VelocityConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)};
     // HolonomicPath holonomicPath(HolonomicPath({
     //     HolonomicWaypoint({PoseConstraint(RectangularSet2d(0.762, -2.286), 0.0)}, zeroVelocityConstraints, {}, {}, 0, {InitialGuessPoint(0.762, -2.286, 0.00)}),
     //     HolonomicWaypoint({TranslationConstraint(RectangularSet2d(0.762, -2.286))}, {}, {ObstacleConstraint(d5), ObstacleConstraint(b8), ObstacleConstraint(d10)}, {}, 200, guesses)},

@@ -28,11 +28,11 @@ public:
 };
 }
 
-// template<>
-// struct fmt::formatter<HolonomicTrajectorySample> {
-//     template<typename ParseContext>
-//     constexpr auto parse(ParseContext& ctx);
+template<>
+struct fmt::formatter<helixtrajectory::HolonomicTrajectorySample> {
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx);
 
-//     template<typename FormatContext>
-//     auto format(const HolonomicTrajectorySample& sample, FormatContext& ctx);
-// };
+    template<typename FormatContext>
+    auto format(const helixtrajectory::HolonomicTrajectorySample& sample, FormatContext& ctx);
+};

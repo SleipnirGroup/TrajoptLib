@@ -55,17 +55,18 @@ std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectorySample& 
 }
 }
 
-// template<typename ParseContext>
-// constexpr auto fmt::formatter<HolonomicTrajectorySample>::parse(ParseContext& ctx) {
-//     return ctx.begin();
-// }
+template<typename ParseContext>
+constexpr auto fmt::formatter<helixtrajectory::HolonomicTrajectorySample>::parse(ParseContext& ctx) {
+    return ctx.begin();
+}
 
-// template<typename FormatContext>
-// auto fmt::formatter<HolonomicTrajectorySample>::format(const HolonomicTrajectorySample& sample, FormatContext& ctx) {
-//     return fmt::format_to(ctx.out(),
-//             "{{\"timestamp\": {}, \"x\": {}, \"y\": {}, \"heading\": {}, \"velocityX\": {}, \"velocityY\": {}, \"angularVelocity\": {}, \"accelerationX\": {}, \"accelerationY\": {}, \"angularAcceleration\": {}}}",
-//             sample.timestamp,
-//             sample.x, sample.y, sample.heading,
-//             sample.velocityX, sample.velocityY, sample.angularVelocity,
-//             sample.accelerationX, sample.accelerationY, sample.angularAcceleration);
-// }
+template<typename FormatContext>
+auto fmt::formatter<helixtrajectory::HolonomicTrajectorySample>::format(
+        const helixtrajectory::HolonomicTrajectorySample& sample, FormatContext& ctx) {
+    return fmt::format_to(ctx.out(),
+            "{{\"timestamp\": {}, \"x\": {}, \"y\": {}, \"heading\": {}, \"velocityX\": {}, \"velocityY\": {}, \"angularVelocity\": {}, \"accelerationX\": {}, \"accelerationY\": {}, \"angularAcceleration\": {}}}",
+            sample.timestamp,
+            sample.x, sample.y, sample.heading,
+            sample.velocityX, sample.velocityY, sample.angularVelocity,
+            sample.accelerationX, sample.accelerationY, sample.angularAcceleration);
+}

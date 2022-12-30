@@ -14,27 +14,27 @@
 namespace helixtrajectory {
 
 std::optional<SolutionError> Constraint::CheckState(double x, double y,
-        double heading, const SolutionTolerances& tolerances) const {
+        double heading, const SolutionTolerances& tolerances) const noexcept {
     if (IsTranslationConstraint()) {
         std::optional<SolutionError> check = GetTranslationConstraint()
                 .CheckTranslation(x, y, tolerances);
         if (check.has_value()) {
-            return fmt::format("({}) violated: {}",
-                    *this, check->errorMessage);
+            return SolutionError{fmt::format("({}) violated: {}",
+                    "GetTranslationConstraint()", check->errorMessage)}; // <<< causes error: "Cannot format a const argument."
         }
     } else if (IsHeadingConstraint()) {
         std::optional<SolutionError> check = GetHeadingConstraint()
                 .CheckHeading(heading, tolerances);
         if (check.has_value()) {
-            return fmt::format("({}) violated: {}",
-                    *this, check->errorMessage);
+            return SolutionError{fmt::format("({}) violated: {}",
+                    "GetHeadingConstraint()", check->errorMessage)};
         }
     } else if (IsPoseConstraint()) {
         std::optional<SolutionError> check = GetPoseConstraint()
                 .CheckPose(x, y, heading, tolerances);
         if (check.has_value()) {
-            return fmt::format("({}) violated: {}",
-                    *this, check->errorMessage);
+            return SolutionError{fmt::format("({}) violated: {}",
+                    "GetPoseConstraint()", check->errorMessage)};
         }
     }
     return std::nullopt;
@@ -112,7 +112,7 @@ auto fmt::formatter<helixtrajectory::Constraint>::format(
         return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetHeadingConstraint());
     } else if (constraint.IsPoseConstraint()) {
         return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetPoseConstraint());
-    } else if (constraint.IsObstacleConstraint()) {
+    } else /*if (constraint.IsObstacleConstraint())*/ {
         return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetObstacleConstraint());
     }
 }

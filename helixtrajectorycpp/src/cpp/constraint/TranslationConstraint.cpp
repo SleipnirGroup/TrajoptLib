@@ -33,6 +33,6 @@ template<typename FormatContext>
 auto fmt::formatter<helixtrajectory::TranslationConstraint>::format(
         const helixtrajectory::TranslationConstraint& translationConstraint,
         FormatContext& ctx) {
-    return std::format_to(ctx.out(), "");
+    return fmt::format_to(ctx.out(), "jk");
     // return fmt::format_to(ctx.out(), "heading {}", obstacleConstraint.obstacle);
 }

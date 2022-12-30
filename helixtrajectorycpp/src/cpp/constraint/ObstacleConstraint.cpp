@@ -1,6 +1,6 @@
 #include "constraint/ObstacleConstraint.h"
 
-#include "<fmt/format.h>"
+#include <fmt/format.h>
 
 #include "obstacle/Obstacle.h"
 
@@ -21,6 +21,6 @@ template<typename FormatContext>
 auto fmt::formatter<helixtrajectory::ObstacleConstraint>::format(
         const helixtrajectory::ObstacleConstraint& obstacleConstraint,
         FormatContext& ctx) {
-    return std::format_to(ctx.out(), "");
+    return fmt::format_to(ctx.out(), "");
     // return fmt::format_to(ctx.out(), "heading {}", obstacleConstraint.obstacle);
 }
