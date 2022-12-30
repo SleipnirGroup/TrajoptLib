@@ -22,14 +22,15 @@ RectangularSet2d RectangularSet2d::R2() {
     return RectangularSet2d(IntervalSet1d::R1(), IntervalSet1d::R1());
 }
 
-std::optional<SolutionError> RectangularSet2d::CheckVector(double xComp, double yComp, const SolutionTolerances& tolerances) const noexcept {
+std::optional<SolutionError> RectangularSet2d::CheckVector(double xComp,
+        double yComp, const SolutionTolerances& tolerances) const noexcept {
     auto xCheck = xBound.CheckScalar(xComp, tolerances);
-    auto yCheck = yBound.CheckScalar(yComp, tolerances);
     if (xCheck.has_value()) {
-        return SolutionError(fmt::format("x of {}", xCheck->errorMessage));
+        return SolutionError(fmt::format("x ", xCheck->errorMessage));
     }
+    auto yCheck = yBound.CheckScalar(yComp, tolerances);
     if (yCheck.has_value()) {
-        return SolutionError(fmt::format("y of {}", yCheck->errorMessage));
+        return SolutionError(fmt::format("y ", yCheck->errorMessage));
     }
     return std::nullopt;
 }
@@ -37,4 +38,16 @@ std::optional<SolutionError> RectangularSet2d::CheckVector(double xComp, double 
 bool RectangularSet2d::IsValid() const noexcept {
     return xBound.IsValid() && yBound.IsValid();
 }
+}
+
+template<typename ParseContext>
+constexpr auto fmt::formatter<helixtrajectory::RectangularSet2d>::parse(
+        ParseContext& ctx) {
+    return ctx.begin();
+}
+
+template<typename FormatContext>
+auto fmt::formatter<helixtrajectory::RectangularSet2d>::format(
+        const helixtrajectory::RectangularSet2d& rectangularSet, FormatContext& ctx) {
+    return fmt::format_to(ctx.out(), "x {}, y {}", rectangularSet.xBound, rectangularSet.yBound);
 }

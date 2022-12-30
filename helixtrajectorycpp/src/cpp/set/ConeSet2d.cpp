@@ -16,9 +16,9 @@ ConeSet2d::ConeSet2d(const IntervalSet1d& thetaBound)
 std::optional<SolutionError> ConeSet2d::CheckVector(double xComp, double yComp, const SolutionTolerances& tolerances) const noexcept {
     if (!(xComp * std::sin(thetaBound.upper) >= yComp * std::cos(thetaBound.upper) &&
           xComp * std::sin(thetaBound.lower) <= yComp * std::cos(thetaBound.lower))) {
-        return SolutionError(fmt::format(
-                "({}, {}) is not inside a cone with a theta bound of [{} rad, {} rad]",
-                xComp, yComp, thetaBound.lower, thetaBound.upper));
+        double rComp = std::hypot(xComp, yComp);
+        double thetaComp = std::atan2(yComp, xComp);
+        return SolutionError(fmt::format("(r, θ) = ({}, {})", rComp, thetaComp));
     }
     return std::nullopt;
 }
@@ -26,4 +26,17 @@ std::optional<SolutionError> ConeSet2d::CheckVector(double xComp, double yComp, 
 bool ConeSet2d::IsValid() const noexcept {
     return thetaBound.Range() > 0.0 && thetaBound.Range() <= M_PI;
 }
+}
+
+template<typename ParseContext>
+constexpr auto fmt::formatter<helixtrajectory::ConeSet2d>::parse(
+        ParseContext& ctx) {
+    return ctx.begin();
+}
+
+template<typename FormatContext>
+auto fmt::formatter<helixtrajectory::ConeSet2d>::format(
+        const helixtrajectory::ConeSet2d& coneSet,
+        FormatContext& ctx) {
+    return fmt::format_to(ctx.out(), "cone: θ = {}", coneSet.thetaBound);
 }

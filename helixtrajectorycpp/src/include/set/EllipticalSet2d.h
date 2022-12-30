@@ -2,6 +2,8 @@
 
 #include <optional>
 
+#include <fmt/format.h>
+
 #include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
@@ -29,3 +31,13 @@ public:
     bool IsValid() const noexcept;
 };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::EllipticalSet2d> {
+
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx);
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::EllipticalSet2d& ellipticalSet, FormatContext& ctx);
+};

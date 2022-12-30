@@ -48,12 +48,8 @@ bool IntervalSet1d::IsUpperBounded() const noexcept {
 }
 
 std::optional<SolutionError> IntervalSet1d::CheckScalar(double scalar, const SolutionTolerances& tolerances) const noexcept {
-    if (IsExact()) {
-        if (std::abs(scalar - lower) > tolerances.errorMargin) {
-            return SolutionError(fmt::format("|{} - {}| ≰ {}", scalar, lower, tolerances.errorMargin));
-        }
-    } else if (scalar < lower || scalar > upper) {
-        return SolutionError(fmt::format("{} ∉ [{}, {}]", scalar, lower, upper));
+    if ((IsExact() && std::abs(scalar - lower) > tolerances.errorMargin) || scalar < lower || scalar > upper) {
+        return SolutionError(fmt::format("= {}", scalar));
     }
     return std::nullopt;
 }
@@ -61,4 +57,20 @@ std::optional<SolutionError> IntervalSet1d::CheckScalar(double scalar, const Sol
 bool IntervalSet1d::IsValid() const noexcept {
     return lower <= upper;
 }
+}
+
+template<typename ParseContext>
+constexpr auto fmt::formatter<helixtrajectory::IntervalSet1d>::parse(
+        ParseContext& ctx) {
+    return ctx.begin();
+}
+
+template<typename FormatContext>
+auto fmt::formatter<helixtrajectory::IntervalSet1d>::format(
+        const helixtrajectory::IntervalSet1d& set1d, FormatContext& ctx) {
+    if (set1d.IsExact()) {
+        return fmt::format_to(ctx.out(), "= {}", set1d.lower);
+    } else {
+        return fmt::format_to(ctx.out(), "∈ [{}, {}]", set1d.lower, set1d.upper);
+    }
 }

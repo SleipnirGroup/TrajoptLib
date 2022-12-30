@@ -17,10 +17,13 @@ PoseConstraint::PoseConstraint(const Set2d& translationBound,
 }
 
 std::optional<SolutionError> PoseConstraint::CheckPose(double x, double y, double theta, const SolutionTolerances& tolerances) {
-    Check
-    auto translationCheck = translationBound.CheckVector(x, y, tolerances);
-    if (check.has_value()) {
-        return SolutionError(fmt::format("(x, y) = ({}, {}), {}", x, y, check->errorMessage));
+    auto translationCheck = CheckTranslation(x, y, tolerances);
+    if (translationCheck.has_value()) {
+        return translationCheck.value();
+    }
+    auto headingCheck = CheckHeading(theta, tolerances);
+    if (headingCheck.has_value()) {
+        return headingCheck.value();
     }
     return std::nullopt;
 }

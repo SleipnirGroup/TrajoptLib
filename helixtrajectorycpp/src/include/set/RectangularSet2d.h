@@ -29,3 +29,13 @@ public:
     bool IsValid() const noexcept;
 };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::RectangularSet2d> {
+
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx);
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::RectangularSet2d& rectangularSet, FormatContext& ctx);
+};

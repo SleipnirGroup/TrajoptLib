@@ -18,3 +18,13 @@ public:
     bool IsValid() const noexcept;
 };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::ConeSet2d> {
+
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx);
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::ConeSet2d& coneSet, FormatContext& ctx);
+};

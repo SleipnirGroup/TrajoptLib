@@ -18,7 +18,9 @@ LinearSet2d::LinearSet2d(double theta)
 std::optional<SolutionError> LinearSet2d::CheckVector(double xComp, double yComp, const SolutionTolerances& tolerances) const noexcept {
     if (std::abs(xComp * std::sin(theta) - yComp * std::cos(theta))
             > tolerances.errorMargin) {
-        return SolutionError(fmt::format("({}, {}) is not on line defined by θ = {}", xComp, yComp, theta));
+        double rComp = std::hypot(xComp, yComp);
+        double thetaComp = std::atan2(yComp, xComp);
+        return SolutionError(fmt::format("(r, θ) = ({}, {})", rComp, thetaComp));
     }
 }
 
@@ -43,4 +45,16 @@ RectangularSet2d LinearSet2d::RBoundToRectangular(double theta, const IntervalSe
         return RectangularSet2d({lowerVectorX, upperVectorX}, IntervalSet1d::R1());
     }
 }
+}
+
+template<typename ParseContext>
+constexpr auto fmt::formatter<helixtrajectory::LinearSet2d>::parse(
+        ParseContext& ctx) {
+    return ctx.begin();
+}
+
+template<typename FormatContext>
+auto fmt::formatter<helixtrajectory::LinearSet2d>::format(
+        const helixtrajectory::LinearSet2d& linearSet, FormatContext& ctx) {
+    return fmt::format_to(ctx.out(), "polar line: θ = {}", linearSet.theta);
 }

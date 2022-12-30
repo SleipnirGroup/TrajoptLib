@@ -20,7 +20,7 @@ Linear Set 2d:
 
 Cone Set 2d:
     format_string = "cone: θ {thetaBound}"
-    violation_string = "(x, y) = ({xComp}, {yComp})"
+    violation_string = "(r, θ) = ({hypot(xComp, yComp)}, {atan2(yComp, xComp)}"
 
 Elliptical Set 2d:
     format_string = "<shape>: <direction>, rₓ = {xRadius}, rᵧ = {yRadius}"
@@ -29,7 +29,7 @@ Elliptical Set 2d:
     violation_string = "(x, y) = ({xComp}, {yComp})"
 
 Set 2d:
-    format_string = "2D {set2d}"
+    format_string = "2d {set2d}"
     violation_string = "{set2d violation_string}
 
 HeadingConstraint:
