@@ -1,5 +1,11 @@
 #pragma once
 
+#include <optional>
+
+#include <fmt/format.h>
+
+#include "solution/SolutionChecking.h"
+
 namespace helixtrajectory {
 
 class EllipticalSet2d {
@@ -20,6 +26,18 @@ public:
     bool IsCircular() const noexcept;
     bool IsR2() const noexcept;
 
+    std::optional<SolutionError> CheckVector(double xComp, double yComp, const SolutionTolerances& tolerances) const noexcept;
+
     bool IsValid() const noexcept;
 };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::EllipticalSet2d> {
+
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx);
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::EllipticalSet2d& ellipticalSet, FormatContext& ctx);
+};

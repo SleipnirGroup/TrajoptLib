@@ -6,6 +6,8 @@
 #include "drivetrain/HolonomicDrivetrain.h"
 #include "drivetrain/SwerveModule.h"
 #include "obstacle/Obstacle.h"
+// #include "trajectory/HolonomicState.h"
+#include "trajectory/HolonomicTrajectory.h"
 
 namespace helixtrajectory {
 
@@ -32,6 +34,9 @@ namespace helixtrajectory {
          * @param bumpers the bumpers of the robot represented as an obstacle
          */
         SwerveDrivetrain(double mass, double momentOfInertia, const std::vector<SwerveModule>& modules);
+
+        // void CheckState(const HolonomicState& state) const;
+        // void CheckTrajectory(const HolonomicTrajectory& trajectory) const;
 
         /**
          * @brief Append a string representation of a swerve drivetrain to an output stream.

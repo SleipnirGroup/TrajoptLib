@@ -1,47 +1,76 @@
 #include "set/IntervalSet1d.h"
 
+#include <cmath>
 #include <limits>
+#include <optional>
+
+#include <fmt/format.h>
+
+#include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
 
-    IntervalSet1d::IntervalSet1d(double lower, double upper)
-            : lower(lower), upper(lower) {
-    }
+IntervalSet1d::IntervalSet1d(double lower, double upper)
+        : lower(lower), upper(upper) {
+}
 
-    IntervalSet1d::IntervalSet1d(double value)
-            : lower(value), upper(value) {
-    }
+IntervalSet1d::IntervalSet1d(double value)
+        : lower(value), upper(value) {
+}
 
-    IntervalSet1d IntervalSet1d::R1() {
-        return IntervalSet1d(
-                -std::numeric_limits<double>::infinity(),
-                +std::numeric_limits<double>::infinity());
-    }
+IntervalSet1d IntervalSet1d::R1() {
+    return IntervalSet1d(
+            -std::numeric_limits<double>::infinity(),
+            +std::numeric_limits<double>::infinity());
+}
 
-    bool IntervalSet1d::operator==(const IntervalSet1d& other) const noexcept {
-        return lower == other.lower && upper == other.upper;
-    }
+bool IntervalSet1d::operator==(const IntervalSet1d& other) const noexcept {
+    return lower == other.lower && upper == other.upper;
+}
 
-    double IntervalSet1d::Range() const noexcept {
-        return upper - lower;
-    }
+double IntervalSet1d::Range() const noexcept {
+    return upper - lower;
+}
 
-    bool IntervalSet1d::IsExact() const noexcept {
-        return lower == upper;
-    }
+bool IntervalSet1d::IsExact() const noexcept {
+    return lower == upper;
+}
 
-    bool IntervalSet1d::IsZero() const noexcept {
-        return lower == 0.0 && upper == 0.0;
-    }
+bool IntervalSet1d::IsZero() const noexcept {
+    return lower == 0.0 && upper == 0.0;
+}
 
-    bool IntervalSet1d::IsLowerBounded() const noexcept {
-        return lower > -std::numeric_limits<double>::infinity();
-    }
-    bool IntervalSet1d::IsUpperBounded() const noexcept {
-        return upper < +std::numeric_limits<double>::infinity();
-    }
+bool IntervalSet1d::IsLowerBounded() const noexcept {
+    return lower > -std::numeric_limits<double>::infinity();
+}
+bool IntervalSet1d::IsUpperBounded() const noexcept {
+    return upper < +std::numeric_limits<double>::infinity();
+}
 
-    bool IntervalSet1d::IsValid() const noexcept {
-        return lower <= upper;
+std::optional<SolutionError> IntervalSet1d::CheckScalar(double scalar, const SolutionTolerances& tolerances) const noexcept {
+    if ((IsExact() && std::abs(scalar - lower) > tolerances.errorMargin) || scalar < lower || scalar > upper) {
+        return SolutionError{fmt::format("= {}", scalar)};
+    }
+    return std::nullopt;
+}
+
+bool IntervalSet1d::IsValid() const noexcept {
+    return lower <= upper;
+}
+}
+
+template<typename ParseContext>
+constexpr auto fmt::formatter<helixtrajectory::IntervalSet1d>::parse(
+        ParseContext& ctx) {
+    return ctx.begin();
+}
+
+template<typename FormatContext>
+auto fmt::formatter<helixtrajectory::IntervalSet1d>::format(
+        const helixtrajectory::IntervalSet1d& set1d, FormatContext& ctx) {
+    if (set1d.IsExact()) {
+        return fmt::format_to(ctx.out(), "= {}", set1d.lower);
+    } else {
+        return fmt::format_to(ctx.out(), "∈ [{}, {}]", set1d.lower, set1d.upper);
     }
 }

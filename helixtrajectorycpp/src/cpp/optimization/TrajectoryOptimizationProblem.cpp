@@ -3,40 +3,28 @@
 #include "optimization/TrajectoryOptimizationProblem.h"
 
 #include <cmath>
+#include <exception>
 #include <iostream>
 #include <limits>
-#include <exception>
 #include <variant>
 #include <vector>
 
-#include "optimization/CasADiOpti.h"
-#include "set/Set2d.h"
-#include "set/IntervalSet1d.h"
-#include "drivetrain/Drivetrain.h"
-#include "path/HolonomicPath.h"
-#include "trajectory/Trajectory.h"
-#include "obstacle/Obstacle.h"
-#include "path/Path.h"
 #include "TrajectoryGenerationException.h"
+#include "drivetrain/Drivetrain.h"
+#include "obstacle/Obstacle.h"
+#include "path/HolonomicPath.h"
+#include "optimization/CasADiOpti.h"
+#include "path/Path.h"
+#include "optimization/SleipnirOpti.h"
+#include "set/IntervalSet1d.h"
+#include "set/Set2d.h"
 
 namespace helixtrajectory {
 
 template<typename Opti>
-Trajectory TrajectoryOptimizationProblem<Opti>::Generate() {
-    try {
-        TrajectoryOptimizationProblem<Opti>::opti.Solve();
-#ifdef DEBUG_OUTPUT
-        std::cout << "Solution stored" << std::endl;
-#endif
-        return ConstructTrajectory(opti, dt, x, y, theta);
-    } catch (const std::exception& e) {
-        throw TrajectoryGenerationException("Error optimizing trajectory" + std::string(e.what()));
-    }
-}
-
-template<typename Opti>
-TrajectoryOptimizationProblem<Opti>::TrajectoryOptimizationProblem(const Drivetrain& drivetrain, const Path& path)
-        : drivetrain(drivetrain), path(path),
+TrajectoryOptimizationProblem<Opti>::TrajectoryOptimizationProblem(
+        const Drivetrain& drivetrain, const Path& path)
+      : drivetrain(drivetrain), path(path),
         waypointCount(path.Length()), trajectorySegmentCount(waypointCount - 1),
         controlIntervalTotal(path.ControlIntervalTotal()),
         sampleTotal(controlIntervalTotal + 1), opti(),
@@ -144,17 +132,17 @@ template<typename Opti>
 void TrajectoryOptimizationProblem<Opti>::ApplySet2dConstraint(Opti& opti,
         const Expression& vectorX, const Expression& vectorY, const Set2d& set2d) {
 
-    if (std::holds_alternative<RectangularSet2d>(set2d)) {
-        const RectangularSet2d& rectangularSet2d = std::get<RectangularSet2d>(set2d);
+    if (set2d.IsRectangular()) {
+        const RectangularSet2d& rectangularSet2d = set2d.GetRectangular();
         ApplyIntervalSet1dConstraint(opti, vectorX, rectangularSet2d.xBound);
         ApplyIntervalSet1dConstraint(opti, vectorY, rectangularSet2d.yBound);
-    } else if (std::holds_alternative<LinearSet2d>(set2d)) {
-        const LinearSet2d& linearSet2d = std::get<LinearSet2d>(set2d);
+    } else if (set2d.IsLinear()) {
+        const LinearSet2d& linearSet2d = set2d.GetLinear();
         double sinTheta = sin(linearSet2d.theta);
         double cosTheta = cos(linearSet2d.theta);
         opti.SubjectTo(vectorX * sinTheta == vectorY * cosTheta);
-    } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
-        const EllipticalSet2d& ellipticalSet2d = std::get<EllipticalSet2d>(set2d);
+    } else if (set2d.IsElliptical()) {
+        const EllipticalSet2d& ellipticalSet2d = set2d.GetElliptical();
         const Expression scaledVectorXSquared = (vectorX * vectorX) / (ellipticalSet2d.xRadius * ellipticalSet2d.xRadius);
         const Expression scaledVectorYSquared = (vectorY * vectorY) / (ellipticalSet2d.yRadius * ellipticalSet2d.yRadius);
         const Expression lhs = scaledVectorXSquared + scaledVectorYSquared;
@@ -169,18 +157,42 @@ void TrajectoryOptimizationProblem<Opti>::ApplySet2dConstraint(Opti& opti,
                 opti.SubjectTo(lhs >= 1.0);
                 break;
         }
-    } else if (std::holds_alternative<ConeSet2d>(set2d)) {
-        const ConeSet2d& coneSet2d = std::get<ConeSet2d>(set2d);
+    } else if (set2d.IsCone()) {
+        const ConeSet2d& coneSet2d = set2d.GetCone();
         opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.upper) >= vectorY * cos(coneSet2d.thetaBound.upper));
         opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.lower) <= vectorY * cos(coneSet2d.thetaBound.lower));
     }
 }
 
 template<typename Opti>
+std::vector<double> TrajectoryOptimizationProblem<Opti>::SolutionValue(
+        const Opti& opti,
+        const std::vector<Expression>& rowVector) {
+    std::vector<double> valueRowVector;
+    valueRowVector.reserve(rowVector.size());
+    for (auto& expression : rowVector) {
+        valueRowVector.push_back(opti.SolutionValue(expression));
+    }
+    return valueRowVector;
+}
+
+template<typename Opti>
+std::vector<std::vector<double>> TrajectoryOptimizationProblem<Opti>::SolutionValue(
+        const Opti& opti,
+        const std::vector<std::vector<Expression>>& matrix) {
+    std::vector<std::vector<double>> valueMatrix;
+    valueMatrix.reserve(matrix.size());
+    for (auto& row : matrix) {
+        valueMatrix.push_back(TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, row));
+    }
+    return valueMatrix;
+}
+
+template<typename Opti>
 const typename TrajectoryOptimizationProblem<Opti>::BumperCornerPosition
         TrajectoryOptimizationProblem<Opti>::SolveBumperCornerPosition(const Expression& x, const Expression& y,
         const Expression& theta, const ObstaclePoint& bumperCorner) {
-    BumperCornerPosition position{};
+    BumperCornerPosition position{0.0, 0.0};
     if (bumperCorner.x == 0.0 && bumperCorner.y == 0.0) {
         position.x = x;
         position.y = y;
@@ -204,7 +216,8 @@ Expression linePointDist(LineNumberType lineStartX, LineNumberType lineStartY, L
     Expression dot = vX * lX + vY * lY;
     Expression lNormSquared = lX * lX + lY * lY;
     Expression t = dot / lNormSquared;
-    Expression tBounded = fmax(fmin(t, 1), 0);
+    // Expression tBounded = fmax(fmin(t, 1), 0);
+    Expression tBounded = t;
     Expression iX = (1 - tBounded) * lineStartX + tBounded * lineEndX;
     Expression iY = (1 - tBounded) * lineStartY + tBounded * lineEndY;
     Expression distSquared = (iX - pointX) * (iX - pointX) + (iY - pointY) * (iY - pointY);
@@ -282,20 +295,20 @@ void TrajectoryOptimizationProblem<Opti>::ApplyObstacleConstraint(Opti& opti, co
 template<typename Opti>
 void TrajectoryOptimizationProblem<Opti>::ApplyConstraint(Opti& opti, const Expression& x,
         const Expression& y, const Expression& theta, const Obstacle& bumpers, const Constraint& constraint) {
-    if (std::holds_alternative<TranslationConstraint>(constraint)) {
-        const TranslationConstraint& translationConstraint = std::get<TranslationConstraint>(constraint);
+    if (constraint.IsTranslationConstraint()) {
+        const TranslationConstraint& translationConstraint = constraint.GetTranslationConstraint();
         ApplySet2dConstraint(opti, x, y, translationConstraint.translationBound);
-    } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
-        const HeadingConstraint& headingConstraint = std::get<HeadingConstraint>(constraint);
+    } else if (constraint.IsHeadingConstraint()) {
+        const HeadingConstraint& headingConstraint = constraint.GetHeadingConstraint();
         ApplyIntervalSet1dConstraint(opti, theta, headingConstraint.headingBound);
-    } else if (std::holds_alternative<PoseConstraint>(constraint)) {
-        const PoseConstraint& poseConstraint = std::get<PoseConstraint>(constraint);
+    } else if (constraint.IsPoseConstraint()) {
+        const PoseConstraint& poseConstraint = constraint.GetPoseConstraint();
         auto translationConstraint = static_cast<TranslationConstraint>(poseConstraint);
         auto headingConstraint = static_cast<HeadingConstraint>(poseConstraint);
         ApplyConstraint(opti, x, y, theta, bumpers, translationConstraint);
         ApplyConstraint(opti, x, y, theta, bumpers, headingConstraint);
-    } else if (std::holds_alternative<ObstacleConstraint>(constraint)) {
-        const ObstacleConstraint& obstacleConstraint = std::get<ObstacleConstraint>(constraint);
+    } else /*if (constraint.IsObstacleConstraint())*/ {
+        const ObstacleConstraint& obstacleConstraint = constraint.GetObstacleConstraint();
         ApplyObstacleConstraint(opti, x, y, theta, bumpers, obstacleConstraint.obstacle);
     }
 }
@@ -420,8 +433,8 @@ const typename TrajectoryOptimizationProblem<Opti>::InitialGuessX TrajectoryOpti
 }
 
 template<typename Opti>
-void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuessX(Opti& opti, const std::vector<Expression>& x,
-        const std::vector<Expression>& y, const std::vector<Expression>& theta,
+void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuessX(Opti& opti, std::vector<Expression>& x,
+        std::vector<Expression>& y, std::vector<Expression>& theta,
         const InitialGuessX& initialGuessX) {
 
 #ifdef DEBUG_OUTPUT
@@ -441,33 +454,7 @@ void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuessX(Opti& opti, const s
 #endif
 }
 
-template<typename Opti>
-Trajectory TrajectoryOptimizationProblem<Opti>::ConstructTrajectory(const Opti& opti,
-        const std::vector<Expression>& dt,
-        const std::vector<Expression>& x,
-        const std::vector<Expression>& y,
-        const std::vector<Expression>& theta) {
-
-    std::vector<TrajectorySample> samples;
-    samples.reserve(x.size());
-
-    samples.push_back(TrajectorySample( // TODO: check if emplace_back works?
-            0.0,
-            static_cast<double>(opti.SolutionValue(x[0])),
-            static_cast<double>(opti.SolutionValue(y[0])),
-            static_cast<double>(opti.SolutionValue(theta[0]))));
-
-    for (size_t sampleIndex = 1; sampleIndex < x.size(); sampleIndex++) {
-        samples.push_back(TrajectorySample( // TODO: check if emplace_back works?
-                static_cast<double>(opti.SolutionValue(dt[sampleIndex - 1])),
-                static_cast<double>(opti.SolutionValue(x[sampleIndex])),
-                static_cast<double>(opti.SolutionValue(y[sampleIndex])),
-                static_cast<double>(opti.SolutionValue(theta[sampleIndex]))));
-    }
-
-    return Trajectory(samples);
-}
-
 // TODO: do this in CasADiOpti.cpp:
 template class TrajectoryOptimizationProblem<CasADiOpti>;
+template class TrajectoryOptimizationProblem<SleipnirOpti>;
 }

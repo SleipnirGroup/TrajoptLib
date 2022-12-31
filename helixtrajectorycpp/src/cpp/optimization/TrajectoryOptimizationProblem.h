@@ -8,7 +8,7 @@
 #include "path/Path.h"
 #include "set/IntervalSet1d.h"
 #include "set/Set2d.h"
-#include "trajectory/Trajectory.h"
+#include "solution/Solution.h"
 
 namespace helixtrajectory {
 
@@ -18,16 +18,6 @@ namespace helixtrajectory {
  */
 template<typename Opti>
 class TrajectoryOptimizationProblem {
-public:
-    /**
-     * @brief Optimizes the given path using IPOPT. Note this function call
-     * may take a long time to complete. It may also fail, and throw a
-     * CasadiException.
-     * 
-     * @return a holonomic trajectory
-     */
-    Trajectory Generate();
-
 protected:
     /**
      * @brief the drivetrain
@@ -45,7 +35,7 @@ protected:
     /**
      * @brief the number of trajectory segments in the trajectory
      */
-    const size_t trajectorySegmentCount;
+    const size_t trajectorySegmentCount; // TODO: check if this can be removed
     /**
      * @brief the total number of control intervals in the trajectory
      */
@@ -63,7 +53,7 @@ protected:
     /**
      * @brief an abstract expression type representing a scalar expression
      */
-    using Expression = typename Opti::Expression;
+    using Expression = typename Opti::Expression; // TODO: make this a template-specification pattern rather than typedefs
 
     /**
      * @brief The 1 x (controlIntervalTotal) vector of the time differentials between sample points.
@@ -110,8 +100,15 @@ protected:
      */
     TrajectoryOptimizationProblem(const Drivetrain& drivetrain, const Path& path);
 
-    static void ApplyIntervalSet1dConstraint(Opti& opti, const Expression& scalar, const IntervalSet1d& set1d);
-    static void ApplySet2dConstraint(Opti& opti, const Expression& vectorX, const Expression& vectorY, const Set2d& set2d);
+    static void ApplyIntervalSet1dConstraint(Opti& opti, const Expression& scalar,
+            const IntervalSet1d& set1d);
+    static void ApplySet2dConstraint(Opti& opti, const Expression& vectorX,
+            const Expression& vectorY, const Set2d& set2d);
+
+    static std::vector<double> SolutionValue(const Opti& opti,
+            const std::vector<Expression>& rowVector);
+    static std::vector<std::vector<double>> SolutionValue(const Opti& opti,
+            const std::vector<std::vector<Expression>>& matrix);
 
 private:
     struct BumperCornerPosition {
@@ -176,7 +173,7 @@ private:
             const std::vector<std::vector<Expression>>& thetaSegments,
             const Path& path);
 
-    struct InitialGuessX {
+    struct InitialGuessX { // TODO: maybe rename to BasicInitialGuess or LinearInitialGuess
         std::vector<double> x;
         std::vector<double> y;
         std::vector<double> theta;
@@ -193,16 +190,10 @@ private:
     static const InitialGuessX GenerateInitialGuessX(const Path& path);
 
     static void ApplyInitialGuessX(Opti& opti,
-            const std::vector<Expression>& x,
-            const std::vector<Expression>& y,
-            const std::vector<Expression>& theta,
+            std::vector<Expression>& x,
+            std::vector<Expression>& y,
+            std::vector<Expression>& theta,
             const InitialGuessX& initialGuessX);
-
-    static Trajectory ConstructTrajectory(const Opti& opti,
-            const std::vector<Expression>& dt,
-            const std::vector<Expression>& x,
-            const std::vector<Expression>& y,
-            const std::vector<Expression>& theta);
 
 public:
     /**

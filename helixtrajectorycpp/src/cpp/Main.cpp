@@ -1,13 +1,27 @@
+#include <cmath>
 #include <iostream>
+#include <iomanip>
+#include <limits>
 #include <vector>
 
 #include <casadi/casadi.hpp>
+#include <sleipnir/autodiff/Variable.hpp>
+#include <sleipnir/optimization/OptimizationProblem.hpp>
+
+#include <fmt/format.h>
 
 #include "path/HolonomicPath.h"
 #include "drivetrain/SwerveDrivetrain.h"
 #include "path/InitialGuessPoint.h"
 #include "obstacle/Obstacle.h"
 #include "OptimalTrajectoryGenerator.h"
+#include "constraint/ObstacleConstraint.h"
+#include "constraint/TranslationConstraint.h"
+#include "trajectory/HolonomicTrajectory.h"
+#include "IncompatibleTrajectoryException.h"
+#include "set/ConeSet2d.h"
+#include "TestUtil.h"
+#include "solution/SwerveSolution.h"
 
 int main() {
 
@@ -28,26 +42,83 @@ int main() {
              SwerveModule(-0.6, +0.6, 0.04, 70, 2),
              SwerveModule(-0.6, -0.6, 0.04, 70, 2)});
 
-    HolonomicPath holonomicPath(HolonomicPath({
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {},   0, {InitialGuessPoint( 4,  0,  0.00)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  4},  1.57)},     {},                                                                                    {}, {}, 100, {InitialGuessPoint( 0,  4,  1.57)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{-4,  0},  0.00)},     {},                                                                                    {}, {}, 100, {InitialGuessPoint(-4,  0,  0.00)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0, -4}, -1.57)},     {},                                                                                    {}, {}, 100, {InitialGuessPoint( 0, -4, -1.57)}),
-        HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},     {VelocityHolonomicConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {}, {}, 100, {InitialGuessPoint( 4,  0,  0.00)})},
-        Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}})));
+    Obstacle bumpers(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}});
 
+    // // CIRCULAR PATH
     // HolonomicPath holonomicPath(HolonomicPath({
-    //     HolonomicWaypoint(0, 0, 0, 0, 0, 0, true, true, true,  true,  true,  true,  true,    0, {}, {}),
-    //     HolonomicWaypoint(4, 0, 0, 0, 0, 0, true, true, true,  true,  true,  true,  true,   50, {}, {})
-    // }));
+    //     HolonomicWaypoint(
+    //         {Constraint(PoseConstraint(RectangularSet2d{ 4,  0},  0.00))},
+    //         {HolonomicConstraint(VelocityConstraint{RectangularSet2d(0, 0)}), HolonomicConstraint(AngularVelocityConstraint(0.0))},
+    //         {},
+    //         {},
+    //         0,
+    //         {InitialGuessPoint( 4,  0,  0.00)}),
+    //     HolonomicWaypoint(
+    //         {PoseConstraint(RectangularSet2d{ 0,  4},  1.57)},
+    //         {},
+    //         {},{},
+    //         10,
+    //         {InitialGuessPoint( 0,  4,  1.57)}),
+    //     HolonomicWaypoint(
+    //         {PoseConstraint(RectangularSet2d{-4,  0},  0.00)},
+    //         {},
+    //         {},
+    //         {},
+    //         10,
+    //         {InitialGuessPoint(-4,  0,  0.00)}),
+    //     HolonomicWaypoint(
+    //         {PoseConstraint(RectangularSet2d{ 0, -4}, -1.57)},
+    //         {},
+    //         {},
+    //         {},
+    //         10,
+    //         {InitialGuessPoint( 0, -4, -1.57)}),
+    //     HolonomicWaypoint(
+    //         {PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},
+    //         {VelocityConstraint{RectangularSet2d{0, 0}}, AngularVelocityConstraint(0.0)},
+    //         {},
+    //         {},
+    //         10,
+    //         {InitialGuessPoint( 4,  0,  0.00)})},
+    //     Obstacle(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}})));
 
+    // OBSTACLE TEST:
+    // const std::vector<InitialGuessPoint> guesses = {
+    //     { 0.00,  0.00, 0.00},
+    //     { 2.00,  1.50, 0.00},
+    //     { 3.60,  0.00, -M_PI_2},
+    //     { 2.00, -1.50, -M_PI},
+    //     { 0.00,  0.00, -M_PI}
+    // };
+    // Obstacle cone(0.8, {{2.0, 0.0}});
+    // HolonomicPath holonomicPath({
+    //     HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  0},  0.00)}, {VelocityConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {                        }, {},   0, {InitialGuessPoint( 0,  0,   0.00)}),
+    //     HolonomicWaypoint({PoseConstraint(RectangularSet2d{ 0,  0}, -M_PI)}, {VelocityConstraint(RectangularSet2d{0, 0}), AngularVelocityConstraint(0.0)}, {ObstacleConstraint(cone)}, {}, 100,                             guesses)},
+    //     bumpers);
 
-    // benchmarks: before converting to std::vector: 2:08 -> 0:26 :)
-    // std::cout << "Drivetrain:\n" << drive << "\n"
-    //         << "\nPath:\n" << path << std::endl;
+    // SIMPLE MOTION PROFILE
+    HolonomicPath holonomicPath(HolonomicPath({
+        HolonomicWaypoint(
+            {Constraint(PoseConstraint(RectangularSet2d{ 0,  0},  0.00))},
+            {HolonomicConstraint(VelocityConstraint{RectangularSet2d(0, 0)}), HolonomicConstraint(AngularVelocityConstraint(0.0))},
+            {},
+            {},
+            0,
+            {InitialGuessPoint( 0,  0,  0.00)}),
+        HolonomicWaypoint(
+            {PoseConstraint(RectangularSet2d{ 4,  0},  0.00)},
+            {VelocityConstraint{RectangularSet2d{0, 0}}, AngularVelocityConstraint(0.0)},
+            {},
+            {},
+            6,
+            {InitialGuessPoint( 4,  0,  0.00)})},
+        bumpers));
 
-    Trajectory trajectory = OptimalTrajectoryGenerator::Generate(swerveDrivetrain, holonomicPath);
+    SwerveSolution solution = OptimalTrajectoryGenerator::Generate(swerveDrivetrain, holonomicPath);
 
-    std::cout << "\nTrajectory:\n\n" << trajectory;
+    fmt::print("{}", solution);
+
+    // std::cout << "\nTrajectory:\n\n" << trajectory << std::endl;
+
     std::cout << std::endl;
 }

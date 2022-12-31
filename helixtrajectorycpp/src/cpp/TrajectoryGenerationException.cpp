@@ -5,11 +5,11 @@
 
 namespace helixtrajectory {
 
-    TrajectoryGenerationException::TrajectoryGenerationException(const std::string& message)
-            : logic_error(message) {
-    }
+TrajectoryGenerationException::TrajectoryGenerationException(const std::string& message)
+        : logic_error(message) {
+}
 
-    TrajectoryGenerationException::TrajectoryGenerationException(const char* message)
-            : logic_error(message) {
-    }
+TrajectoryGenerationException::TrajectoryGenerationException(const char* message)
+        : logic_error(message) {
+}
 }
