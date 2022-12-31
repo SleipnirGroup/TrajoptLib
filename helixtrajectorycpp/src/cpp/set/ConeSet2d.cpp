@@ -18,7 +18,7 @@ std::optional<SolutionError> ConeSet2d::CheckVector(double xComp, double yComp, 
           xComp * std::sin(thetaBound.lower) <= yComp * std::cos(thetaBound.lower))) {
         double rComp = std::hypot(xComp, yComp);
         double thetaComp = std::atan2(yComp, xComp);
-        return SolutionError(fmt::format("(r, θ) = ({}, {})", rComp, thetaComp));
+        return SolutionError{fmt::format("(r, θ) = ({}, {})", rComp, thetaComp)};
     }
     return std::nullopt;
 }

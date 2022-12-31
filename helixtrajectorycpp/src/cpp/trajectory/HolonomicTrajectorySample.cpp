@@ -64,9 +64,8 @@ template<typename FormatContext>
 auto fmt::formatter<helixtrajectory::HolonomicTrajectorySample>::format(
         const helixtrajectory::HolonomicTrajectorySample& sample, FormatContext& ctx) {
     return fmt::format_to(ctx.out(),
-            "{{\"timestamp\": {}, \"x\": {}, \"y\": {}, \"heading\": {}, \"velocityX\": {}, \"velocityY\": {}, \"angularVelocity\": {}, \"accelerationX\": {}, \"accelerationY\": {}, \"angularAcceleration\": {}}}",
+            "{{\"timestamp\": {}, \"x\": {}, \"y\": {}, \"heading\": {}, \"velocityX\": {}, \"velocityY\": {}, \"angularVelocity\": {}}}",
             sample.timestamp,
             sample.x, sample.y, sample.heading,
-            sample.velocityX, sample.velocityY, sample.angularVelocity,
-            sample.accelerationX, sample.accelerationY, sample.angularAcceleration);
+            sample.velocityX, sample.velocityY, sample.angularVelocity);
 }

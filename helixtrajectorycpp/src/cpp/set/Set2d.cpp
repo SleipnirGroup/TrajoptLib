@@ -15,7 +15,7 @@ std::optional<SolutionError> Set2d::CheckVector(double xComp, double yComp,
         return GetLinear().CheckVector(xComp, yComp, tolerances);
     } else if (IsElliptical()) {
         return GetElliptical().CheckVector(xComp, yComp, tolerances);
-    } else if (IsCone()) {
+    } else /*if (IsCone())*/ {
         return GetCone().CheckVector(xComp, yComp, tolerances);
     }
 }
@@ -84,12 +84,12 @@ auto fmt::formatter<helixtrajectory::Set2d>::format(
         FormatContext& ctx) {
     using namespace helixtrajectory;
     if (set2d.IsRectangular()) {
-        return fmt::format_to(ctx.out(), "2d {}", std::get<RectangularSet2d>(set2d));
+        return fmt::format_to(ctx.out(), "2d {}", set2d.GetRectangular());
     } else if (set2d.IsLinear()) {
-        return fmt::format_to(ctx.out(), "2d {}", std::get<LinearSet2d>(set2d));
+        return fmt::format_to(ctx.out(), "2d {}", set2d.GetLinear());
     } else if (set2d.IsElliptical()) {
-        return fmt::format_to(ctx.out(), "2d {}", std::get<EllipticalSet2d>(set2d));
+        return fmt::format_to(ctx.out(), "2d {}", set2d.GetElliptical());
     } else if (set2d.IsCone()) {
-        return fmt::format_to(ctx.out(), "2d {}", std::get<ConeSet2d>(set2d));
+        return fmt::format_to(ctx.out(), "2d {}", set2d.GetCone());
     }
 }

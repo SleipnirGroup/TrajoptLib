@@ -49,7 +49,7 @@ bool IntervalSet1d::IsUpperBounded() const noexcept {
 
 std::optional<SolutionError> IntervalSet1d::CheckScalar(double scalar, const SolutionTolerances& tolerances) const noexcept {
     if ((IsExact() && std::abs(scalar - lower) > tolerances.errorMargin) || scalar < lower || scalar > upper) {
-        return SolutionError(fmt::format("= {}", scalar));
+        return SolutionError{fmt::format("= {}", scalar)};
     }
     return std::nullopt;
 }

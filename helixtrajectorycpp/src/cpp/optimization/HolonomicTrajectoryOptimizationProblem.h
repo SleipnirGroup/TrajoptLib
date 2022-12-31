@@ -7,7 +7,7 @@
 #include "constraint/HolonomicConstraint.h"
 #include "obstacle/Obstacle.h"
 #include "path/HolonomicPath.h"
-#include "trajectory/HolonomicTrajectory.h"
+#include "solution/HolonomicSolution.h"
 
 namespace helixtrajectory {
 
@@ -28,16 +28,6 @@ namespace helixtrajectory {
  */
 template<typename Opti>
 class HolonomicTrajectoryOptimizationProblem : public TrajectoryOptimizationProblem<Opti> {
-public:
-    /**
-     * @brief Optimizes the given path using IPOPT. Note this function call
-     * may take a long time to complete. It may also fail, and throw a
-     * CasadiException.
-     * 
-     * @return a holonomic trajectory
-     */
-    HolonomicTrajectory Generate();
-
 protected:
     /**
      * @brief the holonomic drivetrain
@@ -157,17 +147,5 @@ private:
             const std::vector<std::vector<Expression>>& aySegments,
             const std::vector<std::vector<Expression>>& alphaSegments,
             const HolonomicPath& holonomicPath);
-
-    static HolonomicTrajectory ConstructTrajectory(const Opti& opti,
-            const std::vector<Expression>& dt,
-            const std::vector<Expression>& x,
-            const std::vector<Expression>& y,
-            const std::vector<Expression>& theta,
-            const std::vector<Expression>& vx,
-            const std::vector<Expression>& vy,
-            const std::vector<Expression>& omega,
-            const std::vector<Expression>& ax,
-            const std::vector<Expression>& ay,
-            const std::vector<Expression>& alpha);
 };
 }

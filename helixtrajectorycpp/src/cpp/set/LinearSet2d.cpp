@@ -20,8 +20,9 @@ std::optional<SolutionError> LinearSet2d::CheckVector(double xComp, double yComp
             > tolerances.errorMargin) {
         double rComp = std::hypot(xComp, yComp);
         double thetaComp = std::atan2(yComp, xComp);
-        return SolutionError(fmt::format("(r, θ) = ({}, {})", rComp, thetaComp));
+        return SolutionError{fmt::format("(r, θ) = ({}, {})", rComp, thetaComp)};
     }
+    return std::nullopt;
 }
 
 RectangularSet2d LinearSet2d::RBoundToRectangular(double theta, const IntervalSet1d& rBound) {

@@ -37,23 +37,23 @@ std::optional<SolutionError> EllipticalSet2d::CheckVector(
     switch (direction) {
         case Direction::kInside:
             if (lhs <= 1.0) {
-                return SolutionError(fmt::format(
+                return SolutionError{fmt::format(
                         "({}, {}) is not on or inside an ellipse with x radius of {} and y radius of {}",
-                        xComp, yComp, xRadius, yRadius));
+                        xComp, yComp, xRadius, yRadius)};
             }
             break;
         case Direction::kCentered:
             if (std::abs(lhs - 1.0) <= tolerances.errorMargin) {
-                return SolutionError(fmt::format(
+                return SolutionError{fmt::format(
                         "({}, {}) is not on an ellipse with x radius of {} and y radius of {}",
-                        xComp, yComp, xRadius, yRadius));
+                        xComp, yComp, xRadius, yRadius)};
             }
             break;
         case Direction::kOutside:
             if (lhs >= 1.0) {
-                return SolutionError(fmt::format(
+                return SolutionError{fmt::format(
                         "({}, {}) is not on or outside an ellipse with x radius of {} and y radius of {}",
-                        xComp, yComp, xRadius, yRadius));
+                        xComp, yComp, xRadius, yRadius)};
             }
             break;
     }

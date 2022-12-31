@@ -4,8 +4,10 @@
 
 #include "solution/HolonomicSolution.h"
 
-struct SwerveSolution {
+namespace helixtrajectory {
+struct SwerveSolution : HolonomicSolution {
 
     std::vector<std::vector<double>> moduleFX;
     std::vector<std::vector<double>> moduleFY;
 };
+}

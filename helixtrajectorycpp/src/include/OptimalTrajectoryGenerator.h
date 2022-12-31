@@ -1,7 +1,7 @@
 #pragma once
 
 #include "path/HolonomicPath.h"
-#include "trajectory/HolonomicTrajectory.h"
+#include "solution/SwerveSolution.h"
 #include "drivetrain/SwerveDrivetrain.h"
 
 namespace helixtrajectory {
@@ -27,8 +27,7 @@ namespace helixtrajectory {
          * @param holonomicPath the holonomic path
          * @return the optimized holonomic trajectory
          */
-        static HolonomicTrajectory Generate(const SwerveDrivetrain& swerveDrivetrain,
-                const HolonomicPath& holonomicPath,
-                const HolonomicTrajectory* previousSolution = nullptr);
+        static SwerveSolution Generate(const SwerveDrivetrain& swerveDrivetrain,
+                const HolonomicPath& holonomicPath);
     };
 }

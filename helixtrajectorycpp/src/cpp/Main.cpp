@@ -19,6 +19,7 @@
 #include "IncompatibleTrajectoryException.h"
 #include "set/ConeSet2d.h"
 #include "TestUtil.h"
+#include "solution/SwerveSolution.h"
 
 int main() {
 
@@ -101,49 +102,9 @@ int main() {
     // std::cout << "Drivetrain:\n" << drive << "\n"
     //         << "\nPath:\n" << path << std::endl;
 
-    HolonomicTrajectory trajectory = OptimalTrajectoryGenerator::Generate(swerveDrivetrain, holonomicPath);
+    SwerveSolution solution = OptimalTrajectoryGenerator::Generate(swerveDrivetrain, holonomicPath);
 
     // std::cout << "\nTrajectory:\n\n" << trajectory << std::endl;
 
     std::cout << std::endl;
-
-
-    // AngularVelocityConstraint constraint = IntervalSet1d(1, 2);
-    // try {
-    //     constraint.CheckAngularVelocity(-1);
-    // } catch (const IncompatibleTrajectoryException& exception) {
-    //     std::cout << exception.what();
-    // }
-
-    // ConeSet2d set2d = IntervalSet1d(0, 1.57/2);
-    // try {
-    //     set2d.CheckVector(1,0);
-    //     set2d.CheckVector(1,0.5);
-    //     set2d.CheckVector(0.5,1);
-    // } catch (const IncompatibleTrajectoryException& exception) {
-    //     std::cout << exception.what();
-    // }
-
-    // casadi::Opti opti;
-    // opti.solver("ipopt");
-    // auto x = opti.variable();
-    // // opti.subject_to(x >= 0 && x <= 1);
-    // opti.subject_to(x >= 0);
-    // opti.subject_to(x <= 1);
-    // opti.minimize(-2 * x * x);
-    // auto sol = opti.solve();
-    // std::cout << "Solver value: " << static_cast<double>(sol.value(x)) << std::endl;
-    // ConeSet2d set(IntervalSet1d(0, 0.78));
-    // std::array<bool, 2> carry = set.GetConstraints(2., -1.);
-    // std::cout << std::boolalpha;
-    // std::cout << carry[0] << ", " << carry[1] << std::endl;
-
-    sleipnir::OptimizationProblem problem;
-    sleipnir::VariableMatrix vari = problem.DecisionVariable();
-    problem.SubjectTo(vari >= 3);
-    problem.Minimize(vari * vari);
-    // problem.SubjectTo(Max(vari, 1) == 0.0);
-    problem.Solve();
-    std::cout << "Variable is: " << vari.Value();
-
 }

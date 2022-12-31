@@ -26,11 +26,11 @@ std::optional<SolutionError> RectangularSet2d::CheckVector(double xComp,
         double yComp, const SolutionTolerances& tolerances) const noexcept {
     auto xCheck = xBound.CheckScalar(xComp, tolerances);
     if (xCheck.has_value()) {
-        return SolutionError(fmt::format("x ", xCheck->errorMessage));
+        return SolutionError{fmt::format("x ", xCheck->errorMessage)};
     }
     auto yCheck = yBound.CheckScalar(yComp, tolerances);
     if (yCheck.has_value()) {
-        return SolutionError(fmt::format("y ", yCheck->errorMessage));
+        return SolutionError{fmt::format("y ", yCheck->errorMessage)};
     }
     return std::nullopt;
 }
