@@ -4,7 +4,7 @@ macro(fetch_sleipnir)
     FetchContent_Declare(
         sleipnir
         GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        GIT_TAG 3cf29ed4559815b1e7b7154fff7f5b7f2b72a0f8
+        GIT_TAG df45ae5756917b931869ea7bcd77904317471288
     )
     FetchContent_MakeAvailable(sleipnir)
 endmacro()
