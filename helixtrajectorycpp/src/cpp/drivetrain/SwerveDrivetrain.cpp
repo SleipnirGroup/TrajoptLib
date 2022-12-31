@@ -7,7 +7,6 @@
 #include <vector>
 
 #include <fmt/format.h>
-#include <casadi/casadi.hpp>
 
 #include "drivetrain/HolonomicDrivetrain.h"
 #include "drivetrain/SwerveDrivetrain.h"
@@ -56,7 +55,7 @@ namespace helixtrajectory {
     std::ostream& operator<<(std::ostream& stream, const SwerveDrivetrain& swerveDrivetrain) {
         return stream << "{\"mass\": " << swerveDrivetrain.mass
                << ", \"moment_of_inertia\": " << swerveDrivetrain.momentOfInertia
-               << ", \"modules\": " << swerveDrivetrain.modules
+            //    << ", \"modules\": " << swerveDrivetrain.modules
                << "}";
     }
 }

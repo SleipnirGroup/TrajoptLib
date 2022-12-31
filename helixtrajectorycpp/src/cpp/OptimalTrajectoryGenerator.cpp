@@ -1,6 +1,6 @@
 #include "OptimalTrajectoryGenerator.h"
 
-#include "optimization/CasADiOpti.h"
+// #include "optimization/CasADiOpti.h"
 #include "optimization/SleipnirOpti.h"
 #include "DebugOptions.h"
 #include "InvalidPathException.h"
@@ -42,8 +42,8 @@ namespace helixtrajectory {
 //             }
 //         }
 //         return Trajectory(samples);
-        // SwerveTrajectoryOptimizationProblem<SleipnirOpti> problem(swerveDrivetrain, holonomicPath);
-        SwerveTrajectoryOptimizationProblem<CasADiOpti> problem(swerveDrivetrain, holonomicPath);
+        SwerveTrajectoryOptimizationProblem<SleipnirOpti> problem(swerveDrivetrain, holonomicPath);
+        // SwerveTrajectoryOptimizationProblem<CasADiOpti> problem(swerveDrivetrain, holonomicPath);
         return problem.Generate();
     }
 }

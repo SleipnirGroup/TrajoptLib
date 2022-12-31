@@ -13,7 +13,7 @@
 #include "drivetrain/Drivetrain.h"
 #include "obstacle/Obstacle.h"
 #include "path/HolonomicPath.h"
-#include "optimization/CasADiOpti.h"
+// #include "optimization/CasADiOpti.h"
 #include "path/Path.h"
 #include "optimization/SleipnirOpti.h"
 #include "set/IntervalSet1d.h"
@@ -455,6 +455,6 @@ void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuessX(Opti& opti, std::ve
 }
 
 // TODO: do this in CasADiOpti.cpp:
-template class TrajectoryOptimizationProblem<CasADiOpti>;
+// template class TrajectoryOptimizationProblem<CasADiOpti>;
 template class TrajectoryOptimizationProblem<SleipnirOpti>;
 }

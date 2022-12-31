@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "TrajectoryGenerationException.h"
-#include "optimization/CasADiOpti.h"
+// #include "optimization/CasADiOpti.h"
 #include "optimization/SleipnirOpti.h"
 #include "path/HolonomicPath.h"
 #include "drivetrain/SwerveDrivetrain.h"
@@ -300,6 +300,6 @@ void SwerveTrajectoryOptimizationProblem<Opti>::PrintSolution() const {
 }
 #endif
 
-template class SwerveTrajectoryOptimizationProblem<CasADiOpti>;
+// template class SwerveTrajectoryOptimizationProblem<CasADiOpti>;
 template class SwerveTrajectoryOptimizationProblem<SleipnirOpti>;
 }
