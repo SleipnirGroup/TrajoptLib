@@ -47,11 +47,11 @@ HolonomicTrajectorySample::HolonomicTrajectorySample(
 // }
 
 std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectorySample& sample) {
-    return stream << fmt::format(
+    return stream;/* << fmt::format(
             "{{\"timestamp\": {}, \"x\": {}, \"y\": {}, \"heading\": {}, \"velocityX\": {}, \"velocityY\": {}, \"angularVelocity\": {}, \"accelerationX\": {}, \"accelerationY\": {}, \"angularAcceleration\": {}}}",
             sample.timestamp,
             sample.x, sample.y, sample.heading,
-            sample.velocityX, sample.velocityY, sample.angularVelocity);
+            sample.velocityX, sample.velocityY, sample.angularVelocity);*/
 }
 }
 

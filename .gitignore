@@ -3,6 +3,7 @@
 
 # Ignore Gradle build output directory
 build
+altbuild
 
 # Ignore resources dir which will eventually hold binaries
 resources

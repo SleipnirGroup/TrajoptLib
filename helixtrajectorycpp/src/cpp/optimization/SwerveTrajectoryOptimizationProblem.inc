@@ -1,12 +1,10 @@
 #include "DebugOptions.h"
 
-#include "optimization/SwerveTrajectoryOptimizationProblem.h"
+// #include "optimization/SwerveTrajectoryOptimizationProblem.h"
 
 #include <iostream>
 
 #include "TrajectoryGenerationException.h"
-#include "optimization/CasADiOpti.h"
-#include "optimization/SleipnirOpti.h"
 #include "path/HolonomicPath.h"
 #include "drivetrain/SwerveDrivetrain.h"
 #include "solution/SwerveSolution.h"
@@ -299,7 +297,4 @@ void SwerveTrajectoryOptimizationProblem<Opti>::PrintSolution() const {
     }
 }
 #endif
-
-template class SwerveTrajectoryOptimizationProblem<CasADiOpti>;
-template class SwerveTrajectoryOptimizationProblem<SleipnirOpti>;
 }

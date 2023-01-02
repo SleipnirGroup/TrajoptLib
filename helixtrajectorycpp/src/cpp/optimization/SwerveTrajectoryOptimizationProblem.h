@@ -160,3 +160,5 @@ public:
 #endif
 };
 }
+
+#include "optimization/SwerveTrajectoryOptimizationProblem.inc"

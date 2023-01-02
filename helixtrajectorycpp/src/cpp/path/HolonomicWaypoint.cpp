@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include <casadi/casadi.hpp>
-
 #include "obstacle/Obstacle.h"
 #include "path/InitialGuessPoint.h"
 #include "path/Waypoint.h"

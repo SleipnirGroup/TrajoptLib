@@ -3,8 +3,6 @@
 #include <iostream>
 #include <vector>
 
-#include <casadi/casadi.hpp>
-
 #include "path/HolonomicWaypoint.h"
 #include "path/Path.h"
 #include "path/Waypoint.h"
@@ -31,6 +29,6 @@ namespace helixtrajectory {
     }
 
     std::ostream& operator<<(std::ostream& stream, const HolonomicPath& path) {
-        return stream << path.holonomicWaypoints;
+        return stream;//  << path.holonomicWaypoints;
     }
 }

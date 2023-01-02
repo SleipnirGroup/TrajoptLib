@@ -202,3 +202,5 @@ public:
     virtual ~TrajectoryOptimizationProblem() = default;
 };
 }
+
+#include "optimization/TrajectoryOptimizationProblem.inc"
