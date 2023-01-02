@@ -2,6 +2,8 @@
 
 #include "optimization/SleipnirOpti.h"
 
+#include <cstddef>
+#include <limits>
 #include <memory>
 #include <vector>
 
@@ -46,6 +48,7 @@ void SleipnirOpti::SetInitial(sleipnir::VariableMatrix& expression, double value
 void SleipnirOpti::Solve() {
     static sleipnir::SolverConfig config;
     config.diagnostics = true;
+    config.maxIterations = std::numeric_limits<int>::max();
     opti.Solve(config);
 }
 
