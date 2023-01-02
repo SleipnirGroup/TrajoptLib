@@ -1,6 +1,6 @@
 #include "DebugOptions.h"
 
-#include "optimization/TrajectoryOptimizationProblem.h"
+// #include "optimization/TrajectoryOptimizationProblem.h"
 
 #include <cmath>
 #include <exception>
@@ -15,7 +15,6 @@
 #include "path/HolonomicPath.h"
 // #include "optimization/CasADiOpti.h"
 #include "path/Path.h"
-#include "optimization/SleipnirOpti.h"
 #include "set/IntervalSet1d.h"
 #include "set/Set2d.h"
 
@@ -380,7 +379,7 @@ void TrajectoryOptimizationProblem<Opti>::ApplyPathConstraints(Opti& opti,
     }
 }
 
-void linspace(std::vector<double>& arry, size_t startIndex, size_t endIndex, double startValue, double endValue) {
+inline void linspace(std::vector<double>& arry, size_t startIndex, size_t endIndex, double startValue, double endValue) {
     size_t intervalCount = endIndex - startIndex;
     double delta = (endValue - startValue) / intervalCount;
     for (int index = 0; index < intervalCount; index++) {
@@ -453,8 +452,4 @@ void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuessX(Opti& opti, std::ve
     std::cout << std::endl;
 #endif
 }
-
-// TODO: do this in CasADiOpti.cpp:
-// template class TrajectoryOptimizationProblem<CasADiOpti>;
-template class TrajectoryOptimizationProblem<SleipnirOpti>;
 }

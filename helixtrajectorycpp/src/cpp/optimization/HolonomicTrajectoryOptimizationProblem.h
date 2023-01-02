@@ -149,3 +149,5 @@ private:
             const HolonomicPath& holonomicPath);
 };
 }
+
+#include "optimization/HolonomicTrajectoryOptimizationProblem.inc"

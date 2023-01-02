@@ -1,49 +1,61 @@
-// #include "optimization/CasADiOpti.h"
+#ifdef OPTIMIZER_TYPE_CASADI
 
-// #include "DebugOptions.h"
+#include "optimization/CasADiOpti.h"
 
-// namespace helixtrajectory {
+#include <casadi/casadi.hpp>
 
-//     CasADiOpti::CasADiOpti() : opti(), solution(nullptr) {
-//     }
+#include "optimization/HolonomicTrajectoryOptimizationProblem.h"
+#include "optimization/SwerveTrajectoryOptimizationProblem.h"
+#include "optimization/TrajectoryOptimizationProblem.h"
 
-//     casadi::MX CasADiOpti::Variable() {
-//         return opti.variable();
-//     }
+#include "DebugOptions.h"
 
-//     void CasADiOpti::Minimize(const casadi::MX& objective) {
-//         opti.minimize(objective);
-//     }
+namespace helixtrajectory {
 
-//     void CasADiOpti::SubjectTo(const casadi::MX& constraint) {
-//         opti.subject_to(constraint);
-//     }
+CasADiOpti::CasADiOpti() : opti(), solution(nullptr) {
+}
 
-//     void CasADiOpti::SetInitial(const casadi::MX& expression, double value) {
-//         opti.set_initial(expression, value);
-//     }
+casadi::MX CasADiOpti::Variable() {
+    return opti.variable();
+}
 
-//     void CasADiOpti::Solve() {
-// #ifdef DEBUG_OUTPUT
-//         // I don't try-catch this next line since it should always work.
-//         // I'm assuming the dynamic lib is on the path and casadi can find it.
-//         opti.solver("ipopt");
-//         std::cout << "Located IPOPT Plugin" << std::endl;
-// #else
-//         auto pluginOptions = casadi::Dict();
-//         pluginOptions["ipopt.print_level"] = 0;
-//         pluginOptions["print_time"] = 0;
-//         pluginOptions["ipopt.sb"] = "yes";
-//         opti.solver("ipopt", pluginOptions);
-// #endif
-//         solution = new casadi::OptiSol(opti.solve());
-//     }
+void CasADiOpti::Minimize(const casadi::MX& objective) {
+    opti.minimize(objective);
+}
 
-//     double CasADiOpti::SolutionValue(const casadi::MX& expression) const {
-//         if (solution != nullptr) {
-//             return static_cast<double>(solution->value(expression));
-//         } else {
-//             throw "Solution not generated properly";
-//         }
-//     }
-// }
+void CasADiOpti::SubjectTo(const casadi::MX& constraint) {
+    opti.subject_to(constraint);
+}
+
+void CasADiOpti::SetInitial(const casadi::MX& expression, double value) {
+    opti.set_initial(expression, value);
+}
+
+void CasADiOpti::Solve() {
+#ifdef DEBUG_OUTPUT
+    // I don't try-catch this next line since it should always work.
+    // I'm assuming the dynamic lib is on the path and casadi can find it.
+    opti.solver("ipopt");
+    std::cout << "Located IPOPT Plugin" << std::endl;
+#else
+    auto pluginOptions = casadi::Dict();
+    pluginOptions["ipopt.print_level"] = 0;
+    pluginOptions["print_time"] = 0;
+    pluginOptions["ipopt.sb"] = "yes";
+    opti.solver("ipopt", pluginOptions);
+#endif
+    solution = new casadi::OptiSol(opti.solve());
+}
+
+double CasADiOpti::SolutionValue(const casadi::MX& expression) const {
+    if (solution != nullptr) {
+        return static_cast<double>(solution->value(expression));
+    } else {
+        throw "Solution not generated properly";
+    }
+}
+// template class HolonomicTrajectoryOptimizationProblem<CasADiOpti>;
+// template class SwerveTrajectoryOptimizationProblem<CasADiOpti>;
+// template class TrajectoryOptimizationProblem<CasADiOpti>;
+}
+#endif

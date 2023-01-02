@@ -4,9 +4,6 @@
 #include <limits>
 #include <vector>
 
-#include <sleipnir/autodiff/Variable.hpp>
-#include <sleipnir/optimization/OptimizationProblem.hpp>
-
 #include <fmt/format.h>
 
 #include "path/HolonomicPath.h"

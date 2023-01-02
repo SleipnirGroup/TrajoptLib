@@ -14,14 +14,6 @@ macro(fetch_casadi)
         set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.5.5/casadi-linux-py39-v3.5.5-64bit.tar.gz)
     endif()
     message(STATUS "Downloading CasADi from ${CASADI_URL}")
-    # include(ExternalProject)
-    # ExternalProject_Add(
-    #     casadi-3.5.5
-    #     URL ${CASADI_URL}
-    #     CONFIGURE_COMMAND ""
-    #     BUILD_COMMAND ""
-    #     INSTALL_COMMAND ""
-    #     PREFIX ${CMAKE_BINARY_DIR}/external)
     set(CASADI_DIR ${CMAKE_BINARY_DIR}/_deps/casadi-3.5.5-src/casadi)
 
     include(FetchContent)
@@ -30,4 +22,6 @@ macro(fetch_casadi)
         URL ${CASADI_URL}
     )
     FetchContent_MakeAvailable(casadi-3.5.5)
+
+    set(OPTIMIZER_LIBS casadi)
 endmacro()

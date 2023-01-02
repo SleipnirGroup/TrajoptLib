@@ -1,12 +1,10 @@
 #include "DebugOptions.h"
 
-#include "optimization/HolonomicTrajectoryOptimizationProblem.h"
+// #include "optimization/HolonomicTrajectoryOptimizationProblem.h"
 
 #include <iostream>
 #include <vector>
 
-// #include "optimization/CasADiOpti.h"
-#include "optimization/SleipnirOpti.h"
 #include "drivetrain/HolonomicDrivetrain.h"
 #include "path/HolonomicPath.h"
 #include "solution/HolonomicSolution.h"
@@ -284,7 +282,4 @@ void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicPathConstraints
 
 //     return HolonomicTrajectory(initialState, samples);
 // }
-
-// template class HolonomicTrajectoryOptimizationProblem<CasADiOpti>;
-template class HolonomicTrajectoryOptimizationProblem<SleipnirOpti>;
 }
