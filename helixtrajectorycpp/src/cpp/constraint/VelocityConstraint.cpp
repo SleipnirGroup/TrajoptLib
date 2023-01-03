@@ -22,16 +22,3 @@ std::optional<SolutionError> VelocityConstraint::CheckVelocity(
     return std::nullopt;
 }
 }
-
-template<typename ParseContext>
-constexpr auto fmt::formatter<helixtrajectory::VelocityConstraint>::parse(
-        ParseContext& ctx) {
-    return ctx.begin();
-}
-
-template<typename FormatContext>
-auto fmt::formatter<helixtrajectory::VelocityConstraint>::format(
-        const helixtrajectory::VelocityConstraint& velocityConstraint,
-        FormatContext& ctx) {
-    return fmt::format_to(ctx.out(), "velocity {}", velocityConstraint.velocityBound);
-}

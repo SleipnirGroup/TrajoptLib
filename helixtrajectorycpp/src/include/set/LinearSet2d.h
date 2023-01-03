@@ -25,8 +25,12 @@ template<>
 struct fmt::formatter<helixtrajectory::LinearSet2d> {
 
     template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx);
+    constexpr auto parse(ParseContext& ctx) {
+        return ctx.begin();
+    }
 
     template<typename FormatContext>
-    auto format(const helixtrajectory::LinearSet2d& linearSet, FormatContext& ctx);
+    auto format(const helixtrajectory::LinearSet2d& linearSet, FormatContext& ctx) {
+        return fmt::format_to(ctx.out(), "polar line: θ = {}", linearSet.theta);
+    }
 };

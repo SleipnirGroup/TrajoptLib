@@ -4,8 +4,6 @@
 #include <limits>
 #include <optional>
 
-#include <fmt/format.h>
-
 #include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
@@ -57,20 +55,4 @@ std::optional<SolutionError> IntervalSet1d::CheckScalar(double scalar, const Sol
 bool IntervalSet1d::IsValid() const noexcept {
     return lower <= upper;
 }
-}
-
-template<typename ParseContext>
-constexpr auto fmt::formatter<helixtrajectory::IntervalSet1d>::parse(
-        ParseContext& ctx) {
-    return ctx.begin();
-}
-
-template<typename FormatContext>
-auto fmt::formatter<helixtrajectory::IntervalSet1d>::format(
-        const helixtrajectory::IntervalSet1d& set1d, FormatContext& ctx) {
-    if (set1d.IsExact()) {
-        return fmt::format_to(ctx.out(), "= {}", set1d.lower);
-    } else {
-        return fmt::format_to(ctx.out(), "∈ [{}, {}]", set1d.lower, set1d.upper);
-    }
 }

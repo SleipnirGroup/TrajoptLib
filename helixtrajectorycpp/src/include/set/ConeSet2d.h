@@ -23,8 +23,12 @@ template<>
 struct fmt::formatter<helixtrajectory::ConeSet2d> {
 
     template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx);
+    constexpr auto parse(ParseContext& ctx) {
+        return ctx.begin();
+    }
 
     template<typename FormatContext>
-    auto format(const helixtrajectory::ConeSet2d& coneSet, FormatContext& ctx);
+    auto format(const helixtrajectory::ConeSet2d& coneSet, FormatContext& ctx) {
+        return fmt::format_to(ctx.out(), "cone: θ = {}", coneSet.thetaBound);
+    }
 };

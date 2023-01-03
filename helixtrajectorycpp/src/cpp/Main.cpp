@@ -104,8 +104,9 @@ int main() {
     //     bumpers);
 
     // SIMPLE MOTION PROFILE
-    IntervalSet1d x = IntervalSet1d(1, 2);
-    fmt::print("{}", x);
+    // auto con = Constraint(TranslationConstraint(RectangularSet2d(0, 0)));
+    auto con = VelocityConstraint(RectangularSet2d(0, 0));
+    fmt::print("{}\n\n\n", con);
     HolonomicPath holonomicPath(HolonomicPath({
         HolonomicWaypoint(
             {TranslationConstraint(RectangularSet2d(0, 0)),         HeadingConstraint(0)},
@@ -123,11 +124,7 @@ int main() {
             {InitialGuessPoint( 4,  0,  0.00)})},
         bumpers));
 
-    SwerveSolution solution = OptimalTrajectoryGenerator::Generate(swerveDrivetrain, holonomicPath);
-
-    fmt::print("{}", solution);
-
-    // std::cout << "\nTrajectory:\n\n" << trajectory << std::endl;
-
-    std::cout << std::endl;
+    // SOLVE
+    // SwerveSolution solution = OptimalTrajectoryGenerator::Generate(swerveDrivetrain, holonomicPath);
+    // fmt::print("{}\n", solution);
 }

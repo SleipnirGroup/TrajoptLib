@@ -61,20 +61,3 @@ HolonomicConstraint::HolonomicConstraint(const AngularVelocityConstraint& angula
         : constraint(angularVelocityConstraint) {
 }
 }
-
-template<typename ParseContext>
-constexpr auto fmt::formatter<helixtrajectory::Constraint>::parse(
-        ParseContext& ctx) {
-    return ctx.begin();
-}
-
-template<typename FormatContext>
-auto fmt::formatter<helixtrajectory::HolonomicConstraint>::format(
-        const helixtrajectory::HolonomicConstraint& constraint,
-        FormatContext& ctx) {
-    if (constraint.IsVelocityConstraint()) {
-        return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetVelocityConstraint());
-    } else /*if (constraint.IsHeadingConstraint())*/ {
-        return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetAngularVelocityConstraint());
-    }
-}

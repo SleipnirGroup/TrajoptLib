@@ -3,8 +3,6 @@
 #include <cmath>
 #include <optional>
 
-#include <fmt/format.h>
-
 #include "set/IntervalSet1d.h"
 #include "solution/SolutionChecking.h"
 
@@ -38,16 +36,4 @@ std::optional<SolutionError> RectangularSet2d::CheckVector(double xComp,
 bool RectangularSet2d::IsValid() const noexcept {
     return xBound.IsValid() && yBound.IsValid();
 }
-}
-
-template<typename ParseContext>
-constexpr auto fmt::formatter<helixtrajectory::RectangularSet2d>::parse(
-        ParseContext& ctx) {
-    return ctx.begin();
-}
-
-template<typename FormatContext>
-auto fmt::formatter<helixtrajectory::RectangularSet2d>::format(
-        const helixtrajectory::RectangularSet2d& rectangularSet, FormatContext& ctx) {
-    return fmt::format_to(ctx.out(), "x {}, y {}", rectangularSet.xBound, rectangularSet.yBound);
 }

@@ -70,8 +70,21 @@ template<>
 struct fmt::formatter<helixtrajectory::Set2d> {
 
     template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx);
+    constexpr auto parse(ParseContext& ctx) {
+        return ctx.begin();
+    }
 
     template<typename FormatContext>
-    auto format(const helixtrajectory::Set2d& set2d, FormatContext& ctx);
+    auto format(const helixtrajectory::Set2d& set2d, FormatContext& ctx) {
+        using namespace helixtrajectory;
+        if (set2d.IsRectangular()) {
+            return fmt::format_to(ctx.out(), "2d {}", set2d.GetRectangular());
+        } else if (set2d.IsLinear()) {
+            return fmt::format_to(ctx.out(), "2d {}", set2d.GetLinear());
+        } else if (set2d.IsElliptical()) {
+            return fmt::format_to(ctx.out(), "2d {}", set2d.GetElliptical());
+        } else /*if (set2d.IsCone())*/ {
+            return fmt::format_to(ctx.out(), "2d {}", set2d.GetCone());
+        }
+    }
 };

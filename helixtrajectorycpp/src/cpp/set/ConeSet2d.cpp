@@ -3,8 +3,6 @@
 #include <cmath>
 #include <optional>
 
-#include <fmt/format.h>
-
 #include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
@@ -26,17 +24,4 @@ std::optional<SolutionError> ConeSet2d::CheckVector(double xComp, double yComp, 
 bool ConeSet2d::IsValid() const noexcept {
     return thetaBound.Range() > 0.0 && thetaBound.Range() <= M_PI;
 }
-}
-
-template<typename ParseContext>
-constexpr auto fmt::formatter<helixtrajectory::ConeSet2d>::parse(
-        ParseContext& ctx) {
-    return ctx.begin();
-}
-
-template<typename FormatContext>
-auto fmt::formatter<helixtrajectory::ConeSet2d>::format(
-        const helixtrajectory::ConeSet2d& coneSet,
-        FormatContext& ctx) {
-    return fmt::format_to(ctx.out(), "cone: θ = {}", coneSet.thetaBound);
 }
