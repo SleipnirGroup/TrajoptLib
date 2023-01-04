@@ -38,6 +38,8 @@ int main() {
              SwerveModule(-0.6, +0.6, 0.04, 70, 2),
              SwerveModule(-0.6, -0.6, 0.04, 70, 2)});
 
+    fmt::print("{}\n", swerveDrivetrain.modules[0]);
+
     Obstacle bumpers(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}});
 
     // // CIRCULAR PATH
@@ -125,6 +127,6 @@ int main() {
         bumpers));
 
     // SOLVE
-    // SwerveSolution solution = OptimalTrajectoryGenerator::Generate(swerveDrivetrain, holonomicPath);
-    // fmt::print("{}\n", solution);
+    SwerveSolution solution = OptimalTrajectoryGenerator::Generate(swerveDrivetrain, holonomicPath);
+    fmt::print("{}\n", solution);
 }
