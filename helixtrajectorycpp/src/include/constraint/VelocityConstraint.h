@@ -26,10 +26,13 @@ public:
 template<>
 struct fmt::formatter<helixtrajectory::VelocityConstraint> {
 
-    template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx);
+    constexpr auto parse(fmt::format_parse_context& ctx) {
+        return ctx.begin();
+    }
 
     template<typename FormatContext>
     auto format(const helixtrajectory::VelocityConstraint& velocityConstraint,
-            FormatContext& ctx);
+            FormatContext& ctx) {
+        return fmt::format_to(ctx.out(), "velocity {}", velocityConstraint.velocityBound);
+    }
 };

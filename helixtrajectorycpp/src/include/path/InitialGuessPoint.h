@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <fmt/format.h>
+
 namespace helixtrajectory {
 
     /**
@@ -27,3 +29,18 @@ namespace helixtrajectory {
         friend std::ostream& operator<<(std::ostream& stream, const InitialGuessPoint& guessPoint);
     };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::InitialGuessPoint> {
+
+    constexpr auto parse(fmt::format_parse_context& ctx) {
+        return ctx.begin();
+    }
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::InitialGuessPoint& initialGuessPoint,
+            FormatContext& ctx) {
+        return fmt::format_to(ctx.out(),
+            "Initial Guess Point");
+    }
+};

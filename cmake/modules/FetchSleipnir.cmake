@@ -8,7 +8,7 @@ macro(fetch_sleipnir)
     FetchContent_Declare(
         sleipnir
         GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        GIT_TAG c8d2d861f19b8975be71f324433511550317cf0a
+        GIT_TAG 8011450bc05eade43085eabe92519e4772eb17b5
         CMAKE_ARGS -DBUILD_TESTING=OFF -DBUILD_BENCHMARKING=OFF -DINSTALL_GMOCK=OFF -DINSTALL_GTEST=OFF
     )
     FetchContent_MakeAvailable(sleipnir)

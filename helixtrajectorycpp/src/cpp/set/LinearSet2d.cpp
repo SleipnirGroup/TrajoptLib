@@ -3,8 +3,6 @@
 #include <cmath>
 #include <optional>
 
-#include <fmt/format.h>
-
 #include "set/IntervalSet1d.h"
 #include "set/RectangularSet2d.h"
 #include "solution/SolutionChecking.h"
@@ -46,16 +44,4 @@ RectangularSet2d LinearSet2d::RBoundToRectangular(double theta, const IntervalSe
         return RectangularSet2d({lowerVectorX, upperVectorX}, IntervalSet1d::R1());
     }
 }
-}
-
-template<typename ParseContext>
-constexpr auto fmt::formatter<helixtrajectory::LinearSet2d>::parse(
-        ParseContext& ctx) {
-    return ctx.begin();
-}
-
-template<typename FormatContext>
-auto fmt::formatter<helixtrajectory::LinearSet2d>::format(
-        const helixtrajectory::LinearSet2d& linearSet, FormatContext& ctx) {
-    return fmt::format_to(ctx.out(), "polar line: θ = {}", linearSet.theta);
 }

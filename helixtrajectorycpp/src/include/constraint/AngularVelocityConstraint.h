@@ -23,10 +23,14 @@ public:
 template<>
 struct fmt::formatter<helixtrajectory::AngularVelocityConstraint> {
 
-    template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx);
+    constexpr auto parse(fmt::format_parse_context& ctx) {
+        return ctx.begin();
+    }
 
     template<typename FormatContext>
     auto format(const helixtrajectory::AngularVelocityConstraint& angularVelocityConstraint,
-            FormatContext& ctx);
+            FormatContext& ctx) {
+        return fmt::format_to(ctx.out(), "ω {}",
+                angularVelocityConstraint.angularVelocityBound);
+    }
 };

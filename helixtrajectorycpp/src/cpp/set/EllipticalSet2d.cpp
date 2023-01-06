@@ -5,8 +5,6 @@
 #include <optional>
 #include <string>
 
-#include <fmt/format.h>
-
 #include "solution/SolutionChecking.h"
 
 namespace helixtrajectory {
@@ -63,37 +61,4 @@ std::optional<SolutionError> EllipticalSet2d::CheckVector(
 bool EllipticalSet2d::IsValid() const noexcept {
     return xRadius > 0.0 && yRadius > 0.0;
 }
-}
-
-template<typename ParseContext>
-constexpr auto fmt::formatter<helixtrajectory::EllipticalSet2d>::parse(
-        ParseContext& ctx) {
-    return ctx.begin();
-}
-
-template<typename FormatContext>
-auto fmt::formatter<helixtrajectory::EllipticalSet2d>::format(
-        const helixtrajectory::EllipticalSet2d& ellipticalSet,
-        FormatContext& ctx) {
-    std::string shape;
-    if (ellipticalSet.IsCircular()) {
-        shape = "circle";
-    } else {
-        shape = "ellipse";
-    }
-    using enum helixtrajectory::EllipticalSet2d::Direction;
-    std::string direction;
-    switch (ellipticalSet.direction) {
-        case kInside:
-            direction = "inside";
-            break;
-        case kCentered:
-            direction = "centered";
-            break;
-        case kOutside:
-            direction = "outside";
-            break;
-    }
-    return fmt::format_to(ctx.out(), "{}: {}, rₓ = {}, rᵧ = {}",
-            shape, direction, ellipticalSet.xRadius, ellipticalSet.yRadius);
 }

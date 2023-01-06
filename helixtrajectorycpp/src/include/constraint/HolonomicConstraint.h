@@ -39,9 +39,16 @@ private:
 template<>
 struct fmt::formatter<helixtrajectory::HolonomicConstraint> {
 
-    template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx);
+    constexpr auto parse(fmt::format_parse_context& ctx) {
+        return ctx.begin();
+    }
 
     template<typename FormatContext>
-    auto format(const helixtrajectory::HolonomicConstraint& constraint, FormatContext& ctx);
+    auto format(const helixtrajectory::HolonomicConstraint& constraint, FormatContext& ctx) {
+        if (constraint.IsVelocityConstraint()) {
+            return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetVelocityConstraint());
+        } else /*if (constraint.IsHeadingConstraint())*/ {
+            return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetAngularVelocityConstraint());
+        }
+    }
 };

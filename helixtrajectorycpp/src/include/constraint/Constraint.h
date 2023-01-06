@@ -5,6 +5,8 @@
 #include <optional>
 #include <variant>
 
+#include <fmt/format.h>
+
 #include "constraint/HeadingConstraint.h"
 #include "constraint/ObstacleConstraint.h"
 #include "constraint/PoseConstraint.h"
@@ -92,9 +94,21 @@ private:
 template<>
 struct fmt::formatter<helixtrajectory::Constraint> {
 
-    template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx);
+    constexpr auto parse(fmt::format_parse_context& ctx) {
+        return ctx.begin();
+    }
 
     template<typename FormatContext>
-    auto format(const helixtrajectory::Constraint& constraint, FormatContext& ctx);
+    auto format(const helixtrajectory::Constraint& constraint, FormatContext& ctx) {
+        using namespace helixtrajectory;
+        if (constraint.IsTranslationConstraint()) {
+            return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetTranslationConstraint());
+        } else if (constraint.IsHeadingConstraint()) {
+            return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetHeadingConstraint());
+        } else if (constraint.IsPoseConstraint()) {
+            return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetPoseConstraint());
+        } else /*if (constraint.IsObstacleConstraint())*/ {
+            return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetObstacleConstraint());
+        }
+    }
 };

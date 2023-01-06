@@ -94,25 +94,3 @@ Constraint::Constraint(const ObstacleConstraint& obstacleConstraint)
         : constraint(obstacleConstraint) {
 }
 }
-
-template<typename ParseContext>
-constexpr auto fmt::formatter<helixtrajectory::Constraint>::parse(
-        ParseContext& ctx) {
-    return ctx.begin();
-}
-
-template<typename FormatContext>
-auto fmt::formatter<helixtrajectory::Constraint>::format(
-        const helixtrajectory::Constraint& constraint,
-        FormatContext& ctx) {
-    using namespace helixtrajectory;
-    if (constraint.IsTranslationConstraint()) {
-        return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetTranslationConstraint());
-    } else if (constraint.IsHeadingConstraint()) {
-        return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetHeadingConstraint());
-    } else if (constraint.IsPoseConstraint()) {
-        return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetPoseConstraint());
-    } else /*if (constraint.IsObstacleConstraint())*/ {
-        return fmt::format_to(ctx.out(), "constraint: {}", constraint.GetObstacleConstraint());
-    }
-}

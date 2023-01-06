@@ -3,6 +3,11 @@
 #include <iostream>
 #include <vector>
 
+#include <fmt/format.h>
+#include <fmt/ranges.h>
+#include <fmt/std.h>
+#include <fmt/core.h>
+
 #include "drivetrain/HolonomicDrivetrain.h"
 #include "drivetrain/SwerveModule.h"
 #include "obstacle/Obstacle.h"
@@ -51,3 +56,23 @@ namespace helixtrajectory {
         friend std::ostream& operator<<(std::ostream& stream, const SwerveDrivetrain& swerveDrivetrain);
     };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::SwerveDrivetrain> {
+
+    constexpr auto parse(fmt::format_parse_context& ctx) {
+        return ctx.begin();
+    }
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::SwerveDrivetrain& swerveDrivetrain,
+            FormatContext& ctx) {
+        return fmt::format_to(ctx.out(),
+            "swerve drivetrain:\n"
+            "  mass = {},\n"
+            "  moi = {},\n"
+            "  modules = (no impl yet)",
+                swerveDrivetrain.mass,
+                swerveDrivetrain.momentOfInertia);
+    }
+};

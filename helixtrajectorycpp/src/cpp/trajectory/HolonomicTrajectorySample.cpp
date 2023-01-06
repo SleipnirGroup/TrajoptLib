@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <fmt/format.h>
+// #include <fmt/format.h>
 
 namespace helixtrajectory {
 
@@ -53,19 +53,4 @@ std::ostream& operator<<(std::ostream& stream, const HolonomicTrajectorySample& 
             sample.x, sample.y, sample.heading,
             sample.velocityX, sample.velocityY, sample.angularVelocity);*/
 }
-}
-
-template<typename ParseContext>
-constexpr auto fmt::formatter<helixtrajectory::HolonomicTrajectorySample>::parse(ParseContext& ctx) {
-    return ctx.begin();
-}
-
-template<typename FormatContext>
-auto fmt::formatter<helixtrajectory::HolonomicTrajectorySample>::format(
-        const helixtrajectory::HolonomicTrajectorySample& sample, FormatContext& ctx) {
-    return fmt::format_to(ctx.out(),
-            "{{\"timestamp\": {}, \"x\": {}, \"y\": {}, \"heading\": {}, \"velocityX\": {}, \"velocityY\": {}, \"angularVelocity\": {}}}",
-            sample.timestamp,
-            sample.x, sample.y, sample.heading,
-            sample.velocityX, sample.velocityY, sample.angularVelocity);
 }

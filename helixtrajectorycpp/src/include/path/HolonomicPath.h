@@ -67,3 +67,18 @@ namespace helixtrajectory {
         friend std::ostream& operator<<(std::ostream& stream, const HolonomicPath& path);
     };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::HolonomicPath> {
+
+    constexpr auto parse(fmt::format_parse_context& ctx) {
+        return ctx.begin();
+    }
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::HolonomicPath& holonomicPath,
+            FormatContext& ctx) {
+        return fmt::format_to(ctx.out(),
+            "Holonomic Path");
+    }
+};

@@ -70,3 +70,22 @@ namespace helixtrajectory {
         friend std::ostream& operator<<(std::ostream& stream, const SwerveModule& module);
     };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::SwerveModule> {
+
+    constexpr auto parse(fmt::format_parse_context& ctx) {
+        return ctx.begin();
+    }
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::SwerveModule& swerveModule,
+            FormatContext& ctx) {
+        return fmt::format_to(ctx.out(),
+            "swerve module: (x, y) = ({}, {}), r = {}, ωₘₐₓ = {}, τₘₐₓ = {}",
+                swerveModule.x, swerveModule.y,
+                swerveModule.wheelRadius,
+                swerveModule.wheelMaxAngularVelocity,
+                swerveModule.wheelMaxTorque);
+    }
+};

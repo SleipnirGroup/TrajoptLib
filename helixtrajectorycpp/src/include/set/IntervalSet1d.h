@@ -96,9 +96,16 @@ public:
 template<>
 struct fmt::formatter<helixtrajectory::IntervalSet1d> {
 
-    template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx);
+    constexpr auto parse(fmt::format_parse_context& ctx) {
+        return ctx.begin();
+    }
 
     template<typename FormatContext>
-    auto format(const helixtrajectory::IntervalSet1d& set1d, FormatContext& ctx);
+    auto format(const helixtrajectory::IntervalSet1d& set1d, FormatContext& ctx) {
+        if (set1d.IsExact()) {
+            return fmt::format_to(ctx.out(), "= {}", set1d.lower);
+        } else {
+            return fmt::format_to(ctx.out(), "∈ [{}, {}]", set1d.lower, set1d.upper);
+        }
+    }
 };

@@ -22,17 +22,3 @@ std::optional<SolutionError> TranslationConstraint::CheckTranslation(
     return std::nullopt;
 }
 }
-
-template<typename ParseContext>
-constexpr auto fmt::formatter<helixtrajectory::TranslationConstraint>::parse(
-        ParseContext& ctx) {
-    return ctx.begin();
-}
-
-template<typename FormatContext>
-auto fmt::formatter<helixtrajectory::TranslationConstraint>::format(
-        const helixtrajectory::TranslationConstraint& translationConstraint,
-        FormatContext& ctx) {
-    return fmt::format_to(ctx.out(), "jk");
-    // return fmt::format_to(ctx.out(), "heading {}", obstacleConstraint.obstacle);
-}
