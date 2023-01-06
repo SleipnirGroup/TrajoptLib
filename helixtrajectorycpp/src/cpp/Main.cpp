@@ -38,7 +38,7 @@ int main() {
              SwerveModule(-0.6, +0.6, 0.04, 70, 2),
              SwerveModule(-0.6, -0.6, 0.04, 70, 2)});
 
-    fmt::print("{}\n", swerveDrivetrain.modules[0]);
+    fmt::print("{}\n", swerveDrivetrain);
 
     Obstacle bumpers(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}});
 

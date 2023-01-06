@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+
 #include <fmt/format.h>
 
 namespace helixtrajectory {
@@ -31,8 +32,16 @@ public:
 template<>
 struct fmt::formatter<helixtrajectory::HolonomicTrajectorySample> {
     template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx);
+    constexpr auto parse(ParseContext& ctx) {
+        return ctx.begin();
+    }
 
     template<typename FormatContext>
-    auto format(const helixtrajectory::HolonomicTrajectorySample& sample, FormatContext& ctx);
+    auto format(const helixtrajectory::HolonomicTrajectorySample& sample, FormatContext& ctx) {
+        return fmt::format_to(ctx.out(),
+            "{{\"timestamp\": {}, \"x\": {}, \"y\": {}, \"heading\": {}, \"velocityX\": {}, \"velocityY\": {}, \"angularVelocity\": {}}}",
+                sample.timestamp,
+                sample.x, sample.y, sample.heading,
+                sample.velocityX, sample.velocityY, sample.angularVelocity);
+    }
 };

@@ -27,3 +27,19 @@ namespace helixtrajectory {
         friend std::ostream& operator<<(std::ostream& stream, const InitialGuessPoint& guessPoint);
     };
 }
+
+template<>
+struct fmt::formatter<helixtrajectory::InitialGuessPoint> {
+
+    template<typename ParseContext>
+    constexpr auto parse(ParseContext& ctx) {
+        return ctx.begin();
+    }
+
+    template<typename FormatContext>
+    auto format(const helixtrajectory::InitialGuessPoint& initialGuessPoint,
+            FormatContext& ctx) {
+        return fmt::format_to(ctx.out(),
+            "Initial Guess Point");
+    }
+};

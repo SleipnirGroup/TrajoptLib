@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <vector>
 
 #include <fmt/format.h>
@@ -21,8 +20,16 @@ public:
 template<>
 struct fmt::formatter<helixtrajectory::HolonomicTrajectory> {
     template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx);
+    constexpr auto parse(ParseContext& ctx) {
+        return ctx.begin();
+    }
 
     template<typename FormatContext>
-    auto format(const helixtrajectory::HolonomicTrajectory& trajectory, FormatContext& ctx);
+    auto format(const helixtrajectory::HolonomicTrajectory& trajectory, FormatContext& ctx) {
+        std::string sampsStr = fmt::format("{}", trajectory.samples[0]);
+        for (int i = 1; i < trajectory.samples.size(); i++) {
+            sampsStr += fmt::format(", {}", sample);
+        }
+        return fmt::format_to(ctx.out(), "[{}]", sampsStr);
+    }
 };

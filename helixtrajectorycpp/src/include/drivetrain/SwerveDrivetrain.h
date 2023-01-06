@@ -4,6 +4,9 @@
 #include <vector>
 
 #include <fmt/format.h>
+#include <fmt/ranges.h>
+#include <fmt/std.h>
+#include <fmt/core.h>
 
 #include "drivetrain/HolonomicDrivetrain.h"
 #include "drivetrain/SwerveModule.h"
@@ -69,9 +72,8 @@ struct fmt::formatter<helixtrajectory::SwerveDrivetrain> {
             "swerve drivetrain:\n"
             "  mass = {},\n"
             "  moi = {},\n"
-            "  modules = {}",
+            "  modules = (no impl yet)",
                 swerveDrivetrain.mass,
-                swerveDrivetrain.momentOfInertia,
-                fmt::join(swerveDrivetrain.modules, ",\n    "));
+                swerveDrivetrain.momentOfInertia);
     }
 };
