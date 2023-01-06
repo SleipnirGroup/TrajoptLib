@@ -17,9 +17,9 @@ modifiableFileExclude {
 }
 
 licenseUpdateExclude {
-  helixtrajectoryj/src/main/java/org/team2363/util/DependencyExtractor\.java$
-  helixtrajectoryj/src/main/java/org/team2363/util/RuntimeDetector\.java$
-  helixtrajectoryj/src/main/java/org/team2363/util/RuntimeLoader\.java$
+  java/src/main/java/org/team2363/util/DependencyExtractor\.java$
+  java/src/main/java/org/team2363/util/RuntimeDetector\.java$
+  java/src/main/java/org/team2363/util/RuntimeLoader\.java$
 }
 
 includeOtherLibs {
