@@ -60,8 +60,7 @@ namespace helixtrajectory {
 template<>
 struct fmt::formatter<helixtrajectory::SwerveDrivetrain> {
 
-    template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx) {
+    constexpr auto parse(fmt::format_parse_context& ctx) {
         return ctx.begin();
     }
 

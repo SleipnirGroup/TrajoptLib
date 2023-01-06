@@ -18,8 +18,7 @@ struct SwerveSolution : HolonomicSolution {
 template<>
 struct fmt::formatter<helixtrajectory::SwerveSolution> {
 
-    template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx) {
+    constexpr auto parse(fmt::format_parse_context& ctx) {
         return ctx.begin();
     }
 

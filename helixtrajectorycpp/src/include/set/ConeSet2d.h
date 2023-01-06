@@ -22,8 +22,7 @@ public:
 template<>
 struct fmt::formatter<helixtrajectory::ConeSet2d> {
 
-    template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx) {
+    constexpr auto parse(fmt::format_parse_context& ctx) {
         return ctx.begin();
     }
 

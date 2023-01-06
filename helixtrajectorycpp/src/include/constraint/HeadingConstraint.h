@@ -23,8 +23,7 @@ public:
 template<>
 struct fmt::formatter<helixtrajectory::HeadingConstraint> {
 
-    template<typename ParseContext>
-    constexpr auto parse(ParseContext& ctx) {
+    constexpr auto parse(fmt::format_parse_context& ctx) {
         return ctx.begin();
     }
 
