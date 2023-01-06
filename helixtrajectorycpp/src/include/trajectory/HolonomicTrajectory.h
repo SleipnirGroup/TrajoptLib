@@ -28,7 +28,7 @@ struct fmt::formatter<helixtrajectory::HolonomicTrajectory> {
     auto format(const helixtrajectory::HolonomicTrajectory& trajectory, FormatContext& ctx) {
         std::string sampsStr = fmt::format("{}", trajectory.samples[0]);
         for (int i = 1; i < trajectory.samples.size(); i++) {
-            sampsStr += fmt::format(", {}", sample);
+            sampsStr += fmt::format(", {}", trajectory.samples[i]);
         }
         return fmt::format_to(ctx.out(), "[{}]", sampsStr);
     }

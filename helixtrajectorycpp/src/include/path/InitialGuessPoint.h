@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <fmt/format.h>
+
 namespace helixtrajectory {
 
     /**

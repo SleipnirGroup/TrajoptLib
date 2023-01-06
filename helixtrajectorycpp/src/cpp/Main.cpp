@@ -107,8 +107,8 @@ int main() {
 
     // SIMPLE MOTION PROFILE
     // auto con = Constraint(TranslationConstraint(RectangularSet2d(0, 0)));
-    auto con = VelocityConstraint(RectangularSet2d(0, 0));
-    fmt::print("{}\n\n\n", con);
+    // auto con = VelocityConstraint(RectangularSet2d(0, 0));
+    // fmt::print("{}\n\n\n", con);
     HolonomicPath holonomicPath(HolonomicPath({
         HolonomicWaypoint(
             {TranslationConstraint(RectangularSet2d(0, 0)),         HeadingConstraint(0)},
@@ -122,7 +122,7 @@ int main() {
             {   VelocityConstraint(RectangularSet2d(0, 0)), AngularVelocityConstraint(0)},
             {},
             {},
-            30,
+            50,
             {InitialGuessPoint( 4,  0,  0.00)})},
         bumpers));
 
