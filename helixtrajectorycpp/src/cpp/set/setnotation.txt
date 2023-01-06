@@ -47,7 +47,7 @@ PoseConstraint:
         else if translation violated: "{translation violation_string}"
 
 VelocityHolonomicConstraint:
-    format_string = 
+    format_string =
     "constraint (velocity {velocityBound}) violated: velocity = ({velocityX}, {velocityY})"
 
 AngularVelocityHolonmicConstraint:

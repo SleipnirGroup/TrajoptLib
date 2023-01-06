@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public final class DependencyExtractor<T> {
-  
     private static String defaultExtractionRoot;
 
     /**

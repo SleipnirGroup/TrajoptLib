@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 #pragma once
 
 #include <optional>
@@ -13,25 +15,23 @@
 namespace helixtrajectory {
 
 class PoseConstraint : public TranslationConstraint, public HeadingConstraint {
-public:
-    PoseConstraint(const Set2d& translationBound,
-            const IntervalSet1d& headingBound);
+ public:
+  PoseConstraint(const Set2d& translationBound,
+                 const IntervalSet1d& headingBound);
 
-    std::optional<SolutionError> CheckPose(double x, double y, double heading,
-            const SolutionTolerances& tolerances) const noexcept;
+  std::optional<SolutionError> CheckPose(
+      double x, double y, double heading,
+      const SolutionTolerances& tolerances) const noexcept;
 };
-}
+}  // namespace helixtrajectory
 
-template<>
+template <>
 struct fmt::formatter<helixtrajectory::PoseConstraint> {
+  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
-    constexpr auto parse(fmt::format_parse_context& ctx) {
-        return ctx.begin();
-    }
-
-    template<typename FormatContext>
-    auto format(const helixtrajectory::PoseConstraint& poseConstraint,
-            FormatContext& ctx) {
-        return fmt::format_to(ctx.out(), "obstacle constraint");
-    }
+  template <typename FormatContext>
+  auto format(const helixtrajectory::PoseConstraint& poseConstraint,
+              FormatContext& ctx) {
+    return fmt::format_to(ctx.out(), "obstacle constraint");
+  }
 };

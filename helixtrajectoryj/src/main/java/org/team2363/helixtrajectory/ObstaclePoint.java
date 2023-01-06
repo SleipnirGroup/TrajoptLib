@@ -1,7 +1,8 @@
+// Copyright (c) TrajoptLib contributors
+
 package org.team2363.helixtrajectory;
 
 public final class ObstaclePoint {
-
     public final double x;
     public final double y;
 

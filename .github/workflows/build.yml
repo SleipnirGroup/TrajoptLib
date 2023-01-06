@@ -28,7 +28,7 @@ jobs:
 
     name: "Native Build: ${{ matrix.name }}"
     runs-on: ${{ matrix.os }}
-    
+
     steps:
       - uses: actions/checkout@v2
 
@@ -73,7 +73,7 @@ jobs:
             containsmacOS-x86_64: false
             containsWindows-x86_64: true
             platform_id: windows64
-          
+
           - name: Universal
             containsLinux-x86_64: true
             containsmacOS-x86_64: true
@@ -84,7 +84,7 @@ jobs:
     name: "Java: ${{ matrix.name }}"
 
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       contents: read
       packages: write
     steps:
@@ -104,7 +104,7 @@ jobs:
         with:
           name: HelixTrajectory_macOS-x86_64
           path: native_builds/HelixTrajectory_macOS-x86_64
-      
+
       - uses: actions/download-artifact@v3
         if: ${{ matrix.containsWindows-x86_64 }}
         with:
@@ -121,7 +121,7 @@ jobs:
 
       - if: ${{ matrix.containsWindows-x86_64 }}
         run: mkdir -p helixtrajectoryj/src/main/resources/windows;cp -R native_builds/HelixTrajectory_Windows-x86_64/bin helixtrajectoryj/src/main/resources/windows;cd helixtrajectoryj/src/main/resources/windows;mv bin x86_64;cd x86_64;HASH=$(md5sum libhelixtrajectory.dll | cut -c -32);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dll libhelixtrajectory.dll.$HASH
-      
+
       - name: Build Java
         run: ./gradlew jar
       - name: Publish package

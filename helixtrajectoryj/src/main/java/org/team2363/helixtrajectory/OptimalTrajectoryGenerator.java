@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 package org.team2363.helixtrajectory;
 
 import java.io.IOException;
@@ -7,7 +9,6 @@ import org.team2363.util.DependencyExtractor;
 import org.team2363.util.RuntimeLoader;
 
 public final class OptimalTrajectoryGenerator {
-
     private static boolean isPluginLoaded = false;
 
     private static void loadPlugin() throws PluginLoadException {
@@ -50,7 +51,6 @@ public final class OptimalTrajectoryGenerator {
 
     public static HolonomicTrajectory generate(SwerveDrivetrain swerveDrivetrain, HolonomicPath holonomicPath)
             throws NullPointerException, InvalidPathException, PluginLoadException, TrajectoryGenerationException {
-
         return new OptimalTrajectoryGenerator().generateHolonomicTrajectory(
                 Objects.requireNonNull(swerveDrivetrain, "Holonomic Trajectory Generator swerve drivetrain cannot be null"),
                 Objects.requireNonNull(holonomicPath, "Holonomic Trajectory Generator holonomic path cannot be null"));

@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 #include "IncompatibleTrajectoryException.h"
 
 #include <stdexcept>
@@ -5,11 +7,11 @@
 
 namespace helixtrajectory {
 
-    IncompatibleTrajectoryException::IncompatibleTrajectoryException(const std::string& message)
-            : logic_error(message) {
-    }
+IncompatibleTrajectoryException::IncompatibleTrajectoryException(
+    const std::string& message)
+    : logic_error(message) {}
 
-    IncompatibleTrajectoryException::IncompatibleTrajectoryException(const char* message)
-            : logic_error(message) {
-    }
-}
+IncompatibleTrajectoryException::IncompatibleTrajectoryException(
+    const char* message)
+    : logic_error(message) {}
+}  // namespace helixtrajectory

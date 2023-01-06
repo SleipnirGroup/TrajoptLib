@@ -1,7 +1,8 @@
+// Copyright (c) TrajoptLib contributors
+
 package org.team2363.helixtrajectory;
 
 public class HolonomicTrajectorySample extends TrajectorySample {
-
     public final double velocityX;
     public final double velocityY;
     public final double angularVelocity;

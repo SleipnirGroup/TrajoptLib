@@ -11,6 +11,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 project(helixtrajectory LANGUAGES CXX)
 
+# Set default build type to release with debug info (i.e. release mode
+# optimizations are performed, but debug info still exists).
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "" FORCE)
+endif()
+
+# Generate compile_commands.json by default
+if (NOT CMAKE_EXPORT_COMPILE_COMMANDS)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS "YES" CACHE STRING "" FORCE)
+endif()
+
 set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -82,12 +93,12 @@ elseif(${OPTIMIZER_TYPE} STREQUAL "sleipnir")
   include(FetchSleipnir)
   fetch_sleipnir()
   add_compile_definitions(OPTIMIZER_TYPE_SLEIPNIR)
-  endif()
-
-set(CMAKE_CXX_STANDARD 20)
+endif()
 
 file(GLOB_RECURSE src helixtrajectorycpp/src/cpp/*.cpp)
 add_executable(helixtrajectory ${src})
+
+target_compile_features(helixtrajectory PUBLIC cxx_std_20)
 
 if (${OPTIMIZER_TYPE} STREQUAL "casadi")
   target_include_directories(helixtrajectory PRIVATE ${CASADI_DIR}/include)

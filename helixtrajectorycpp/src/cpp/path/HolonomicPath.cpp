@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 #include "path/HolonomicPath.h"
 
 #include <iostream>
@@ -9,26 +11,25 @@
 
 namespace helixtrajectory {
 
-    HolonomicPath::HolonomicPath(const std::vector<HolonomicWaypoint>& holonomicWaypoints,
-                const Obstacle& bumpers,
-                const std::vector<Constraint>& globalConstraints,
-                const std::vector<HolonomicConstraint>& globalHolonomicConstraints)
-            : Path(bumpers, globalConstraints),
-            holonomicWaypoints(holonomicWaypoints),
-            globalHolonomicConstraints(globalHolonomicConstraints) {
-    }
+HolonomicPath::HolonomicPath(
+    const std::vector<HolonomicWaypoint>& holonomicWaypoints,
+    const Obstacle& bumpers, const std::vector<Constraint>& globalConstraints,
+    const std::vector<HolonomicConstraint>& globalHolonomicConstraints)
+    : Path(bumpers, globalConstraints),
+      holonomicWaypoints(holonomicWaypoints),
+      globalHolonomicConstraints(globalHolonomicConstraints) {}
 
-    size_t HolonomicPath::Length() const noexcept {
-        return holonomicWaypoints.size();
-    }
-    Waypoint& HolonomicPath::GetWaypoint(size_t index) {
-        return holonomicWaypoints[index];
-    }
-    const Waypoint& HolonomicPath::GetWaypoint(size_t index) const {
-        return holonomicWaypoints[index];
-    }
-
-    std::ostream& operator<<(std::ostream& stream, const HolonomicPath& path) {
-        return stream;//  << path.holonomicWaypoints;
-    }
+size_t HolonomicPath::Length() const noexcept {
+  return holonomicWaypoints.size();
 }
+Waypoint& HolonomicPath::GetWaypoint(size_t index) {
+  return holonomicWaypoints[index];
+}
+const Waypoint& HolonomicPath::GetWaypoint(size_t index) const {
+  return holonomicWaypoints[index];
+}
+
+std::ostream& operator<<(std::ostream& stream, const HolonomicPath& path) {
+  return stream;  //  << path.holonomicWaypoints;
+}
+}  // namespace helixtrajectory

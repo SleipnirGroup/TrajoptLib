@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 package org.team2363.helixtrajectory;
 
 import static org.team2363.util.ObjectChecker.requireNonNegative;
@@ -6,7 +8,6 @@ import static org.team2363.util.ObjectChecker.requireNonNullAndWrapUnmodifiable;
 import java.util.List;
 
 public abstract class Waypoint {
-
     public final double x;
     public final double y;
     public final double heading;
@@ -29,7 +30,7 @@ public abstract class Waypoint {
         this.x = x;
         this.y = y;
         this.heading = heading;
-        
+
         this.xConstrained = xConstrained;
         this.yConstrained = yConstrained;
         this.headingConstrained = headingConstrained;

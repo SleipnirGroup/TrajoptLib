@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 package org.team2363.helixtrajectory;
 
 import static org.team2363.util.ObjectChecker.requireNonNullAndWrapUnmodifiable;
@@ -5,7 +7,6 @@ import static org.team2363.util.ObjectChecker.requireNonNullAndWrapUnmodifiable;
 import java.util.List;
 
 public final class Obstacle {
-
     public final double safetyDistance;
     public final boolean applyToAllSegments;
     public final List<? extends ObstaclePoint> points;
