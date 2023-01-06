@@ -17,7 +17,7 @@ jobs:
           - os: macOS-12
             name: macOS-x86_64
             mingw: false
-            cmake_flags: "-D CMAKE_CXX_COMPILER=$(brew --prefix llvm)/bin/clang++"
+            cmake_flags: "-D CMAKE_CXX_COMPILER=clang++"
             gradle_command: "./gradlew"
 
           - os: windows-2019
