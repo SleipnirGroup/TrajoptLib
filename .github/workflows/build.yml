@@ -14,10 +14,10 @@ jobs:
             cmake_flags: ""
             gradle_command: "./gradlew"
 
-          - os: macOS-11
+          - os: macOS-12
             name: macOS-x86_64
             mingw: false
-            cmake_flags: ""
+            cmake_flags: "-D CMAKE_CXX_COMPILER=clang++"
             gradle_command: "./gradlew"
 
           - os: windows-2019
