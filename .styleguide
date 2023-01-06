@@ -1,0 +1,29 @@
+cppHeaderFileInclude {
+  \.h$
+  \.hpp$
+  \.inc$
+}
+
+cppSrcFileInclude {
+  \.cpp$
+}
+
+modifiableFileExclude {
+  jni/jni\.h$
+  jni/darwin/jni_md\.h$
+  jni/linux/jni_md\.h$
+  jni/win32/jni_md\.h$
+  \.jar$
+}
+
+licenseUpdateExclude {
+  helixtrajectoryj/src/main/java/org/team2363/util/DependencyExtractor\.java$
+  helixtrajectoryj/src/main/java/org/team2363/util/RuntimeDetector\.java$
+  helixtrajectoryj/src/main/java/org/team2363/util/RuntimeLoader\.java$
+}
+
+includeOtherLibs {
+  ^Eigen/
+  ^fmt/
+  ^gtest/
+}

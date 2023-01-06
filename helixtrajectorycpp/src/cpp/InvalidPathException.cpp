@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 #include "InvalidPathException.h"
 
 #include <stdexcept>
@@ -5,11 +7,9 @@
 
 namespace helixtrajectory {
 
-    InvalidPathException::InvalidPathException(const std::string& message)
-            : logic_error(message) {
-    }
+InvalidPathException::InvalidPathException(const std::string& message)
+    : logic_error(message) {}
 
-    InvalidPathException::InvalidPathException(const char* message)
-            : logic_error(message) {
-    }
-}
+InvalidPathException::InvalidPathException(const char* message)
+    : logic_error(message) {}
+}  // namespace helixtrajectory

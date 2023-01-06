@@ -1,8 +1,9 @@
+// Copyright (c) TrajoptLib contributors
+
 package org.team2363.helixtrajectory;
 
 
 public final class SwerveModule {
-
     public final double x;
     public final double y;
     public final double wheelRadius;

@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 #pragma once
 
 #include <vector>
@@ -8,23 +10,23 @@
 
 namespace helixtrajectory {
 
-    class SleipnirOpti {
-    public:
-        using Expression = sleipnir::VariableMatrix;
+class SleipnirOpti {
+ public:
+  using Expression = sleipnir::VariableMatrix;
 
-    private:
-        sleipnir::OptimizationProblem opti;
+ private:
+  sleipnir::OptimizationProblem opti;
 
-    public:
-        SleipnirOpti();
+ public:
+  SleipnirOpti();
 
-        Expression Variable();
-        void Minimize(const Expression& objective);
-        void SubjectTo(const Expression& relation);
-        void SubjectTo(sleipnir::EqualityConstraints&& relations);
-        void SubjectTo(sleipnir::InequalityConstraints&& relations);
-        void SetInitial(Expression& expression, double value);
-        void Solve();
-        double SolutionValue(const Expression& expression) const;
-    };
-}
+  Expression Variable();
+  void Minimize(const Expression& objective);
+  void SubjectTo(const Expression& relation);
+  void SubjectTo(sleipnir::EqualityConstraints&& relations);
+  void SubjectTo(sleipnir::InequalityConstraints&& relations);
+  void SetInitial(Expression& expression, double value);
+  void Solve();
+  double SolutionValue(const Expression& expression) const;
+};
+}  // namespace helixtrajectory

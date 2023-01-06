@@ -1,9 +1,10 @@
+// Copyright (c) TrajoptLib contributors
+
 package org.team2363.helixtrajectory;
 
 import java.util.Objects;
 
 public abstract class Drivetrain {
-
     public final double mass;
     public final double momentOfInertia;
     public final Obstacle bumpers;

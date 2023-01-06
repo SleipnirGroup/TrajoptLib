@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 #pragma once
 
 #include <vector>
@@ -6,7 +8,6 @@
 
 namespace helixtrajectory {
 struct HolonomicSolution : Solution {
-
-    std::vector<double> vx, vy, omega, ax, ay, alpha;
+  std::vector<double> vx, vy, omega, ax, ay, alpha;
 };
-}
+}  // namespace helixtrajectory

@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 #pragma once
 
 #include <stdexcept>
@@ -5,10 +7,9 @@
 
 namespace helixtrajectory {
 
-    class IncompatibleTrajectoryException : public std::logic_error {
-    public:
-
-        explicit IncompatibleTrajectoryException(const std::string& message);
-        explicit IncompatibleTrajectoryException(const char* message);
-    };
-}
+class IncompatibleTrajectoryException : public std::logic_error {
+ public:
+  explicit IncompatibleTrajectoryException(const std::string& message);
+  explicit IncompatibleTrajectoryException(const char* message);
+};
+}  // namespace helixtrajectory

@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 public final class RuntimeLoader<T> {
-  
     private static String defaultExtractionRoot;
 
     /**

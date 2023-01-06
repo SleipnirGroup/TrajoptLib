@@ -5,7 +5,6 @@
 package org.team2363.util;
 
 public final class RuntimeDetector {
-
     private static String filePrefix;
     private static String fileExtension;
     private static String filePath;

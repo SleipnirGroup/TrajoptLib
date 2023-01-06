@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 package org.team2363.util;
 
 import java.util.ArrayList;
@@ -6,11 +8,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class ObjectChecker {
-
     /**
      * Throws an exception if the list or any of its elements are null and
      * returns an unmodifiable copy of the given list.
-     * 
+     *
      * @param <E> the list type
      * @param list the list to wrap
      * @return the unmofifiable copy of {@code list}
