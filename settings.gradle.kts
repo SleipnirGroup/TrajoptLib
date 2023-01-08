@@ -1,3 +1,3 @@
-rootProject.name = "helixtrajectoryj"
+rootProject.name = "java"
 
-include("helixtrajectoryj")
+include("java")
