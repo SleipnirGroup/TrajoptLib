@@ -59,12 +59,12 @@ class TRAJOPT_DLLEXPORT HolonomicWaypoint : public Waypoint {
    * while approaching this waypoint
    */
   explicit HolonomicWaypoint(
-      const std::vector<Constraint>& waypointConstraints,
-      const std::vector<HolonomicConstraint>& waypointHolonomicConstraints = {},
-      const std::vector<Constraint>& segmentConstraints = {},
-      const std::vector<HolonomicConstraint>& segmentHolonomicConstraints = {},
+      std::vector<Constraint> waypointConstraints,
+      std::vector<HolonomicConstraint> waypointHolonomicConstraints = {},
+      std::vector<Constraint> segmentConstraints = {},
+      std::vector<HolonomicConstraint> segmentHolonomicConstraints = {},
       size_t controlIntervalCount = 100,
-      const std::vector<InitialGuessPoint>& initialGuessPoints = {});
+      std::vector<InitialGuessPoint> initialGuessPoints = {});
 
   /**
    * @brief Check if the velocity state at this holonomic waypoint is known.

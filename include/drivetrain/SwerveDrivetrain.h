@@ -43,7 +43,7 @@ class TRAJOPT_DLLEXPORT SwerveDrivetrain : public HolonomicDrivetrain {
    * @param bumpers the bumpers of the robot represented as an obstacle
    */
   SwerveDrivetrain(double mass, double momentOfInertia,
-                   const std::vector<SwerveModule>& modules);
+                   std::vector<SwerveModule> modules);
 
   // void CheckState(const HolonomicState& state) const;
   // void CheckTrajectory(const HolonomicTrajectory& trajectory) const;

@@ -6,6 +6,6 @@
 
 namespace trajopt {
 
-ObstacleConstraint::ObstacleConstraint(const Obstacle& obstacle)
-    : obstacle(obstacle) {}
+ObstacleConstraint::ObstacleConstraint(Obstacle obstacle)
+    : obstacle(std::move(obstacle)) {}
 }  // namespace trajopt

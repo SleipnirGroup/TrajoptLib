@@ -9,6 +9,7 @@
 #include "DebugOptions.h"
 #include "TrajectoryGenerationException.h"
 #include "drivetrain/SwerveDrivetrain.h"
+#include "optimization/SwerveTrajectoryOptimizationProblem.h"
 #include "path/HolonomicPath.h"
 #include "solution/SwerveSolution.h"
 

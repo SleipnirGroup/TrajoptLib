@@ -9,6 +9,7 @@
 #include "TrajectoryGenerationException.h"
 #include "drivetrain/HolonomicDrivetrain.h"
 #include "obstacle/Obstacle.h"
+#include "optimization/HolonomicTrajectoryOptimizationProblem.h"
 #include "path/HolonomicPath.h"
 #include "path/HolonomicWaypoint.h"
 #include "solution/HolonomicSolution.h"

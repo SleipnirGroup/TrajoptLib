@@ -13,6 +13,7 @@
 #include "TrajectoryGenerationException.h"
 #include "drivetrain/Drivetrain.h"
 #include "obstacle/Obstacle.h"
+#include "optimization/TrajectoryOptimizationProblem.h"
 #include "path/HolonomicPath.h"
 #include "path/Path.h"
 #include "set/IntervalSet1d.h"

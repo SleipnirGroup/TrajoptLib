@@ -19,17 +19,12 @@ constexpr inline bool WithinPrecision(const T& actualVal, const T& expectedVal,
 }
 
 struct LooseDouble {
-  double value;
+  double value = 0.0;
 
-  constexpr LooseDouble() : value(0.0) {}
-  constexpr LooseDouble(double value) : value(value) {}
+  constexpr LooseDouble() = default;
+  explicit constexpr LooseDouble(double value) : value(value) {}
 
-  constexpr operator double() { return value; }
-
-  // LooseDouble& operator=(LooseDouble other) {
-  //     value = other.value;
-  //     return *this;
-  // }
+  explicit constexpr operator double() { return value; }
 
   constexpr bool operator==(const LooseDouble& other) const {
     return WithinPrecision(value, other.value, 1e-3);
@@ -37,14 +32,7 @@ struct LooseDouble {
   auto operator<=>(const LooseDouble& other) const = default;
 
   LooseDouble operator*(const LooseDouble& other) const {
-    return value * other.value;
+    return LooseDouble{value * other.value};
   }
 };
-
-// LooseDouble sin(const LooseDouble& theta) {
-//     return std::sin(theta.value);
-// }
-// LooseDouble cos(const LooseDouble& theta) {
-//     return std::cos(theta.value);
-// }
 }  // namespace trajopt
