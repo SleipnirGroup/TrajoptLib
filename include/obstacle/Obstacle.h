@@ -35,7 +35,7 @@ class TRAJOPT_DLLEXPORT Obstacle {
    * segments
    * @param waypoints minimum distance from the obstacle the robot must maintain
    */
-  Obstacle(double safetyDistance, const std::vector<ObstaclePoint>& points);
+  Obstacle(double safetyDistance, std::vector<ObstaclePoint> points);
 
   /**
    * @brief Append a string representation of an obstacle to an output stream.

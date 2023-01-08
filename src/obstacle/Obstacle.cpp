@@ -9,9 +9,8 @@
 
 namespace trajopt {
 
-Obstacle::Obstacle(double safetyDistance,
-                   const std::vector<ObstaclePoint>& points)
-    : safetyDistance(safetyDistance), points(points) {}
+Obstacle::Obstacle(double safetyDistance, std::vector<ObstaclePoint> points)
+    : safetyDistance(safetyDistance), points(std::move(points)) {}
 
 std::ostream& operator<<(std::ostream& stream, const Obstacle& obstacle) {
   stream << std::boolalpha;

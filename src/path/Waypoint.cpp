@@ -45,12 +45,12 @@ bool Waypoint::IsSplitWaypoint() const noexcept {
   return IsInitialWaypoint() || IsStateKnown();
 }
 
-Waypoint::Waypoint(const std::vector<Constraint>& waypointConstraints,
-                   const std::vector<Constraint>& segmentConstraints,
+Waypoint::Waypoint(std::vector<Constraint> waypointConstraints,
+                   std::vector<Constraint> segmentConstraints,
                    size_t controlIntervalCount,
-                   const std::vector<InitialGuessPoint>& initialGuessPoints)
-    : waypointConstraints(waypointConstraints),
-      segmentConstraints(segmentConstraints),
+                   std::vector<InitialGuessPoint> initialGuessPoints)
+    : waypointConstraints(std::move(waypointConstraints)),
+      segmentConstraints(std::move(segmentConstraints)),
       controlIntervalCount(controlIntervalCount),
-      initialGuessPoints(initialGuessPoints) {}
+      initialGuessPoints(std::move(initialGuessPoints)) {}
 }  // namespace trajopt

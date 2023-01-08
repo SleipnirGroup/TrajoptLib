@@ -50,33 +50,33 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
         if: ${{ failure() }}
 
-#  tidy:
-#    name: "clang-tidy"
-#    runs-on: ubuntu-latest
-#    container: wpilib/roborio-cross-ubuntu:2023-22.04
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Fetch all history and metadata
-#        run: |
-#          git config --global --add safe.directory /__w/TrajoptLib/TrajoptLib
-#          git fetch --prune --unshallow
-#          git checkout -b pr
-#          git branch -f main origin/main
-#      - name: Set up Python 3.8
-#        uses: actions/setup-python@v4
-#        with:
-#          python-version: 3.8
-#      - name: Install clang-tidy
-#        run: |
-#          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-#          sudo sh -c "echo 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-14 main' >> /etc/apt/sources.list.d/proposed-repositories.list"
-#          sudo apt-get update -q
-#          sudo apt-get install -y clang-tidy-14 clang-format-14
-#      - name: Install wpiformat
-#        run: pip3 install wpiformat
-#      - name: Create compile_commands.json
-#        run: cmake -B build -S . -DCMAKE_C_COMPILER:FILEPATH=/usr/bin/clang-14 -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++-14 -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
-#      - name: List changed files
-#        run: wpiformat -list-changed-files
-#      - name: Run clang-tidy
-#        run: wpiformat -clang 14 -no-format -tidy-all -compile-commands=build -tidy-extra-args std=c++20 -vv
+  tidy:
+    name: "clang-tidy"
+    runs-on: ubuntu-latest
+    container: wpilib/roborio-cross-ubuntu:2023-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fetch all history and metadata
+        run: |
+          git config --global --add safe.directory /__w/TrajoptLib/TrajoptLib
+          git fetch --prune --unshallow
+          git checkout -b pr
+          git branch -f main origin/main
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - name: Install clang-tidy
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo sh -c "echo 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-14 main' >> /etc/apt/sources.list.d/proposed-repositories.list"
+          sudo apt-get update -q
+          sudo apt-get install -y clang-tidy-14 clang-format-14
+      - name: Install wpiformat
+        run: pip3 install wpiformat
+      - name: Create compile_commands.json
+        run: cmake -B build -S . -DOPTIMIZER_BACKEND=sleipnir -DCMAKE_C_COMPILER:FILEPATH=/usr/bin/clang-14 -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++-14 -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
+      - name: List changed files
+        run: wpiformat -list-changed-files
+      - name: Run clang-tidy
+        run: wpiformat -clang 14 -no-format -tidy-all -compile-commands=build -tidy-extra-args std=c++20 -vv

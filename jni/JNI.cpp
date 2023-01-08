@@ -1,7 +1,5 @@
 // Copyright (c) TrajoptLib contributors
 
-#include <jni.h>
-
 #include <iostream>
 #include <memory>
 
@@ -10,6 +8,7 @@
 #include "TrajectoryGenerationException.h"
 #include "drivetrain/SwerveDrivetrain.h"
 #include "drivetrain/SwerveModule.h"
+#include "jni.h"
 #include "obstacle/Obstacle.h"
 #include "obstacle/ObstaclePoint.h"
 #include "org_team2363_trajopt_OptimalTrajectoryGenerator.h"

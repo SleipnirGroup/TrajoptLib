@@ -11,16 +11,16 @@
 namespace trajopt {
 
 HolonomicWaypoint::HolonomicWaypoint(
-    const std::vector<Constraint>& waypointConstraints,
-    const std::vector<HolonomicConstraint>& waypointHolonomicConstraints,
-    const std::vector<Constraint>& segmentConstraints,
-    const std::vector<HolonomicConstraint>& segmentHolonomicConstraints,
+    std::vector<Constraint> waypointConstraints,
+    std::vector<HolonomicConstraint> waypointHolonomicConstraints,
+    std::vector<Constraint> segmentConstraints,
+    std::vector<HolonomicConstraint> segmentHolonomicConstraints,
     size_t controlIntervalCount,
-    const std::vector<InitialGuessPoint>& initialGuessPoints)
-    : Waypoint(waypointConstraints, segmentConstraints, controlIntervalCount,
-               initialGuessPoints),
-      waypointHolonomicConstraints(waypointHolonomicConstraints),
-      segmentHolonomicConstraints(segmentHolonomicConstraints) {}
+    std::vector<InitialGuessPoint> initialGuessPoints)
+    : Waypoint(std::move(waypointConstraints), std::move(segmentConstraints),
+               controlIntervalCount, std::move(initialGuessPoints)),
+      waypointHolonomicConstraints(std::move(waypointHolonomicConstraints)),
+      segmentHolonomicConstraints(std::move(segmentHolonomicConstraints)) {}
 
 bool HolonomicWaypoint::IsVelocityStateKnown() const noexcept {
   // return waypointVelocityConstraint.angularVelocityBound.IsExact()

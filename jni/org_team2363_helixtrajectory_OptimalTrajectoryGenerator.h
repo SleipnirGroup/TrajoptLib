@@ -1,7 +1,7 @@
 // Copyright (c) TrajoptLib contributors
 
 /* DO NOT EDIT THIS std::FILE - it is machine generated */
-#include <jni.h>
+#include "jni.h"
 
 /* Header for class org_team2363_trajopt_OptimalTrajectoryGenerator */
 

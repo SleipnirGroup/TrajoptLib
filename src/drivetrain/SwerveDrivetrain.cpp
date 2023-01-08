@@ -17,8 +17,8 @@
 namespace trajopt {
 
 SwerveDrivetrain::SwerveDrivetrain(double mass, double momentOfInertia,
-                                   const std::vector<SwerveModule>& modules)
-    : HolonomicDrivetrain(mass, momentOfInertia), modules(modules) {}
+                                   std::vector<SwerveModule> modules)
+    : HolonomicDrivetrain(mass, momentOfInertia), modules(std::move(modules)) {}
 
 // void SwerveDrivetrain::CheckState(const HolonomicState& state) const {
 //     for (size_t moduleIndex = 0; moduleIndex < modules.size(); moduleIndex++)

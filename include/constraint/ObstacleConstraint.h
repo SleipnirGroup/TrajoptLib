@@ -13,7 +13,7 @@ class TRAJOPT_DLLEXPORT ObstacleConstraint {
  public:
   Obstacle obstacle;
 
-  explicit ObstacleConstraint(const Obstacle& obstacle);
+  explicit ObstacleConstraint(Obstacle obstacle);
 };
 }  // namespace trajopt
 

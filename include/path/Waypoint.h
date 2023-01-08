@@ -121,9 +121,9 @@ class TRAJOPT_DLLEXPORT Waypoint {
    * @param obstacles the collection of obstacles that the robot must avoid
    * while approaching this waypoint
    */
-  Waypoint(const std::vector<Constraint>& waypointConstraints,
-           const std::vector<Constraint>& segmentConstraints,
+  Waypoint(std::vector<Constraint> waypointConstraints,
+           std::vector<Constraint> segmentConstraints,
            size_t controlIntervalCount,
-           const std::vector<InitialGuessPoint>& initialGuessPoints);
+           std::vector<InitialGuessPoint> initialGuessPoints);
 };
 }  // namespace trajopt
