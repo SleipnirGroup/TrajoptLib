@@ -135,6 +135,9 @@ elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
   fetch_sleipnir()
   target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_SLEIPNIR)
   target_link_libraries(TrajoptLib PRIVATE Sleipnir)
+
+  # Install Sleipnir manually because EXCLUDE_FROM_ALL was used during import
+  install(TARGETS Sleipnir)
 endif()
 
 target_include_directories(TrajoptLib
