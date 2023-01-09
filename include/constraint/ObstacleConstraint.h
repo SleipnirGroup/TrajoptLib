@@ -9,20 +9,47 @@
 
 namespace trajopt {
 
+/**
+ * Obstacle constraint.
+ */
 class TRAJOPT_DLLEXPORT ObstacleConstraint {
  public:
+  /// The obstacle.
   Obstacle obstacle;
 
+  /**
+   * Construct the ObstacleConstraint.
+   *
+   * @param obstacle The obstacle.
+   */
   explicit ObstacleConstraint(Obstacle obstacle);
 };
+
 }  // namespace trajopt
 
+/**
+ * Formatter for ObstacleConstraint.
+ */
+//! @cond Doxygen_Suppress
 template <>
 struct fmt::formatter<trajopt::ObstacleConstraint> {
+  //! @endcond
+  /**
+   * Format string parser.
+   *
+   * @param ctx Format string context.
+   */
   constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
+  /**
+   * Writes out a formatted ObstacleConstraint.
+   *
+   * @tparam FormatContext Format string context type.
+   * @param constraint ObstacleConstraint instance.
+   * @param ctx Format string context.
+   */
   template <typename FormatContext>
-  auto format(const trajopt::ObstacleConstraint& obstacleConstraint,
+  auto format(const trajopt::ObstacleConstraint& constraint,
               FormatContext& ctx) {
     return fmt::format_to(ctx.out(), "obstacle constraint");
   }

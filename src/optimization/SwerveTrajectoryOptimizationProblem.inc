@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -19,9 +18,6 @@ template <typename Opti>
 SwerveSolution SwerveTrajectoryOptimizationProblem<Opti>::Generate() {
   try {
     TrajectoryOptimizationProblem<Opti>::opti.Solve();
-#ifdef DEBUG_OUTPUT
-    std::cout << "Solution stored" << std::endl;
-#endif
     return ConstructSwerveSolution(
         TrajectoryOptimizationProblem<Opti>::opti,
         TrajectoryOptimizationProblem<Opti>::dt,
@@ -120,10 +116,6 @@ SwerveTrajectoryOptimizationProblem<Opti>::SwerveTrajectoryOptimizationProblem(
     moduleTau.push_back(indexModuleTau);
   }
 
-#ifdef DEBUG_OUTPUT
-  std::cout << "Set up module position and velocity variables" << std::endl;
-#endif
-
   for (size_t sampleIndex = 0;
        sampleIndex < TrajectoryOptimizationProblem<Opti>::sampleTotal;
        sampleIndex++) {
@@ -140,10 +132,6 @@ SwerveTrajectoryOptimizationProblem<Opti>::SwerveTrajectoryOptimizationProblem(
     netTau.push_back(intervalNetTau);
   }
 
-#ifdef DEBUG_OUTPUT
-  std::cout << "Set up net force and net torque expressions" << std::endl;
-#endif
-
   ApplyDynamicsConstraints(
       TrajectoryOptimizationProblem<Opti>::opti,
       HolonomicTrajectoryOptimizationProblem<Opti>::ax,
@@ -151,17 +139,9 @@ SwerveTrajectoryOptimizationProblem<Opti>::SwerveTrajectoryOptimizationProblem(
       HolonomicTrajectoryOptimizationProblem<Opti>::alpha, netFX, netFY, netTau,
       SwerveTrajectoryOptimizationProblem::swerveDrivetrain);
 
-#ifdef DEBUG_OUTPUT
-  std::cout << "Applied swerve dynamics constraints" << std::endl;
-#endif
-
   ApplyPowerConstraints(TrajectoryOptimizationProblem<Opti>::opti, moduleVX,
                         moduleVY, moduleFX, moduleFY,
                         SwerveTrajectoryOptimizationProblem::swerveDrivetrain);
-
-#ifdef DEBUG_OUTPUT
-  std::cout << "Applied swerve power constraints" << std::endl;
-#endif
 }
 
 template <typename Opti>
@@ -219,8 +199,6 @@ void SwerveTrajectoryOptimizationProblem<Opti>::ApplyPowerConstraints(
                             moduleVY[moduleIndex][sampleIndex] *
                                 moduleVY[moduleIndex][sampleIndex] <=
                         maxWheelVelocity * maxWheelVelocity;
-      // std::cout << "\n\nMax velocity constraint: " << constraint <<
-      // std::endl;
       opti.SubjectTo(moduleVX[moduleIndex][sampleIndex] *
                              moduleVX[moduleIndex][sampleIndex] +
                          moduleVY[moduleIndex][sampleIndex] *
@@ -232,10 +210,6 @@ void SwerveTrajectoryOptimizationProblem<Opti>::ApplyPowerConstraints(
                          moduleFY[moduleIndex][sampleIndex] *
                              moduleFY[moduleIndex][sampleIndex] <=
                      maxForce * maxForce);
-
-      // std::cout << "Applied module " << moduleIndex << " sample " <<
-      // sampleIndex << " velocity power constraint of " << maxWheelVelocity <<
-      // std::endl;
     }
   }
 }
@@ -266,129 +240,4 @@ SwerveTrajectoryOptimizationProblem<Opti>::ConstructSwerveSolution(
       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, moduleFY)};
 }
 
-#ifdef DEBUG_OUTPUT
-template <typename Opti>
-void SwerveTrajectoryOptimizationProblem<Opti>::PrintSolution() const {
-  std::cout << "Printing " << TrajectoryOptimizationProblem<Opti>::sampleTotal
-            << " samples:\n\n";
-  std::cout << "sample, dt, x, y, theta, vx, vy, omega, ax, ay, alpha";
-  for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-    std::cout << ", module" << moduleIndex << "x";
-  }
-  for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-    std::cout << ", module" << moduleIndex << "y";
-  }
-  for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-    std::cout << ", module" << moduleIndex << "vx";
-  }
-  for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-    std::cout << ", module" << moduleIndex << "vy";
-  }
-  for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-    std::cout << ", module" << moduleIndex << "fx";
-  }
-  for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-    std::cout << ", module" << moduleIndex << "fy";
-  }
-  for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-    std::cout << ", module" << moduleIndex << "tau";
-  }
-  std::cout << "\n";
-
-  for (size_t sampleIndex = 0;
-       sampleIndex < TrajectoryOptimizationProblem<Opti>::sampleTotal;
-       sampleIndex++) {
-    std::cout << sampleIndex;
-    if (sampleIndex == 0) {
-      std::cout << ",";
-    } else {
-      std::cout
-          << ", "
-          << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-                 TrajectoryOptimizationProblem<Opti>::dt[sampleIndex - 1]);
-    }
-    std::cout
-        << ", "
-        << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-               TrajectoryOptimizationProblem<Opti>::x[sampleIndex])
-        << ", "
-        << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-               TrajectoryOptimizationProblem<Opti>::y[sampleIndex])
-        << ", "
-        << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-               TrajectoryOptimizationProblem<Opti>::theta[sampleIndex])
-        << ", "
-        << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-               HolonomicTrajectoryOptimizationProblem<Opti>::vx[sampleIndex])
-        << ", "
-        << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-               HolonomicTrajectoryOptimizationProblem<Opti>::vy[sampleIndex])
-        << ", "
-        << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-               HolonomicTrajectoryOptimizationProblem<
-                   Opti>::omega[sampleIndex]);
-    if (sampleIndex == 0) {
-      std::cout << ",,,";
-    } else {
-      std::cout
-          << ", "
-          << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-                 HolonomicTrajectoryOptimizationProblem<Opti>::ax[sampleIndex -
-                                                                  1])
-          << ", "
-          << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-                 HolonomicTrajectoryOptimizationProblem<Opti>::ay[sampleIndex -
-                                                                  1])
-          << ", "
-          << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-                 HolonomicTrajectoryOptimizationProblem<
-                     Opti>::alpha[sampleIndex - 1]);
-    }
-
-    for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-      std::cout << ", "
-                << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-                       moduleX[moduleIndex][sampleIndex]);
-    }
-    for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-      std::cout << ", "
-                << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-                       moduleY[moduleIndex][sampleIndex]);
-    }
-    for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-      std::cout << ", "
-                << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-                       moduleVX[moduleIndex][sampleIndex]);
-    }
-    for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-      std::cout << ", "
-                << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-                       moduleVY[moduleIndex][sampleIndex]);
-    }
-
-    if (sampleIndex == 0) {
-      for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-        std::cout << ",,,";
-      }
-    } else {
-      for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-        std::cout << ", "
-                  << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-                         moduleFX[moduleIndex][sampleIndex - 1]);
-      }
-      for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-        std::cout << ", "
-                  << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-                         moduleFY[moduleIndex][sampleIndex - 1]);
-      }
-      for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-        std::cout << ", "
-                  << TrajectoryOptimizationProblem<Opti>::opti.SolutionValue(
-                         moduleTau[moduleIndex][sampleIndex - 1]);
-      }
-    }
-    std::cout << "\n";
-  }
-}
-#endif
 }  // namespace trajopt

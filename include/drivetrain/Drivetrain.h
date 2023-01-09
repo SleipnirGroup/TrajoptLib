@@ -45,34 +45,24 @@ namespace trajopt {
  */
 class TRAJOPT_DLLEXPORT Drivetrain {
  public:
-  /**
-   * @brief mass of the robot
-   */
+  /// Mass of the robot.
   double mass;
-  /**
-   * @brief moment of inertia of robot about axis of rotation, through
-   * center of robot coordinate system
-   */
+
+  /// Moment of inertia of robot about axis of rotation, through center of
+  /// robot.
   double momentOfInertia;
 
-  std::array<double, 2> TransformVector(std::array<double, 2> _vector,
-                                        double heading);
-
-  /**
-   * @brief Destroy the Drivetrain object
-   */
   virtual ~Drivetrain() = default;
 
  protected:
   /**
-   * @brief Construct a Drivetrain object with the robot's mass, moment of
-   * inertia, and bumpers.
+   * Construct a Drivetrain.
    *
-   * @param mass the mass of the entire robot
-   * @param momentOfInertia the moment of inertia of the robot about the axis of
-   * rotation
-   * @param bumpers the bumpers of the robot
+   * @param mass The mass of the entire robot.
+   * @param momentOfInertia The moment of inertia of the robot about the axis of
+   *   rotation.
    */
   Drivetrain(double mass, double momentOfInertia);
 };
+
 }  // namespace trajopt

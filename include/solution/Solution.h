@@ -8,7 +8,20 @@
 
 namespace trajopt {
 
+/**
+ * The trajectory optimization solution.
+ */
 struct TRAJOPT_DLLEXPORT Solution {
-  std::vector<double> dt, x, y, theta;
+  /// Times between samples.
+  std::vector<double> dt;
+
+  /// X positions.
+  std::vector<double> x;
+
+  /// Y positions.
+  std::vector<double> y;
+
+  /// Headings.
+  std::vector<double> theta;
 };
 }  // namespace trajopt

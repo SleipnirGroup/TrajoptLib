@@ -38,42 +38,136 @@ namespace trajopt {
 using Set2dVariant =
     std::variant<RectangularSet2d, LinearSet2d, EllipticalSet2d, ConeSet2d>;
 
+/**
+ * 2D set.
+ */
 class TRAJOPT_DLLEXPORT Set2d {
  public:
+  /**
+   * Returns an error if the given vector isn't inside the region.
+   *
+   * @param xComp The x coordinate.
+   * @param yComp The y coordinate.
+   * @param tolerances The tolerances considered to satisfy the constraint.
+   */
   std::optional<SolutionError> CheckVector(
       double xComp, double yComp, const SolutionTolerances& tolerances) const;
 
+  /**
+   * Returns true if region is rectangular.
+   */
   bool IsRectangular() const;
+
+  /**
+   * Returns true if region is a line.
+   */
   bool IsLinear() const;
+
+  /**
+   * Returns true if region is elliptical.
+   */
   bool IsElliptical() const;
+
+  /**
+   * Returns true if region is conical.
+   */
   bool IsCone() const;
 
+  /**
+   * Returns this set as a RectangularSet2d.
+   */
   const RectangularSet2d& GetRectangular() const;
+
+  /**
+   * Returns this set as a RectangularSet2d.
+   */
   RectangularSet2d& GetRectangular();
 
+  /**
+   * Returns this set as a LinearSet2d.
+   */
   const LinearSet2d& GetLinear() const;
+
+  /**
+   * Returns this set as a LinearSet2d.
+   */
   LinearSet2d& GetLinear();
 
+  /**
+   * Returns this set as a EllipticalSet2d.
+   */
   const EllipticalSet2d& GetElliptical() const;
+
+  /**
+   * Returns this set as a EllipticalSet2d.
+   */
   EllipticalSet2d& GetElliptical();
 
+  /**
+   * Returns this set as a ConeSet2d.
+   */
   const ConeSet2d& GetCone() const;
+
+  /**
+   * Returns this set as a ConeSet2d.
+   */
   ConeSet2d& GetCone();
 
+  /**
+   * Construct a Set2d.
+   *
+   * @param rectangularSet2d A RectangularSet2d.
+   */
   Set2d(const RectangularSet2d& rectangularSet2d);  // NOLINT
-  Set2d(const LinearSet2d& linearSet2d);            // NOLINT
-  Set2d(const EllipticalSet2d& ellipticalSet2d);    // NOLINT
-  Set2d(const ConeSet2d& coneSet2d);                // NOLINT
+
+  /**
+   * Construct a Set2d.
+   *
+   * @param linearSet2d A LinearSet2d.
+   */
+  Set2d(const LinearSet2d& linearSet2d);  // NOLINT
+
+  /**
+   * Construct a Set2d.
+   *
+   * @param ellipticalSet2d A EllipticalSet2d.
+   */
+  Set2d(const EllipticalSet2d& ellipticalSet2d);  // NOLINT
+
+  /**
+   * Construct a Set2d.
+   *
+   * @param coneSet2d A ConeSet2d.
+   */
+  Set2d(const ConeSet2d& coneSet2d);  // NOLINT
 
  private:
   Set2dVariant set2d;
 };
+
 }  // namespace trajopt
 
+/**
+ * Formatter for Set2d.
+ */
+//! @cond Doxygen_Suppress
 template <>
 struct fmt::formatter<trajopt::Set2d> {
+  //! @endcond
+  /**
+   * Format string parser.
+   *
+   * @param ctx Format string context.
+   */
   constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
+  /**
+   * Writes out a formatted Set2d.
+   *
+   * @tparam FormatContext Format string context type.
+   * @param set2d Set2d instance.
+   * @param ctx Format string context.
+   */
   template <typename FormatContext>
   auto format(const trajopt::Set2d& set2d, FormatContext& ctx) {
     using namespace trajopt;

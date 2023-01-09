@@ -4,7 +4,6 @@
 
 #include <cmath>
 #include <exception>
-#include <iostream>
 #include <limits>
 #include <variant>
 #include <vector>
@@ -66,13 +65,7 @@ TrajectoryOptimizationProblem<Opti>::TrajectoryOptimizationProblem(
     opti.SubjectTo(segmentDt >= 0);
     opti.SetInitial(segmentDt, 5.0 / segmentControlIntervalCount);
   }
-#ifdef DEBUG_OUTPUT
-  std::cout << "Applied Time Constraints" << std::endl;
-#endif
   opti.Minimize(totalT);
-#ifdef DEBUG_OUTPUT
-  std::cout << "Set Optimization Objective" << std::endl;
-#endif
 
   dtSegments.reserve(trajectorySegmentCount);
   xSegments.reserve(waypointCount);
@@ -108,29 +101,19 @@ TrajectoryOptimizationProblem<Opti>::TrajectoryOptimizationProblem(
     thetaSegments.push_back(thetaSegment);
     sampleIndex += controlIntervalCount;
   }
-  std::cout << "Set up Decision Variables" << std::endl;
 
   ApplyPathConstraints(opti, xSegments, ySegments, thetaSegments,
                        TrajectoryOptimizationProblem<Opti>::path);
-#ifdef DEBUG_OUTPUT
-  std::cout << "Applied Path constraints" << std::endl;
-#endif
 
   // ApplyObstacleConstraints(opti, xSegments, ySegments, thetaSegments,
   //         TrajectoryOptimizationProblem::drivetrain,
   //         TrajectoryOptimizationProblem::path);
-#ifdef DEBUG_OUTPUT
-  std::cout << "Applied Obstacle constraints" << std::endl;
-#endif
 
   ApplyInitialGuessX(
       opti, x, y, theta,
       GenerateInitialGuessX(TrajectoryOptimizationProblem::path));
   // opti.SetInitial(X,
   // GenerateInitialGuessX(TrajectoryOptimizationProblem::path));
-#ifdef DEBUG_OUTPUT
-  std::cout << "Set Initial Trajectory" << std::endl;
-#endif
 }
 
 template <typename Opti>
@@ -277,23 +260,18 @@ void TrajectoryOptimizationProblem<Opti>::ApplyObstacleConstraint(
   } else {
     for (size_t bumperCornerIndex = 0;
          bumperCornerIndex < bumperCornerCount - 1; bumperCornerIndex++) {
-      // std::cout << "About to solve bumper positions" << std::endl;
       const BumperCornerPosition startBumperCornerPosition =
           SolveBumperCornerPosition(x, y, theta,
                                     bumpers.points[bumperCornerIndex]);
       const BumperCornerPosition endBumperCornerPosition =
           SolveBumperCornerPosition(x, y, theta,
                                     bumpers.points[bumperCornerIndex + 1]);
-      // std::cout << "solved bumper positions" << std::endl;
       for (const ObstaclePoint& obstaclePoint : obstacle.points) {
-        // std::cout << "Finding line point dist" << std::endl;
         Expression dist = linePointDist<Expression>(
             startBumperCornerPosition.x, startBumperCornerPosition.y,
             endBumperCornerPosition.x, endBumperCornerPosition.y,
             obstaclePoint.x, obstaclePoint.y);
-        // std::cout << "Line point dist found" << std::endl;
         opti.SubjectTo(dist >= distSquared);
-        // std::cout << "Constrained line point dist" << std::endl;
       }
     }
     if (bumperCornerCount >=
@@ -402,7 +380,6 @@ void TrajectoryOptimizationProblem<Opti>::ApplyPathConstraints(
     size_t waypointSampleIndex = segmentSampleCount - 1;
     for (size_t segmentSampleIndex = 0;
          segmentSampleIndex < segmentSampleCount - 1; segmentSampleIndex++) {
-      std::cout << "hellow?" << std::endl;
       ApplyConstraints(opti, xSegments[waypointIndex][segmentSampleIndex],
                        ySegments[waypointIndex][segmentSampleIndex],
                        thetaSegments[waypointIndex][segmentSampleIndex],
@@ -515,22 +492,12 @@ template <typename Opti>
 void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuessX(
     Opti& opti, std::vector<Expression>& x, std::vector<Expression>& y,
     std::vector<Expression>& theta, const InitialGuessX& initialGuessX) {
-#ifdef DEBUG_OUTPUT
-  std::cout << "\n\nInitial Guess:\n";
-#endif
   size_t sampleTotal = x.size();
   for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
-#ifdef DEBUG_OUTPUT
-    std::cout << initialGuessX.x[sampleIndex] << ", "
-              << initialGuessX.y[sampleIndex] << ", "
-              << initialGuessX.theta[sampleIndex] << "\n";
-#endif
     opti.SetInitial(x[sampleIndex], initialGuessX.x[sampleIndex]);
     opti.SetInitial(y[sampleIndex], initialGuessX.y[sampleIndex]);
     opti.SetInitial(theta[sampleIndex], initialGuessX.theta[sampleIndex]);
   }
-#ifdef DEBUG_OUTPUT
-  std::cout << std::endl;
-#endif
 }
+
 }  // namespace trajopt

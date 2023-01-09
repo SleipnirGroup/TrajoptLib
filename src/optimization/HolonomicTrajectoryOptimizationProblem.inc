@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <iostream>
 #include <vector>
 
 #include "DebugOptions.h"
@@ -46,7 +45,6 @@ HolonomicTrajectoryOptimizationProblem<Opti>::
   for (size_t sampleIndex = 0;
        sampleIndex < TrajectoryOptimizationProblem<Opti>::sampleTotal;
        sampleIndex++) {
-    // std::cout << "Setting up holonomic: " << std::endl;
     vx.push_back(TrajectoryOptimizationProblem<Opti>::opti.Variable());
     vy.push_back(TrajectoryOptimizationProblem<Opti>::opti.Variable());
     omega.push_back(TrajectoryOptimizationProblem<Opti>::opti.Variable());
@@ -54,8 +52,6 @@ HolonomicTrajectoryOptimizationProblem<Opti>::
     ay.push_back(TrajectoryOptimizationProblem<Opti>::opti.Variable());
     alpha.push_back(TrajectoryOptimizationProblem<Opti>::opti.Variable());
   }
-  // std::cout << "Created new velocity variables" << std::endl;
-  // std::cout << "Created new acceleration variables" << std::endl;
 
   vxSegments.reserve(TrajectoryOptimizationProblem<Opti>::waypointCount);
   vySegments.reserve(TrajectoryOptimizationProblem<Opti>::waypointCount);
@@ -119,17 +115,10 @@ HolonomicTrajectoryOptimizationProblem<Opti>::
                              TrajectoryOptimizationProblem<Opti>::theta, vx, vy,
                              omega, ax, ay, alpha);
 
-#ifdef DEBUG_OUTPUT
-  std::cout << "Applied Holonomic Kinematics Constraints" << std::endl;
-#endif
-
   ApplyHolonomicPathConstraints(
       TrajectoryOptimizationProblem<Opti>::opti, vxSegments, vySegments,
       omegaSegments, axSegments, aySegments, alphaSegments,
       HolonomicTrajectoryOptimizationProblem::holonomicPath);
-#ifdef DEBUG_OUTPUT
-  std::cout << "Applied Holonomic Path Constraints" << std::endl;
-#endif
 }
 
 template <typename Opti>

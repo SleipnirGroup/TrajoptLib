@@ -20,10 +20,6 @@ IntervalSet1d IntervalSet1d::R1() {
                        +std::numeric_limits<double>::infinity());
 }
 
-bool IntervalSet1d::operator==(const IntervalSet1d& other) const noexcept {
-  return lower == other.lower && upper == other.upper;
-}
-
 double IntervalSet1d::Range() const noexcept {
   return upper - lower;
 }

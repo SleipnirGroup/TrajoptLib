@@ -103,27 +103,20 @@ class TRAJOPT_DLLEXPORT Waypoint {
 
  protected:
   /**
-   * @brief Construct a Waypoint with its position constraint settings, control
-   * interval count, initial guess points, and obstacles.
+   * Construct a Waypoint.
    *
-   * @param waypointPositionConstraint the set of constraints on position for
-   * this waypoint
-   * @param segmentPositionConstraint the set of constraints on position for
-   * this segment
-   * @param applySegmentConstraintAtWaypoint whether or not to apply the
-   * constraint specified in the segment constraint set to the waypoint sample
-   * point
+   * @param waypointConstraints The set of waypoint constraints.
+   * @param segmentConstraints The set of segment constraints.
    * @param controlIntervalCount the number of control intervals in the
-   * optimization problem from the previous waypoint to this waypoint
-   * @param initialGuessPoints the points used to construct the linear initial
-   * trajectory guess for the trajectory segment from the last waypoint to this
-   * waypoint
-   * @param obstacles the collection of obstacles that the robot must avoid
-   * while approaching this waypoint
+   *   optimization problem from the previous waypoint to this waypoint.
+   * @param initialGuessPoints The points used to construct the linear initial
+   *   trajectory guess for the trajectory segment from the last waypoint to
+   *   this waypoint.
    */
   Waypoint(std::vector<Constraint> waypointConstraints,
            std::vector<Constraint> segmentConstraints,
            size_t controlIntervalCount,
            std::vector<InitialGuessPoint> initialGuessPoints);
 };
+
 }  // namespace trajopt

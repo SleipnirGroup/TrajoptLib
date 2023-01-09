@@ -62,7 +62,9 @@ AngularVelocityConstraint& HolonomicConstraint::GetAngularVelocityConstraint() {
 HolonomicConstraint::HolonomicConstraint(
     const VelocityConstraint& velocityConstraint)
     : constraint(velocityConstraint) {}
+
 HolonomicConstraint::HolonomicConstraint(
     const AngularVelocityConstraint& angularVelocityConstraint)
     : constraint(angularVelocityConstraint) {}
+
 }  // namespace trajopt

@@ -1,8 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
 #include <cmath>
-#include <iomanip>
-#include <iostream>
 #include <limits>
 #include <numbers>
 #include <vector>
@@ -27,11 +25,6 @@ int main() {
 
   // auto variable1 = opti.variable(4, 1);
   // auto variable2 = opti.variable(4, 1);
-
-  // std::cout << "pose    : " << variable1 << "\n";
-  // std::cout << "variable: " << variable2 << std::endl;
-  // std::cout << "pose(0): " << pose(slice0) << "\n";
-  // std::cout << "pose(1): " << pose(slice1) << std::endl;
 
   using namespace trajopt;
   SwerveDrivetrain swerveDrivetrain(45, 6,
