@@ -21,8 +21,7 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectory {
       const std::vector<HolonomicTrajectorySample>& samples);
   explicit HolonomicTrajectory(
       std::vector<HolonomicTrajectorySample>&& samples);
-  explicit HolonomicTrajectory(
-      const HolonomicSolution& solution);
+  explicit HolonomicTrajectory(const HolonomicSolution& solution);
 };
 }  // namespace trajopt
 
