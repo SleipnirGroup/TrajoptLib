@@ -8,6 +8,7 @@
 #include <fmt/format.h>
 
 #include "SymbolExports.h"
+#include "solution/HolonomicSolution.h"
 #include "trajectory/HolonomicTrajectorySample.h"
 
 namespace trajopt {
@@ -20,6 +21,7 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectory {
       const std::vector<HolonomicTrajectorySample>& samples);
   explicit HolonomicTrajectory(
       std::vector<HolonomicTrajectorySample>&& samples);
+  explicit HolonomicTrajectory(const HolonomicSolution& solution);
 };
 }  // namespace trajopt
 
