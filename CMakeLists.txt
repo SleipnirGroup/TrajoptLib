@@ -78,7 +78,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fmt)
 
-target_link_libraries(TrajoptLib PRIVATE fmt)
+target_link_libraries(TrajoptLib PUBLIC fmt)
 
 set(OPTIMIZER_BACKEND "casadi" CACHE STRING "Optimizer backend")
 set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS casadi sleipnir)
@@ -185,12 +185,8 @@ foreach(example ${EXAMPLES})
   trajoptlib_compiler_flags(${example})
   target_include_directories(${example}
                              PRIVATE
-                             ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/include
-                             ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/units/include)
-  target_link_libraries(${example}
-                        PRIVATE
-                        TrajoptLib
-                        fmt)
+                             ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/include)
+  target_link_libraries(${example} PRIVATE TrajoptLib)
 
   # Build example test if files exist for it
   if (BUILD_TESTING AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/test)
@@ -199,18 +195,15 @@ foreach(example ${EXAMPLES})
     target_include_directories(${example}Test
                                PRIVATE
                                ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/src
-                               ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/test
-                               ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/units/include)
+                               ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/test)
     trajoptlib_compiler_flags(${example}Test)
     target_compile_definitions(${example}Test PUBLIC RUNNING_TESTS)
     target_include_directories(${example}Test
                                PRIVATE
-                               ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/include
-                               ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/units/include)
+                               ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/include)
     target_link_libraries(${example}Test
                           PRIVATE
                           TrajoptLib
-                          fmt
                           GTest::gtest
                           GTest::gtest_main)
     if (NOT CMAKE_TOOLCHAIN_FILE)
