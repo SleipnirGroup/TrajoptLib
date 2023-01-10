@@ -13,22 +13,52 @@
 
 namespace trajopt {
 
+/**
+ * Holonomic trajectory.
+ */
 class TRAJOPT_DLLEXPORT HolonomicTrajectory {
  public:
+  /// Trajectory samples.
   std::vector<HolonomicTrajectorySample> samples;
 
-  explicit HolonomicTrajectory(
-      const std::vector<HolonomicTrajectorySample>& samples);
-  explicit HolonomicTrajectory(
-      std::vector<HolonomicTrajectorySample>&& samples);
+  /**
+   * Construct a HolonomicTrajectory from samples.
+   *
+   * @param samples The samples.
+   */
+  explicit HolonomicTrajectory(std::vector<HolonomicTrajectorySample> samples);
+
+  /**
+   * Construct a HolonomicTrajectory from a solution.
+   *
+   * @param solution The solution.
+   */
   explicit HolonomicTrajectory(const HolonomicSolution& solution);
 };
+
 }  // namespace trajopt
 
+/**
+ * Formatter for HolonomicTrajectory.
+ */
+//! @cond Doxygen_Suppress
 template <>
 struct fmt::formatter<trajopt::HolonomicTrajectory> {
+  //! @endcond
+  /**
+   * Format string parser.
+   *
+   * @param ctx Format string context.
+   */
   constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
+  /**
+   * Writes out a formatted HolonomicTrajectory.
+   *
+   * @tparam FormatContext Format string context type.
+   * @param trajectory HolonomicTrajectory instance.
+   * @param ctx Format string context.
+   */
   template <typename FormatContext>
   auto format(const trajopt::HolonomicTrajectory& trajectory,
               FormatContext& ctx) {

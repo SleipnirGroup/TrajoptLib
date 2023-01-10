@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <iostream>
 #include <vector>
 
 #include "SymbolExports.h"
@@ -18,36 +17,20 @@ namespace trajopt {
  */
 class TRAJOPT_DLLEXPORT Obstacle {
  public:
-  /**
-   * @brief minimum distance from the obstacle the robot must maintain
-   */
+  /// Minimum distance from the obstacle the robot must maintain.
   double safetyDistance;
-  /**
-   * @brief the list of points that make up this obstacle
-   */
+
+  /// The list of points that make up this obstacle.
   std::vector<ObstaclePoint> points;
 
   /**
-   * @brief Construct a new Obstacle object
+   * Construct a Obstacle.
    *
-   * @param safetyDistance the list of points that make up this obstacle
-   * @param applyToAllSegments whether to apply this obstacle to all trajectory
-   * segments
-   * @param waypoints minimum distance from the obstacle the robot must maintain
+   * @param safetyDistance Minimum distance from the obstacle the robot must
+   *   maintain.
+   * @param points The list of points that make up this obstacle.
    */
   Obstacle(double safetyDistance, std::vector<ObstaclePoint> points);
-
-  /**
-   * @brief Append a string representation of an obstacle to an output stream.
-   * A string representation of an obstacle is a json object with a
-   * "safety_distance" numerical field and a "points" array field with the
-   * ordered list of obstacle points.
-   *
-   * @param stream the stream to append the string representation to
-   * @param sample the obstacle
-   * @return a reference to the given stream
-   */
-  friend std::ostream& operator<<(std::ostream& stream,
-                                  const Obstacle& obstacle);
 };
+
 }  // namespace trajopt

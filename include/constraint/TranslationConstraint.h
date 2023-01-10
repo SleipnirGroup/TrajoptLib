@@ -12,25 +12,58 @@
 
 namespace trajopt {
 
+/**
+ * Translation constraint.
+ */
 class TRAJOPT_DLLEXPORT TranslationConstraint {
  public:
+  /// Translation bound.
   Set2d translationBound;
 
+  /**
+   * Construct a TranslationConstraint.
+   *
+   * @param translationBound The constraint's upper and lower bounds.
+   */
   explicit TranslationConstraint(const Set2d& translationBound);
 
+  /**
+   * Returns an error if the given position doesn't satisfy the constraint.
+   *
+   * @param x The position's x component.
+   * @param y The position's y component.
+   * @param tolerances The tolerances considered to satisfy the constraint.
+   */
   std::optional<SolutionError> CheckTranslation(
       double x, double y, const SolutionTolerances& tolerances) const noexcept;
 };
 }  // namespace trajopt
 
+/**
+ * Formatter for TranslationConstraint.
+ */
+//! @cond Doxygen_Suppress
 template <>
 struct fmt::formatter<trajopt::TranslationConstraint> {
+  //! @endcond
+  /**
+   * Format string parser.
+   *
+   * @param ctx Format string context.
+   */
   constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
+  /**
+   * Writes out a formatted TranslationConstraint.
+   *
+   * @tparam FormatContext Format string context type.
+   * @param constraint TranslationConstraint instance.
+   * @param ctx Format string context.
+   */
   template <typename FormatContext>
-  auto format(const trajopt::TranslationConstraint& translationConstraint,
+  auto format(const trajopt::TranslationConstraint& constraint,
               FormatContext& ctx) {
     return fmt::format_to(ctx.out(), "translation {}",
-                          translationConstraint.translationBound);
+                          constraint.translationBound);
   }
 };

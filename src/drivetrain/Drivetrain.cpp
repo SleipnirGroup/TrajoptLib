@@ -6,4 +6,5 @@ namespace trajopt {
 
 Drivetrain::Drivetrain(double mass, double momentOfInertia)
     : mass(mass), momentOfInertia(momentOfInertia) {}
+
 }  // namespace trajopt

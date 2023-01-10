@@ -2,8 +2,6 @@
 
 #include "trajectory/HolonomicTrajectorySample.h"
 
-#include <iostream>
-
 namespace trajopt {
 
 HolonomicTrajectorySample::HolonomicTrajectorySample(double timestamp, double x,

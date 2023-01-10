@@ -13,29 +13,64 @@
 
 namespace trajopt {
 
+/**
+ * Velocity constraint.
+ */
 class TRAJOPT_DLLEXPORT VelocityConstraint {
  public:
+  /// Velocity bound.
   Set2d velocityBound;
+
+  /// Coordinate system.
   CoordinateSystem coordinateSystem;
 
+  /**
+   * Construct a VelocityConstraint.
+   *
+   * @param velocityBound The constraint's upper and lower bounds.
+   * @param coordinateSystem The constraint's coordinate system.
+   */
   explicit VelocityConstraint(
       const Set2d& velocityBound,
       CoordinateSystem coordinateSystem = CoordinateSystem::kField);
 
+  /**
+   * Returns an error if the given velocity doesn't satisfy the constraint.
+   *
+   * @param velocityX The velocity's x component.
+   * @param velocityY The velocity's y component.
+   * @param tolerances The tolerances considered to satisfy the constraint.
+   */
   std::optional<SolutionError> CheckVelocity(
       double velocityX, double velocityY,
       const SolutionTolerances& tolerances) const noexcept;
 };
 }  // namespace trajopt
 
+/**
+ * Formatter for VelocityConstraint.
+ */
+//! @cond Doxygen_Suppress
 template <>
 struct fmt::formatter<trajopt::VelocityConstraint> {
+  //! @endcond
+  /**
+   * Format string parser.
+   *
+   * @param ctx Format string context.
+   */
   constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
+  /**
+   * Writes out a formatted VelocityConstraint.
+   *
+   * @tparam FormatContext Format string context type.
+   * @param constraint VelocityConstraint instance.
+   * @param ctx Format string context.
+   */
   template <typename FormatContext>
-  auto format(const trajopt::VelocityConstraint& velocityConstraint,
+  auto format(const trajopt::VelocityConstraint& constraint,
               FormatContext& ctx) {
-    return fmt::format_to(ctx.out(), "velocity {}",
-                          velocityConstraint.velocityBound);
+    return fmt::format_to(ctx.out(), "velocity {}", constraint.velocityBound);
   }
 };

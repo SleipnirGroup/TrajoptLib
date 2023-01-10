@@ -48,58 +48,132 @@ enum class CoordinateSystem {
   kRobot,
 };
 
-// inline std::array<double, 2> ApplyRotation(std::array<double, 2> vect, double
-// heading) {
-//     if (vect[0] == 0.0 && vect[1] == 0.0) {
-//         return {0.0, 0.0};
-//     } else {
-//         auto cosHeading = std::cos(heading);
-//         auto sinHeading = std::sin(heading);
-//         return {cosHeading * vect[0] - sinHeading * vect[1], sinHeading *
-//         vect[0] + cosHeading * vect[1]};
-//     }
-// }
-
 using ConstraintVariant = std::variant<TranslationConstraint, HeadingConstraint,
                                        PoseConstraint, ObstacleConstraint>;
 
+/**
+ * Constraint.
+ */
 class TRAJOPT_DLLEXPORT Constraint {
  public:
+  /**
+   * Returns an error if the state doesn't satisfy the constraint.
+   *
+   * @param x The x coordinate.
+   * @param y The y coordinate.
+   * @param heading The heading.
+   * @param tolerances The tolerances considered to satisfy the constraint.
+   */
   std::optional<SolutionError> CheckState(
       double x, double y, double heading,
       const SolutionTolerances& tolerances) const noexcept;
 
+  /**
+   * Returns true if this is a translation constraint.
+   */
   bool IsTranslationConstraint() const;
+
+  /**
+   * Returns true if this is a heading constraint.
+   */
   bool IsHeadingConstraint() const;
+
+  /**
+   * Returns true if this is a pose constraint.
+   */
   bool IsPoseConstraint() const;
+
+  /**
+   * Returns true if this is an obstacle constraint.
+   */
   bool IsObstacleConstraint() const;
 
+  /**
+   * Returns this constraint as a TranslationConstraint.
+   */
   const TranslationConstraint& GetTranslationConstraint() const;
+
+  /**
+   * Returns this constraint as a TranslationConstraint.
+   */
   TranslationConstraint& GetTranslationConstraint();
 
+  /**
+   * Returns this constraint as a heading constraint.
+   */
   const HeadingConstraint& GetHeadingConstraint() const;
+
+  /**
+   * Returns this constraint as a heading constraint.
+   */
   HeadingConstraint& GetHeadingConstraint();
 
+  /**
+   * Returns this constraint as a pose constraint.
+   */
   const PoseConstraint& GetPoseConstraint() const;
+
+  /**
+   * Returns this constraint as a pose constraint.
+   */
   PoseConstraint& GetPoseConstraint();
 
+  /**
+   * Returns this constraint as an obstacle constraint.
+   */
   const ObstacleConstraint& GetObstacleConstraint() const;
+
+  /**
+   * Returns this constraint as an obstacle constraint.
+   */
   ObstacleConstraint& GetObstacleConstraint();
 
+  /**
+   * Constructs this constraint from a TranslationConstraint.
+   */
   Constraint(const TranslationConstraint& translationConstraint);  // NOLINT
-  Constraint(const HeadingConstraint& headingConstraint);          // NOLINT
-  Constraint(const PoseConstraint& poseConstraint);                // NOLINT
-  Constraint(const ObstacleConstraint& obstacleConstraint);        // NOLINT
+
+  /**
+   * Constructs this constraint from a HeadingConstraint.
+   */
+  Constraint(const HeadingConstraint& headingConstraint);  // NOLINT
+
+  /**
+   * Constructs this constraint from a PoseConstraint.
+   */
+  Constraint(const PoseConstraint& poseConstraint);  // NOLINT
+
+  /**
+   * Constructs this constraint from a ObstacleConstraint.
+   */
+  Constraint(const ObstacleConstraint& obstacleConstraint);  // NOLINT
 
  private:
   ConstraintVariant constraint;
 };
 }  // namespace trajopt
 
+/**
+ * Formatter for Constraint.
+ */
+//! @cond Doxygen_Suppress
 template <>
 struct fmt::formatter<trajopt::Constraint> {
+  //! @endcond
+  /**
+   * Format string parser.
+   *
+   * @param ctx Format string context.
+   */
   constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
+  /**
+   * Writes out a formatted Constraint.
+   *
+   * @tparam FormatContext Format string context type.
+   * @param constraint Constraint instance.
+   * @param ctx Format string context.
+   */
   template <typename FormatContext>
   auto format(const trajopt::Constraint& constraint, FormatContext& ctx) {
     if (constraint.IsTranslationConstraint()) {

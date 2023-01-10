@@ -9,11 +9,7 @@
 namespace trajopt {
 
 HolonomicTrajectory::HolonomicTrajectory(
-    const std::vector<HolonomicTrajectorySample>& samples)
-    : samples(samples) {}
-
-HolonomicTrajectory::HolonomicTrajectory(
-    std::vector<HolonomicTrajectorySample>&& samples)
+    std::vector<HolonomicTrajectorySample> samples)
     : samples(std::move(samples)) {}
 
 HolonomicTrajectory::HolonomicTrajectory(const HolonomicSolution& solution) {

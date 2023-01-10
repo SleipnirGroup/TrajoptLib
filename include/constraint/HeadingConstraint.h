@@ -12,25 +12,57 @@
 
 namespace trajopt {
 
+/**
+ * Heading constraint.
+ */
 class TRAJOPT_DLLEXPORT HeadingConstraint {
  public:
+  /// The heading bound.
   IntervalSet1d headingBound;
 
+  /**
+   * Construct a HeadingConstraint.
+   *
+   * @param headingBound The heading bounds.
+   */
   explicit HeadingConstraint(const IntervalSet1d& headingBound);
 
+  /**
+   * Returns an error if the given heading isn't in the heading region.
+   *
+   * @param theta The heading.
+   * @param tolerances The tolerances considered to satisfy the constraint.
+   */
   std::optional<SolutionError> CheckHeading(
       double theta, const SolutionTolerances& tolerances) const noexcept;
 };
+
 }  // namespace trajopt
 
+/**
+ * Formatter for HeadingConstraint.
+ */
+//! @cond Doxygen_Suppress
 template <>
 struct fmt::formatter<trajopt::HeadingConstraint> {
+  //! @endcond
+  /**
+   * Format string parser.
+   *
+   * @param ctx Format string context.
+   */
   constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
+  /**
+   * Writes out a formatted HeadingConstraint.
+   *
+   * @tparam FormatContext Format string context type.
+   * @param constraint HeadingConstraint instance.
+   * @param ctx Format string context.
+   */
   template <typename FormatContext>
-  auto format(const trajopt::HeadingConstraint& headingConstraint,
+  auto format(const trajopt::HeadingConstraint& constraint,
               FormatContext& ctx) {
-    return fmt::format_to(ctx.out(), "heading {}",
-                          headingConstraint.headingBound);
+    return fmt::format_to(ctx.out(), "heading {}", constraint.headingBound);
   }
 };

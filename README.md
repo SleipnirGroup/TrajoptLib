@@ -1,5 +1,9 @@
 # HelixTrajectory
 
+![Build](https://github.com/SleipnirGroup/TrajoptLib/actions/workflows/build.yml/badge.svg)
+[![C++ Documentation](https://img.shields.io/badge/documentation-c%2B%2B-blue)](https://sleipnirgroup.github.io/TrajoptLib/)
+[![Discord](https://img.shields.io/discord/975739302933856277?color=%23738ADB&label=Join%20our%20Discord&logo=discord&logoColor=white)](https://discord.gg/ad2EEZZwsS)
+
 This library is used to generate time-optimal trajectories for FRC robots.
 
 ## Trajectory Optimization

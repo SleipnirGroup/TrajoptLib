@@ -3,7 +3,6 @@
 #pragma once
 
 #include <array>
-#include <iostream>
 
 #include "SymbolExports.h"
 #include "constraint/Constraint.h"
@@ -51,34 +50,31 @@ class TRAJOPT_DLLEXPORT SwerveModule {
    */
   SwerveModule(double x, double y, double wheelRadius,
                double wheelMaxAngularVelocity, double wheelMaxTorque);
-
-  // std::array<double, 2> CalculateVelocity(double velocityX, double velocityY,
-  // double angularVelocity) const noexcept {
-  //     std::array<double, 2> velocity;
-  //     velocity[0] = velocityX - y * angularVelocity;
-  //     velocity[1] = velocityY + x * angularVelocity;
-  //     return velocity;
-  // }
-
-  /**
-   * @brief Append a string representation of a swerve module to an output
-   * stream. A string representation of a swerve module is a json object with
-   * "x", "y", "wheel_radius", "wheel_max_angular_velocity", and
-   * "wheel_max_torque" numerical fields.
-   *
-   * @param stream the stream to append the string representation to
-   * @param module the swerve module
-   * @return a reference to the given stream
-   */
-  friend std::ostream& operator<<(std::ostream& stream,
-                                  const SwerveModule& module);
 };
+
 }  // namespace trajopt
 
+/**
+ * Formatter for SwerveModule.
+ */
+//! @cond Doxygen_Suppress
 template <>
 struct fmt::formatter<trajopt::SwerveModule> {
+  //! @endcond
+  /**
+   * Format string parser.
+   *
+   * @param ctx Format string context.
+   */
   constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
+  /**
+   * Writes out a formatted SwerveModule.
+   *
+   * @tparam FormatContext Format string context type.
+   * @param swerveModule SwerveModule instance.
+   * @param ctx Format string context.
+   */
   template <typename FormatContext>
   auto format(const trajopt::SwerveModule& swerveModule, FormatContext& ctx) {
     return fmt::format_to(

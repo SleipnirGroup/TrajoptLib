@@ -9,6 +9,9 @@
 
 namespace trajopt {
 
+/**
+ * Incompatible trajectory exception.
+ */
 class TRAJOPT_DLLEXPORT IncompatibleTrajectoryException
     : public std::logic_error {
  public:

@@ -19,14 +19,14 @@ namespace trajopt {
 class TRAJOPT_DLLEXPORT HolonomicDrivetrain : public Drivetrain {
  protected:
   /**
-   * @brief Construct a new HolonomicDrivetrain with the robot's mass, moment of
+   * Construct a new HolonomicDrivetrain with the robot's mass, moment of
    * inertia, and bumpers.
    *
-   * @param mass the mass of the entire robot
-   * @param momentOfInertia the moment of inertia of the robot about the center
-   * of rotation, which
-   * @param bumpers the bumpers of the robot represented as an obstacle
+   * @param mass The mass of the entire robot.
+   * @param momentOfInertia The moment of inertia of the robot about the center
+   *   of rotation.
    */
   HolonomicDrivetrain(double mass, double momentOfInertia);
 };
+
 }  // namespace trajopt

@@ -11,16 +11,40 @@
 
 namespace trajopt {
 
+/**
+ * The swerve drive trajectory optimization solution.
+ */
 struct TRAJOPT_DLLEXPORT SwerveSolution : HolonomicSolution {
+  /// The x forces for each module.
   std::vector<std::vector<double>> moduleFX;
+
+  /// The y forces for each module.
   std::vector<std::vector<double>> moduleFY;
 };
+
 }  // namespace trajopt
 
+/**
+ * Formatter for SwerveSolution.
+ */
+//! @cond Doxygen_Suppress
 template <>
 struct fmt::formatter<trajopt::SwerveSolution> {
+  //! @endcond
+  /**
+   * Format string parser.
+   *
+   * @param ctx Format string context.
+   */
   constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
+  /**
+   * Writes out a formatted SwerveSolution.
+   *
+   * @tparam FormatContext Format string context type.
+   * @param swerveSolution SwerveSolution instance.
+   * @param ctx Format string context.
+   */
   template <typename FormatContext>
   auto format(const trajopt::SwerveSolution& swerveSolution,
               FormatContext& ctx) {

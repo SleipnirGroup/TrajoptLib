@@ -2,7 +2,6 @@
 
 #include "path/HolonomicPath.h"
 
-#include <iostream>
 #include <vector>
 
 #include "path/HolonomicWaypoint.h"
@@ -29,7 +28,4 @@ const Waypoint& HolonomicPath::GetWaypoint(size_t index) const {
   return holonomicWaypoints[index];
 }
 
-std::ostream& operator<<(std::ostream& stream, const HolonomicPath& path) {
-  return stream;  //  << path.holonomicWaypoints;
-}
 }  // namespace trajopt

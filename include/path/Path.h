@@ -69,6 +69,13 @@ class TRAJOPT_DLLEXPORT Path {
   virtual ~Path() = default;
 
  protected:
+  /**
+   * Construct a Path.
+   *
+   * @param bumpers The robot bumper obstacle.
+   * @param globalConstraints The global path constraints.
+   */
   Path(Obstacle bumpers, std::vector<Constraint> globalConstraints);
 };
+
 }  // namespace trajopt

@@ -2,13 +2,9 @@
 
 #pragma once
 
-#include <iostream>
 #include <vector>
 
 #include <fmt/core.h>
-#include <fmt/format.h>
-#include <fmt/ranges.h>
-#include <fmt/std.h>
 
 #include "SymbolExports.h"
 #include "drivetrain/HolonomicDrivetrain.h"
@@ -26,47 +22,45 @@ namespace trajopt {
  */
 class TRAJOPT_DLLEXPORT SwerveDrivetrain : public HolonomicDrivetrain {
  public:
-  /**
-   * @brief the list of swerve modules that make the robot move, usually one in
-   * each corner
-   */
+  /// The list of swerve modules that make the robot move, usually one in each
+  /// corner.
   std::vector<SwerveModule> modules;
 
   /**
-   * @brief Construct a new SwerveDrivetrain with the robot's mass, moment of
-   * inertia, swerve modules, and bumpers.
+   * Construct a SwerveDrivetrain.
    *
-   * @param mass the mass of the entire robot
-   * @param momentOfInertia the moment of inertia of the robot about the center
-   * of rotation, which
+   * @param mass The mass of the entire robot.
+   * @param momentOfInertia The moment of inertia of the robot about the center
+   *   of rotation.
    * @param modules the list of modules the make up this swerve drivetrain
-   * @param bumpers the bumpers of the robot represented as an obstacle
    */
   SwerveDrivetrain(double mass, double momentOfInertia,
                    std::vector<SwerveModule> modules);
-
-  // void CheckState(const HolonomicState& state) const;
-  // void CheckTrajectory(const HolonomicTrajectory& trajectory) const;
-
-  /**
-   * @brief Append a string representation of a swerve drivetrain to an output
-   * stream. A string representation of a swerve drivetrain is a json object
-   * with a "mass" numerical field, a "moment_of_inertia" numerical field, a
-   * "bumpers" object field, and a "modules" array field.
-   *
-   * @param stream the stream to append the string representation to
-   * @param swerveDrivetrain the swerve drivetrain
-   * @return a reference to the given stream
-   */
-  friend std::ostream& operator<<(std::ostream& stream,
-                                  const SwerveDrivetrain& swerveDrivetrain);
 };
+
 }  // namespace trajopt
 
+/**
+ * Formatter for SwerveDrivetrain.
+ */
+//! @cond Doxygen_Suppress
 template <>
 struct fmt::formatter<trajopt::SwerveDrivetrain> {
+  //! @endcond
+  /**
+   * Format string parser.
+   *
+   * @param ctx Format string context.
+   */
   constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
 
+  /**
+   * Writes out a formatted SwerveDrivetrain.
+   *
+   * @tparam FormatContext Format string context type.
+   * @param swerveDrivetrain SwerveDrivetrain instance.
+   * @param ctx Format string context.
+   */
   template <typename FormatContext>
   auto format(const trajopt::SwerveDrivetrain& swerveDrivetrain,
               FormatContext& ctx) {

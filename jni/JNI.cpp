@@ -1,6 +1,5 @@
 // Copyright (c) TrajoptLib contributors
 
-#include <iostream>
 #include <memory>
 
 #include "InvalidPathException.h"
