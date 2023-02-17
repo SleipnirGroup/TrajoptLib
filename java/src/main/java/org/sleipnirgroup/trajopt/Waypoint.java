@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-package org.sleipnirgroup.trajoptlib;
+package org.sleipnirgroup.trajopt;
 
 import static org.sleipnirgroup.util.ObjectChecker.requireNonNegative;
 import static org.sleipnirgroup.util.ObjectChecker.requireNonNullAndWrapUnmodifiable;

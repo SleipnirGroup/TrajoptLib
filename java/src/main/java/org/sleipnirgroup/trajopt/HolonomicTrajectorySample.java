@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-package org.sleipnirgroup.trajoptlib;
+package org.sleipnirgroup.trajopt;
 
 public class HolonomicTrajectorySample extends TrajectorySample {
     public final double velocityX;

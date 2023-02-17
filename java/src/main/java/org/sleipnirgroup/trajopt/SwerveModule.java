@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-package org.sleipnirgroup.trajoptlib;
+package org.sleipnirgroup.trajopt;
 
 public final class SwerveModule {
     public final double x;

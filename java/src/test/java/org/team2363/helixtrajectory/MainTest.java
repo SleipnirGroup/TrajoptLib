@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-package org.sleipnirgroup.trajoptlib;
+package org.sleipnirgroup.trajopt;
 
 import java.util.List;
 

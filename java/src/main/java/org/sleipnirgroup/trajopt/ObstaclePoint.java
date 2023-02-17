@@ -1,23 +1,20 @@
 // Copyright (c) TrajoptLib contributors
 
-package org.sleipnirgroup.trajoptlib;
+package org.sleipnirgroup.trajopt;
 
-public final class InitialGuessPoint {
+public final class ObstaclePoint {
     public final double x;
     public final double y;
-    public final double heading;
 
-    public InitialGuessPoint(double x, double y, double heading) {
+    public ObstaclePoint(double x, double y) {
         this.x = x;
         this.y = y;
-        this.heading = heading;
     }
 
     @Override
     public String toString() {
         return "{\"x\": " + x
             + ", \"y\": " + y
-            + ", \"heading\": " + heading
             + "}";
     }
 }

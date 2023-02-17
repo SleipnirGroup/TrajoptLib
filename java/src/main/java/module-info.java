@@ -1,5 +1,5 @@
 // Copyright (c) TrajoptLib contributors
 
-module org.sleipnirgroup.trajoptlib {
-    exports org.sleipnirgroup.trajoptlib;
+module org.sleipnirgroup.trajopt {
+    exports org.sleipnirgroup.trajopt;
 }
