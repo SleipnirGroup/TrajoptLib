@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-package org.team2363.helixtrajectory;
+package org.sleipnirgroup.trajoptlib;
 
 public final class InitialGuessPoint {
     public final double x;

@@ -1,12 +1,12 @@
 // Copyright (c) TrajoptLib contributors
 
-package org.team2363.helixtrajectory;
+package org.sleipnirgroup.trajoptlib;
 
 import java.io.IOException;
 import java.util.Objects;
 
-import org.team2363.util.DependencyExtractor;
-import org.team2363.util.RuntimeLoader;
+import org.sleipnirgroup.util.DependencyExtractor;
+import org.sleipnirgroup.util.RuntimeLoader;
 
 public final class OptimalTrajectoryGenerator {
     private static boolean isPluginLoaded = false;

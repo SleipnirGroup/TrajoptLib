@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-package org.team2363.util;
+package org.sleipnirgroup.util;
 
 import java.util.ArrayList;
 import java.util.Collections;

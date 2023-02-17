@@ -1,8 +1,8 @@
 // Copyright (c) TrajoptLib contributors
 
-package org.team2363.helixtrajectory;
+package org.sleipnirgroup.trajoptlib;
 
-import static org.team2363.util.ObjectChecker.requireNonNullAndWrapUnmodifiable;
+import static org.sleipnirgroup.util.ObjectChecker.requireNonNullAndWrapUnmodifiable;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-package org.team2363.helixtrajectory;
+package org.sleipnirgroup.trajoptlib;
 
 public abstract class HolonomicDrivetrain extends Drivetrain {
     protected HolonomicDrivetrain(double mass, double momentOfInertia, Obstacle bumpers) throws NullPointerException {

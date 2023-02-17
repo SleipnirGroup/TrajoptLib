@@ -1,5 +1,5 @@
 // Copyright (c) TrajoptLib contributors
 
-module org.team2363.helixtrajectory {
-    exports org.team2363.helixtrajectory;
+module org.sleipnirgroup.trajoptlib {
+    exports org.sleipnirgroup.trajoptlib;
 }
