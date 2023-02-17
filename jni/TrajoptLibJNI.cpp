@@ -1,20 +1,22 @@
 // Copyright (c) TrajoptLib contributors
 
+#include <algorithm>
 #include <memory>
 
 #include "InvalidPathException.h"
 #include "OptimalTrajectoryGenerator.h"
 #include "TrajectoryGenerationException.h"
+#include "constraint/ObstacleConstraint.h"
 #include "drivetrain/SwerveDrivetrain.h"
 #include "drivetrain/SwerveModule.h"
 #include "jni.h"
 #include "obstacle/Obstacle.h"
 #include "obstacle/ObstaclePoint.h"
-#include "org_team2363_trajopt_OptimalTrajectoryGenerator.h"
+#include "org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator.h"
 #include "path/HolonomicPath.h"
 #include "path/HolonomicWaypoint.h"
 #include "path/InitialGuessPoint.h"
-#include "trajectory/Trajectory.h"
+#include "trajectory/HolonomicTrajectory.h"
 
 using namespace trajopt;
 
@@ -80,11 +82,9 @@ Obstacle obstacleFromJObstacle(JNIEnv* env, jobject jObstacle) {
   std::vector<ObstaclePoint> obstaclePoints =
       vectorFromJList<ObstaclePoint, obstaclePointFromJObstaclePoint>(
           env,
-          jObstaclePoints);  // <-- i love templates, this wouldn't be possible
-                             // on
-  almost any other language
+          jObstaclePoints);  // <-- i love templates
 
-      return Obstacle(jObstacleSafetyDistance, jObstacleApplyToAllSegments,
+      return Obstacle(jObstacleSafetyDistance,
                       obstaclePoints);
 }
 
@@ -174,7 +174,7 @@ SwerveDrivetrain swerveDrivetrainFromJSwerveDrivetrain(
           env, jSwerveDrivetrainModules);
 
   return SwerveDrivetrain(jSwerveDrivetrainMass,
-                          jSwerveDrivetrainMomentOfInertia, modules, bumpers);
+                          jSwerveDrivetrainMomentOfInertia, modules);
 }
 
 HolonomicWaypoint holonomicWaypointFromJHolonomicWaypoint(
@@ -259,6 +259,15 @@ HolonomicWaypoint holonomicWaypointFromJHolonomicWaypoint(
   std::vector<Obstacle> obstacles =
       vectorFromJList<Obstacle, obstacleFromJObstacle>(
           env, jHolonomicWaypointObstacles);
+
+  std::vector<ObstacleConstraint> obstConsts(obstacles.size());
+  for (auto& obst : obstacles) {
+    obstConsts.push_back(ObstacleConstraint{obst});
+  }
+
+  std::vector<
+
+
 
   return HolonomicWaypoint(
       jHolonomicWaypointX, jHolonomicWaypointY, jHolonomicWaypointHeading,

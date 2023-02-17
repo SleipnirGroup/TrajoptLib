@@ -3,7 +3,7 @@
 /* DO NOT EDIT THIS std::FILE - it is machine generated */
 #include "jni.h"
 
-/* Header for class org_sleipnirgroup_trajoptlib_OptimalTrajectoryGenerator */
+/* Header for class org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator */
 
 #pragma once
 
@@ -14,10 +14,10 @@ extern "C" {
  * Class:     org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator
  * Method:    generateHolonomicTrajectory
  * Signature:
- * (Lorg/team2363/trajopt/SwerveDrivetrain;Lorg/team2363/trajopt/HolonomicPath;)Lorg/team2363/trajopt/HolonomicTrajectory;
+ * (Lorg/sleipnirgroup/trajopt/SwerveDrivetrain;Lorg/sleipnirgroup/trajopt/HolonomicPath;)Lorg/sleipnirgroup/trajopt/HolonomicTrajectory;
  */
 JNIEXPORT jobject JNICALL
-Java_org_team2363_trajopt_OptimalTrajectoryGenerator_generateHolonomicTrajectory(
+Java_org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator_generateHolonomicTrajectory(
     JNIEnv*, jobject, jobject, jobject);
 
 #ifdef __cplusplus
