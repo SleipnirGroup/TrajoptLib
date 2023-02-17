@@ -51,7 +51,7 @@ public final class RuntimeDetector {
             filePath = "/linux/nativearm/";
         }
         } else {
-        throw new IllegalStateException("Failed to determine OS");
+            throw new IllegalStateException("Failed to determine OS");
         }
     }
 

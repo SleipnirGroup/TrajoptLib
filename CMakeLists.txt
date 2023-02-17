@@ -233,3 +233,22 @@ foreach(example ${EXAMPLES})
     endif()
   endif()
 endforeach()
+
+# Build the Java bindings
+
+option(WITH_JAVA "Build Java bindings" ON)
+
+if (WITH_JAVA)
+  add_library(TrajoptLib-java SHARED ${CMAKE_CURRENT_SOURCE_DIR}/jni/TrajoptLibJNI.cpp)
+  target_link_libraries(TrajoptLib-java PRIVATE TrajoptLib)
+  target_include_directories(TrajoptLib-java PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/jni/jni.h)
+  if (${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS" OR WIN32)
+    target_include_directories(TrajoptLib-java PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32)
+  elseif (APPLE)
+    target_include_directories(TrajoptLib-java PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/jni/darwin)
+  elseif (UNIX)
+    target_include_directories(TrajoptLib-java PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/jni/linux)
+  endif()
+  include(InstallJavaLibs)
+  installjavalibs()
+endif()
