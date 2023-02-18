@@ -16,23 +16,12 @@ namespace trajopt {
 /**
  * Velocity constraint.
  */
-class TRAJOPT_DLLEXPORT VelocityConstraint {
- public:
+struct TRAJOPT_DLLEXPORT VelocityConstraint {
   /// Velocity bound.
   Set2d velocityBound;
 
   /// Coordinate system.
   CoordinateSystem coordinateSystem;
-
-  /**
-   * Construct a VelocityConstraint.
-   *
-   * @param velocityBound The constraint's upper and lower bounds.
-   * @param coordinateSystem The constraint's coordinate system.
-   */
-  explicit VelocityConstraint(
-      const Set2d& velocityBound,
-      CoordinateSystem coordinateSystem = CoordinateSystem::kField);
 
   /**
    * Returns an error if the given velocity doesn't satisfy the constraint.

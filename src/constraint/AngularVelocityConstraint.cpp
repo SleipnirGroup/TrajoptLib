@@ -11,10 +11,6 @@
 
 namespace trajopt {
 
-AngularVelocityConstraint::AngularVelocityConstraint(
-    const IntervalSet1d& angularVelocityBound)
-    : angularVelocityBound(angularVelocityBound) {}
-
 std::optional<SolutionError> AngularVelocityConstraint::CheckAngularVelocity(
     double angularVelocity,
     const SolutionTolerances& tolerances) const noexcept {

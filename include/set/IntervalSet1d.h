@@ -15,8 +15,7 @@ namespace trajopt {
  * @brief This class represents a bounded region of abstract 1D space. The bound
  * is specified by an inclusive inequality between two numbers.
  */
-class TRAJOPT_DLLEXPORT IntervalSet1d {
- public:
+struct TRAJOPT_DLLEXPORT IntervalSet1d {
   /// The lower bound.
   double lower;
 
@@ -37,6 +36,8 @@ class TRAJOPT_DLLEXPORT IntervalSet1d {
    * @param value the value to bound the number between.
    */
   IntervalSet1d(double value);  // NOLINT
+
+  IntervalSet1d() = default;
 
   /**
    * Returns an IntervalSet1d spanning R¹.

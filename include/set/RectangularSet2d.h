@@ -13,21 +13,12 @@ namespace trajopt {
 /**
  * Rectangular 2D set.
  */
-class TRAJOPT_DLLEXPORT RectangularSet2d {
- public:
+struct TRAJOPT_DLLEXPORT RectangularSet2d {
   /// The x boundary.
   IntervalSet1d xBound;
 
   /// The y boundary.
   IntervalSet1d yBound;
-
-  /**
-   * Construct a RectangularSet2d from rectangular coordinates.
-   *
-   * @param xBound The x boundary.
-   * @param yBound The y boundary.
-   */
-  RectangularSet2d(const IntervalSet1d& xBound, const IntervalSet1d& yBound);
 
   /**
    * Construct a RectangularSet2d from polar coordinates.

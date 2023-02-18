@@ -18,18 +18,8 @@ namespace trajopt {
 /**
  * Pose constraint.
  */
-class TRAJOPT_DLLEXPORT PoseConstraint : public TranslationConstraint,
-                                         public HeadingConstraint {
- public:
-  /**
-   * Construct a PoseConstraint.
-   *
-   * @param translationBound The trnaslation bounds.
-   * @param headingBound The heading bounds.
-   */
-  PoseConstraint(const Set2d& translationBound,
-                 const IntervalSet1d& headingBound);
-
+struct TRAJOPT_DLLEXPORT PoseConstraint : public TranslationConstraint,
+                                          public HeadingConstraint {
   /**
    * Returns an error if the given pose is outside the region.
    *

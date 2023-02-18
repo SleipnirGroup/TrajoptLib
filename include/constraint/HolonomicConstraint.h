@@ -10,86 +10,37 @@
 #include "constraint/AngularVelocityConstraint.h"
 #include "constraint/VelocityConstraint.h"
 #include "solution/SolutionChecking.h"
+#include "util/AppendVariant.h"
 
 namespace trajopt {
 
-using HolonomicConstraintVariant =
+// In the future this will be used
+// using HolonomicConstraint = decltype(_append_variant(
+//     Constraint{}, VelocityConstraint{}, AngularVelocityConstraint{}));
+
+using HolonomicConstraint =
     std::variant<VelocityConstraint, AngularVelocityConstraint>;
 
 /**
- * Holonomic constraint.
+ * Returns an error if the given state doesn't satisfy the constraint.
+ *
+ * @param x The x coordinate.
+ * @param y The y coordinate.
+ * @param heading The heading.
+ * @param velocityX The velocity's x component.
+ * @param velocityY The velocity's y component.
+ * @param angularVelocity The angular velocity.
+ * @param accelerationX The acceleration's x component.
+ * @param accelerationY The acceleration's y component.
+ * @param angularAcceleration The angular acceleration.
+ * @param tolerances The tolerances considered to satisfy the constraint.
  */
-class TRAJOPT_DLLEXPORT HolonomicConstraint {
- public:
-  /**
-   * Returns an error if the given state doesn't satisfy the constraint.
-   *
-   * @param x The x coordinate.
-   * @param y The y coordinate.
-   * @param heading The heading.
-   * @param velocityX The velocity's x component.
-   * @param velocityY The velocity's y component.
-   * @param angularVelocity The angular velocity.
-   * @param accelerationX The acceleration's x component.
-   * @param accelerationY The acceleration's y component.
-   * @param angularAcceleration The angular acceleration.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckHolonomicState(
-      double x, double y, double heading, double velocityX, double velocityY,
-      double angularVelocity, double accelerationX, double accelerationY,
-      double angularAcceleration,
-      const SolutionTolerances& tolerances) const noexcept;
+std::optional<SolutionError> CheckState(
+    const HolonomicConstraint& constraint, double x, double y, double heading,
+    double velocityX, double velocityY, double angularVelocity,
+    double accelerationX, double accelerationY, double angularAcceleration,
+    const SolutionTolerances& tolerances) noexcept;
 
-  /**
-   * Returns true if there's a velocity constraint.
-   */
-  bool IsVelocityConstraint() const noexcept;
-
-  /**
-   * Returns true if there's an angular velocity constraint.
-   */
-  bool IsAngularVelocityConstraint() const noexcept;
-
-  /**
-   * Returns the velocity constraint.
-   */
-  const VelocityConstraint& GetVelocityConstraint() const;
-
-  /**
-   * Returns the velocity constraint.
-   */
-  VelocityConstraint& GetVelocityConstraint();
-
-  /**
-   * Returns the angular velocity constraint.
-   */
-  const AngularVelocityConstraint& GetAngularVelocityConstraint() const;
-
-  /**
-   * Returns the angular velocity constraint.
-   */
-  AngularVelocityConstraint& GetAngularVelocityConstraint();
-
-  /**
-   * Construct a HolonomicConstraint from a velocity constraint.
-   *
-   * @param velocityConstraint The velocity constraint.
-   */
-  HolonomicConstraint(  // NOLINT
-      const VelocityConstraint& velocityConstraint);
-
-  /**
-   * Construct a HolonomicConstraint from an angular velocity constraint.
-   *
-   * @param angularVelocityConstraint The angular velocity constraint.
-   */
-  HolonomicConstraint(  // NOLINT
-      const AngularVelocityConstraint& angularVelocityConstraint);
-
- private:
-  HolonomicConstraintVariant constraint;
-};
 }  // namespace trajopt
 
 /**
@@ -116,12 +67,13 @@ struct fmt::formatter<trajopt::HolonomicConstraint> {
   template <typename FormatContext>
   auto format(const trajopt::HolonomicConstraint& constraint,
               FormatContext& ctx) {
-    if (constraint.IsVelocityConstraint()) {
+    using namespace trajopt;
+    if (std::holds_alternative<VelocityConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
-                            constraint.GetVelocityConstraint());
-    } else if (constraint.IsAngularVelocityConstraint()) {
+                            std::get<VelocityConstraint>(constraint));
+    } else if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
-                            constraint.GetAngularVelocityConstraint());
+                            std::get<AngularVelocityConstraint>(constraint));
     } else {
       return ctx.out();
     }

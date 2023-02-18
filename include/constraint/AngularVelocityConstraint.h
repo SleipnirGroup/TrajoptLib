@@ -15,17 +15,9 @@ namespace trajopt {
 /**
  * Angular velocity constraint.
  */
-class TRAJOPT_DLLEXPORT AngularVelocityConstraint {
- public:
+struct TRAJOPT_DLLEXPORT AngularVelocityConstraint {
   /// The angular velocity bounds.
   IntervalSet1d angularVelocityBound;
-
-  /**
-   * Construct a AngularVelocityConstraint.
-   *
-   * @param angularVelocityBound The angular velocity bounds.
-   */
-  explicit AngularVelocityConstraint(const IntervalSet1d& angularVelocityBound);
 
   /**
    * Returns an error if the angular velocity is outside the bounds.

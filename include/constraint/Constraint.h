@@ -48,109 +48,20 @@ enum class CoordinateSystem {
   kRobot,
 };
 
-using ConstraintVariant = std::variant<TranslationConstraint, HeadingConstraint,
-                                       PoseConstraint, ObstacleConstraint>;
+using Constraint = std::variant<TranslationConstraint, HeadingConstraint,
+                                PoseConstraint, ObstacleConstraint>;
 
 /**
- * Constraint.
+ * Returns an error if the state doesn't satisfy the constraint.
+ *
+ * @param x The x coordinate.
+ * @param y The y coordinate.
+ * @param heading The heading.
+ * @param tolerances The tolerances considered to satisfy the constraint.
  */
-class TRAJOPT_DLLEXPORT Constraint {
- public:
-  /**
-   * Returns an error if the state doesn't satisfy the constraint.
-   *
-   * @param x The x coordinate.
-   * @param y The y coordinate.
-   * @param heading The heading.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckState(
-      double x, double y, double heading,
-      const SolutionTolerances& tolerances) const noexcept;
-
-  /**
-   * Returns true if this is a translation constraint.
-   */
-  bool IsTranslationConstraint() const;
-
-  /**
-   * Returns true if this is a heading constraint.
-   */
-  bool IsHeadingConstraint() const;
-
-  /**
-   * Returns true if this is a pose constraint.
-   */
-  bool IsPoseConstraint() const;
-
-  /**
-   * Returns true if this is an obstacle constraint.
-   */
-  bool IsObstacleConstraint() const;
-
-  /**
-   * Returns this constraint as a TranslationConstraint.
-   */
-  const TranslationConstraint& GetTranslationConstraint() const;
-
-  /**
-   * Returns this constraint as a TranslationConstraint.
-   */
-  TranslationConstraint& GetTranslationConstraint();
-
-  /**
-   * Returns this constraint as a heading constraint.
-   */
-  const HeadingConstraint& GetHeadingConstraint() const;
-
-  /**
-   * Returns this constraint as a heading constraint.
-   */
-  HeadingConstraint& GetHeadingConstraint();
-
-  /**
-   * Returns this constraint as a pose constraint.
-   */
-  const PoseConstraint& GetPoseConstraint() const;
-
-  /**
-   * Returns this constraint as a pose constraint.
-   */
-  PoseConstraint& GetPoseConstraint();
-
-  /**
-   * Returns this constraint as an obstacle constraint.
-   */
-  const ObstacleConstraint& GetObstacleConstraint() const;
-
-  /**
-   * Returns this constraint as an obstacle constraint.
-   */
-  ObstacleConstraint& GetObstacleConstraint();
-
-  /**
-   * Constructs this constraint from a TranslationConstraint.
-   */
-  Constraint(const TranslationConstraint& translationConstraint);  // NOLINT
-
-  /**
-   * Constructs this constraint from a HeadingConstraint.
-   */
-  Constraint(const HeadingConstraint& headingConstraint);  // NOLINT
-
-  /**
-   * Constructs this constraint from a PoseConstraint.
-   */
-  Constraint(const PoseConstraint& poseConstraint);  // NOLINT
-
-  /**
-   * Constructs this constraint from a ObstacleConstraint.
-   */
-  Constraint(const ObstacleConstraint& obstacleConstraint);  // NOLINT
-
- private:
-  ConstraintVariant constraint;
-};
+std::optional<SolutionError> CheckState(
+    const Constraint& constraint, double x, double y, double heading,
+    const SolutionTolerances& tolerances) noexcept;
 }  // namespace trajopt
 
 /**
@@ -176,18 +87,19 @@ struct fmt::formatter<trajopt::Constraint> {
    */
   template <typename FormatContext>
   auto format(const trajopt::Constraint& constraint, FormatContext& ctx) {
-    if (constraint.IsTranslationConstraint()) {
+    using namespace trajopt;
+    if (std::holds_alternative<TranslationConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
-                            constraint.GetTranslationConstraint());
-    } else if (constraint.IsHeadingConstraint()) {
+                            std::get<TranslationConstraint>(constraint));
+    } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
-                            constraint.GetHeadingConstraint());
-    } else if (constraint.IsPoseConstraint()) {
+                            std::get<HeadingConstraint>(constraint));
+    } else if (std::holds_alternative<PoseConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
-                            constraint.GetPoseConstraint());
-    } else if (constraint.IsObstacleConstraint()) {
+                            std::get<PoseConstraint>(constraint));
+    } else if (std::holds_alternative<ObstacleConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
-                            constraint.GetObstacleConstraint());
+                            std::get<ObstacleConstraint>(constraint));
     } else {
       return ctx.out();
     }

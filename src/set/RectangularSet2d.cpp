@@ -10,16 +10,12 @@
 
 namespace trajopt {
 
-RectangularSet2d::RectangularSet2d(const IntervalSet1d& xBound,
-                                   const IntervalSet1d& yBound)
-    : xBound(xBound), yBound(yBound) {}
-
 RectangularSet2d RectangularSet2d::PolarExactSet2d(double r, double theta) {
-  return RectangularSet2d(r * std::cos(theta), r * std::sin(theta));
+  return RectangularSet2d{r * std::cos(theta), r * std::sin(theta)};
 }
 
 RectangularSet2d RectangularSet2d::R2() {
-  return RectangularSet2d(IntervalSet1d::R1(), IntervalSet1d::R1());
+  return RectangularSet2d{IntervalSet1d::R1(), IntervalSet1d::R1()};
 }
 
 std::optional<SolutionError> RectangularSet2d::CheckVector(

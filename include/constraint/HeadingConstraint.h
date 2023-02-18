@@ -15,17 +15,9 @@ namespace trajopt {
 /**
  * Heading constraint.
  */
-class TRAJOPT_DLLEXPORT HeadingConstraint {
- public:
+struct TRAJOPT_DLLEXPORT HeadingConstraint {
   /// The heading bound.
   IntervalSet1d headingBound;
-
-  /**
-   * Construct a HeadingConstraint.
-   *
-   * @param headingBound The heading bounds.
-   */
-  explicit HeadingConstraint(const IntervalSet1d& headingBound);
 
   /**
    * Returns an error if the given heading isn't in the heading region.
