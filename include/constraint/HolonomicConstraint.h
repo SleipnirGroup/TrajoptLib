@@ -14,7 +14,7 @@
 
 namespace trajopt {
 
-using HolonomicConstraint = decltype(appendVariant(
+using HolonomicConstraint = decltype(_append_variant(
     Constraint{}, VelocityConstraint{}, AngularVelocityConstraint{}));
 
 /**
