@@ -14,8 +14,12 @@
 
 namespace trajopt {
 
-using HolonomicConstraint = decltype(_append_variant(
-    Constraint{}, VelocityConstraint{}, AngularVelocityConstraint{}));
+// In the future this will be used
+// using HolonomicConstraint = decltype(_append_variant(
+//     Constraint{}, VelocityConstraint{}, AngularVelocityConstraint{}));
+
+using HolonomicConstraint =
+    std::variant<VelocityConstraint, AngularVelocityConstraint>;
 
 /**
  * Returns an error if the given state doesn't satisfy the constraint.
