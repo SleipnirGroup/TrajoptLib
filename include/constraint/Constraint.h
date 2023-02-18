@@ -49,21 +49,20 @@ enum class CoordinateSystem {
 };
 
 using Constraint = std::variant<TranslationConstraint, HeadingConstraint,
-                                       PoseConstraint, ObstacleConstraint>;
+                                PoseConstraint, ObstacleConstraint>;
 
 /**
-  * Returns an error if the state doesn't satisfy the constraint.
-  *
-  * @param x The x coordinate.
-  * @param y The y coordinate.
-  * @param heading The heading.
-  * @param tolerances The tolerances considered to satisfy the constraint.
-  */
+ * Returns an error if the state doesn't satisfy the constraint.
+ *
+ * @param x The x coordinate.
+ * @param y The y coordinate.
+ * @param heading The heading.
+ * @param tolerances The tolerances considered to satisfy the constraint.
+ */
 std::optional<SolutionError> CheckState(
-    const Constraint& constraint,
-    double x, double y, double heading,
+    const Constraint& constraint, double x, double y, double heading,
     const SolutionTolerances& tolerances) noexcept;
-}
+}  // namespace trajopt
 
 /**
  * Formatter for Constraint.

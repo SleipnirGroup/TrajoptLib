@@ -38,9 +38,9 @@ namespace trajopt {
 using Set2d =
     std::variant<RectangularSet2d, LinearSet2d, EllipticalSet2d, ConeSet2d>;
 
-std::optional<SolutionError> CheckVector(
-    const Set2d& set2d,
-    double xComp, double yComp, const SolutionTolerances& tolerances);
+std::optional<SolutionError> CheckVector(const Set2d& set2d, double xComp,
+                                         double yComp,
+                                         const SolutionTolerances& tolerances);
 
 }  // namespace trajopt
 
@@ -69,11 +69,13 @@ struct fmt::formatter<trajopt::Set2d> {
   auto format(const trajopt::Set2d& set2d, FormatContext& ctx) {
     using namespace trajopt;
     if (std::holds_alternative<RectangularSet2d>(set2d)) {
-      return fmt::format_to(ctx.out(), "2d {}", std::get<RectangularSet2d>(set2d));
+      return fmt::format_to(ctx.out(), "2d {}",
+                            std::get<RectangularSet2d>(set2d));
     } else if (std::holds_alternative<LinearSet2d>(set2d)) {
       return fmt::format_to(ctx.out(), "2d {}", std::get<LinearSet2d>(set2d));
     } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
-      return fmt::format_to(ctx.out(), "2d {}",std::get<EllipticalSet2d>(set2d));
+      return fmt::format_to(ctx.out(), "2d {}",
+                            std::get<EllipticalSet2d>(set2d));
     } else /*if (set2d.IsCone())*/ {
       return fmt::format_to(ctx.out(), "2d {}", std::get<ConeSet2d>(set2d));
     }

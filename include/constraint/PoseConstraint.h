@@ -19,7 +19,7 @@ namespace trajopt {
  * Pose constraint.
  */
 struct TRAJOPT_DLLEXPORT PoseConstraint : public TranslationConstraint,
-                                         public HeadingConstraint {
+                                          public HeadingConstraint {
   /**
    * Returns an error if the given pose is outside the region.
    *

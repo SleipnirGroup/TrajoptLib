@@ -13,15 +13,17 @@
 
 namespace trajopt {
 
-std::optional<SolutionError> CheckVector(
-    const Set2d& set2d,
-    double xComp, double yComp, const SolutionTolerances& tolerances) {
+std::optional<SolutionError> CheckVector(const Set2d& set2d, double xComp,
+                                         double yComp,
+                                         const SolutionTolerances& tolerances) {
   if (std::holds_alternative<RectangularSet2d>(set2d)) {
-    return std::get<RectangularSet2d>(set2d).CheckVector(xComp, yComp, tolerances);
+    return std::get<RectangularSet2d>(set2d).CheckVector(xComp, yComp,
+                                                         tolerances);
   } else if (std::holds_alternative<LinearSet2d>(set2d)) {
     return std::get<LinearSet2d>(set2d).CheckVector(xComp, yComp, tolerances);
   } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
-    return std::get<EllipticalSet2d>(set2d).CheckVector(xComp, yComp, tolerances);
+    return std::get<EllipticalSet2d>(set2d).CheckVector(xComp, yComp,
+                                                        tolerances);
   } else /*if (IsCone())*/ {
     return std::get<ConeSet2d>(set2d).CheckVector(xComp, yComp, tolerances);
   }

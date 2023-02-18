@@ -120,12 +120,14 @@ int main() {
   HolonomicPath holonomicPath(HolonomicPath(
       {HolonomicWaypoint({TranslationConstraint{RectangularSet2d{0, 0}},
                           HeadingConstraint{0}},
-                         {VelocityConstraint{RectangularSet2d{0, 0}, CoordinateSystem::kField},
+                         {VelocityConstraint{RectangularSet2d{0, 0},
+                                             CoordinateSystem::kField},
                           AngularVelocityConstraint{0}},
                          {}, {}, 0, {InitialGuessPoint(0, 0, 0.0)}),
        HolonomicWaypoint({TranslationConstraint{RectangularSet2d{4, 0}},
                           HeadingConstraint{0}},
-                         {VelocityConstraint{RectangularSet2d{0, 0}, CoordinateSystem::kField},
+                         {VelocityConstraint{RectangularSet2d{0, 0},
+                                             CoordinateSystem::kField},
                           AngularVelocityConstraint{0}},
                          {}, {}, 50, {InitialGuessPoint(4, 0, 0.0)})},
       bumpers));

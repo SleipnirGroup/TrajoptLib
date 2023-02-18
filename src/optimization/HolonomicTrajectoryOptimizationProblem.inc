@@ -157,7 +157,8 @@ void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicConstraint(
         std::get<VelocityConstraint>(holonomicConstraint);
     TrajectoryOptimizationProblem<Opti>::ApplySet2dConstraint(
         opti, vx, vy, velocityHolonomicConstraint.velocityBound);
-  } else if (std::holds_alternative<AngularVelocityConstraint>(holonomicConstraint)) {
+  } else if (std::holds_alternative<AngularVelocityConstraint>(
+                 holonomicConstraint)) {
     const auto& angularVelocityConstraint =
         std::get<AngularVelocityConstraint>(holonomicConstraint);
     TrajectoryOptimizationProblem<Opti>::ApplyIntervalSet1dConstraint(

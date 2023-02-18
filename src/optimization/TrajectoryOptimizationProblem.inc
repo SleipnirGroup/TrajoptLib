@@ -151,12 +151,10 @@ void TrajectoryOptimizationProblem<Opti>::ApplySet2dConstraint(
     opti.SubjectTo(vectorX * sinTheta == vectorY * cosTheta);
   } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
     auto& ellipticalSet2d = std::get<EllipticalSet2d>(set2d);
-    auto scaledVectorXSquared =
-        (vectorX * vectorX) /
-        (ellipticalSet2d.xRadius * ellipticalSet2d.xRadius);
-    auto scaledVectorYSquared =
-        (vectorY * vectorY) /
-        (ellipticalSet2d.yRadius * ellipticalSet2d.yRadius);
+    auto scaledVectorXSquared = (vectorX * vectorX) / (ellipticalSet2d.xRadius *
+                                                       ellipticalSet2d.xRadius);
+    auto scaledVectorYSquared = (vectorY * vectorY) / (ellipticalSet2d.yRadius *
+                                                       ellipticalSet2d.yRadius);
     auto lhs = scaledVectorXSquared + scaledVectorYSquared;
     using enum EllipticalSet2d::Direction;
     switch (ellipticalSet2d.direction) {
@@ -336,8 +334,7 @@ void TrajectoryOptimizationProblem<Opti>::ApplyConstraint(
     const Expression& theta, const Obstacle& bumpers,
     const Constraint& constraint) {
   if (std::holds_alternative<TranslationConstraint>(constraint)) {
-    auto& translationConstraint =
-        std::get<TranslationConstraint>(constraint);
+    auto& translationConstraint = std::get<TranslationConstraint>(constraint);
     ApplySet2dConstraint(opti, x, y, translationConstraint.translationBound);
   } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
     auto& headingConstraint = std::get<HeadingConstraint>(constraint);
@@ -346,12 +343,12 @@ void TrajectoryOptimizationProblem<Opti>::ApplyConstraint(
     auto poseConstraint = std::get<PoseConstraint>(constraint);
     auto translationConstraint =
         static_cast<const TranslationConstraint&>(poseConstraint);
-    auto headingConstraint = static_cast<const HeadingConstraint&>(poseConstraint);
+    auto headingConstraint =
+        static_cast<const HeadingConstraint&>(poseConstraint);
     ApplyConstraint(opti, x, y, theta, bumpers, translationConstraint);
     ApplyConstraint(opti, x, y, theta, bumpers, headingConstraint);
   } else /*if (constraint.IsObstacleConstraint())*/ {
-    auto& obstacleConstraint =
-        std::get<ObstacleConstraint>(constraint);
+    auto& obstacleConstraint = std::get<ObstacleConstraint>(constraint);
     ApplyObstacleConstraint(opti, x, y, theta, bumpers,
                             obstacleConstraint.obstacle);
   }
