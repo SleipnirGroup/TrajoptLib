@@ -11,11 +11,6 @@
 
 namespace trajopt {
 
-PoseConstraint::PoseConstraint(const Set2d& translationBound,
-                               const IntervalSet1d& headingBound)
-    : TranslationConstraint(translationBound),
-      HeadingConstraint(headingBound) {}
-
 std::optional<SolutionError> PoseConstraint::CheckPose(
     double x, double y, double heading,
     const SolutionTolerances& tolerances) const noexcept {

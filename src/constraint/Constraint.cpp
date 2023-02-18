@@ -15,28 +15,29 @@
 
 namespace trajopt {
 
-std::optional<SolutionError> Constraint::CheckState(
+std::optional<SolutionError> CheckState(
+    const Constraint& constraint,
     double x, double y, double heading,
-    const SolutionTolerances& tolerances) const noexcept {
-  if (IsTranslationConstraint()) {
+    const SolutionTolerances& tolerances) noexcept {
+  if (std::holds_alternative<TranslationConstraint>(constraint)) {
     std::optional<SolutionError> check =
-        GetTranslationConstraint().CheckTranslation(x, y, tolerances);
+        std::get<TranslationConstraint>(constraint).CheckTranslation(x, y, tolerances);
     if (check.has_value()) {
       return SolutionError{
           fmt::format("({}) violated: {}", "GetTranslationConstraint()",
                       check->errorMessage)};  // <<< causes error: "Cannot
                                               // format a const argument."
     }
-  } else if (IsHeadingConstraint()) {
+  } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
     std::optional<SolutionError> check =
-        GetHeadingConstraint().CheckHeading(heading, tolerances);
+        std::get<HeadingConstraint>(constraint).CheckHeading(heading, tolerances);
     if (check.has_value()) {
       return SolutionError{fmt::format(
           "({}) violated: {}", "GetHeadingConstraint()", check->errorMessage)};
     }
-  } else if (IsPoseConstraint()) {
+  } else if (std::holds_alternative<PoseConstraint>(constraint)) {
     std::optional<SolutionError> check =
-        GetPoseConstraint().CheckPose(x, y, heading, tolerances);
+        std::get<PoseConstraint>(constraint).CheckPose(x, y, heading, tolerances);
     if (check.has_value()) {
       return SolutionError{fmt::format(
           "({}) violated: {}", "GetPoseConstraint()", check->errorMessage)};
@@ -45,53 +46,4 @@ std::optional<SolutionError> Constraint::CheckState(
   return std::nullopt;
 }
 
-bool Constraint::IsTranslationConstraint() const {
-  return std::holds_alternative<TranslationConstraint>(constraint);
-}
-bool Constraint::IsHeadingConstraint() const {
-  return std::holds_alternative<HeadingConstraint>(constraint);
-}
-bool Constraint::IsPoseConstraint() const {
-  return std::holds_alternative<PoseConstraint>(constraint);
-}
-bool Constraint::IsObstacleConstraint() const {
-  return std::holds_alternative<ObstacleConstraint>(constraint);
-}
-
-const TranslationConstraint& Constraint::GetTranslationConstraint() const {
-  return std::get<TranslationConstraint>(constraint);
-}
-TranslationConstraint& Constraint::GetTranslationConstraint() {
-  return std::get<TranslationConstraint>(constraint);
-}
-
-const HeadingConstraint& Constraint::GetHeadingConstraint() const {
-  return std::get<HeadingConstraint>(constraint);
-}
-HeadingConstraint& Constraint::GetHeadingConstraint() {
-  return std::get<HeadingConstraint>(constraint);
-}
-
-const PoseConstraint& Constraint::GetPoseConstraint() const {
-  return std::get<PoseConstraint>(constraint);
-}
-PoseConstraint& Constraint::GetPoseConstraint() {
-  return std::get<PoseConstraint>(constraint);
-}
-
-const ObstacleConstraint& Constraint::GetObstacleConstraint() const {
-  return std::get<ObstacleConstraint>(constraint);
-}
-ObstacleConstraint& Constraint::GetObstacleConstraint() {
-  return std::get<ObstacleConstraint>(constraint);
-}
-
-Constraint::Constraint(const TranslationConstraint& translationConstraint)
-    : constraint(translationConstraint) {}
-Constraint::Constraint(const HeadingConstraint& headingConstraint)
-    : constraint(headingConstraint) {}
-Constraint::Constraint(const PoseConstraint& poseConstraint)
-    : constraint(poseConstraint) {}
-Constraint::Constraint(const ObstacleConstraint& obstacleConstraint)
-    : constraint(obstacleConstraint) {}
 }  // namespace trajopt

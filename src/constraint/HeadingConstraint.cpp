@@ -11,9 +11,6 @@
 
 namespace trajopt {
 
-HeadingConstraint::HeadingConstraint(const IntervalSet1d& headingBound)
-    : headingBound(headingBound) {}
-
 std::optional<SolutionError> HeadingConstraint::CheckHeading(
     double theta, const SolutionTolerances& tolerances) const noexcept {
   auto check = headingBound.CheckScalar(theta, tolerances);

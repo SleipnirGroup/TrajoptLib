@@ -35,115 +35,12 @@ namespace trajopt {
  * Bounding theta within [-pi, -pi] or within [pi, pi] is equivalent; both will
  * force the vector to be colinear with the x-axis.
  */
-using Set2dVariant =
+using Set2d =
     std::variant<RectangularSet2d, LinearSet2d, EllipticalSet2d, ConeSet2d>;
 
-/**
- * 2D set.
- */
-class TRAJOPT_DLLEXPORT Set2d {
- public:
-  /**
-   * Returns an error if the given vector isn't inside the region.
-   *
-   * @param xComp The x coordinate.
-   * @param yComp The y coordinate.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckVector(
-      double xComp, double yComp, const SolutionTolerances& tolerances) const;
-
-  /**
-   * Returns true if region is rectangular.
-   */
-  bool IsRectangular() const;
-
-  /**
-   * Returns true if region is a line.
-   */
-  bool IsLinear() const;
-
-  /**
-   * Returns true if region is elliptical.
-   */
-  bool IsElliptical() const;
-
-  /**
-   * Returns true if region is conical.
-   */
-  bool IsCone() const;
-
-  /**
-   * Returns this set as a RectangularSet2d.
-   */
-  const RectangularSet2d& GetRectangular() const;
-
-  /**
-   * Returns this set as a RectangularSet2d.
-   */
-  RectangularSet2d& GetRectangular();
-
-  /**
-   * Returns this set as a LinearSet2d.
-   */
-  const LinearSet2d& GetLinear() const;
-
-  /**
-   * Returns this set as a LinearSet2d.
-   */
-  LinearSet2d& GetLinear();
-
-  /**
-   * Returns this set as a EllipticalSet2d.
-   */
-  const EllipticalSet2d& GetElliptical() const;
-
-  /**
-   * Returns this set as a EllipticalSet2d.
-   */
-  EllipticalSet2d& GetElliptical();
-
-  /**
-   * Returns this set as a ConeSet2d.
-   */
-  const ConeSet2d& GetCone() const;
-
-  /**
-   * Returns this set as a ConeSet2d.
-   */
-  ConeSet2d& GetCone();
-
-  /**
-   * Construct a Set2d.
-   *
-   * @param rectangularSet2d A RectangularSet2d.
-   */
-  Set2d(const RectangularSet2d& rectangularSet2d);  // NOLINT
-
-  /**
-   * Construct a Set2d.
-   *
-   * @param linearSet2d A LinearSet2d.
-   */
-  Set2d(const LinearSet2d& linearSet2d);  // NOLINT
-
-  /**
-   * Construct a Set2d.
-   *
-   * @param ellipticalSet2d A EllipticalSet2d.
-   */
-  Set2d(const EllipticalSet2d& ellipticalSet2d);  // NOLINT
-
-  /**
-   * Construct a Set2d.
-   *
-   * @param coneSet2d A ConeSet2d.
-   */
-  Set2d(const ConeSet2d& coneSet2d);  // NOLINT
-
- private:
-  Set2dVariant set2d;
-};
+std::optional<SolutionError> CheckVector(
+    const Set2d& set2d,
+    double xComp, double yComp, const SolutionTolerances& tolerances);
 
 }  // namespace trajopt
 
@@ -171,14 +68,14 @@ struct fmt::formatter<trajopt::Set2d> {
   template <typename FormatContext>
   auto format(const trajopt::Set2d& set2d, FormatContext& ctx) {
     using namespace trajopt;
-    if (set2d.IsRectangular()) {
-      return fmt::format_to(ctx.out(), "2d {}", set2d.GetRectangular());
-    } else if (set2d.IsLinear()) {
-      return fmt::format_to(ctx.out(), "2d {}", set2d.GetLinear());
-    } else if (set2d.IsElliptical()) {
-      return fmt::format_to(ctx.out(), "2d {}", set2d.GetElliptical());
+    if (std::holds_alternative<RectangularSet2d>(set2d)) {
+      return fmt::format_to(ctx.out(), "2d {}", std::get<RectangularSet2d>(set2d));
+    } else if (std::holds_alternative<LinearSet2d>(set2d)) {
+      return fmt::format_to(ctx.out(), "2d {}", std::get<LinearSet2d>(set2d));
+    } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
+      return fmt::format_to(ctx.out(), "2d {}",std::get<EllipticalSet2d>(set2d));
     } else /*if (set2d.IsCone())*/ {
-      return fmt::format_to(ctx.out(), "2d {}", set2d.GetCone());
+      return fmt::format_to(ctx.out(), "2d {}", std::get<ConeSet2d>(set2d));
     }
   }
 };

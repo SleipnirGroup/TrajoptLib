@@ -15,17 +15,9 @@ namespace trajopt {
 /**
  * Translation constraint.
  */
-class TRAJOPT_DLLEXPORT TranslationConstraint {
- public:
+struct TRAJOPT_DLLEXPORT TranslationConstraint {
   /// Translation bound.
   Set2d translationBound;
-
-  /**
-   * Construct a TranslationConstraint.
-   *
-   * @param translationBound The constraint's upper and lower bounds.
-   */
-  explicit TranslationConstraint(const Set2d& translationBound);
 
   /**
    * Returns an error if the given position doesn't satisfy the constraint.

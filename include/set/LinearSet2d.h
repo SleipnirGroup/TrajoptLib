@@ -14,17 +14,9 @@ namespace trajopt {
 /**
  * Linear 2D set.
  */
-class TRAJOPT_DLLEXPORT LinearSet2d {
- public:
+struct TRAJOPT_DLLEXPORT LinearSet2d {
   /// FIXME What does this do?
   double theta;
-
-  /**
-   * Construct a LinearSet2d.
-   *
-   * @param theta FIXME What does this do?
-   */
-  explicit LinearSet2d(double theta);
 
   /**
    * FIXME What does this do?

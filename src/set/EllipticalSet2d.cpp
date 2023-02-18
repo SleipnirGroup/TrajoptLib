@@ -11,13 +11,9 @@
 
 namespace trajopt {
 
-EllipticalSet2d::EllipticalSet2d(double xRadius, double yRadius,
-                                 Direction direction)
-    : xRadius(xRadius), yRadius(yRadius), direction(direction) {}
-
 EllipticalSet2d EllipticalSet2d::CircularSet2d(double radius,
                                                Direction direction) {
-  return EllipticalSet2d(radius, radius, direction);
+  return EllipticalSet2d{radius, radius, direction};
 }
 
 bool EllipticalSet2d::IsCircular() const noexcept {

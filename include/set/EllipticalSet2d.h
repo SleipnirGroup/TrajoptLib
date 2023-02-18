@@ -15,8 +15,7 @@ namespace trajopt {
 /**
  * Elliptical 2D set.
  */
-class TRAJOPT_DLLEXPORT EllipticalSet2d {
- public:
+struct TRAJOPT_DLLEXPORT EllipticalSet2d {
   /**
    * FIXME What does this do?
    */
@@ -37,16 +36,6 @@ class TRAJOPT_DLLEXPORT EllipticalSet2d {
 
   /// The direction.
   Direction direction;
-
-  /**
-   * Construct a EllipticalSet2d from rectangular coordinates.
-   *
-   * @param xRadius The x radius.
-   * @param yRadius The y radius.
-   * @param direction The direction.
-   */
-  EllipticalSet2d(double xRadius, double yRadius,
-                  Direction direction = Direction::kInside);
 
   /**
    * Construct a circular EllipticalSet2d from a radius.

@@ -12,17 +12,9 @@ namespace trajopt {
 /**
  * Obstacle constraint.
  */
-class TRAJOPT_DLLEXPORT ObstacleConstraint {
- public:
+struct TRAJOPT_DLLEXPORT ObstacleConstraint {
   /// The obstacle.
   Obstacle obstacle;
-
-  /**
-   * Construct the ObstacleConstraint.
-   *
-   * @param obstacle The obstacle.
-   */
-  explicit ObstacleConstraint(Obstacle obstacle);
 };
 
 }  // namespace trajopt

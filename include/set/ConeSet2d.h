@@ -13,17 +13,9 @@ namespace trajopt {
 /**
  * Conical 2D set.
  */
-class TRAJOPT_DLLEXPORT ConeSet2d {
- public:
+struct TRAJOPT_DLLEXPORT ConeSet2d {
   /// The heading bounds of the cone.
   IntervalSet1d thetaBound;
-
-  /**
-   * Construct a ConeSet2d.
-   *
-   * @param thetaBound The heading bounds of the cone.
-   */
-  explicit ConeSet2d(const IntervalSet1d& thetaBound);
 
   /**
    * Returns an error if the given coordinate is outside the cone.
@@ -41,7 +33,6 @@ class TRAJOPT_DLLEXPORT ConeSet2d {
    */
   bool IsValid() const noexcept;
 };
-
 }  // namespace trajopt
 
 /**

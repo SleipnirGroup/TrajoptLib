@@ -10,9 +10,6 @@
 
 namespace trajopt {
 
-ConeSet2d::ConeSet2d(const IntervalSet1d& thetaBound)
-    : thetaBound(thetaBound) {}
-
 std::optional<SolutionError> ConeSet2d::CheckVector(
     double xComp, double yComp,
     const SolutionTolerances& tolerances) const noexcept {
