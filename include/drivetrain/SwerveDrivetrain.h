@@ -7,7 +7,6 @@
 #include <fmt/core.h>
 
 #include "SymbolExports.h"
-#include "drivetrain/HolonomicDrivetrain.h"
 #include "drivetrain/SwerveModule.h"
 #include "obstacle/Obstacle.h"
 #include "trajectory/HolonomicTrajectory.h"
@@ -20,22 +19,12 @@ namespace trajopt {
  * An arbitrary number of swerve modules can be specified, but typically it will
  * be four. The order the swerve modules are listed does not matter.
  */
-class TRAJOPT_DLLEXPORT SwerveDrivetrain : public HolonomicDrivetrain {
- public:
+struct TRAJOPT_DLLEXPORT SwerveDrivetrain {
+  double mass;
+  double moi;
   /// The list of swerve modules that make the robot move, usually one in each
   /// corner.
   std::vector<SwerveModule> modules;
-
-  /**
-   * Construct a SwerveDrivetrain.
-   *
-   * @param mass The mass of the entire robot.
-   * @param momentOfInertia The moment of inertia of the robot about the center
-   *   of rotation.
-   * @param modules the list of modules the make up this swerve drivetrain
-   */
-  SwerveDrivetrain(double mass, double momentOfInertia,
-                   std::vector<SwerveModule> modules);
 };
 
 }  // namespace trajopt
@@ -70,6 +59,6 @@ struct fmt::formatter<trajopt::SwerveDrivetrain> {
                           "  moi = {},\n"
                           "  modules = (no impl yet)",
                           swerveDrivetrain.mass,
-                          swerveDrivetrain.momentOfInertia);
+                          swerveDrivetrain.moi);
   }
 };

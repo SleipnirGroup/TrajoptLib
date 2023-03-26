@@ -4,7 +4,7 @@
 
 #include "SymbolExports.h"
 #include "drivetrain/SwerveDrivetrain.h"
-#include "path/HolonomicPath.h"
+#include "path/Path.h"
 #include "solution/SwerveSolution.h"
 
 namespace trajopt {
@@ -29,7 +29,6 @@ class TRAJOPT_DLLEXPORT OptimalTrajectoryGenerator {
    * @param holonomicPath the holonomic path
    * @return the optimized holonomic trajectory
    */
-  static SwerveSolution Generate(const SwerveDrivetrain& swerveDrivetrain,
-                                 const HolonomicPath& holonomicPath);
+  static SwerveSolution Generate(const SwervePath& holonomicPath);
 };
 }  // namespace trajopt

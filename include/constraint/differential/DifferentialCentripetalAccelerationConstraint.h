@@ -8,7 +8,7 @@
 
 #include "SymbolExports.h"
 #include "constraint/Constraint.h"
-#include "set/Set2d.h"
+#include "set/IntervalSet1d.h"
 #include "solution/SolutionChecking.h"
 
 namespace trajopt {
@@ -16,12 +16,9 @@ namespace trajopt {
 /**
  * Velocity constraint.
  */
-struct TRAJOPT_DLLEXPORT VelocityConstraint {
+struct TRAJOPT_DLLEXPORT DifferentialCentripetalAccelerationConstraint {
   /// Velocity bound.
-  Set2d velocityBound;
-
-  /// Coordinate system.
-  CoordinateSystem coordinateSystem;
+  IntervalSet1d velocityBound;
 
   /**
    * Returns an error if the given velocity doesn't satisfy the constraint.
@@ -31,7 +28,7 @@ struct TRAJOPT_DLLEXPORT VelocityConstraint {
    * @param tolerances The tolerances considered to satisfy the constraint.
    */
   std::optional<SolutionError> CheckVelocity(
-      double velocityX, double velocityY,
+      double leftVelocity, double rightVelocity,
       const SolutionTolerances& tolerances) const noexcept;
 };
 }  // namespace trajopt
@@ -41,7 +38,7 @@ struct TRAJOPT_DLLEXPORT VelocityConstraint {
  */
 //! @cond Doxygen_Suppress
 template <>
-struct fmt::formatter<trajopt::VelocityConstraint> {
+struct fmt::formatter<trajopt::DifferentialCentripetalAccelerationConstraint> {
   //! @endcond
   /**
    * Format string parser.
@@ -58,8 +55,8 @@ struct fmt::formatter<trajopt::VelocityConstraint> {
    * @param ctx Format string context.
    */
   template <typename FormatContext>
-  auto format(const trajopt::VelocityConstraint& constraint,
+  auto format(const trajopt::DifferentialCentripetalAccelerationConstraint& constraint,
               FormatContext& ctx) {
-    return fmt::format_to(ctx.out(), "velocity {}", constraint.velocityBound);
+    return fmt::format_to(ctx.out(), "diff centrip accel {}", constraint.velocityBound);
   }
 };

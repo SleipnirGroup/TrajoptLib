@@ -1,13 +1,14 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "path/Path.h"
+#pragma once
 
 #include <vector>
 
-#include "constraint/Constraint.h"
+#include "SymbolExports.h"
 #include "obstacle/Obstacle.h"
-#include "path/Waypoint.h"
 
 namespace trajopt {
+
+using Bumpers = Obstacle;
 
 }  // namespace trajopt

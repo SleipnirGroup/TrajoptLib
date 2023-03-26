@@ -11,7 +11,7 @@
 
 namespace trajopt {
 
-std::optional<SolutionError> VelocityConstraint::CheckVelocity(
+std::optional<SolutionError> HolonomicVelocityConstraint::CheckVelocity(
     double velocityX, double velocityY,
     const SolutionTolerances& tolerances) const noexcept {
   auto check = CheckVector(velocityBound, velocityX, velocityY, tolerances);

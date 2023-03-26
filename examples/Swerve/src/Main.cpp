@@ -13,9 +13,11 @@
 #include "constraint/Constraint.h"
 #include "constraint/ObstacleConstraint.h"
 #include "constraint/TranslationConstraint.h"
+#include "constraint/holonomic/HolonomicConstraint.h"
 #include "drivetrain/SwerveDrivetrain.h"
 #include "obstacle/Obstacle.h"
-#include "path/HolonomicPath.h"
+#include "constraint/BumpersConstraint.h"
+#include "path/Path.h"
 #include "path/InitialGuessPoint.h"
 #include "set/ConeSet2d.h"
 #include "solution/SwerveSolution.h"
@@ -28,15 +30,15 @@ int main() {
   // auto variable2 = opti.variable(4, 1);
 
   using namespace trajopt;
-  SwerveDrivetrain swerveDrivetrain(45, 6,
-                                    {SwerveModule(+0.6, +0.6, 0.04, 70, 2),
-                                     SwerveModule(+0.6, -0.6, 0.04, 70, 2),
-                                     SwerveModule(-0.6, +0.6, 0.04, 70, 2),
-                                     SwerveModule(-0.6, -0.6, 0.04, 70, 2)});
+  SwerveDrivetrain swerveDrivetrain{.mass = 45, .moi = 6,
+                                    {{+0.6, +0.6, 0.04, 70, 2},
+                                     {+0.6, -0.6, 0.04, 70, 2},
+                                     {-0.6, +0.6, 0.04, 70, 2},
+                                     {-0.6, -0.6, 0.04, 70, 2}}};
 
   fmt::print("{}\n", swerveDrivetrain);
 
-  Obstacle bumpers(0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}});
+  Obstacle bumpers{0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}}};
 
   // // CIRCULAR PATH
   // HolonomicPath holonomicPath(HolonomicPath({
@@ -117,24 +119,25 @@ int main() {
   // auto con = Constraint(TranslationConstraint(RectangularSet2d(0, 0)));
   // auto con = VelocityConstraint(RectangularSet2d(0, 0));
   // fmt::print("{}\n\n\n", con);
-  HolonomicPath holonomicPath(HolonomicPath(
-      {HolonomicWaypoint({TranslationConstraint{RectangularSet2d{0, 0}},
-                          HeadingConstraint{0}},
-                         {VelocityConstraint{RectangularSet2d{0, 0},
+  SwervePath path{
+      {SwerveWaypoint{{TranslationConstraint{RectangularSet2d{0, 0}},
+                          HeadingConstraint{0},
+                          HolonomicVelocityConstraint{RectangularSet2d{0, 0},
+                                                      CoordinateSystem::kField},
+                          AngularVelocityConstraint{0}},
+                          {},
+                          0, {InitialGuessPoint(0, 0, 0.0)}, std::nullopt},
+       SwerveWaypoint{{TranslationConstraint{RectangularSet2d{4, 0}},
+                          HeadingConstraint{0},
+                          HolonomicVelocityConstraint{RectangularSet2d{0, 0},
                                              CoordinateSystem::kField},
                           AngularVelocityConstraint{0}},
-                         {}, {}, 0, {InitialGuessPoint(0, 0, 0.0)}),
-       HolonomicWaypoint({TranslationConstraint{RectangularSet2d{4, 0}},
-                          HeadingConstraint{0}},
-                         {VelocityConstraint{RectangularSet2d{0, 0},
-                                             CoordinateSystem::kField},
-                          AngularVelocityConstraint{0}},
-                         {}, {}, 50, {InitialGuessPoint(4, 0, 0.0)})},
-      bumpers));
+                          {},
+                          50, {InitialGuessPoint(4, 0, 0.0)}, std::nullopt}}, {BumpersConstraint{bumpers}}, swerveDrivetrain};
 
   // SOLVE
   SwerveSolution solution =
-      OptimalTrajectoryGenerator::Generate(swerveDrivetrain, holonomicPath);
+      OptimalTrajectoryGenerator::Generate(path);
   fmt::print("{}\n", solution);
   fmt::print("{}\n", HolonomicTrajectory(solution));
 }

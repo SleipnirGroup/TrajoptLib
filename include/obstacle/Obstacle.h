@@ -22,15 +22,6 @@ class TRAJOPT_DLLEXPORT Obstacle {
 
   /// The list of points that make up this obstacle.
   std::vector<ObstaclePoint> points;
-
-  /**
-   * Construct a Obstacle.
-   *
-   * @param safetyDistance Minimum distance from the obstacle the robot must
-   *   maintain.
-   * @param points The list of points that make up this obstacle.
-   */
-  Obstacle(double safetyDistance, std::vector<ObstaclePoint> points);
 };
 
 }  // namespace trajopt

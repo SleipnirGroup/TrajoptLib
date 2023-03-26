@@ -8,6 +8,8 @@
 #include <fmt/format.h>
 
 #include "SymbolExports.h"
+#include "constraint/AngularVelocityConstraint.h"
+#include "constraint/BumpersConstraint.h"
 #include "constraint/HeadingConstraint.h"
 #include "constraint/ObstacleConstraint.h"
 #include "constraint/PoseConstraint.h"
@@ -49,7 +51,7 @@ enum class CoordinateSystem {
 };
 
 using Constraint = std::variant<TranslationConstraint, HeadingConstraint,
-                                PoseConstraint, ObstacleConstraint>;
+                                PoseConstraint, AngularVelocityConstraint, BumpersConstraint, ObstacleConstraint>;
 
 /**
  * Returns an error if the state doesn't satisfy the constraint.
@@ -60,7 +62,7 @@ using Constraint = std::variant<TranslationConstraint, HeadingConstraint,
  * @param tolerances The tolerances considered to satisfy the constraint.
  */
 std::optional<SolutionError> CheckState(
-    const Constraint& constraint, double x, double y, double heading,
+    const Constraint& constraint, double x, double y, double heading, double angularVelocity,
     const SolutionTolerances& tolerances) noexcept;
 }  // namespace trajopt
 
@@ -97,6 +99,9 @@ struct fmt::formatter<trajopt::Constraint> {
     } else if (std::holds_alternative<PoseConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
                             std::get<PoseConstraint>(constraint));
+    } else if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
+      return fmt::format_to(ctx.out(), "constraint: {}",
+                            std::get<AngularVelocityConstraint>(constraint));
     } else if (std::holds_alternative<ObstacleConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
                             std::get<ObstacleConstraint>(constraint));

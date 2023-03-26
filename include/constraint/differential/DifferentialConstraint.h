@@ -8,18 +8,21 @@
 
 #include "SymbolExports.h"
 #include "constraint/AngularVelocityConstraint.h"
-#include "constraint/VelocityConstraint.h"
+#include "constraint/differential/DifferentialTangentialVelocityConstraint.h"
+#include "constraint/differential/DifferentialCentripetalAccelerationConstraint.h"
+#include "constraint/AngularVelocityConstraint.h"
+#include "constraint/Constraint.h"
 #include "solution/SolutionChecking.h"
 #include "util/AppendVariant.h"
 
 namespace trajopt {
 
 // In the future this will be used
-// using HolonomicConstraint = decltype(_append_variant(
-//     Constraint{}, VelocityConstraint{}, AngularVelocityConstraint{}));
+using DifferentialConstraint = decltype(_append_variant(
+    Constraint{}, DifferentialTangentialVelocityConstraint{}, DifferentialCentripetalAccelerationConstraint{}));
 
-using HolonomicConstraint =
-    std::variant<VelocityConstraint, AngularVelocityConstraint>;
+// using HolonomicConstraint =
+//     std::variant<VelocityConstraint, AngularVelocityConstraint>;
 
 /**
  * Returns an error if the given state doesn't satisfy the constraint.
@@ -36,8 +39,8 @@ using HolonomicConstraint =
  * @param tolerances The tolerances considered to satisfy the constraint.
  */
 std::optional<SolutionError> CheckState(
-    const HolonomicConstraint& constraint, double x, double y, double heading,
-    double velocityX, double velocityY, double angularVelocity,
+    const DifferentialConstraint& constraint, double x, double y, double heading,
+    double leftVelocity, double rightVelocity, double angularVelocity,
     double accelerationX, double accelerationY, double angularAcceleration,
     const SolutionTolerances& tolerances) noexcept;
 
@@ -48,7 +51,7 @@ std::optional<SolutionError> CheckState(
  */
 //! @cond Doxygen_Suppress
 template <>
-struct fmt::formatter<trajopt::HolonomicConstraint> {
+struct fmt::formatter<trajopt::DifferentialConstraint> {
   //! @endcond
   /**
    * Format string parser.
@@ -65,15 +68,15 @@ struct fmt::formatter<trajopt::HolonomicConstraint> {
    * @param ctx Format string context.
    */
   template <typename FormatContext>
-  auto format(const trajopt::HolonomicConstraint& constraint,
+  auto format(const trajopt::DifferentialConstraint& constraint,
               FormatContext& ctx) {
     using namespace trajopt;
-    if (std::holds_alternative<VelocityConstraint>(constraint)) {
+    if (std::holds_alternative<DifferentialTangentialVelocityConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<VelocityConstraint>(constraint));
-    } else if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
+                            std::get<DifferentialTangentialVelocityConstraint>(constraint));
+    } else if (std::holds_alternative<DifferentialCentripetalAccelerationConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<AngularVelocityConstraint>(constraint));
+                            std::get<DifferentialCentripetalAccelerationConstraint>(constraint));
     } else {
       return ctx.out();
     }
