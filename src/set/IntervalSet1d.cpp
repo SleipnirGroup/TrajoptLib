@@ -20,6 +20,14 @@ IntervalSet1d IntervalSet1d::R1() {
                        +std::numeric_limits<double>::infinity());
 }
 
+IntervalSet1d IntervalSet1d::LessThan(double max) {
+  return IntervalSet1d(-std::numeric_limits<double>::infinity(), max);
+}
+
+IntervalSet1d IntervalSet1d::GreaterThan(double min) {
+  return IntervalSet1d(min, +std::numeric_limits<double>::infinity());
+}
+
 double IntervalSet1d::Range() const noexcept {
   return upper - lower;
 }

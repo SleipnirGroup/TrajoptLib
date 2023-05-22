@@ -33,18 +33,16 @@ class SwervePathBuilder {
   void SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx, double v, bool includeWpts = true);
   void SgmtZeroAngularVelocity(size_t fromIdx, size_t toIdx, bool includeWpts = true);
 
-  void StartZeroVelocity();
-  void EndZeroVelocity();
-  void BoundsZeroVelocity();
-
-  void AddBumpers(Bumpers bumpers);
-  void WaypointObstacle(Obstacle obstacle);
-  void SegmentObstacle(Obstacle obstacle);
-
   void WptConstraint(size_t idx, const HolonomicConstraint& constraint);
   void SgmtConstraint(size_t fromIdx, size_t toIdx, const HolonomicConstraint& constraint, bool includeWpts = true);
 
-  void ControlIntervalCounts(std::vector<size_t> counts);
+  void StartZeroVelocity();
+
+  void AddBumpers(Bumpers&& newBumpers);
+  void WptObstacle(size_t idx, const Obstacle& obstacle);
+  void SgmtObstacle(size_t fromIdx, size_t toIdx, const Obstacle& obstacle, bool includeWpts = true);
+
+  void ControlIntervalCounts(std::vector<size_t>&& counts);
 
  private:
   SwervePath path;
@@ -53,5 +51,7 @@ class SwervePathBuilder {
 
   std::vector<std::vector<InitialGuessPoint>> initalGuessPoints;
   std::vector<size_t> controlIntervalCounts;
+
+  static std::vector<HolonomicConstraint> GetConstraintsForObstacle(const Bumpers& bumpers, const Obstacle& obstacle);
 };
 }

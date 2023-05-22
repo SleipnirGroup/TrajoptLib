@@ -44,6 +44,9 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    */
   static IntervalSet1d R1();
 
+  static IntervalSet1d LessThan(double max);
+  static IntervalSet1d GreaterThan(double min);
+
   /**
    * @brief Check if this scalar bound is equivalent to another scalar bound.
    * Two scalar bounds are equivalent if their upper and lower bounds are equal.

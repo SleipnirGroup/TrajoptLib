@@ -9,6 +9,8 @@
 #include "constraint/AngularVelocityConstraint.h"
 #include "constraint/Constraint.h"
 #include "constraint/HeadingConstraint.h"
+#include "constraint/LinePointConstraint.h"
+#include "constraint/PointLineConstraint.h"
 #include "constraint/TranslationConstraint.h"
 #include "constraint/holonomic/HolonomicVelocityConstraint.h"
 #include "drivetrain/SwerveDrivetrain.h"
@@ -16,6 +18,7 @@
 #include "path/InitialGuessPoint.h"
 #include "path/Path.h"
 #include "set/EllipticalSet2d.h"
+#include "set/IntervalSet1d.h"
 #include "set/LinearSet2d.h"
 #include "set/RectangularSet2d.h"
 
@@ -127,5 +130,107 @@ void SwervePathBuilder::SgmtConstraint(size_t fromIdx, size_t toIdx, const Holon
     }
     path.waypoints.at(fromIdx).segmentConstraints.push_back(constraint);
   }
+}
+
+void SwervePathBuilder::StartZeroVelocity() {
+  WptZeroVelocity(0);
+}
+
+void SwervePathBuilder::AddBumpers(Bumpers&& newBumpers) {
+  bumpers.emplace_back(std::move(newBumpers));
+}
+
+void SwervePathBuilder::WptObstacle(size_t idx, const Obstacle& obstacle) {
+  for (auto& _bumpers : bumpers) {
+    auto constraints = GetConstraintsForObstacle(_bumpers, obstacle);
+    for (auto& constraint : constraints) {
+      WptConstraint(idx, constraint);
+    }
+  }
+}
+
+void SwervePathBuilder::SgmtObstacle(size_t fromIdx, size_t toIdx,
+    const Obstacle& obstacle, bool includeWpts) {
+  for (auto& _bumpers : bumpers) {
+    auto constraints = GetConstraintsForObstacle(_bumpers, obstacle);
+    for (auto& constraint : constraints) {
+      SgmtConstraint(fromIdx, toIdx, constraint, includeWpts);
+    }
+  }
+}
+
+std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
+    const Bumpers& bumpers, const Obstacle& obstacle) {
+
+  auto distConst =
+      IntervalSet1d::LessThan(bumpers.safetyDistance + obstacle.safetyDistance);
+
+  size_t bumperCornerCount = bumpers.points.size();
+  size_t obstacleCornerCount = obstacle.points.size();
+  if (bumperCornerCount == 1 && obstacleCornerCount == 1) {
+    // if the bumpers and obstacle are only one point
+    return {PointPointConstraint{bumpers.points.at(0).x, bumpers.points.at(0).y,
+        obstacle.points.at(0).x, obstacle.points.at(0).y, distConst}};
+  }
+
+  std::vector<HolonomicConstraint> constraints;
+
+  // robot bumper edge to obstacle point constraints
+  for (const ObstaclePoint& obstaclePoint : obstacle.points) {
+    // First apply constraint for all but last edge
+    for (size_t bumperCornerIndex = 0;
+        bumperCornerIndex < bumperCornerCount - 1; bumperCornerIndex++) {
+      constraints.emplace_back(LinePointConstraint{
+          bumpers.points.at(bumperCornerIndex).x,
+          bumpers.points.at(bumperCornerIndex).y,
+          bumpers.points.at(bumperCornerIndex + 1).x,
+          bumpers.points.at(bumperCornerIndex + 1).y,
+          obstaclePoint.x,
+          obstaclePoint.y,
+          distConst});
+    }
+    // apply to last edge: the edge connecting the last point to the first
+    // must have at least three points to need this
+    if (bumperCornerCount >= 3) {
+      constraints.emplace_back(LinePointConstraint{
+          bumpers.points.at(bumperCornerCount - 1).x,
+          bumpers.points.at(bumperCornerCount - 1).y,
+          bumpers.points.at(0).x,
+          bumpers.points.at(0).y,
+          obstaclePoint.x,
+          obstaclePoint.y,
+          distConst});
+    }
+  }
+
+  // obstacle edge to bumper corner constraints
+  for (const ObstaclePoint& bumperCorner : bumpers.points) {
+    for (size_t obstacleCornerIndex = 0;
+      obstacleCornerIndex < obstacleCornerCount - 1; obstacleCornerIndex++) {
+      constraints.emplace_back(PointLineConstraint{
+          bumperCorner.x,
+          bumperCorner.y,
+          obstacle.points.at(obstacleCornerIndex).x,
+          obstacle.points.at(obstacleCornerIndex).y,
+          obstacle.points.at(obstacleCornerIndex + 1).x,
+          obstacle.points.at(obstacleCornerIndex + 1).y,
+          distConst});
+    }
+    if (obstacleCornerCount >= 3) {
+      constraints.emplace_back(PointLineConstraint{
+          bumperCorner.x,
+          bumperCorner.y,
+          obstacle.points.at(bumperCornerCount - 1).x,
+          obstacle.points.at(bumperCornerCount - 1).y,
+          obstacle.points.at(0).x,
+          obstacle.points.at(0).y,
+          distConst});
+    }
+  }
+  return constraints;
+}
+
+void SwervePathBuilder::ControlIntervalCounts(std::vector<size_t>&& counts) {
+  controlIntervalCounts = std::move(counts);
 }
 }  // namespace trajopt
