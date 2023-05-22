@@ -12,7 +12,7 @@ namespace trajopt {
 /**
  * The holonomic trajectory optimization solution.
  */
-struct TRAJOPT_DLLEXPORT HolonomicSolution : Solution {
+struct TRAJOPT_DLLEXPORT HolonomicSolution : public Solution {
   /// The x velocities.
   std::vector<double> vx;
 

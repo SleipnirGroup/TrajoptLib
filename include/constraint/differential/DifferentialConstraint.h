@@ -17,12 +17,8 @@
 
 namespace trajopt {
 
-// In the future this will be used
 using DifferentialConstraint = decltype(_append_variant(
-    Constraint{}, DifferentialTangentialVelocityConstraint{}, DifferentialCentripetalAccelerationConstraint{}));
-
-// using HolonomicConstraint =
-//     std::variant<VelocityConstraint, AngularVelocityConstraint>;
+    Constraint{}, AngularVelocityConstraint{}, DifferentialTangentialVelocityConstraint{}, DifferentialCentripetalAccelerationConstraint{}));
 
 /**
  * Returns an error if the given state doesn't satisfy the constraint.
@@ -40,10 +36,8 @@ using DifferentialConstraint = decltype(_append_variant(
  */
 std::optional<SolutionError> CheckState(
     const DifferentialConstraint& constraint, double x, double y, double heading,
-    double leftVelocity, double rightVelocity, double angularVelocity,
-    double accelerationX, double accelerationY, double angularAcceleration,
+    double leftVelocity, double rightVelocity,
     const SolutionTolerances& tolerances) noexcept;
-
 }  // namespace trajopt
 
 /**
@@ -71,7 +65,10 @@ struct fmt::formatter<trajopt::DifferentialConstraint> {
   auto format(const trajopt::DifferentialConstraint& constraint,
               FormatContext& ctx) {
     using namespace trajopt;
-    if (std::holds_alternative<DifferentialTangentialVelocityConstraint>(constraint)) {
+    if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
+      return fmt::format_to(ctx.out(), "constraint: {}",
+                            std::get<AngularVelocityConstraint>(constraint));
+    } else if (std::holds_alternative<DifferentialTangentialVelocityConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
                             std::get<DifferentialTangentialVelocityConstraint>(constraint));
     } else if (std::holds_alternative<DifferentialCentripetalAccelerationConstraint>(constraint)) {

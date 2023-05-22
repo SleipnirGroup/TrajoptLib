@@ -9,10 +9,10 @@
 
 #include "SymbolExports.h"
 #include "constraint/AngularVelocityConstraint.h"
-#include "constraint/BumpersConstraint.h"
 #include "constraint/HeadingConstraint.h"
-#include "constraint/ObstacleConstraint.h"
-#include "constraint/PoseConstraint.h"
+#include "constraint/LinePointConstraint.h"
+#include "constraint/PointLineConstraint.h"
+#include "constraint/PointPointConstraint.h"
 #include "constraint/TranslationConstraint.h"
 #include "solution/SolutionChecking.h"
 
@@ -50,8 +50,12 @@ enum class CoordinateSystem {
   kRobot,
 };
 
-using Constraint = std::variant<TranslationConstraint, HeadingConstraint,
-                                PoseConstraint, AngularVelocityConstraint, BumpersConstraint, ObstacleConstraint>;
+using Constraint = std::variant<
+    TranslationConstraint,
+    HeadingConstraint,
+    LinePointConstraint,
+    PointLineConstraint,
+    PointPointConstraint>;
 
 /**
  * Returns an error if the state doesn't satisfy the constraint.
@@ -62,7 +66,7 @@ using Constraint = std::variant<TranslationConstraint, HeadingConstraint,
  * @param tolerances The tolerances considered to satisfy the constraint.
  */
 std::optional<SolutionError> CheckState(
-    const Constraint& constraint, double x, double y, double heading, double angularVelocity,
+    const Constraint& constraint, double x, double y, double heading,
     const SolutionTolerances& tolerances) noexcept;
 }  // namespace trajopt
 
@@ -96,15 +100,15 @@ struct fmt::formatter<trajopt::Constraint> {
     } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
                             std::get<HeadingConstraint>(constraint));
-    } else if (std::holds_alternative<PoseConstraint>(constraint)) {
+    } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<PoseConstraint>(constraint));
-    } else if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
+                            std::get<LinePointConstraint>(constraint));
+    } else if (std::holds_alternative<PointLineConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<AngularVelocityConstraint>(constraint));
-    } else if (std::holds_alternative<ObstacleConstraint>(constraint)) {
+                            std::get<PointLineConstraint>(constraint));
+    } else if (std::holds_alternative<PointPointConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<ObstacleConstraint>(constraint));
+                            std::get<PointPointConstraint>(constraint));
     } else {
       return ctx.out();
     }

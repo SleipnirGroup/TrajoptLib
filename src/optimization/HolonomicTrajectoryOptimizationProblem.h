@@ -5,11 +5,8 @@
 #include <memory>
 #include <vector>
 
-#include "constraint/HolonomicConstraint.h"
-#include "drivetrain/HolonomicDrivetrain.h"
 #include "obstacle/Obstacle.h"
 #include "optimization/TrajectoryOptimizationProblem.h"
-#include "path/HolonomicPath.h"
 #include "solution/HolonomicSolution.h"
 
 namespace trajopt {
@@ -35,15 +32,6 @@ template <typename Opti>
 class HolonomicTrajectoryOptimizationProblem
     : public TrajectoryOptimizationProblem<Opti> {
  protected:
-  /**
-   * @brief the holonomic drivetrain
-   */
-  const HolonomicDrivetrain& holonomicDrivetrain;
-  /**
-   * @brief the holonomic path
-   */
-  const HolonomicPath& holonomicPath;
-
   using Expression = typename Opti::Expression;
   /**
    * @brief
@@ -78,47 +66,13 @@ class HolonomicTrajectoryOptimizationProblem
   std::vector<Expression> alpha;
 
   /**
-   * @brief the entries of the vx vector, separated into individual trajectory
-   * segments
-   */
-  std::vector<std::vector<Expression>> vxSegments;
-  /**
-   * @brief the entries of the vy vector, separated into individual trajectory
-   * segments
-   */
-  std::vector<std::vector<Expression>> vySegments;
-  /**
-   * @brief the entries of the omega vector, separated into individual
-   * trajectory segments
-   */
-  std::vector<std::vector<Expression>> omegaSegments;
-
-  /**
-   * @brief the entries of the ax vector, separated into individual trajectory
-   * segments
-   */
-  std::vector<std::vector<Expression>> axSegments;
-  /**
-   * @brief the entries of the ay vector, separated into individual trajectory
-   * segments
-   */
-  std::vector<std::vector<Expression>> aySegments;
-  /**
-   * @brief the entries of the alpha vector, separated into individual
-   * trajectory segments
-   */
-  std::vector<std::vector<Expression>> alphaSegments;
-
-  /**
    * @brief Construct a new CasADi Holonomic Trajectory Optimization Problem
    * with a holonomic drivetrain and holonomic path.
    *
    * @param holonomicDrivetrain the holonomic drivetrain
    * @param HolonomicPath the holonomic path
    */
-  HolonomicTrajectoryOptimizationProblem(
-      const HolonomicDrivetrain& holonomicDrivetrain,
-      const HolonomicPath& holonomicPath);
+  explicit HolonomicTrajectoryOptimizationProblem(std::vector<size_t>&& ctrlIntCnts);
 
  private:
   /**
@@ -140,38 +94,10 @@ class HolonomicTrajectoryOptimizationProblem
       const std::vector<Expression>& alpha);
 
   static void ApplyHolonomicConstraint(
-      Opti& opti, const Expression& vx, const Expression& vy,
+      Opti& opti, const Expression& x, const Expression& y, const Expression& theta,
+      const Expression& vx, const Expression& vy,
       const Expression& omega, const Expression& ax, const Expression& ay,
       const Expression& alpha, const HolonomicConstraint& constraint);
-
-  static void ApplyHolonomicConstraints(
-      Opti& opti, const Expression& vx, const Expression& vy,
-      const Expression& omega, const Expression& ax, const Expression& ay,
-      const Expression& alpha,
-      const std::vector<HolonomicConstraint>& constraints);
-
-  /**
-   * @brief Apply the constraints that force the robot's motion to comply
-   * with the list of holonomic waypoints provided. This function only
-   * applies constraints on velocity and angular velocity.
-   *
-   * @param opti the current optimizer
-   * @param vxSegments the x-component of the robot's velocity for each sample
-   * point, divided into segments
-   * @param vySegments the y-component of the robot's velocity for each sample
-   * point, divided into segments
-   * @param omegaSegments the angular velocity of the robot for each sample
-   * point, divided into segments
-   * @param holonomicPath the holonomic path to apply constraints for
-   */
-  static void ApplyHolonomicPathConstraints(
-      Opti& opti, const std::vector<std::vector<Expression>>& vxSegments,
-      const std::vector<std::vector<Expression>>& vySegments,
-      const std::vector<std::vector<Expression>>& omegaSegments,
-      const std::vector<std::vector<Expression>>& axSegments,
-      const std::vector<std::vector<Expression>>& aySegments,
-      const std::vector<std::vector<Expression>>& alphaSegments,
-      const HolonomicPath& holonomicPath);
 };
 }  // namespace trajopt
 

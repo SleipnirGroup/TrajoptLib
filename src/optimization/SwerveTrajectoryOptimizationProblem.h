@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "HolonomicTrajectoryOptimizationProblem.h"
+#include "optimization/HolonomicTrajectoryOptimizationProblem.h"
 #include "drivetrain/SwerveDrivetrain.h"
 #include "path/HolonomicPath.h"
 #include "solution/SwerveSolution.h"

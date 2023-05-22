@@ -11,12 +11,10 @@
 #include "OptimalTrajectoryGenerator.h"
 #include "TestUtil.h"
 #include "constraint/Constraint.h"
-#include "constraint/ObstacleConstraint.h"
 #include "constraint/TranslationConstraint.h"
 #include "constraint/holonomic/HolonomicConstraint.h"
 #include "drivetrain/SwerveDrivetrain.h"
 #include "obstacle/Obstacle.h"
-#include "constraint/BumpersConstraint.h"
 #include "path/Path.h"
 #include "path/InitialGuessPoint.h"
 #include "set/ConeSet2d.h"
@@ -31,10 +29,10 @@ int main() {
 
   using namespace trajopt;
   SwerveDrivetrain swerveDrivetrain{.mass = 45, .moi = 6,
-                                    {{+0.6, +0.6, 0.04, 70, 2},
-                                     {+0.6, -0.6, 0.04, 70, 2},
-                                     {-0.6, +0.6, 0.04, 70, 2},
-                                     {-0.6, -0.6, 0.04, 70, 2}}};
+                                    .modules={{+0.6, +0.6, 0.04, 70, 2},
+                                              {+0.6, -0.6, 0.04, 70, 2},
+                                              {-0.6, +0.6, 0.04, 70, 2},
+                                              {-0.6, -0.6, 0.04, 70, 2}}};
 
   fmt::print("{}\n", swerveDrivetrain);
 

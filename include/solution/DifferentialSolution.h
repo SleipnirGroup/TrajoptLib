@@ -12,24 +12,13 @@ namespace trajopt {
 /**
  * The holonomic trajectory optimization solution.
  */
-struct TRAJOPT_DLLEXPORT DifferentialSolution : Solution {
+struct TRAJOPT_DLLEXPORT DifferentialSolution : public Solution {
   /// The x velocities.
-  std::vector<double> vl;
-
+  std::vector<double> vL;
   /// The y velocities.
-  std::vector<double> vr;
-
-  /// The angular velocities.
-  std::vector<double> omega;
-
-  /// The x accelerations.
-  std::vector<double> ax;
-
-  /// The y accelerations.
-  std::vector<double> ay;
-
-  /// The angular accelerations.
-  std::vector<double> alpha;
+  std::vector<double> vR;
+  std::vector<double> tauL;
+  std::vector<double> tauR;
 };
 
 }  // namespace trajopt

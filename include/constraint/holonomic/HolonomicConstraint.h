@@ -7,6 +7,7 @@
 #include <fmt/format.h>
 
 #include "SymbolExports.h"
+#include "constraint/AngularVelocityConstraint.h"
 #include "constraint/holonomic/HolonomicVelocityConstraint.h"
 #include "solution/SolutionChecking.h"
 #include "util/AppendVariant.h"
@@ -15,7 +16,7 @@ namespace trajopt {
 
 // In the future this will be used
 using HolonomicConstraint = decltype(_append_variant(
-    Constraint{}, HolonomicVelocityConstraint{}));
+    Constraint{}, AngularVelocityConstraint{}, HolonomicVelocityConstraint{}));
 
 // using HolonomicConstraint =
 //     std::variant<VelocityConstraint, AngularVelocityConstraint>;
@@ -67,12 +68,12 @@ struct fmt::formatter<trajopt::HolonomicConstraint> {
   auto format(const trajopt::HolonomicConstraint& constraint,
               FormatContext& ctx) {
     using namespace trajopt;
-    if (std::holds_alternative<HolonomicVelocityConstraint>(constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<HolonomicVelocityConstraint>(constraint));
-    } else if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
+    if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
                             std::get<AngularVelocityConstraint>(constraint));
+    } else if (std::holds_alternative<HolonomicVelocityConstraint>(constraint)) {
+      return fmt::format_to(ctx.out(), "constraint: {}",
+                            std::get<HolonomicVelocityConstraint>(constraint));
     } else {
       return ctx.out();
     }

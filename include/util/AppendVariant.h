@@ -28,3 +28,9 @@ std::variant<Vs..., Aps...> _append_variant(
     [[maybe_unused]] Aps... newvals) {
   return std::variant<Vs..., Aps...>();
 }
+
+template <typename... Vs, typename... Aps>
+inline std::variant<Vs...> _get_as_sub_vari(std::variant<Vs..., Aps...> myvar) {
+  std::get<1>(myvar);
+  return std::variant<Vs..., Aps...>();
+}

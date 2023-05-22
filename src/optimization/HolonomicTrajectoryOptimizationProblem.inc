@@ -6,11 +6,10 @@
 
 #include "DebugOptions.h"
 #include "TrajectoryGenerationException.h"
-#include "drivetrain/HolonomicDrivetrain.h"
 #include "obstacle/Obstacle.h"
 #include "optimization/HolonomicTrajectoryOptimizationProblem.h"
-#include "path/HolonomicPath.h"
-#include "path/HolonomicWaypoint.h"
+#include "optimization/TrajectoryOptimizationProblem.h"
+#include "path/Path.h"
 #include "solution/HolonomicSolution.h"
 
 namespace trajopt {
@@ -28,13 +27,7 @@ HolonomicTrajectoryOptimizationProblem<Opti>::
       omega(),
       ax(),
       ay(),
-      alpha(),
-      vxSegments(),
-      vySegments(),
-      omegaSegments(),
-      axSegments(),
-      aySegments(),
-      alphaSegments() {
+      alpha() {
   vx.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
   vy.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
   omega.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
@@ -149,7 +142,8 @@ void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyKinematicsConstraints(
 
 template <typename Opti>
 void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicConstraint(
-    Opti& opti, const Expression& vx, const Expression& vy,
+    Opti& opti, const Expression& x, const Expression& y, const Expression& theta,
+    const Expression& vx, const Expression& vy,
     const Expression& omega, const Expression& ax, const Expression& ay,
     const Expression& alpha, const HolonomicConstraint& holonomicConstraint) {
   if (std::holds_alternative<HolonomicVelocityConstraint>(holonomicConstraint)) {
@@ -163,6 +157,8 @@ void HolonomicTrajectoryOptimizationProblem<Opti>::ApplyHolonomicConstraint(
         std::get<AngularVelocityConstraint>(holonomicConstraint);
     TrajectoryOptimizationProblem<Opti>::ApplyIntervalSet1dConstraint(
         opti, omega, angularVelocityConstraint.angularVelocityBound);
+  } else {
+    TrajectoryOptimizationProblem<Opti>::ApplyConstraint(opti, x, y, theta, )
   }
 }
 
