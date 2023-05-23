@@ -12,21 +12,19 @@
 #include "DebugOptions.h"
 #include "InvalidPathException.h"
 #include "drivetrain/SwerveDrivetrain.h"
-#include "optimization/SwerveTrajectoryOptimizationProblem.h"
+// #include "optimization/SwerveTrajectoryOptimizationProblem.h"
 #include "solution/SwerveSolution.h"
 
 namespace trajopt {
 
 SwerveSolution OptimalTrajectoryGenerator::Generate(
-    const SwerveDrivetrain& swerveDrivetrain,
-    const HolonomicPath& holonomicPath) {
-  if (!holonomicPath.IsValid()) {
-    throw InvalidPathException("Cannot optimize an invalid path.");
-  }
-  SwerveTrajectoryOptimizationProblem<_OPTI_BACKEND> problem(swerveDrivetrain,
-                                                             holonomicPath);
-  // SwerveTrajectoryOptimizationProblem<CasADiOpti> problem(swerveDrivetrain,
-  // holonomicPath);
-  return problem.Generate();
+    const SwervePath& swervePath) {
+  // if (!holonomicPath.IsValid()) {
+  //   throw InvalidPathException("Cannot optimize an invalid path.");
+  // }
+  // SwerveTrajectoryOptimizationProblem<_OPTI_BACKEND> problem(swerveDrivetrain,
+  //                                                            holonomicPath);
+  // return problem.Generate();
+  return SwerveSolution{};
 }
 }  // namespace trajopt

@@ -29,11 +29,7 @@ const SwervePath& SwervePathBuilder::GetPath() const {
 }
 
 void SwervePathBuilder::SetDrivetrain(SwerveDrivetrain drivetrain) {
-  if (path.waypoints.empty()) {
-    path.drivetrain = std::move(drivetrain);
-  } else {
-    path.waypoints.back().segmentDrivetrain = std::move(drivetrain);
-  }
+  path.drivetrain = std::move(drivetrain);
 }
 
 void SwervePathBuilder::PoseWpt(size_t index, double x, double y, double heading) {

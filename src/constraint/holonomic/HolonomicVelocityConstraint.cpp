@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "constraint/VelocityConstraint.h"
+#include "constraint/holonomic/HolonomicVelocityConstraint.h"
 
 #include <optional>
 

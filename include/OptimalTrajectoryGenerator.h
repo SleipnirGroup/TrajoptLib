@@ -3,7 +3,6 @@
 #pragma once
 
 #include "SymbolExports.h"
-#include "drivetrain/SwerveDrivetrain.h"
 #include "path/Path.h"
 #include "solution/SwerveSolution.h"
 

@@ -27,9 +27,9 @@ struct TRAJOPT_DLLEXPORT DifferentialCentripetalAccelerationConstraint {
    * @param velocityY The velocity's y component.
    * @param tolerances The tolerances considered to satisfy the constraint.
    */
-  std::optional<SolutionError> CheckVelocity(
-      double leftVelocity, double rightVelocity,
-      const SolutionTolerances& tolerances) const noexcept;
+  // std::optional<SolutionError> CheckVelocity(
+  //     double leftVelocity, double rightVelocity,
+  //     const SolutionTolerances& tolerances) const noexcept;
 };
 }  // namespace trajopt
 

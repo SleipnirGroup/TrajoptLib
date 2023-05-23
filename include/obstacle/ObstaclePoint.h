@@ -9,8 +9,7 @@ namespace trajopt {
 /**
  * @brief A point of an obstacle, usually representing a vertex of a polygon.
  */
-class TRAJOPT_DLLEXPORT ObstaclePoint {
- public:
+struct TRAJOPT_DLLEXPORT ObstaclePoint {
   /**
    * @brief the x-coordinate of obstacle point
    */

@@ -36,9 +36,16 @@ using HolonomicConstraint = decltype(_append_variant(
  * @param tolerances The tolerances considered to satisfy the constraint.
  */
 std::optional<SolutionError> CheckState(
-    const HolonomicConstraint& constraint, double x, double y, double heading,
-    double velocityX, double velocityY, double angularVelocity,
-    double accelerationX, double accelerationY, double angularAcceleration,
+    const HolonomicConstraint& constraint,
+    double x,
+    double y,
+    double heading,
+    double velocityX,
+    double velocityY,
+    double angularVelocity,
+    double accelerationX,
+    double accelerationY,
+    double angularAcceleration,
     const SolutionTolerances& tolerances) noexcept;
 
 }  // namespace trajopt

@@ -1,248 +1,248 @@
-// Copyright (c) TrajoptLib contributors
+// // Copyright (c) TrajoptLib contributors
 
-#pragma once
+// #pragma once
 
-#include <cmath>
-#include <memory>
-#include <exception>
-#include <limits>
-#include <numeric>
-#include <variant>
-#include <vector>
+// #include <cmath>
+// #include <memory>
+// #include <exception>
+// #include <limits>
+// #include <numeric>
+// #include <variant>
+// #include <vector>
 
-#include "DebugOptions.h"
-#include "TrajectoryGenerationException.h"
-#include "constraint/LinePointConstraint.h"
-#include "constraint/PointLineConstraint.h"
-#include "constraint/PointPointConstraint.h"
-#include "constraint/TranslationConstraint.h"
-#include "obstacle/Obstacle.h"
-#include "optimization/TrajectoryOptimizationProblem.h"
-#include "path/Path.h"
-#include "set/ConeSet2d.h"
-#include "set/EllipticalSet2d.h"
-#include "set/IntervalSet1d.h"
-#include "set/LinearSet2d.h"
-#include "set/RectangularSet2d.h"
-#include "set/Set2d.h"
+// #include "DebugOptions.h"
+// #include "TrajectoryGenerationException.h"
+// #include "constraint/LinePointConstraint.h"
+// #include "constraint/PointLineConstraint.h"
+// #include "constraint/PointPointConstraint.h"
+// #include "constraint/TranslationConstraint.h"
+// #include "obstacle/Obstacle.h"
+// #include "optimization/TrajectoryOptimizationProblem.h"
+// #include "path/Path.h"
+// #include "set/ConeSet2d.h"
+// #include "set/EllipticalSet2d.h"
+// #include "set/IntervalSet1d.h"
+// #include "set/LinearSet2d.h"
+// #include "set/RectangularSet2d.h"
+// #include "set/Set2d.h"
 
-namespace trajopt {
+// namespace trajopt {
 
-template <typename Opti>
-TrajectoryOptimizationProblem<Opti>::TrajectoryOptimizationProblem(std::vector<size_t>&& ctrlIntCnts)
-      : ctrlIntCnts(std::move(ctrlIntCnts)),
-      wpCnt(TrajectoryOptimizationProblem<Opti>::ctrlIntCnts.size() + 1),
-      segCnt(wpCnt - 1),
-      ctrlIntTot(std::accumulate(ctrlIntCnts.begin(), ctrlIntCnts.end(), 0)),
-      sampTot(ctrlIntTot + 1) {
-  dt.reserve(ctrlIntCnts);
-  x.reserve(sampTot);
-  y.reserve(sampTot);
-  theta.reserve(sampTot);
+// template <typename Opti>
+// TrajectoryOptimizationProblem<Opti>::TrajectoryOptimizationProblem(std::vector<size_t>&& ctrlIntCnts)
+//       : ctrlIntCnts(std::move(ctrlIntCnts)),
+//       wpCnt(TrajectoryOptimizationProblem<Opti>::ctrlIntCnts.size() + 1),
+//       segCnt(wpCnt - 1),
+//       ctrlIntTot(std::accumulate(ctrlIntCnts.begin(), ctrlIntCnts.end(), 0)),
+//       sampTot(ctrlIntTot + 1) {
+//   dt.reserve(ctrlIntCnts);
+//   x.reserve(sampTot);
+//   y.reserve(sampTot);
+//   theta.reserve(sampTot);
 
-  for (size_t sampIdx = 0; sampIdx < sampTot; sampIdx++) {
-    x.push_back(opti.Variable());
-    y.push_back(opti.Variable());
-    theta.push_back(opti.Variable());
-  }
+//   for (size_t sampIdx = 0; sampIdx < sampTot; sampIdx++) {
+//     x.push_back(opti.Variable());
+//     y.push_back(opti.Variable());
+//     theta.push_back(opti.Variable());
+//   }
 
-  Expression totalT = 0;
-  for (size_t segIdx = 0; segIdx < segCnt; segIdx++) {
-    Expression segmentDt = opti.Variable();
-    size_t segCtrlIntCnt = ctrlIntCnts.at(segIdx);
-    for (size_t segIntIdx = 0; segIntIdx < segCtrlIntCnt; segIntIdx++) {
-      dt.push_back(segmentDt);
-    }
-    totalT += segCtrlIntCnt * segmentDt;
-    opti.SubjectTo(segmentDt >= 0);
-    opti.SetInitial(segmentDt, 5.0 / segCtrlIntCnt);
-  }
-  opti.Minimize(totalT);
-}
+//   Expression totalT = 0;
+//   for (size_t segIdx = 0; segIdx < segCnt; segIdx++) {
+//     Expression segmentDt = opti.Variable();
+//     size_t segCtrlIntCnt = ctrlIntCnts.at(segIdx);
+//     for (size_t segIntIdx = 0; segIntIdx < segCtrlIntCnt; segIntIdx++) {
+//       dt.push_back(segmentDt);
+//     }
+//     totalT += segCtrlIntCnt * segmentDt;
+//     opti.SubjectTo(segmentDt >= 0);
+//     opti.SetInitial(segmentDt, 5.0 / segCtrlIntCnt);
+//   }
+//   opti.Minimize(totalT);
+// }
 
-template <typename Opti>
-void TrajectoryOptimizationProblem<Opti>::ApplyIntervalSet1dConstraint(
-    Opti& opti, const Expression& scalar, const IntervalSet1d& set1d) {
-  if (set1d.IsExact()) {
-    opti.SubjectTo(scalar == set1d.lower);
-  } else {
-    if (set1d.IsLowerBounded()) {
-      opti.SubjectTo(scalar >= set1d.lower);
-    }
-    if (set1d.IsUpperBounded()) {
-      opti.SubjectTo(scalar <= set1d.upper);
-    }
-  }
-}
+// template <typename Opti>
+// void TrajectoryOptimizationProblem<Opti>::ApplyIntervalSet1dConstraint(
+//     Opti& opti, const Expression& scalar, const IntervalSet1d& set1d) {
+//   if (set1d.IsExact()) {
+//     opti.SubjectTo(scalar == set1d.lower);
+//   } else {
+//     if (set1d.IsLowerBounded()) {
+//       opti.SubjectTo(scalar >= set1d.lower);
+//     }
+//     if (set1d.IsUpperBounded()) {
+//       opti.SubjectTo(scalar <= set1d.upper);
+//     }
+//   }
+// }
 
-template <typename Opti>
-void TrajectoryOptimizationProblem<Opti>::ApplySet2dConstraint(
-    Opti& opti, const Expression& vectorX, const Expression& vectorY,
-    const Set2d& set2d) {
-  if (std::holds_alternative<RectangularSet2d>(set2d)) {
-    auto& rectangularSet2d = std::get<RectangularSet2d>(set2d);
-    ApplyIntervalSet1dConstraint(opti, vectorX, rectangularSet2d.xBound);
-    ApplyIntervalSet1dConstraint(opti, vectorY, rectangularSet2d.yBound);
-  } else if (std::holds_alternative<LinearSet2d>(set2d)) {
-    auto& linearSet2d = std::get<LinearSet2d>(set2d);
-    double sinTheta = std::sin(linearSet2d.theta);
-    double cosTheta = std::cos(linearSet2d.theta);
-    opti.SubjectTo(vectorX * sinTheta == vectorY * cosTheta);
-  } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
-    auto& ellipticalSet2d = std::get<EllipticalSet2d>(set2d);
-    auto scaledVectorXSquared = (vectorX * vectorX) / (ellipticalSet2d.xRadius *
-                                                       ellipticalSet2d.xRadius);
-    auto scaledVectorYSquared = (vectorY * vectorY) / (ellipticalSet2d.yRadius *
-                                                       ellipticalSet2d.yRadius);
-    auto lhs = scaledVectorXSquared + scaledVectorYSquared;
-    using enum EllipticalSet2d::Direction;
-    switch (ellipticalSet2d.direction) {
-      case kInside:
-        opti.SubjectTo(lhs <= 1.0);
-        break;
-      case kCentered:
-        opti.SubjectTo(lhs == 1.0);
-        break;
-      case kOutside:
-        opti.SubjectTo(lhs >= 1.0);
-        break;
-    }
-  } else if (std::holds_alternative<ConeSet2d>(set2d)) {
-    auto& coneSet2d = std::get<ConeSet2d>(set2d);
-    opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.upper) >=  // NOLINT
-                   vectorY * cos(coneSet2d.thetaBound.upper));   // NOLINT
-    opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.lower) <=  // NOLINT
-                   vectorY * cos(coneSet2d.thetaBound.lower));   // NOLINT
-  }
-}
+// template <typename Opti>
+// void TrajectoryOptimizationProblem<Opti>::ApplySet2dConstraint(
+//     Opti& opti, const Expression& vectorX, const Expression& vectorY,
+//     const Set2d& set2d) {
+//   if (std::holds_alternative<RectangularSet2d>(set2d)) {
+//     auto& rectangularSet2d = std::get<RectangularSet2d>(set2d);
+//     ApplyIntervalSet1dConstraint(opti, vectorX, rectangularSet2d.xBound);
+//     ApplyIntervalSet1dConstraint(opti, vectorY, rectangularSet2d.yBound);
+//   } else if (std::holds_alternative<LinearSet2d>(set2d)) {
+//     auto& linearSet2d = std::get<LinearSet2d>(set2d);
+//     double sinTheta = std::sin(linearSet2d.theta);
+//     double cosTheta = std::cos(linearSet2d.theta);
+//     opti.SubjectTo(vectorX * sinTheta == vectorY * cosTheta);
+//   } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
+//     auto& ellipticalSet2d = std::get<EllipticalSet2d>(set2d);
+//     auto scaledVectorXSquared = (vectorX * vectorX) / (ellipticalSet2d.xRadius *
+//                                                        ellipticalSet2d.xRadius);
+//     auto scaledVectorYSquared = (vectorY * vectorY) / (ellipticalSet2d.yRadius *
+//                                                        ellipticalSet2d.yRadius);
+//     auto lhs = scaledVectorXSquared + scaledVectorYSquared;
+//     using enum EllipticalSet2d::Direction;
+//     switch (ellipticalSet2d.direction) {
+//       case kInside:
+//         opti.SubjectTo(lhs <= 1.0);
+//         break;
+//       case kCentered:
+//         opti.SubjectTo(lhs == 1.0);
+//         break;
+//       case kOutside:
+//         opti.SubjectTo(lhs >= 1.0);
+//         break;
+//     }
+//   } else if (std::holds_alternative<ConeSet2d>(set2d)) {
+//     auto& coneSet2d = std::get<ConeSet2d>(set2d);
+//     opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.upper) >=  // NOLINT
+//                    vectorY * cos(coneSet2d.thetaBound.upper));   // NOLINT
+//     opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.lower) <=  // NOLINT
+//                    vectorY * cos(coneSet2d.thetaBound.lower));   // NOLINT
+//   }
+// }
 
-template <typename Opti>
-std::vector<double> TrajectoryOptimizationProblem<Opti>::SolutionValue(
-    const Opti& opti, const std::vector<Expression>& rowVector) {
-  std::vector<double> valueRowVector;
-  valueRowVector.reserve(rowVector.size());
-  for (auto& expression : rowVector) {
-    valueRowVector.push_back(opti.SolutionValue(expression));
-  }
-  return valueRowVector;
-}
+// template <typename Opti>
+// std::vector<double> TrajectoryOptimizationProblem<Opti>::SolutionValue(
+//     const Opti& opti, const std::vector<Expression>& rowVector) {
+//   std::vector<double> valueRowVector;
+//   valueRowVector.reserve(rowVector.size());
+//   for (auto& expression : rowVector) {
+//     valueRowVector.push_back(opti.SolutionValue(expression));
+//   }
+//   return valueRowVector;
+// }
 
-template <typename Opti>
-std::vector<std::vector<double>>
-TrajectoryOptimizationProblem<Opti>::SolutionValue(
-    const Opti& opti, const std::vector<std::vector<Expression>>& matrix) {
-  std::vector<std::vector<double>> valueMatrix;
-  valueMatrix.reserve(matrix.size());
-  for (auto& row : matrix) {
-    valueMatrix.push_back(
-        TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, row));
-  }
-  return valueMatrix;
-}
+// template <typename Opti>
+// std::vector<std::vector<double>>
+// TrajectoryOptimizationProblem<Opti>::SolutionValue(
+//     const Opti& opti, const std::vector<std::vector<Expression>>& matrix) {
+//   std::vector<std::vector<double>> valueMatrix;
+//   valueMatrix.reserve(matrix.size());
+//   for (auto& row : matrix) {
+//     valueMatrix.push_back(
+//         TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, row));
+//   }
+//   return valueMatrix;
+// }
 
-template <typename Opti>
-const typename TrajectoryOptimizationProblem<Opti>::RobotPoint
-TrajectoryOptimizationProblem<Opti>::SolveRobotPointPosition(
-    const Expression& x, const Expression& y, const Expression& theta,
-    double robotPointX, double robotPointY) {
-  RobotPoint position{0.0, 0.0};
-  if (robotPointX == 0.0 && robotPointY == 0.0) {
-    position.x = x;
-    position.y = y;
-  } else {
-    double cornerDiagonal = std::hypot(robotPointX, robotPointY);
-    double cornerAngle = std::atan2(robotPointY, robotPointX);
-    position.x = x + cornerDiagonal * cos(cornerAngle + theta);  // NOLINT
-    position.y = y + cornerDiagonal * sin(cornerAngle + theta);  // NOLINT
-  }
-  return position;
-}
+// template <typename Opti>
+// const typename TrajectoryOptimizationProblem<Opti>::RobotPoint
+// TrajectoryOptimizationProblem<Opti>::SolveRobotPointPosition(
+//     const Expression& x, const Expression& y, const Expression& theta,
+//     double robotPointX, double robotPointY) {
+//   RobotPoint position{0.0, 0.0};
+//   if (robotPointX == 0.0 && robotPointY == 0.0) {
+//     position.x = x;
+//     position.y = y;
+//   } else {
+//     double cornerDiagonal = std::hypot(robotPointX, robotPointY);
+//     double cornerAngle = std::atan2(robotPointY, robotPointX);
+//     position.x = x + cornerDiagonal * cos(cornerAngle + theta);  // NOLINT
+//     position.y = y + cornerDiagonal * sin(cornerAngle + theta);  // NOLINT
+//   }
+//   return position;
+// }
 
-// https://www.desmos.com/calculator/cqmc1tjtsv
-template <typename Expression, typename LineNumberType,
-          typename PointNumberType>
-Expression linePointDist(LineNumberType lineStartX, LineNumberType lineStartY,
-                         LineNumberType lineEndX, LineNumberType lineEndY,
-                         PointNumberType pointX, PointNumberType pointY) {
-  Expression lX = lineEndX - lineStartX;
-  Expression lY = lineEndY - lineStartY;
-  Expression vX = pointX - lineStartX;
-  Expression vY = pointY - lineStartY;
-  Expression dot = vX * lX + vY * lY;
-  Expression lNormSquared = lX * lX + lY * lY;
-  Expression t = dot / lNormSquared;
-  // Expression tBounded = std::fmax(std::fmin(t, 1), 0);
-  Expression tBounded = t;
-  Expression iX = (1 - tBounded) * lineStartX + tBounded * lineEndX;
-  Expression iY = (1 - tBounded) * lineStartY + tBounded * lineEndY;
-  Expression distSquared =
-      (iX - pointX) * (iX - pointX) + (iY - pointY) * (iY - pointY);
-  return distSquared;
-}
+// // https://www.desmos.com/calculator/cqmc1tjtsv
+// template <typename Expression, typename LineNumberType,
+//           typename PointNumberType>
+// Expression linePointDist(LineNumberType lineStartX, LineNumberType lineStartY,
+//                          LineNumberType lineEndX, LineNumberType lineEndY,
+//                          PointNumberType pointX, PointNumberType pointY) {
+//   Expression lX = lineEndX - lineStartX;
+//   Expression lY = lineEndY - lineStartY;
+//   Expression vX = pointX - lineStartX;
+//   Expression vY = pointY - lineStartY;
+//   Expression dot = vX * lX + vY * lY;
+//   Expression lNormSquared = lX * lX + lY * lY;
+//   Expression t = dot / lNormSquared;
+//   // Expression tBounded = std::fmax(std::fmin(t, 1), 0);
+//   Expression tBounded = t;
+//   Expression iX = (1 - tBounded) * lineStartX + tBounded * lineEndX;
+//   Expression iY = (1 - tBounded) * lineStartY + tBounded * lineEndY;
+//   Expression distSquared =
+//       (iX - pointX) * (iX - pointX) + (iY - pointY) * (iY - pointY);
+//   return distSquared;
+// }
 
-template <typename Opti>
-void TrajectoryOptimizationProblem<Opti>::ApplyConstraint(
-    Opti& opti, const Expression& x, const Expression& y,
-    const Expression& theta,
-    const Constraint& constraint) {
-  if (std::holds_alternative<TranslationConstraint>(constraint)) {
-    auto& translationConstraint = std::get<TranslationConstraint>(constraint);
-    ApplySet2dConstraint(opti, x, y, translationConstraint.translationBound);
-  } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
-    auto& headingConstraint = std::get<HeadingConstraint>(constraint);
-    ApplyIntervalSet1dConstraint(opti, theta, headingConstraint.headingBound);
-  } else if (std::holds_alternative<PoseConstraint>(constraint)) {
-    auto poseConstraint = std::get<PoseConstraint>(constraint);
-    auto translationConstraint =
-        static_cast<const TranslationConstraint&>(poseConstraint);
-    auto headingConstraint =
-        static_cast<const HeadingConstraint&>(poseConstraint);
-    ApplyConstraint(opti, x, y, theta, translationConstraint);
-    ApplyConstraint(opti, x, y, theta, headingConstraint);
-  } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
-    // pass
-  } else if (std::holds_alternative<PointLineConstraint>(constraint)) {
-    // pass
-  } else if (std::holds_alternative<PointPointConstraint>(constraint)) {
-    auto pointPointConstraint = std::get<PointPointConstraint>(constraint);
-    double robotPointX = pointPointConstraint.robotPointX;
-    double robotPointY = pointPointConstraint.robotPointY;
-    double fieldPointX = pointPointConstraint.fieldPointX;
-    double fieldPointY = pointPointConstraint.fieldPointY;
-    const RobotPoint bumperCornerPosition =
-        SolveRobotPointPosition(x, y, theta, robotPointX, robotPointY);
-    auto dx = fieldPointX - bumperCornerPosition.x;
-    auto dy = fieldPointY - bumperCornerPosition.y;
-    auto pointDistSquared = dx * dx + dy * dy;
-    IntervalSet1d distSquared = pointPointConstraint.distance;
-    distSquared.lower *= distSquared.lower;
-    distSquared.upper *= distSquared.upper;
-    ApplyIntervalSet1dConstraint(opti, pointDistSquared, distSquared);
-  }
-}
+// template <typename Opti>
+// void TrajectoryOptimizationProblem<Opti>::ApplyConstraint(
+//     Opti& opti, const Expression& x, const Expression& y,
+//     const Expression& theta,
+//     const Constraint& constraint) {
+//   if (std::holds_alternative<TranslationConstraint>(constraint)) {
+//     auto& translationConstraint = std::get<TranslationConstraint>(constraint);
+//     ApplySet2dConstraint(opti, x, y, translationConstraint.translationBound);
+//   } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
+//     auto& headingConstraint = std::get<HeadingConstraint>(constraint);
+//     ApplyIntervalSet1dConstraint(opti, theta, headingConstraint.headingBound);
+//   } else if (std::holds_alternative<PoseConstraint>(constraint)) {
+//     auto poseConstraint = std::get<PoseConstraint>(constraint);
+//     auto translationConstraint =
+//         static_cast<const TranslationConstraint&>(poseConstraint);
+//     auto headingConstraint =
+//         static_cast<const HeadingConstraint&>(poseConstraint);
+//     ApplyConstraint(opti, x, y, theta, translationConstraint);
+//     ApplyConstraint(opti, x, y, theta, headingConstraint);
+//   } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
+//     // pass
+//   } else if (std::holds_alternative<PointLineConstraint>(constraint)) {
+//     // pass
+//   } else if (std::holds_alternative<PointPointConstraint>(constraint)) {
+//     auto pointPointConstraint = std::get<PointPointConstraint>(constraint);
+//     double robotPointX = pointPointConstraint.robotPointX;
+//     double robotPointY = pointPointConstraint.robotPointY;
+//     double fieldPointX = pointPointConstraint.fieldPointX;
+//     double fieldPointY = pointPointConstraint.fieldPointY;
+//     const RobotPoint bumperCornerPosition =
+//         SolveRobotPointPosition(x, y, theta, robotPointX, robotPointY);
+//     auto dx = fieldPointX - bumperCornerPosition.x;
+//     auto dy = fieldPointY - bumperCornerPosition.y;
+//     auto pointDistSquared = dx * dx + dy * dy;
+//     IntervalSet1d distSquared = pointPointConstraint.distance;
+//     distSquared.lower *= distSquared.lower;
+//     distSquared.upper *= distSquared.upper;
+//     ApplyIntervalSet1dConstraint(opti, pointDistSquared, distSquared);
+//   }
+// }
 
-inline void linspace(std::vector<double>& arry, size_t startIndex,
-                     size_t endIndex, double startValue, double endValue) {
-  size_t intervalCount = endIndex - startIndex;
-  double delta = (endValue - startValue) / intervalCount;
-  for (size_t index = 0; index < intervalCount; index++) {
-    // arry[startIndex + index] = startValue + index * delta;
-    arry.push_back(startValue + index * delta);
-  }
-}
+// inline void linspace(std::vector<double>& arry, size_t startIndex,
+//                      size_t endIndex, double startValue, double endValue) {
+//   size_t intervalCount = endIndex - startIndex;
+//   double delta = (endValue - startValue) / intervalCount;
+//   for (size_t index = 0; index < intervalCount; index++) {
+//     // arry[startIndex + index] = startValue + index * delta;
+//     arry.push_back(startValue + index * delta);
+//   }
+// }
 
-template <typename Opti>
-void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuess(
-    Opti& opti, const Solution& solution,
-    std::vector<Expression>& x,
-    std::vector<Expression>& y,
-    std::vector<Expression>& theta) {
-  size_t sampleTotal = x.size();
-  for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
-    opti.SetInitial(x[sampleIndex], solution.x[sampleIndex]);
-    opti.SetInitial(y[sampleIndex], solution.y[sampleIndex]);
-    opti.SetInitial(theta[sampleIndex], solution.theta[sampleIndex]);
-  }
-}
+// template <typename Opti>
+// void TrajectoryOptimizationProblem<Opti>::ApplyInitialGuess(
+//     Opti& opti, const Solution& solution,
+//     std::vector<Expression>& x,
+//     std::vector<Expression>& y,
+//     std::vector<Expression>& theta) {
+//   size_t sampleTotal = x.size();
+//   for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
+//     opti.SetInitial(x[sampleIndex], solution.x[sampleIndex]);
+//     opti.SetInitial(y[sampleIndex], solution.y[sampleIndex]);
+//     opti.SetInitial(theta[sampleIndex], solution.theta[sampleIndex]);
+//   }
+// }
 
-}  // namespace trajopt
+// }  // namespace trajopt
