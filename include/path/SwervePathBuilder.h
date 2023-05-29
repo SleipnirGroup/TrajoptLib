@@ -45,12 +45,14 @@ class SwervePathBuilder {
   void ControlIntervalCounts(std::vector<size_t>&& counts);
   const std::vector<size_t>& GetControlIntervalCounts() const;
 
+  Solution CalculateInitialGuess() const;
+
  private:
   SwervePath path;
 
   std::vector<Bumpers> bumpers;
 
-  std::vector<std::vector<InitialGuessPoint>> initalGuessPoints;
+  std::vector<std::vector<InitialGuessPoint>> initialGuessPoints;
   std::vector<size_t> controlIntervalCounts;
 
   static std::vector<HolonomicConstraint> GetConstraintsForObstacle(const Bumpers& bumpers, const Obstacle& obstacle);

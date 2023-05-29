@@ -23,8 +23,8 @@ SwerveSolution OptimalTrajectoryGenerator::Generate(
   // if (!holonomicPath.IsValid()) {
   //   throw InvalidPathException("Cannot optimize an invalid path.");
   // }
-  SwerveTrajectoryOptimizationProblem<_OPTI_BACKEND> problem(path.GetPath(), path.GetControlIntervalCounts());
-  // return problem.Generate();
-  return SwerveSolution{};
+  SwerveTrajectoryOptimizationProblem<_OPTI_BACKEND> problem(path.GetPath(), path.GetControlIntervalCounts(), path.CalculateInitialGuess());
+  return problem.Generate();
+  // return SwerveSolution{};
 }
 }  // namespace trajopt

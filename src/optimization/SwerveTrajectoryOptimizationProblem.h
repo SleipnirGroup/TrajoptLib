@@ -164,7 +164,10 @@ class SwerveTrajectoryOptimizationProblem {
    * @param swerveDrivetrain the swerve drivetrain
    * @param holonomicPath the holonomic path
    */
-  explicit SwerveTrajectoryOptimizationProblem(const SwervePath& path, const std::vector<size_t>& N);
+  explicit SwerveTrajectoryOptimizationProblem(
+        const SwervePath& path,
+        const std::vector<size_t>& N,
+        const Solution& initialGuess);
 
 #ifdef DEBUG_OUTPUT
   void PrintSolution() const;

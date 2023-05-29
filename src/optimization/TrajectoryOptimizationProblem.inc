@@ -153,7 +153,7 @@ void ApplySet2dConstraint(
 }
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-std::vector<double> SolutionValue(
+std::vector<double> RowSolutionValue(
     const Opti& opti, const std::vector<Expr>& rowVector) {
   std::vector<double> valueRowVector;
   valueRowVector.reserve(rowVector.size());
@@ -164,12 +164,12 @@ std::vector<double> SolutionValue(
 }
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-std::vector<std::vector<double>> SolutionValue(
+std::vector<std::vector<double>> MatrixSolutionValue(
     const Opti& opti, const std::vector<std::vector<Expr>>& matrix) {
   std::vector<std::vector<double>> valueMatrix;
   valueMatrix.reserve(matrix.size());
   for (auto& row : matrix) {
-    valueMatrix.push_back(SolutionValue(opti, row));
+    valueMatrix.push_back(RowSolutionValue(opti, row));
   }
   return valueMatrix;
 }
@@ -244,16 +244,6 @@ void ApplyConstraint(
     distSquared.lower *= distSquared.lower;
     distSquared.upper *= distSquared.upper;
     ApplyIntervalSet1dConstraint(opti, pointDistSquared, distSquared);
-  }
-}
-
-inline void linspace(std::vector<double>& arry, size_t startIndex,
-                     size_t endIndex, double startValue, double endValue) {
-  size_t intervalCount = endIndex - startIndex;
-  double delta = (endValue - startValue) / intervalCount;
-  for (size_t index = 0; index < intervalCount; index++) {
-    // arry[startIndex + index] = startValue + index * delta;
-    arry.push_back(startValue + index * delta);
   }
 }
 

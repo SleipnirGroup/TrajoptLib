@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,27 @@ template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
 SwerveSolution SwerveTrajectoryOptimizationProblem<Expr, Opti>::Generate() {
   try {
     opti.Solve();
+    // std::cout << dt << std::endl;
+    std::cout << x << std::endl;
+    // std::cout << y << std::endl;
+    // std::cout << theta << std::endl;
+    // std::cout << vx << std::endl;
+    // std::cout << vy << std::endl;
+    // std::cout << omega << std::endl;
+    // std::cout << ax << std::endl;
+    // std::cout << ay << std::endl;
+    // std::cout << alpha << std::endl;
+    // fmt::print("{}\n", fmt::join(dt, ", "));
+    // fmt::print("{}\n", fmt::join(x, ", "));
+    // fmt::print("{}\n", fmt::join(y, ", "));
+    // fmt::print("{}\n", fmt::join(theta, ", "));
+    // fmt::print("{}\n", fmt::join(dt, ", "));
+    // fmt::print("{}\n", fmt::join(dt, ", "));
+    // fmt::print("{}\n", fmt::join(dt, ", "));
+    // fmt::print("{}\n", fmt::join(dt, ", "));
+    // fmt::print("{}\n", fmt::join(dt, ", "));
+    // fmt::print("{}\n", fmt::join(dt, ", "));
+    // fmt::print("{}\n", fmt::join(dt, ", "));
     return ConstructSwerveSolution(
         opti,
         dt,
@@ -41,7 +63,7 @@ SwerveSolution SwerveTrajectoryOptimizationProblem<Expr, Opti>::Generate() {
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
 SwerveTrajectoryOptimizationProblem<Expr, Opti>::SwerveTrajectoryOptimizationProblem(
-    const SwervePath& path, const std::vector<size_t>& N)
+    const SwervePath& path, const std::vector<size_t>& N, const Solution& initialGuess)
     : path(path), N(N) {
 
   size_t wptCnt = 1 + N.size();
@@ -92,6 +114,8 @@ SwerveTrajectoryOptimizationProblem<Expr, Opti>::SwerveTrajectoryOptimizationPro
   }
 
   ApplyDiscreteTimeObjective(opti, dt, N);
+  ApplyKinematicsConstraints(opti,
+      x, y, theta, vx, vy, omega, ax, ay, alpha, dt, N);
 
   for (size_t idx = 0; idx < sampTot; ++idx) {
     auto [Fx_net, Fy_net] = SolveNetForce(Fx.at(idx), Fy.at(idx));
@@ -155,6 +179,8 @@ SwerveTrajectoryOptimizationProblem<Expr, Opti>::SwerveTrajectoryOptimizationPro
       }
     }
   }
+
+  ApplyInitialGuess(opti, initialGuess, x, y, theta);
 }
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
@@ -322,18 +348,18 @@ SwerveSolution SwerveTrajectoryOptimizationProblem<Expr, Opti>
     const std::vector<std::vector<Expr>>& Fx,
     const std::vector<std::vector<Expr>>& Fy) {
   return SwerveSolution{
-      SolutionValue(opti, dt),
-      SolutionValue(opti, x),
-      SolutionValue(opti, y),
-      SolutionValue(opti, theta),
-      SolutionValue(opti, vx),
-      SolutionValue(opti, vy),
-      SolutionValue(opti, omega),
-      SolutionValue(opti, ax),
-      SolutionValue(opti, ay),
-      SolutionValue(opti, alpha),
-      SolutionValue(opti, Fx),
-      SolutionValue(opti, Fy)};
+      RowSolutionValue(opti, dt),
+      RowSolutionValue(opti, x),
+      RowSolutionValue(opti, y),
+      RowSolutionValue(opti, theta),
+      RowSolutionValue(opti, vx),
+      RowSolutionValue(opti, vy),
+      RowSolutionValue(opti, omega),
+      RowSolutionValue(opti, ax),
+      RowSolutionValue(opti, ay),
+      RowSolutionValue(opti, alpha),
+      MatrixSolutionValue(opti, Fx),
+      MatrixSolutionValue(opti, Fy)};
 }
 
 }  // namespace trajopt

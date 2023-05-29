@@ -41,8 +41,8 @@ int main() {
   // One Meter Forward
   SwervePathBuilder path;
   path.SetDrivetrain(swerveDrivetrain);
-  path.TranslationWpt(0, 0.0, 0.0, 0.0);
-  path.TranslationWpt(1, 0.0, 0.0, 0.0);
+  path.TranslationWpt(0, 0.0, 0.0);
+  path.TranslationWpt(1, 1.0, 0.0);
   path.WptZeroVelocity(0);
   path.WptZeroVelocity(1);
   path.ControlIntervalCounts({20});
@@ -51,8 +51,10 @@ int main() {
   try {
     SwerveSolution solution =
         OptimalTrajectoryGenerator::Generate(path);
+    fmt::print("[{}]", fmt::join(path.CalculateInitialGuess().x, ","));
+    // fmt::print("Initial Guess: {}\n", SwerveSolution{path.CalculateInitialGuess(), {}, {}, {}, {}, {}, {}, {}, {}});
     fmt::print("{}\n", solution);
-    fmt::print("{}\n", HolonomicTrajectory(solution));
+    // fmt::print("{}\n", HolonomicTrajectory(solution));
   } catch (const std::exception& e) {
     fmt::print("{}", e.what());
   }

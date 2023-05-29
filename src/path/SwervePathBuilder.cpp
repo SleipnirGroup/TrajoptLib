@@ -15,12 +15,14 @@
 #include "constraint/holonomic/HolonomicVelocityConstraint.h"
 #include "drivetrain/SwerveDrivetrain.h"
 #include "obstacle/Obstacle.h"
+#include "optimization/TrajectoryOptimizationProblem.h"
 #include "path/InitialGuessPoint.h"
 #include "path/Path.h"
 #include "set/EllipticalSet2d.h"
 #include "set/IntervalSet1d.h"
 #include "set/LinearSet2d.h"
 #include "set/RectangularSet2d.h"
+#include "solution/Solution.h"
 
 namespace trajopt {
 
@@ -38,14 +40,14 @@ void SwervePathBuilder::PoseWpt(size_t index, double x, double y, double heading
     TranslationConstraint{RectangularSet2d{x, y}});
   path.waypoints.at(index).waypointConstraints.emplace_back(
     HeadingConstraint{heading});
-  initalGuessPoints.at(index).emplace_back(InitialGuessPoint{x, y, heading});
+  initialGuessPoints.at(index).emplace_back(InitialGuessPoint{x, y, heading});
 }
 
 void SwervePathBuilder::TranslationWpt(size_t index, double x, double y, double headingGuess) {
   NewWpts(index);
   path.waypoints.at(index).waypointConstraints.emplace_back(
     TranslationConstraint{RectangularSet2d{x, y}});
-  initalGuessPoints.at(index).emplace_back(InitialGuessPoint{x, y, headingGuess});
+  initialGuessPoints.at(index).emplace_back(InitialGuessPoint{x, y, headingGuess});
 }
 
 void SwervePathBuilder::NewWpts(size_t finalIndex) {
@@ -54,7 +56,7 @@ void SwervePathBuilder::NewWpts(size_t finalIndex) {
   if (targetIdx > greatestIdx) {
     for (int64_t i = greatestIdx + 1; i <= targetIdx; i++) {
       path.waypoints.emplace_back(SwerveWaypoint{});
-      initalGuessPoints.emplace_back(std::vector<InitialGuessPoint>{});
+      initialGuessPoints.emplace_back(std::vector<InitialGuessPoint>{});
       controlIntervalCounts.push_back(i == 0 ? 0 : 40);
     }
   }
@@ -62,7 +64,7 @@ void SwervePathBuilder::NewWpts(size_t finalIndex) {
 
 void SwervePathBuilder::AddInitialGuessPoint(size_t fromIdx, double x, double y, double heading) {
   NewWpts(fromIdx + 1);
-  initalGuessPoints.at(fromIdx + 1).push_back(InitialGuessPoint{x, y, heading});
+  initialGuessPoints.at(fromIdx + 1).push_back(InitialGuessPoint{x, y, heading});
 }
 
 void SwervePathBuilder::WptVelocityDirection(size_t idx, double angle) {
@@ -161,6 +163,88 @@ void SwervePathBuilder::ControlIntervalCounts(std::vector<size_t>&& counts) {
 
 const std::vector<size_t>& SwervePathBuilder::GetControlIntervalCounts() const {
   return controlIntervalCounts;
+}
+
+inline void linspace(std::vector<double>& arry, size_t startIndex,
+                     size_t endIndex, double startValue, double endValue) {
+  size_t intervalCount = endIndex - startIndex;
+  double delta = (endValue - startValue) / intervalCount;
+  for (size_t index = 0; index < intervalCount; index++) {
+    // arry[startIndex + index] = startValue + index * delta;
+    arry.push_back(startValue + index * delta);
+  }
+}
+
+Solution SwervePathBuilder::CalculateInitialGuess() const {
+  size_t wptCnt = path.waypoints.size();
+  size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
+  Solution initialGuess{};
+  initialGuess.x.reserve(sampTot);
+  initialGuess.y.reserve(sampTot);
+  initialGuess.theta.reserve(sampTot);
+  initialGuess.x.push_back(initialGuessPoints.at(0).at(0).x);
+  initialGuess.y.push_back(initialGuessPoints.at(0).at(0).y);
+  initialGuess.theta.push_back(initialGuessPoints.at(0).at(0).heading);
+  size_t sampIdx = 1;
+  for (size_t wptIdx = 1; wptIdx < wptCnt; wptIdx++) {
+    auto& prevWptFinalInitialGuessPt = initialGuessPoints.at(wptIdx - 1).back();
+    auto& currWptFirstInitialGuessPt = initialGuessPoints.at(wptIdx).front();
+    
+    size_t N_sgmt = controlIntervalCounts.at(wptIdx - 1);
+    size_t guessPointCount = initialGuessPoints.at(wptIdx).size();
+    size_t N_guessSgmt = N_sgmt / guessPointCount;
+    linspace(initialGuess.x,
+             sampIdx,
+             sampIdx + N_guessSgmt,
+             prevWptFinalInitialGuessPt.x,
+             currWptFirstInitialGuessPt.x);
+    linspace(initialGuess.y,
+             sampIdx,
+             sampIdx + N_guessSgmt,
+             prevWptFinalInitialGuessPt.y,
+             currWptFirstInitialGuessPt.y);
+    linspace(initialGuess.theta,
+             sampIdx,
+             sampIdx + N_guessSgmt,
+             prevWptFinalInitialGuessPt.heading,
+             currWptFirstInitialGuessPt.heading);
+    for (size_t guessPointIdx = 1; guessPointIdx < guessPointCount - 1;
+         guessPointIdx++) {  // if three or more guess points
+      size_t prevGuessPointSampIdx = sampIdx + guessPointIdx * N_guessSgmt;
+      size_t guessPointSampleIndex = sampIdx + (guessPointIdx + 1) * N_guessSgmt;
+      linspace(initialGuess.x, prevGuessPointSampIdx,
+               guessPointSampleIndex,
+               initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).x,
+               initialGuessPoints.at(wptIdx).at(guessPointIdx).x);
+      linspace(initialGuess.y, prevGuessPointSampIdx,
+               guessPointSampleIndex,
+               initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).y,
+               initialGuessPoints.at(wptIdx).at(guessPointIdx).y);
+      linspace(initialGuess.theta, prevGuessPointSampIdx,
+               guessPointSampleIndex,
+               initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).heading,
+               initialGuessPoints.at(wptIdx).at(guessPointIdx).heading);
+    }
+    if (guessPointCount > 1) {  // if two or more guess points
+      size_t secondToLastGuessPointSampleIdx =
+          sampIdx + (guessPointCount - 1) * N_guessSgmt;
+      size_t finalGuessPointSampleIndex = sampIdx + N_sgmt;
+      linspace(initialGuess.x, secondToLastGuessPointSampleIdx,
+               finalGuessPointSampleIndex,
+               initialGuessPoints.at(wptIdx).at(guessPointCount - 2).x,
+               initialGuessPoints.at(wptIdx).at(guessPointCount - 1).x);
+      linspace(initialGuess.y, secondToLastGuessPointSampleIdx,
+               finalGuessPointSampleIndex,
+               initialGuessPoints.at(wptIdx).at(guessPointCount - 2).y,
+               initialGuessPoints.at(wptIdx).at(guessPointCount - 1).y);
+      linspace(initialGuess.theta, secondToLastGuessPointSampleIdx,
+               finalGuessPointSampleIndex,
+               initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
+               initialGuessPoints.at(wptIdx).at(guessPointCount - 1).heading);
+    }
+    sampIdx += N_sgmt;
+  }
+  return initialGuess;
 }
 
 std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(

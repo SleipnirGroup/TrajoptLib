@@ -32,7 +32,7 @@ void ApplyDiscreteTimeObjective(Opti& opti,
    * the initial sample
    * @return the index in the array
    */
-size_t GetIdx(const std::vector<size_t>& N,
+inline size_t GetIdx(const std::vector<size_t>& N,
               size_t wptIdx,
               size_t sampIdx = 0);
 
@@ -46,11 +46,11 @@ void ApplySet2dConstraint(Opti& opti, const Expr& vectorX,
                                    const Set2d& set2d);
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-std::vector<double> SolutionValue(
+std::vector<double> RowSolutionValue(
       const Opti& opti, const std::vector<Expr>& rowVector);
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-std::vector<std::vector<double>> SolutionValue(
+std::vector<std::vector<double>> MatrixSolutionValue(
       const Opti& opti, const std::vector<std::vector<Expr>>& matrix);
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
