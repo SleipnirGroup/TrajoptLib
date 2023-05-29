@@ -18,14 +18,6 @@ struct TRAJOPT_DLLEXPORT ObstaclePoint {
    * @brief the y-coordinate of obstacle point
    */
   double y;
-
-  /**
-   * @brief Construct a new Obstacle Point object with its position
-   *
-   * @param x x-coordinate
-   * @param y y-coordinate
-   */
-  ObstaclePoint(double x, double y);
 };
 
 }  // namespace trajopt

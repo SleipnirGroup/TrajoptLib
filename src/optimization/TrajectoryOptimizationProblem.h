@@ -70,7 +70,7 @@ void ApplyConstraint(Opti& opti, const Expr& x,
 * @param bumperCorner the bumper corner to find the position for
 * @return the bumper corner 2 x 1 position vector
 */
-template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+template<typename Expr> requires ExprSys<Expr>
 static const std::pair<Expr, Expr> SolveRobotPointPosition(
       const Expr& x, const Expr& y, const Expr& theta,
       double robotPointX, double robotPointY);

@@ -174,20 +174,20 @@ std::vector<std::vector<double>> SolutionValue(
   return valueMatrix;
 }
 
-template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+template<typename Expr> requires ExprSys<Expr>
 const std::pair<Expr, Expr>
 SolveRobotPointPosition(
     const Expr& x, const Expr& y, const Expr& theta,
     double robotPointX, double robotPointY) {
   std::pair<Expr, Expr> position{0.0, 0.0};
   if (robotPointX == 0.0 && robotPointY == 0.0) {
-    position.x = x;
-    position.y = y;
+    position.first = x;
+    position.second = y;
   } else {
     double cornerDiagonal = std::hypot(robotPointX, robotPointY);
     double cornerAngle = std::atan2(robotPointY, robotPointX);
-    position.x = x + cornerDiagonal * cos(cornerAngle + theta);  // NOLINT
-    position.y = y + cornerDiagonal * sin(cornerAngle + theta);  // NOLINT
+    position.first = x + cornerDiagonal * cos(cornerAngle + theta);  // NOLINT
+    position.second = y + cornerDiagonal * sin(cornerAngle + theta);  // NOLINT
   }
   return position;
 }
@@ -235,10 +235,10 @@ void ApplyConstraint(
     double robotPointY = pointPointConstraint.robotPointY;
     double fieldPointX = pointPointConstraint.fieldPointX;
     double fieldPointY = pointPointConstraint.fieldPointY;
-    auto bumperCornerPosition =
+    auto [bumperCornerX, bumperCornerY] =
         SolveRobotPointPosition(x, y, theta, robotPointX, robotPointY);
-    auto dx = fieldPointX - bumperCornerPosition.x;
-    auto dy = fieldPointY - bumperCornerPosition.y;
+    auto dx = fieldPointX - bumperCornerX;
+    auto dy = fieldPointY - bumperCornerY;
     auto pointDistSquared = dx * dx + dy * dy;
     IntervalSet1d distSquared = pointPointConstraint.distance;
     distSquared.lower *= distSquared.lower;

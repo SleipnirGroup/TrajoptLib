@@ -155,6 +155,14 @@ void SwervePathBuilder::SgmtObstacle(size_t fromIdx, size_t toIdx,
   }
 }
 
+void SwervePathBuilder::ControlIntervalCounts(std::vector<size_t>&& counts) {
+  controlIntervalCounts = std::move(counts);
+}
+
+const std::vector<size_t>& SwervePathBuilder::GetControlIntervalCounts() const {
+  return controlIntervalCounts;
+}
+
 std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
     const Bumpers& bumpers, const Obstacle& obstacle) {
 
@@ -224,9 +232,5 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
     }
   }
   return constraints;
-}
-
-void SwervePathBuilder::ControlIntervalCounts(std::vector<size_t>&& counts) {
-  controlIntervalCounts = std::move(counts);
 }
 }  // namespace trajopt

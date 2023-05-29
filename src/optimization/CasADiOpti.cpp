@@ -1,7 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
 #include <casadi/core/generic_matrix.hpp>
-#include "optimization/SwerveTrajectoryOptimizationProblem.h"
 #ifdef OPTIMIZER_BACKEND_CASADI
 #include "optimization/CasADiOpti.h"
 
@@ -47,6 +46,4 @@ double CasADiOpti::SolutionValue(const casadi::MX& expression) const {
   }
 }
 }  // namespace trajopt
-
-template class trajopt::SwerveTrajectoryOptimizationProblem<casadi::MX, trajopt::CasADiOpti>;
 #endif

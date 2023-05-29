@@ -117,6 +117,46 @@ SwerveTrajectoryOptimizationProblem<Expr, Opti>::SwerveTrajectoryOptimizationPro
         Fy.at(idx),
         path.drivetrain);
   }
+
+  for (size_t wptIdx = 0; wptIdx < wptCnt; ++wptIdx) {
+    for (auto& constraint : path.waypoints.at(wptIdx).waypointConstraints) {
+      size_t idx = GetIdx(N, wptIdx + 1, 0) - 1; // first idx of next wpt - 1
+      ApplyHolonomicConstraint(
+          opti,
+          x.at(idx),
+          y.at(idx),
+          theta.at(idx),
+          vx.at(idx),
+          vy.at(idx),
+          omega.at(idx),
+          ax.at(idx),
+          ay.at(idx),
+          alpha.at(idx),
+          constraint);
+    }
+  } // TODO: try changing the path struct so instead of having waypoint objects
+    //       it's just two vectors of waypoint constraints and segment constraints,
+    //       the waypoint one would be one larger by size
+  for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
+    for (auto& constraint : path.waypoints.at(sgmtIdx + 1).segmentConstraints) {
+      size_t startIdx = GetIdx(N, sgmtIdx + 1, 0);
+      size_t endIdx = GetIdx(N, sgmtIdx + 2, 0);
+      for (size_t idx = startIdx; idx < endIdx; ++idx) {
+        ApplyHolonomicConstraint(
+            opti,
+            x.at(idx),
+            y.at(idx),
+            theta.at(idx),
+            vx.at(idx),
+            vy.at(idx),
+            omega.at(idx),
+            ax.at(idx),
+            ay.at(idx),
+            alpha.at(idx),
+            constraint);
+      }
+    }
+  }
 }
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>

@@ -43,6 +43,7 @@ class SwervePathBuilder {
   void SgmtObstacle(size_t fromIdx, size_t toIdx, const Obstacle& obstacle, bool includeWpts = true);
 
   void ControlIntervalCounts(std::vector<size_t>&& counts);
+  const std::vector<size_t>& GetControlIntervalCounts() const;
 
  private:
   SwervePath path;

@@ -1,15 +1,15 @@
-// // Copyright (c) TrajoptLib contributors
+// Copyright (c) TrajoptLib contributors
 
-// #pragma once
+#pragma once
 
-// #include <memory>
-// #include <vector>
+#include <memory>
+#include <vector>
 
-// #include "obstacle/Obstacle.h"
-// #include "optimization/TrajectoryOptimizationProblem.h"
-// #include "solution/HolonomicSolution.h"
+#include "obstacle/Obstacle.h"
+#include "optimization/TrajectoryOptimizationProblem.h"
+#include "solution/HolonomicSolution.h"
 
-// namespace trajopt {
+namespace trajopt {
 
 // /**
 //  * @brief This is the trajectory generator for all holonomic drivetrains. It can
@@ -93,12 +93,20 @@
 //       const std::vector<Expression>& ax, const std::vector<Expression>& ay,
 //       const std::vector<Expression>& alpha);
 
-//   static void ApplyHolonomicConstraint(
-//       Opti& opti, const Expression& x, const Expression& y, const Expression& theta,
-//       const Expression& vx, const Expression& vy,
-//       const Expression& omega, const Expression& ax, const Expression& ay,
-//       const Expression& alpha, const HolonomicConstraint& constraint);
+template <typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+void ApplyHolonomicConstraint(
+    Opti& opti,
+    const Expr& x,
+    const Expr& y,
+    const Expr& theta,
+    const Expr& vx,
+    const Expr& vy,
+    const Expr& omega,
+    const Expr& ax,
+    const Expr& ay,
+    const Expr& alpha,
+    const HolonomicConstraint& constraint);
 // };
-// }  // namespace trajopt
+}  // namespace trajopt
 
-// #include "optimization/HolonomicTrajectoryOptimizationProblem.inc"
+#include "optimization/HolonomicTrajectoryOptimizationProblem.inc"
