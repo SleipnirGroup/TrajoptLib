@@ -80,12 +80,10 @@ SwerveTrajectoryOptimizationProblem<Expr, Opti>::SwerveTrajectoryOptimizationPro
     ax.emplace_back(opti.DecisionVariable());
     ay.emplace_back(opti.DecisionVariable());
     alpha.emplace_back(opti.DecisionVariable());
-    
-    auto& _Fx = Fx.emplace_back();
-    auto& _Fy = Fy.emplace_back();
+
     for (size_t moduleIdx = 0; moduleIdx < moduleCnt; ++moduleIdx) {
-      _Fx.emplace_back(opti.DecisionVariable());
-      _Fy.emplace_back(opti.DecisionVariable());
+      Fx.at(idx).emplace_back(opti.DecisionVariable());
+      Fy.at(idx).emplace_back(opti.DecisionVariable());
     }
   }
 

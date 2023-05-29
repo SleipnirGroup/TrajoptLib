@@ -69,7 +69,7 @@ size_t GetIdx(const std::vector<size_t>& N,
               size_t wptIdx,
               size_t sampIdx) {
   size_t idx = 0;
-  if (idx > 0) {
+  if (wptIdx > 0) {
     ++idx;
   }
   for (size_t _wptIdx = 1; _wptIdx < wptIdx; ++_wptIdx) {
