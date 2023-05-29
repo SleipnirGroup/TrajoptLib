@@ -1,243 +1,301 @@
-// // Copyright (c) TrajoptLib contributors
+// Copyright (c) TrajoptLib contributors
 
-// #pragma once
+#pragma once
 
-// #include <string>
-// #include <vector>
+#include <string>
+#include <vector>
 
-// #include "DebugOptions.h"
-// #include "TrajectoryGenerationException.h"
-// #include "drivetrain/SwerveDrivetrain.h"
-// #include "optimization/SwerveTrajectoryOptimizationProblem.h"
-// #include "path/HolonomicPath.h"
-// #include "solution/SwerveSolution.h"
+#include "DebugOptions.h"
+#include "TrajectoryGenerationException.h"
+#include "drivetrain/SwerveDrivetrain.h"
+#include "optimization/SwerveTrajectoryOptimizationProblem.h"
+#include "optimization/TrajectoryOptimizationProblem.h"
+#include "path/Path.h"
+#include "solution/SwerveSolution.h"
 
-// namespace trajopt {
+namespace trajopt {
 
-// template <typename Opti>
-// SwerveSolution SwerveTrajectoryOptimizationProblem<Opti>::Generate() {
-//   try {
-//     TrajectoryOptimizationProblem<Opti>::opti.Solve();
-//     return ConstructSwerveSolution(
-//         TrajectoryOptimizationProblem<Opti>::opti,
-//         TrajectoryOptimizationProblem<Opti>::dt,
-//         TrajectoryOptimizationProblem<Opti>::x,
-//         TrajectoryOptimizationProblem<Opti>::y,
-//         TrajectoryOptimizationProblem<Opti>::theta,
-//         HolonomicTrajectoryOptimizationProblem<Opti>::vx,
-//         HolonomicTrajectoryOptimizationProblem<Opti>::vy,
-//         HolonomicTrajectoryOptimizationProblem<Opti>::omega,
-//         HolonomicTrajectoryOptimizationProblem<Opti>::ax,
-//         HolonomicTrajectoryOptimizationProblem<Opti>::ay,
-//         HolonomicTrajectoryOptimizationProblem<Opti>::alpha, moduleFX,
-//         moduleFY);
-//   } catch (const std::exception& e) {
-//     throw TrajectoryGenerationException("Error optimizing trajectory: " +
-//                                         std::string(e.what()));
-//   }
-// }
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+SwerveSolution SwerveTrajectoryOptimizationProblem<Expr, Opti>::Generate() {
+  try {
+    opti.Solve();
+    return ConstructSwerveSolution(
+        opti,
+        dt,
+        x,
+        y,
+        theta,
+        vx,
+        vy,
+        omega,
+        ax,
+        ay,
+        alpha,
+        Fx,
+        Fy);
+  } catch (const std::exception& e) {
+    throw TrajectoryGenerationException("Error optimizing trajectory: " +
+                                        std::string(e.what()));
+  }
+}
 
-// template <typename Opti>
-// SwerveTrajectoryOptimizationProblem<Opti>::SwerveTrajectoryOptimizationProblem(
-//     const SwerveDrivetrain& swerveDrivetrain,
-//     const HolonomicPath& holonomicPath)
-//     : HolonomicTrajectoryOptimizationProblem<Opti>(swerveDrivetrain,
-//                                                    holonomicPath),
-//       swerveDrivetrain(swerveDrivetrain),
-//       moduleCount(swerveDrivetrain.modules.size()),
-//       moduleX(),
-//       moduleY(),
-//       moduleVX(),
-//       moduleVY(),
-//       moduleFX(),
-//       moduleFY(),
-//       moduleTau(),
-//       netFX(),
-//       netFY(),
-//       netTau() {
-//   moduleX.reserve(moduleCount);
-//   moduleY.reserve(moduleCount);
-//   moduleVX.reserve(moduleCount);
-//   moduleVY.reserve(moduleCount);
-//   moduleFX.reserve(moduleCount);
-//   moduleFY.reserve(moduleCount);
-//   moduleTau.reserve(moduleCount);
-//   netFX.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
-//   netFY.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
-//   netTau.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+SwerveTrajectoryOptimizationProblem<Expr, Opti>::SwerveTrajectoryOptimizationProblem(
+    const SwervePath& path, const std::vector<size_t>& N)
+    : path(path), N(N) {
 
-//   for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-//     std::vector<Expression> indexModuleX;
-//     std::vector<Expression> indexModuleY;
-//     std::vector<Expression> indexModuleVX;
-//     std::vector<Expression> indexModuleVY;
-//     std::vector<Expression> indexModuleFX;
-//     std::vector<Expression> indexModuleFY;
-//     std::vector<Expression> indexModuleTau;
-//     indexModuleX.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
-//     indexModuleY.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
-//     indexModuleVX.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
-//     indexModuleVY.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
-//     indexModuleFX.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
-//     indexModuleFY.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
-//     indexModuleTau.reserve(TrajectoryOptimizationProblem<Opti>::sampleTotal);
-//     for (size_t sampleIndex = 0;
-//          sampleIndex < TrajectoryOptimizationProblem<Opti>::sampleTotal;
-//          sampleIndex++) {
-//       ModulePosition modulePosition = SolveModulePosition(
-//           TrajectoryOptimizationProblem<Opti>::theta[sampleIndex],
-//           SwerveTrajectoryOptimizationProblem::swerveDrivetrain
-//               .modules[moduleIndex]);
-//       indexModuleX.push_back(modulePosition.x);
-//       indexModuleY.push_back(modulePosition.y);
-//       indexModuleVX.push_back(
-//           HolonomicTrajectoryOptimizationProblem<Opti>::vx[sampleIndex] -
-//           indexModuleY[sampleIndex] *
-//               HolonomicTrajectoryOptimizationProblem<Opti>::omega[sampleIndex]);
-//       indexModuleVY.push_back(
-//           HolonomicTrajectoryOptimizationProblem<Opti>::vy[sampleIndex] +
-//           indexModuleX[sampleIndex] *
-//               HolonomicTrajectoryOptimizationProblem<Opti>::omega[sampleIndex]);
+  size_t wptCnt = 1 + N.size();
+  size_t sgmtCnt = N.size();
+  size_t sampTot = GetIdx(N, wptCnt, 0);
+  size_t moduleCnt = path.drivetrain.modules.size();
 
-//       indexModuleFX.push_back(
-//           TrajectoryOptimizationProblem<Opti>::opti.Variable());
-//       indexModuleFY.push_back(
-//           TrajectoryOptimizationProblem<Opti>::opti.Variable());
-//       indexModuleTau.push_back(
-//           indexModuleX[sampleIndex] * indexModuleFY[sampleIndex] -
-//           indexModuleY[sampleIndex] * indexModuleFX[sampleIndex]);
-//     }
-//     moduleX.push_back(indexModuleX);
-//     moduleY.push_back(indexModuleY);
-//     moduleVX.push_back(indexModuleVX);
-//     moduleVY.push_back(indexModuleVY);
-//     moduleFX.push_back(indexModuleFX);
-//     moduleFY.push_back(indexModuleFY);
-//     moduleTau.push_back(indexModuleTau);
-//   }
+  x.reserve(sampTot);
+  y.reserve(sampTot);
+  theta.reserve(sampTot);
+  vx.reserve(sampTot);
+  vy.reserve(sampTot);
+  omega.reserve(sampTot);
+  ax.reserve(sampTot);
+  ay.reserve(sampTot);
+  alpha.reserve(sampTot);
 
-//   for (size_t sampleIndex = 0;
-//        sampleIndex < TrajectoryOptimizationProblem<Opti>::sampleTotal;
-//        sampleIndex++) {
-//     Expression intervalNetFX = 0;
-//     Expression intervalNetFY = 0;
-//     Expression intervalNetTau = 0;
-//     for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-//       intervalNetFX += moduleFX[moduleIndex][sampleIndex];
-//       intervalNetFY += moduleFY[moduleIndex][sampleIndex];
-//       intervalNetTau += moduleTau[moduleIndex][sampleIndex];
-//     }
-//     netFX.push_back(intervalNetFX);
-//     netFY.push_back(intervalNetFY);
-//     netTau.push_back(intervalNetTau);
-//   }
+  Fx.reserve(sampTot);
+  Fy.reserve(sampTot);
+  for (size_t sampIdx = 0; sampIdx < sampTot; ++sampIdx) {
+    auto& _Fx = Fx.emplace_back();
+    auto& _Fy = Fy.emplace_back();
+    _Fx.reserve(moduleCnt);
+    _Fy.reserve(moduleCnt);
+  }
 
-//   ApplyDynamicsConstraints(
-//       TrajectoryOptimizationProblem<Opti>::opti,
-//       HolonomicTrajectoryOptimizationProblem<Opti>::ax,
-//       HolonomicTrajectoryOptimizationProblem<Opti>::ay,
-//       HolonomicTrajectoryOptimizationProblem<Opti>::alpha, netFX, netFY, netTau,
-//       SwerveTrajectoryOptimizationProblem::swerveDrivetrain);
+  dt.reserve(sgmtCnt);
 
-//   ApplyPowerConstraints(TrajectoryOptimizationProblem<Opti>::opti, moduleVX,
-//                         moduleVY, moduleFX, moduleFY,
-//                         SwerveTrajectoryOptimizationProblem::swerveDrivetrain);
-// }
+  for (size_t idx = 0; idx < sampTot; ++idx) {
+    x.emplace_back(opti.DecisionVariable());
+    y.emplace_back(opti.DecisionVariable());
+    theta.emplace_back(opti.DecisionVariable());
+    vx.emplace_back(opti.DecisionVariable());
+    vy.emplace_back(opti.DecisionVariable());
+    omega.emplace_back(opti.DecisionVariable());
+    ax.emplace_back(opti.DecisionVariable());
+    ay.emplace_back(opti.DecisionVariable());
+    alpha.emplace_back(opti.DecisionVariable());
+    
+    auto& _Fx = Fx.emplace_back();
+    auto& _Fy = Fy.emplace_back();
+    for (size_t moduleIdx = 0; moduleIdx < moduleCnt; ++moduleIdx) {
+      _Fx.emplace_back(opti.DecisionVariable());
+      _Fy.emplace_back(opti.DecisionVariable());
+    }
+  }
 
-// template <typename Opti>
-// const typename SwerveTrajectoryOptimizationProblem<Opti>::ModulePosition
-// SwerveTrajectoryOptimizationProblem<Opti>::SolveModulePosition(
-//     const Expression& theta, const SwerveModule& module) {
-//   ModulePosition position{0.0, 0.0};
-//   if (module.x == 0.0 && module.y == 0.0) {
-//     position.x = 0;
-//     position.y = 0;
-//   } else {
-//     double moduleDiagonal = std::hypot(module.x, module.y);
-//     double moduleAngle = std::atan2(module.y, module.x);
-//     position.x = moduleDiagonal * cos(moduleAngle + theta);  // NOLINT
-//     position.y = moduleDiagonal * sin(moduleAngle + theta);  // NOLINT
-//   }
-//   return position;
-// }
+  for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
+    dt.emplace_back(opti.DecisionVariable());
+  }
 
-// template <typename Opti>
-// void SwerveTrajectoryOptimizationProblem<Opti>::ApplyDynamicsConstraints(
-//     Opti& opti, const std::vector<Expression>& ax,
-//     const std::vector<Expression>& ay, const std::vector<Expression>& alpha,
-//     const std::vector<Expression>& netFX, const std::vector<Expression>& netFY,
-//     const std::vector<Expression>& netTau,
-//     const SwerveDrivetrain& swerveDrivetrain) {
-//   size_t sampleTotal = ax.size();
-//   for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
-//     opti.SubjectTo(netFX[sampleIndex] ==
-//                    swerveDrivetrain.mass * ax[sampleIndex]);
-//     opti.SubjectTo(netFY[sampleIndex] ==
-//                    swerveDrivetrain.mass * ay[sampleIndex]);
-//     opti.SubjectTo(netTau[sampleIndex] ==
-//                    swerveDrivetrain.momentOfInertia * alpha[sampleIndex]);
-//   }
-// }
+  ApplyDiscreteTimeObjective(opti, dt, N);
 
-// template <typename Opti>
-// void SwerveTrajectoryOptimizationProblem<Opti>::ApplyPowerConstraints(
-//     Opti& opti, const std::vector<std::vector<Expression>>& moduleVX,
-//     const std::vector<std::vector<Expression>>& moduleVY,
-//     const std::vector<std::vector<Expression>>& moduleFX,
-//     const std::vector<std::vector<Expression>>& moduleFY,
-//     const SwerveDrivetrain& swerveDrivetrain) {
-//   size_t moduleCount = swerveDrivetrain.modules.size();
-//   for (size_t moduleIndex = 0; moduleIndex < moduleCount; moduleIndex++) {
-//     size_t sampleTotal = moduleVX[moduleIndex].size();
-//     const SwerveModule& _module = swerveDrivetrain.modules[moduleIndex];
-//     double maxWheelVelocity =
-//         _module.wheelRadius * _module.wheelMaxAngularVelocity;
-//     double maxForce = _module.wheelMaxTorque / _module.wheelRadius;
-//     for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
-//       auto constraint = moduleVX[moduleIndex][sampleIndex] *
-//                                 moduleVX[moduleIndex][sampleIndex] +
-//                             moduleVY[moduleIndex][sampleIndex] *
-//                                 moduleVY[moduleIndex][sampleIndex] <=
-//                         maxWheelVelocity * maxWheelVelocity;
-//       opti.SubjectTo(moduleVX[moduleIndex][sampleIndex] *
-//                              moduleVX[moduleIndex][sampleIndex] +
-//                          moduleVY[moduleIndex][sampleIndex] *
-//                              moduleVY[moduleIndex][sampleIndex] <=
-//                      maxWheelVelocity * maxWheelVelocity);
+  for (size_t idx = 0; idx < sampTot; ++idx) {
+    auto [Fx_net, Fy_net] = SolveNetForce(Fx.at(idx), Fy.at(idx));
+    ApplyDynamicsConstraints(
+        opti,
+        theta.at(idx),
+        ax.at(idx),
+        ay.at(idx),
+        alpha.at(idx),
+        Fx_net,
+        Fy_net,
+        SolveNetTorque(Fx.at(idx), Fy.at(idx), path.drivetrain.modules),
+        path.drivetrain.mass,
+        path.drivetrain.moi);
 
-//       opti.SubjectTo(moduleFX[moduleIndex][sampleIndex] *
-//                              moduleFX[moduleIndex][sampleIndex] +
-//                          moduleFY[moduleIndex][sampleIndex] *
-//                              moduleFY[moduleIndex][sampleIndex] <=
-//                      maxForce * maxForce);
-//     }
-//   }
-// }
+    ApplyPowerConstraints(opti,
+        vx.at(idx),
+        vy.at(idx),
+        omega.at(idx),
+        Fx.at(idx),
+        Fy.at(idx),
+        path.drivetrain);
+  }
+}
 
-// template <typename Opti>
-// SwerveSolution
-// SwerveTrajectoryOptimizationProblem<Opti>::ConstructSwerveSolution(
-//     const Opti& opti, const std::vector<Expression>& dt,
-//     const std::vector<Expression>& x, const std::vector<Expression>& y,
-//     const std::vector<Expression>& theta, const std::vector<Expression>& vx,
-//     const std::vector<Expression>& vy, const std::vector<Expression>& omega,
-//     const std::vector<Expression>& ax, const std::vector<Expression>& ay,
-//     const std::vector<Expression>& alpha,
-//     const std::vector<std::vector<Expression>>& moduleFX,
-//     const std::vector<std::vector<Expression>>& moduleFY) {
-//   return SwerveSolution{
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, dt),
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, x),
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, y),
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, theta),
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, vx),
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, vy),
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, omega),
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, ax),
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, ay),
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, alpha),
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, moduleFX),
-//       TrajectoryOptimizationProblem<Opti>::SolutionValue(opti, moduleFY)};
-// }
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+std::pair<Expr, Expr> SwerveTrajectoryOptimizationProblem<Expr, Opti>
+    ::RotateVector(const Expr& x, const Expr& y, const Expr& theta) {
+  return {x * cos(theta) - y * sin(theta),
+          x * sin(theta) + y * cos(theta)};
+}
 
-// }  // namespace trajopt
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+std::pair<Expr, Expr> SwerveTrajectoryOptimizationProblem<Expr, Opti>::SolveNetForce(
+    const std::vector<Expr>& Fx,
+    const std::vector<Expr>& Fy) {
+  Expr Fx_net = 0;
+  Expr Fy_net = 0;
+
+  for (auto& _Fx : Fx) {
+    Fx_net += _Fx;
+  }
+  for (auto& _Fy : Fy) {
+    Fy_net += _Fy;
+  }
+
+  return {Fx_net, Fy_net};
+}
+
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+Expr SwerveTrajectoryOptimizationProblem<Expr, Opti>::SolveNetTorque(
+    const std::vector<Expr>& Fx,
+    const std::vector<Expr>& Fy,
+    const std::vector<SwerveModule>& swerveModules) {
+  
+  auto [Fx_net, Fy_net] = SolveNetForce(Fx, Fy);
+
+  Expr tau_net = 0;
+
+  for (size_t moduleIdx = 0; moduleIdx < Fx.size(); moduleIdx++) {
+    auto& swerveModule = swerveModules.at(moduleIdx);
+    auto x_m = swerveModule.x;
+    auto y_m = swerveModule.y;
+    auto& Fx_m = Fx.at(moduleIdx);
+    auto& Fy_m = Fy.at(moduleIdx);
+    tau_net += x_m * Fy_m - y_m * Fx_m;
+  }
+
+  return tau_net;
+}
+
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+void SwerveTrajectoryOptimizationProblem<Expr, Opti>::ApplyDynamicsConstraints(
+    Opti& opti,
+    const Expr& theta,
+    const Expr& ax,
+    const Expr& ay,
+    const Expr& alpha,
+    const Expr& Fx_net,
+    const Expr& Fy_net,
+    const Expr& tau_net,
+    double mass,
+    double moi) {
+
+  auto [ax_prime, ay_prime] = RotateVector(ax, ay, -theta);
+  opti.SubjectTo(Fx_net == mass * ax_prime);
+  opti.SubjectTo(Fy_net == mass * ax_prime);
+  opti.SubjectTo(tau_net == moi * alpha);
+}
+
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+void SwerveTrajectoryOptimizationProblem<Expr, Opti>::ApplyKinematicsConstraints(
+    Opti& opti,
+    const std::vector<Expr>& x,
+    const std::vector<Expr>& y,
+    const std::vector<Expr>& theta,
+    const std::vector<Expr>& vx,
+    const std::vector<Expr>& vy,
+    const std::vector<Expr>& omega,
+    const std::vector<Expr>& ax,
+    const std::vector<Expr>& ay,
+    const std::vector<Expr>& alpha,
+    const std::vector<Expr>& dt,
+    const std::vector<size_t> N) {
+
+  size_t wptCnt = N.size() + 1;
+
+  for (size_t wptIdx = 1; wptIdx < wptCnt; ++wptIdx) {
+    size_t N_sgmt = N.at(wptIdx - 1);
+    auto dt_sgmt = dt.at(wptIdx - 1);
+    for (size_t sampIdx = 0; sampIdx < N_sgmt; ++sampIdx) {
+      size_t idx = GetIdx(N, wptIdx, sampIdx);
+      auto x_n = x.at(idx); auto x_n_1 = x.at(idx - 1);
+      auto y_n = y.at(idx); auto y_n_1 = y.at(idx - 1);
+      auto theta_n = theta.at(idx); auto theta_n_1 = theta.at(idx - 1);
+      auto vx_n = vx.at(idx); auto vx_n_1 = vx.at(idx - 1);
+      auto vy_n = vy.at(idx); auto vy_n_1 = vy.at(idx - 1);
+      auto omega_n = omega.at(idx); auto omega_n_1 = omega.at(idx - 1);
+      auto ax_n = ax.at(idx); auto ax_n_1 = ax.at(idx - 1);
+      auto ay_n = ay.at(idx); auto ay_n_1 = ay.at(idx - 1);
+      auto alpha_n = alpha.at(idx); auto alpha_n_1 = alpha.at(idx - 1);
+      opti.SubjectTo(x_n_1     + vx_n    * dt_sgmt == x_n);
+      opti.SubjectTo(y_n_1     + vy_n    * dt_sgmt == y_n);
+      opti.SubjectTo(theta_n_1 + omega_n * dt_sgmt == theta_n);
+      opti.SubjectTo(vx_n_1    + ax_n    * dt_sgmt == vx_n);
+      opti.SubjectTo(vy_n_1    + ay_n    * dt_sgmt == vy_n);
+      opti.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
+    }
+  }
+}
+
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+void SwerveTrajectoryOptimizationProblem<Expr, Opti>::ApplyPowerConstraints(
+    Opti& opti,
+    const Expr& vx,
+    const Expr& vy,
+    const Expr& omega,
+    const std::vector<Expr>& Fx,
+    const std::vector<Expr>& Fy,
+    const SwerveDrivetrain& swerveDrivetrain) {
+
+  size_t moduleCount = swerveDrivetrain.modules.size();
+
+  std::vector<Expr> vx_m;
+  std::vector<Expr> vy_m;
+  vx_m.reserve(moduleCount);
+  vy_m.reserve(moduleCount);
+  for (size_t moduleIdx = 0; moduleIdx < moduleCount; ++moduleIdx) {
+    auto x_m = swerveDrivetrain.modules.at(moduleIdx).x;
+    auto y_m = swerveDrivetrain.modules.at(moduleIdx).y;
+    vx_m.emplace_back(vx - y_m * omega);
+    vy_m.emplace_back(vy + x_m * omega);
+  }
+
+  for (size_t moduleIdx = 0; moduleIdx < moduleCount; moduleIdx++) {
+    auto& _module = swerveDrivetrain.modules.at(moduleIdx);
+    double maxWheelVelocity =
+        _module.wheelRadius * _module.wheelMaxAngularVelocity;
+    double maxForce = _module.wheelMaxTorque / _module.wheelRadius;
+    auto _vx_m = vx_m.at(moduleIdx);
+    auto _vy_m = vy_m.at(moduleIdx);
+    auto Fx_m = Fx.at(moduleIdx);
+    auto Fy_m = Fy.at(moduleIdx);
+    opti.SubjectTo(
+        _vx_m * _vx_m + _vy_m * _vy_m
+     <= maxWheelVelocity * maxWheelVelocity);
+
+    opti.SubjectTo(
+        Fx_m * Fx_m + Fy_m * Fy_m
+     <= maxForce * maxForce);
+  }
+}
+
+template <typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+SwerveSolution SwerveTrajectoryOptimizationProblem<Expr, Opti>
+    ::ConstructSwerveSolution(
+    const Opti& opti,
+    const std::vector<Expr>& dt,
+    const std::vector<Expr>& x,
+    const std::vector<Expr>& y,
+    const std::vector<Expr>& theta,
+    const std::vector<Expr>& vx,
+    const std::vector<Expr>& vy,
+    const std::vector<Expr>& omega,
+    const std::vector<Expr>& ax,
+    const std::vector<Expr>& ay,
+    const std::vector<Expr>& alpha,
+    const std::vector<std::vector<Expr>>& Fx,
+    const std::vector<std::vector<Expr>>& Fy) {
+  return SwerveSolution{
+      SolutionValue(opti, dt),
+      SolutionValue(opti, x),
+      SolutionValue(opti, y),
+      SolutionValue(opti, theta),
+      SolutionValue(opti, vx),
+      SolutionValue(opti, vy),
+      SolutionValue(opti, omega),
+      SolutionValue(opti, ax),
+      SolutionValue(opti, ay),
+      SolutionValue(opti, alpha),
+      SolutionValue(opti, Fx),
+      SolutionValue(opti, Fy)};
+}
+
+}  // namespace trajopt

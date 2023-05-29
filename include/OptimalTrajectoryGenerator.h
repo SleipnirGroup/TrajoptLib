@@ -28,6 +28,6 @@ class TRAJOPT_DLLEXPORT OptimalTrajectoryGenerator {
    * @param holonomicPath the holonomic path
    * @return the optimized holonomic trajectory
    */
-  static SwerveSolution Generate(const SwervePath& holonomicPath);
+  static SwerveSolution Generate(const SwervePath& swervePath);
 };
 }  // namespace trajopt

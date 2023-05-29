@@ -22,7 +22,7 @@ template<typename Constraint, typename Drivetrain>
 struct TRAJOPT_DLLEXPORT Waypoint {
   std::vector<Constraint> waypointConstraints;
   std::vector<Constraint> segmentConstraints;
-  std::optional<Drivetrain> segmentDrivetrain;
+  // std::optional<Drivetrain> segmentDrivetrain;
 };
 
 template<typename Constraint, typename Drivetrain, typename Solution>

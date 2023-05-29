@@ -1,17 +1,17 @@
 // Copyright (c) TrajoptLib contributors
 
+#include <casadi/core/generic_matrix.hpp>
+#include "optimization/SwerveTrajectoryOptimizationProblem.h"
 #ifdef OPTIMIZER_BACKEND_CASADI
 #include "optimization/CasADiOpti.h"
 
 #include <casadi/casadi.hpp>
+#include <casadi/core/mx.hpp>
 
 #include "DebugOptions.h"
-#include "optimization/HolonomicTrajectoryOptimizationProblem.h"
-#include "optimization/SwerveTrajectoryOptimizationProblem.h"
-#include "optimization/TrajectoryOptimizationProblem.h"
 namespace trajopt {
-CasADiOpti::CasADiOpti() : opti(), solution(nullptr) {}
-casadi::MX CasADiOpti::Variable() {
+
+casadi::MX CasADiOpti::DecisionVariable() {
   return opti.variable();
 }
 void CasADiOpti::Minimize(const casadi::MX& objective) {
@@ -37,17 +37,16 @@ void CasADiOpti::Solve() {
   opti.solver("ipopt", pluginOptions);
 #endif
 
-  solution = new casadi::OptiSol(opti.solve());
+  solution = opti.solve();
 }
 double CasADiOpti::SolutionValue(const casadi::MX& expression) const {
-  if (solution != nullptr) {
+  if (solution) {
     return static_cast<double>(solution->value(expression));
   } else {
-    throw "Solution not generated properly";
+    throw std::runtime_error("Solution not generated properly");
   }
 }
-// template class HolonomicTrajectoryOptimizationProblem<CasADiOpti>;
-// template class SwerveTrajectoryOptimizationProblem<CasADiOpti>;
-// template class TrajectoryOptimizationProblem<CasADiOpti>;
 }  // namespace trajopt
+
+template class trajopt::SwerveTrajectoryOptimizationProblem<casadi::MX, trajopt::CasADiOpti>;
 #endif
