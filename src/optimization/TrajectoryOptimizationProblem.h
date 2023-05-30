@@ -75,6 +75,13 @@ static const std::pair<Expr, Expr> SolveRobotPointPosition(
       const Expr& x, const Expr& y, const Expr& theta,
       double robotPointX, double robotPointY);
 
+inline std::vector<double> Linspace(double startValue, double endValue, size_t numSamples);
+
+inline Solution GenerateLinearInitialGuess(
+    const std::vector<std::vector<InitialGuessPoint>>& initialGuessPoints,
+    const std::vector<size_t> controlIntervalCounts);
+
+
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
 static void ApplyInitialGuess(Opti& opti, const Solution& solution,
                                  std::vector<Expr>& x,

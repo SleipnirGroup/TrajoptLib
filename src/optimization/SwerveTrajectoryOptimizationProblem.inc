@@ -20,27 +20,6 @@ template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
 SwerveSolution SwerveTrajectoryOptimizationProblem<Expr, Opti>::Generate() {
   try {
     opti.Solve();
-    // std::cout << dt << std::endl;
-    std::cout << x << std::endl;
-    // std::cout << y << std::endl;
-    // std::cout << theta << std::endl;
-    // std::cout << vx << std::endl;
-    // std::cout << vy << std::endl;
-    // std::cout << omega << std::endl;
-    // std::cout << ax << std::endl;
-    // std::cout << ay << std::endl;
-    // std::cout << alpha << std::endl;
-    // fmt::print("{}\n", fmt::join(dt, ", "));
-    // fmt::print("{}\n", fmt::join(x, ", "));
-    // fmt::print("{}\n", fmt::join(y, ", "));
-    // fmt::print("{}\n", fmt::join(theta, ", "));
-    // fmt::print("{}\n", fmt::join(dt, ", "));
-    // fmt::print("{}\n", fmt::join(dt, ", "));
-    // fmt::print("{}\n", fmt::join(dt, ", "));
-    // fmt::print("{}\n", fmt::join(dt, ", "));
-    // fmt::print("{}\n", fmt::join(dt, ", "));
-    // fmt::print("{}\n", fmt::join(dt, ", "));
-    // fmt::print("{}\n", fmt::join(dt, ", "));
     return ConstructSwerveSolution(
         opti,
         dt,
@@ -276,9 +255,9 @@ void SwerveTrajectoryOptimizationProblem<Expr, Opti>::ApplyKinematicsConstraints
       auto vx_n = vx.at(idx); auto vx_n_1 = vx.at(idx - 1);
       auto vy_n = vy.at(idx); auto vy_n_1 = vy.at(idx - 1);
       auto omega_n = omega.at(idx); auto omega_n_1 = omega.at(idx - 1);
-      auto ax_n = ax.at(idx); auto ax_n_1 = ax.at(idx - 1);
-      auto ay_n = ay.at(idx); auto ay_n_1 = ay.at(idx - 1);
-      auto alpha_n = alpha.at(idx); auto alpha_n_1 = alpha.at(idx - 1);
+      auto ax_n = ax.at(idx); 
+      auto ay_n = ay.at(idx);
+      auto alpha_n = alpha.at(idx);
       opti.SubjectTo(x_n_1     + vx_n    * dt_sgmt == x_n);
       opti.SubjectTo(y_n_1     + vy_n    * dt_sgmt == y_n);
       opti.SubjectTo(theta_n_1 + omega_n * dt_sgmt == theta_n);

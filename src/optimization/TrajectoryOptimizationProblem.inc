@@ -84,9 +84,9 @@ void ApplyDiscreteTimeObjective(Opti& opti,
                                 const std::vector<Expr>& dt,
                                 const std::vector<size_t> N) {
   Expr T_tot = 0;
-  for (size_t sgmtIdx = 0; sgmtIdx < dt.size(); ++sgmtIdx) {
+  for (size_t sgmtIdx = 0; sgmtIdx < N.size(); ++sgmtIdx) {
     auto& dt_sgmt = dt.at(sgmtIdx);
-    auto& N_sgmt = N.at(sgmtIdx);
+    auto N_sgmt = N.at(sgmtIdx);
     auto T_sgmt = dt_sgmt * N_sgmt;
     T_tot += T_sgmt;
 
@@ -245,6 +245,85 @@ void ApplyConstraint(
     distSquared.upper *= distSquared.upper;
     ApplyIntervalSet1dConstraint(opti, pointDistSquared, distSquared);
   }
+}
+
+std::vector<double> Linspace(
+    double startValue,
+    double endValue,
+    size_t numSamples) {
+  std::vector<double> result;
+  double delta = (endValue - startValue) / numSamples;
+  for (size_t index = 1; index <= numSamples; index++) {
+    result.push_back(startValue + index * delta);
+  }
+  return result;
+}
+
+template<typename T>
+inline void append_vector(std::vector<T>& base, const std::vector<T>& newItems) {
+  base.insert(base.end(), newItems.begin(), newItems.end());
+}
+
+Solution GenerateLinearInitialGuess(
+    const std::vector<std::vector<InitialGuessPoint>>& initialGuessPoints,
+    const std::vector<size_t> controlIntervalCounts) {
+  size_t wptCnt = controlIntervalCounts.size() + 1;
+  size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
+  Solution initialGuess{};
+  initialGuess.x.reserve(sampTot);
+  initialGuess.y.reserve(sampTot);
+  initialGuess.theta.reserve(sampTot);
+  initialGuess.x.push_back(initialGuessPoints.front().front().x);
+  initialGuess.y.push_back(initialGuessPoints.front().front().y);
+  initialGuess.theta.push_back(initialGuessPoints.front().front().heading);
+  for (size_t wptIdx = 1; wptIdx < wptCnt; wptIdx++) {
+    size_t N_sgmt = controlIntervalCounts.at(wptIdx - 1);
+    size_t guessPointCount = initialGuessPoints.at(wptIdx).size();
+    size_t N_guessSgmt = N_sgmt / guessPointCount;
+    append_vector(initialGuess.x, 
+        Linspace(initialGuessPoints.at(wptIdx - 1).back().x,
+                 initialGuessPoints.at(wptIdx).front().x,
+                 N_guessSgmt));
+    append_vector(initialGuess.y, 
+        Linspace(initialGuessPoints.at(wptIdx - 1).back().y,
+                 initialGuessPoints.at(wptIdx).front().y,
+                 N_guessSgmt));
+    append_vector(initialGuess.theta, 
+        Linspace(initialGuessPoints.at(wptIdx - 1).back().heading,
+                 initialGuessPoints.at(wptIdx).front().heading,
+                 N_guessSgmt));
+    for (size_t guessPointIdx = 1; guessPointIdx < guessPointCount - 1;
+         guessPointIdx++) {  // if three or more guess points
+      append_vector(initialGuess.x,
+          Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).x,
+                   initialGuessPoints.at(wptIdx).at(guessPointIdx).x,
+                   N_guessSgmt));
+      append_vector(initialGuess.y,
+          Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).y,
+                   initialGuessPoints.at(wptIdx).at(guessPointIdx).y,
+                   N_guessSgmt));
+      append_vector(initialGuess.theta,
+          Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).heading,
+                   initialGuessPoints.at(wptIdx).at(guessPointIdx).heading,
+                   N_guessSgmt));
+    }
+    if (guessPointCount > 1) {  // if two or more guess points
+      size_t N_lastGuessSgmt = N_sgmt - (guessPointCount - 1) * N_guessSgmt;
+      append_vector(initialGuess.x,
+          Linspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).x,
+                   initialGuessPoints.at(wptIdx).back().x,
+                   N_lastGuessSgmt));
+      append_vector(initialGuess.y,
+          Linspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).y,
+                   initialGuessPoints.at(wptIdx).back().y,
+                   N_lastGuessSgmt));
+      append_vector(initialGuess.theta,
+          Linspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
+                   initialGuessPoints.at(wptIdx).back().heading,
+                   N_lastGuessSgmt));
+    }
+  }
+  return initialGuess;
 }
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>

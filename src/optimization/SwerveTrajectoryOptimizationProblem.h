@@ -69,6 +69,7 @@ class SwerveTrajectoryOptimizationProblem {
 //   static const std::pair<Expr, Expr> SolveModulePosition(const Expr& theta,
 //                                                   const SwerveModule& module);
 
+ public:
   static std::pair<Expr, Expr> SolveNetForce(
       const std::vector<Expr>& Fx,
       const std::vector<Expr>& Fy);
@@ -156,7 +157,6 @@ class SwerveTrajectoryOptimizationProblem {
       const std::vector<std::vector<Expr>>& Fx,
       const std::vector<std::vector<Expr>>& Fy);
 
- public:
   /**
    * @brief Construct a new CasADi Swerve Trajectory Optimization Problem
    * with a swerve drivetrain and holonomic path.

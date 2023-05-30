@@ -175,6 +175,52 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/TrajoptLibConfig.cmake
   DESTINATION lib/cmake/TrajoptLib)
 
+# GoogleTest dependency (static linkage)
+set(BUILD_SHARED_LIBS_SAVE ${BUILD_SHARED_LIBS})
+set(BUILD_SHARED_LIBS OFF)
+option(INSTALL_GMOCK "Install GoogleTest's GMock" OFF)
+option(INSTALL_GTEST "Install GoogleTest's GTest" OFF)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG        release-1.12.1
+  CMAKE_ARGS     "-DCMAKE_BUILD_TYPE=ReleaseWithDebInfo"
+  FIND_PACKAGE_ARGS NAMES GTest
+)
+FetchContent_MakeAvailable(googletest)
+set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVE})
+
+include(CMakeDependentOption)
+
+cmake_dependent_option(BUILD_TESTING "Enable creation of tests." ON "PROJECT_IS_TOP_LEVEL" OFF)
+if (BUILD_TESTING)
+  enable_testing()
+  include(GoogleTest)
+endif()
+
+# Build TrajoptLib tests
+if (BUILD_TESTING)
+  file(GLOB_RECURSE TrajoptLib_test_src test/src/*.cpp)
+  add_executable(TrajoptLibTest ${TrajoptLib_test_src})
+  TrajoptLib_compiler_flags(TrajoptLibTest)
+  target_include_directories(TrajoptLibTest
+                             PRIVATE
+                             ${CMAKE_CURRENT_SOURCE_DIR}/src
+                             ${CMAKE_CURRENT_SOURCE_DIR}/test/include
+                             ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/units/include)
+  target_link_libraries(TrajoptLibTest
+                        PRIVATE
+                        TrajoptLib
+                        fmt::fmt
+                        GTest::gtest
+                        GTest::gtest_main)
+  if (NOT CMAKE_TOOLCHAIN_FILE)
+    gtest_discover_tests(TrajoptLibTest)
+  endif()
+endif()
+
+
+
 # Build examples and example tests
 include(TrajoptLibSubdirList)
 trajoptlib_subdir_list(EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/examples)
