@@ -53,18 +53,6 @@ void SwervePathBuilder::TranslationWpt(size_t index, double x, double y,
       InitialGuessPoint{x, y, headingGuess});
 }
 
-void SwervePathBuilder::NewWpts(size_t finalIndex) {
-  int64_t targetIdx = finalIndex;
-  int64_t greatestIdx = path.waypoints.size() - 1;
-  if (targetIdx > greatestIdx) {
-    for (int64_t i = greatestIdx + 1; i <= targetIdx; i++) {
-      path.waypoints.emplace_back(SwerveWaypoint{});
-      initialGuessPoints.emplace_back(std::vector<InitialGuessPoint>{});
-      controlIntervalCounts.push_back(i == 0 ? 0 : 40);
-    }
-  }
-}
-
 void SwervePathBuilder::AddInitialGuessPoint(size_t fromIdx, double x, double y,
                                              double heading) {
   NewWpts(fromIdx + 1);
@@ -144,10 +132,6 @@ void SwervePathBuilder::SgmtConstraint(size_t fromIdx, size_t toIdx,
   }
 }
 
-void SwervePathBuilder::StartZeroVelocity() {
-  WptZeroVelocity(0);
-}
-
 void SwervePathBuilder::AddBumpers(Bumpers&& newBumpers) {
   bumpers.emplace_back(std::move(newBumpers));
 }
@@ -182,6 +166,18 @@ const std::vector<size_t>& SwervePathBuilder::GetControlIntervalCounts() const {
 
 Solution SwervePathBuilder::CalculateInitialGuess() const {
   return GenerateLinearInitialGuess(initialGuessPoints, controlIntervalCounts);
+}
+
+void SwervePathBuilder::NewWpts(size_t finalIndex) {
+  int64_t targetIdx = finalIndex;
+  int64_t greatestIdx = path.waypoints.size() - 1;
+  if (targetIdx > greatestIdx) {
+    for (int64_t i = greatestIdx + 1; i <= targetIdx; i++) {
+      path.waypoints.emplace_back(SwerveWaypoint{});
+      initialGuessPoints.emplace_back(std::vector<InitialGuessPoint>{});
+      controlIntervalCounts.push_back(i == 0 ? 0 : 40);
+    }
+  }
 }
 
 std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
