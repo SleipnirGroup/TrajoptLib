@@ -1,6 +1,5 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "sleipnir/autodiff/VariableMatrix.hpp"
 #ifdef OPTIMIZER_BACKEND_SLEIPNIR
 #include "optimization/SleipnirOpti.h"
 
