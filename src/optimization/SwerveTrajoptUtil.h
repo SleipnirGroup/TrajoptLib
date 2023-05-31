@@ -14,12 +14,6 @@
 namespace trajopt {
 
 template<typename Expr> requires ExprSys<Expr>
-std::pair<Expr, Expr> RotateVector(const Expr& x, const Expr& y, const Expr& theta);
-
-template<typename Expr> requires ExprSys<Expr>
-std::pair<Expr, Expr> RotateConstantVector(double x, double y, const Expr& theta);
-
-template<typename Expr> requires ExprSys<Expr>
 std::pair<Expr, Expr> SolveNetForce(
     const std::vector<Expr>& Fx,
     const std::vector<Expr>& Fy);

@@ -15,26 +15,32 @@
 
 namespace trajopt {
 
+template<ExprSys Expr>
+std::pair<Expr, Expr> RotateVector(const Expr& x, const Expr& y, const Expr& theta);
+
+template<ExprSys Expr>
+std::pair<Expr, Expr> RotateConstantVector(double x, double y, const Expr& theta);
+
+/**
+ * @brief Get the index of an item in a decision variable array, given the
+ * waypoint and sample indices and whether this array includes an entry
+ * for the initial sample point ("dt" does not, "x" does).
+ * 
+ * @param ctrlIntCnts the control interval counts of each segment, in order
+ * @param wpIdx the waypoint index (1 + segment index)
+ * @param sampIdx the sample index within the segment
+ * @param hasInitialSamp whether this decision variable includes a value for
+ * the initial sample
+ * @return the index in the array
+ */
+inline size_t GetIdx(const std::vector<size_t>& N,
+              size_t wptIdx,
+              size_t sampIdx = 0);
+
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
 void ApplyDiscreteTimeObjective(Opti& opti,
                                  const std::vector<Expr>& dt,
                                  const std::vector<size_t> N);
-
-  /**
-   * @brief Get the index of an item in a decision variable array, given the
-   * waypoint and sample indices and whether this array includes an entry
-   * for the initial sample point ("dt" does not, "x" does).
-   * 
-   * @param ctrlIntCnts the control interval counts of each segment, in order
-   * @param wpIdx the waypoint index (1 + segment index)
-   * @param sampIdx the sample index within the segment
-   * @param hasInitialSamp whether this decision variable includes a value for
-   * the initial sample
-   * @return the index in the array
-   */
-inline size_t GetIdx(const std::vector<size_t>& N,
-              size_t wptIdx,
-              size_t sampIdx = 0);
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
 void ApplyIntervalSet1dConstraint(Opti& opti, const Expr& scalar,
@@ -53,27 +59,27 @@ template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
 std::vector<std::vector<double>> MatrixSolutionValue(
       const Opti& opti, const std::vector<std::vector<Expr>>& matrix);
 
-template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-void ApplyConstraint(Opti& opti, const Expr& x,
-                              const Expr& y, const Expr& theta,
-                              const Constraint& constraint);
-
 /**
-* @brief Get an expression for the position of a bumper corner relative
-* to the field coordinate system, given the robot's x-coordinate,
-* y-coordinate, and heading. The first row of the resulting matrix contains
-* the x-coordinate, and the second row contains the y-coordinate.
-*
-* @param x the instantaneous heading of the robot (scalar)
-* @param y the instantaneous heading of the robot (scalar)
-* @param theta the instantaneous heading of the robot (scalar)
-* @param bumperCorner the bumper corner to find the position for
-* @return the bumper corner 2 x 1 position vector
-*/
+ * @brief Get an expression for the position of a bumper corner relative
+ * to the field coordinate system, given the robot's x-coordinate,
+ * y-coordinate, and heading. The first row of the resulting matrix contains
+ * the x-coordinate, and the second row contains the y-coordinate.
+ *
+ * @param x the instantaneous heading of the robot (scalar)
+ * @param y the instantaneous heading of the robot (scalar)
+ * @param theta the instantaneous heading of the robot (scalar)
+ * @param bumperCorner the bumper corner to find the position for
+ * @return the bumper corner 2 x 1 position vector
+ */
 template<typename Expr> requires ExprSys<Expr>
 static const std::pair<Expr, Expr> SolveRobotPointPosition(
       const Expr& x, const Expr& y, const Expr& theta,
       double robotPointX, double robotPointY);
+
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+void ApplyConstraint(Opti& opti, const Expr& x,
+                              const Expr& y, const Expr& theta,
+                              const Constraint& constraint);
 
 inline std::vector<double> Linspace(double startValue, double endValue, size_t numSamples);
 

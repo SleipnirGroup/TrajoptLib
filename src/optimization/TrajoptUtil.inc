@@ -28,6 +28,18 @@
 
 namespace trajopt {
 
+template<ExprSys Expr>
+std::pair<Expr, Expr> RotateVector(const Expr& x, const Expr& y, const Expr& theta) {
+  return {x * cos(theta) - y * sin(theta),
+          x * sin(theta) + y * cos(theta)};
+}
+
+template<ExprSys Expr>
+std::pair<Expr, Expr> RotateConstantVector(double x, double y, const Expr& theta) {
+  return {x * cos(theta) - y * sin(theta),
+          x * sin(theta) + y * cos(theta)};
+}
+
 size_t GetIdx(const std::vector<size_t>& N,
               size_t wptIdx,
               size_t sampIdx) {

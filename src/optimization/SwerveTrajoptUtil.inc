@@ -17,18 +17,6 @@
 namespace trajopt {
 
 template<typename Expr> requires ExprSys<Expr>
-std::pair<Expr, Expr> RotateVector(const Expr& x, const Expr& y, const Expr& theta) {
-  return {x * cos(theta) - y * sin(theta),
-          x * sin(theta) + y * cos(theta)};
-}
-
-template<typename Expr> requires ExprSys<Expr>
-std::pair<Expr, Expr> RotateConstantVector(double x, double y, const Expr& theta) {
-  return {x * cos(theta) - y * sin(theta),
-          x * sin(theta) + y * cos(theta)};
-}
-
-template<typename Expr> requires ExprSys<Expr>
 std::pair<Expr, Expr> SolveNetForce(
     const std::vector<Expr>& Fx,
     const std::vector<Expr>& Fy) {
@@ -63,22 +51,6 @@ Expr SolveNetTorque(
   }
 
   return tau_net;
-}
-
-template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-void ApplyDynamicsConstraints(
-    Opti& opti,
-    const Expr& ax,
-    const Expr& ay,
-    const Expr& alpha,
-    const Expr& Fx_net,
-    const Expr& Fy_net,
-    const Expr& tau_net,
-    double mass,
-    double moi) {
-  opti.SubjectTo(Fx_net == mass * ax);
-  opti.SubjectTo(Fy_net == mass * ax);
-  opti.SubjectTo(tau_net == moi * alpha);
 }
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
@@ -120,6 +92,22 @@ void ApplyKinematicsConstraints(
       opti.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
     }
   }
+}
+
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+void ApplyDynamicsConstraints(
+    Opti& opti,
+    const Expr& ax,
+    const Expr& ay,
+    const Expr& alpha,
+    const Expr& Fx_net,
+    const Expr& Fy_net,
+    const Expr& tau_net,
+    double mass,
+    double moi) {
+  opti.SubjectTo(Fx_net == mass * ax);
+  opti.SubjectTo(Fy_net == mass * ax);
+  opti.SubjectTo(tau_net == moi * alpha);
 }
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
