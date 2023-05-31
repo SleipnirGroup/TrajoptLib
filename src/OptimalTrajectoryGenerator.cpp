@@ -8,7 +8,7 @@
 #define _OPTI_BACKEND casadi::MX, CasADiOpti
 #elif defined(OPTIMIZER_BACKEND_SLEIPNIR)
 #include "optimization/SleipnirOpti.h"
-#define _OPTI_BACKEND SleipnirOpti
+#define _OPTI_BACKEND SleipnirExpr, SleipnirOpti
 #endif
 #include "DebugOptions.h"
 #include "InvalidPathException.h"

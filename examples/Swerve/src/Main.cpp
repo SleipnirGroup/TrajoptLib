@@ -35,10 +35,10 @@ int main() {
   SwervePathBuilder path;
   path.SetDrivetrain(swerveDrivetrain);
   path.PoseWpt(0, 0.0, 0.0, 0.0);
-  path.PoseWpt(1, 5.0, 0.0, 2.0);
+  path.PoseWpt(1, 5.0, 0.0, 0.0);
   path.WptZeroVelocity(0);
   path.WptZeroVelocity(1);
-  path.ControlIntervalCounts({100});
+  path.ControlIntervalCounts({4});
 
   // SOLVE
   try {

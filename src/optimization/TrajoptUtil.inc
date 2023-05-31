@@ -56,7 +56,7 @@ size_t GetIdx(const std::vector<size_t>& N,
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
 void ApplyDiscreteTimeObjective(Opti& opti,
-                                const std::vector<Expr>& dt,
+                                std::vector<Expr>& dt,
                                 const std::vector<size_t> N) {
   Expr T_tot = 0;
   for (size_t sgmtIdx = 0; sgmtIdx < N.size(); ++sgmtIdx) {
@@ -68,7 +68,7 @@ void ApplyDiscreteTimeObjective(Opti& opti,
     opti.SubjectTo(dt_sgmt >= 0);
     opti.SetInitial(dt_sgmt, 5.0 / N_sgmt);
   }
-  opti.Minimize(T_tot);
+  opti.Minimize(std::move(T_tot));
 }
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>

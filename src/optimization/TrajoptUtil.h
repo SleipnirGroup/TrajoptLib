@@ -39,8 +39,8 @@ inline size_t GetIdx(const std::vector<size_t>& N,
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
 void ApplyDiscreteTimeObjective(Opti& opti,
-                                 const std::vector<Expr>& dt,
-                                 const std::vector<size_t> N);
+                                std::vector<Expr>& dt,
+                                const std::vector<size_t> N);
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
 void ApplyIntervalSet1dConstraint(Opti& opti, const Expr& scalar,

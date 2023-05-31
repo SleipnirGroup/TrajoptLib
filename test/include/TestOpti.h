@@ -30,7 +30,7 @@ class TestOpti {
 
   void Solve() {}
 
-  double SolutionValue(double expr) {
+  double SolutionValue(double expr) const {
     return expr;
   }
 
