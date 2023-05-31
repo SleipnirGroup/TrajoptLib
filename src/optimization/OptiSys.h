@@ -29,7 +29,7 @@ template <typename Expr, typename Opti>
 concept OptiSys =
     ExprSys<Expr> && requires(Expr expr, const Expr constExpr, Opti opti,
                               const Opti constOpti, double num) {
-// clang-format on
+  // clang-format on
   Opti();
   expr = opti.DecisionVariable();
   opti.Minimize(-expr);
