@@ -192,7 +192,7 @@ set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVE})
 
 include(CMakeDependentOption)
 
-cmake_dependent_option(BUILD_TESTING "Enable creation of tests." ON "PROJECT_IS_TOP_LEVEL" OFF)
+cmake_dependent_option(BUILD_TESTING "Enable creation of tests." OFF "PROJECT_IS_TOP_LEVEL" OFF)
 if (BUILD_TESTING)
   enable_testing()
   include(GoogleTest)
