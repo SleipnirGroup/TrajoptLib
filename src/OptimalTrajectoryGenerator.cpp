@@ -1,6 +1,7 @@
 // Copyright (c) TrajoptLib contributors
 
 #include "OptimalTrajectoryGenerator.h"
+#include "optimization/TrajectoryOptimizationProblem.h"
 #include "path/SwervePathBuilder.h"
 
 #if defined(OPTIMIZER_BACKEND_CASADI)
@@ -23,7 +24,10 @@ SwerveSolution OptimalTrajectoryGenerator::Generate(
   // if (!holonomicPath.IsValid()) {
   //   throw InvalidPathException("Cannot optimize an invalid path.");
   // }
-  SwerveTrajectoryOptimizationProblem<_OPTI_BACKEND> problem(path.GetPath(), path.GetControlIntervalCounts(), path.CalculateInitialGuess());
+  SwerveTrajectoryOptimizationProblem<_OPTI_BACKEND> problem(
+      path.GetPath(),
+      path.GetControlIntervalCounts(),
+      path.CalculateInitialGuess());
   return problem.Generate();
   // return SwerveSolution{};
 }

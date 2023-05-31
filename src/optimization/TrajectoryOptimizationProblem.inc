@@ -28,43 +28,6 @@
 
 namespace trajopt {
 
-// template <typename Opti>
-// TrajectoryOptimizationProblem<Opti>::TrajectoryOptimizationProblem(std::vector<size_t>&& ctrlIntCnts)
-//       : ctrlIntCnts(std::move(ctrlIntCnts)),
-//       wpCnt(TrajectoryOptimizationProblem<Opti>::ctrlIntCnts.size() + 1),
-//       segCnt(wpCnt - 1),
-//       ctrlIntTot(std::accumulate(ctrlIntCnts.begin(), ctrlIntCnts.end(), 0)),
-//       sampTot(ctrlIntTot + 1) {
-//   dt.reserve(ctrlIntCnts);
-//   x.reserve(sampTot);
-//   y.reserve(sampTot);
-//   theta.reserve(sampTot);
-
-//   for (size_t sampIdx = 0; sampIdx < sampTot; sampIdx++) {
-//     x.push_back(opti.Variable());
-//     y.push_back(opti.Variable());
-//     theta.push_back(opti.Variable());
-//   }
-
-//   Expression totalT = 0;
-//   for (size_t segIdx = 0; segIdx < segCnt; segIdx++) {
-//     Expression segmentDt = opti.Variable();
-//     size_t segCtrlIntCnt = ctrlIntCnts.at(segIdx);
-//     for (size_t segIntIdx = 0; segIntIdx < segCtrlIntCnt; segIntIdx++) {
-//       dt.push_back(segmentDt);
-//     }
-//     totalT += segCtrlIntCnt * segmentDt;
-//     opti.SubjectTo(segmentDt >= 0);
-//     opti.SetInitial(segmentDt, 5.0 / segCtrlIntCnt);
-//   }
-//   opti.Minimize(totalT);
-// }
-
-/// TEST CASES:
-/// GetIdx({2, 3}, 0, 0) -> 0
-/// GetIdx({2, 3}, 1, 1) -> 2
-/// GetIdx({2, 3}, 2, 2) -> 5
-/// GetIdx({2, 3}, 3, 0) -> 6
 size_t GetIdx(const std::vector<size_t>& N,
               size_t wptIdx,
               size_t sampIdx) {
@@ -193,23 +156,23 @@ SolveRobotPointPosition(
 }
 
 // https://www.desmos.com/calculator/cqmc1tjtsv
-template <typename Expression, typename LineNumberType,
+template <typename LineNumberType,
           typename PointNumberType>
-Expression linePointDist(LineNumberType lineStartX, LineNumberType lineStartY,
+decltype(LineNumberType() + PointNumberType())
+linePointDist(LineNumberType lineStartX, LineNumberType lineStartY,
                          LineNumberType lineEndX, LineNumberType lineEndY,
                          PointNumberType pointX, PointNumberType pointY) {
-  Expression lX = lineEndX - lineStartX;
-  Expression lY = lineEndY - lineStartY;
-  Expression vX = pointX - lineStartX;
-  Expression vY = pointY - lineStartY;
-  Expression dot = vX * lX + vY * lY;
-  Expression lNormSquared = lX * lX + lY * lY;
-  Expression t = dot / lNormSquared;
-  // Expression tBounded = std::fmax(std::fmin(t, 1), 0);
-  Expression tBounded = t;
-  Expression iX = (1 - tBounded) * lineStartX + tBounded * lineEndX;
-  Expression iY = (1 - tBounded) * lineStartY + tBounded * lineEndY;
-  Expression distSquared =
+  auto lX = lineEndX - lineStartX;
+  auto lY = lineEndY - lineStartY;
+  auto vX = pointX - lineStartX;
+  auto vY = pointY - lineStartY;
+  auto dot = vX * lX + vY * lY;
+  auto lNormSquared = lX * lX + lY * lY;
+  auto t = dot / lNormSquared;
+  auto tBounded = fmax(fmin(t, 1), 0);
+  auto iX = (1 - tBounded) * lineStartX + tBounded * lineEndX;
+  auto iY = (1 - tBounded) * lineStartY + tBounded * lineEndY;
+  auto distSquared =
       (iX - pointX) * (iX - pointX) + (iY - pointY) * (iY - pointY);
   return distSquared;
 }
@@ -226,9 +189,38 @@ void ApplyConstraint(
     auto& headingConstraint = std::get<HeadingConstraint>(constraint);
     ApplyIntervalSet1dConstraint(opti, theta, headingConstraint.headingBound);
   } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
-    // pass
+    auto linePointConstraint = std::get<LinePointConstraint>(constraint);
+    auto [lineStartX, lineStartY] = SolveRobotPointPosition(x, y, theta,
+        linePointConstraint.robotLineStartX,
+        linePointConstraint.robotLineStartY);
+    auto [lineEndX, lineEndY] = SolveRobotPointPosition(x, y, theta,
+        linePointConstraint.robotLineEndX,
+        linePointConstraint.robotLineEndY);
+    double pointX = linePointConstraint.fieldPointX;
+    double pointY = linePointConstraint.fieldPointY;
+    auto dist = linePointDist(lineStartX, lineStartY, lineEndX, lineEndY, pointX, pointY);
+    auto distSquared = dist * dist;
+    auto& distInterval = linePointConstraint.distance;
+    auto distIntervalSquared =
+        IntervalSet1d(std::pow(distInterval.lower, 2),
+                      std::pow(distInterval.upper, 2));
+    ApplyIntervalSet1dConstraint(opti, distSquared, distIntervalSquared);
   } else if (std::holds_alternative<PointLineConstraint>(constraint)) {
-    // pass
+    auto pointLineConstraint = std::get<PointLineConstraint>(constraint);
+    double lineStartX = pointLineConstraint.fieldLineStartX;
+    double lineStartY = pointLineConstraint.fieldLineStartY;
+    double lineEndX = pointLineConstraint.fieldLineEndX;
+    double lineEndY = pointLineConstraint.fieldLineEndY;
+    auto [pointX, pointY] = SolveRobotPointPosition(x, y, theta,
+        pointLineConstraint.robotPointX,
+        pointLineConstraint.robotPointY);
+    auto dist = linePointDist(lineStartX, lineStartY, lineEndX, lineEndY, pointX, pointY);
+    auto distSquared = dist * dist;
+    auto& distInterval = pointLineConstraint.distance;
+    auto distIntervalSquared =
+        IntervalSet1d(std::pow(distInterval.lower, 2),
+                      std::pow(distInterval.upper, 2));
+    ApplyIntervalSet1dConstraint(opti, distSquared, distIntervalSquared);
   } else if (std::holds_alternative<PointPointConstraint>(constraint)) {
     auto pointPointConstraint = std::get<PointPointConstraint>(constraint);
     double robotPointX = pointPointConstraint.robotPointX;

@@ -165,86 +165,8 @@ const std::vector<size_t>& SwervePathBuilder::GetControlIntervalCounts() const {
   return controlIntervalCounts;
 }
 
-inline void linspace(std::vector<double>& arry, size_t startIndex,
-                     size_t endIndex, double startValue, double endValue) {
-  size_t intervalCount = endIndex - startIndex;
-  double delta = (endValue - startValue) / intervalCount;
-  for (size_t index = 0; index < intervalCount; index++) {
-    // arry[startIndex + index] = startValue + index * delta;
-    arry.push_back(startValue + index * delta);
-  }
-}
-
 Solution SwervePathBuilder::CalculateInitialGuess() const {
-  size_t wptCnt = path.waypoints.size();
-  size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
-  Solution initialGuess{};
-  initialGuess.x.reserve(sampTot);
-  initialGuess.y.reserve(sampTot);
-  initialGuess.theta.reserve(sampTot);
-  initialGuess.x.push_back(initialGuessPoints.at(0).at(0).x);
-  initialGuess.y.push_back(initialGuessPoints.at(0).at(0).y);
-  initialGuess.theta.push_back(initialGuessPoints.at(0).at(0).heading);
-  size_t sampIdx = 1;
-  for (size_t wptIdx = 1; wptIdx < wptCnt; wptIdx++) {
-    auto& prevWptFinalInitialGuessPt = initialGuessPoints.at(wptIdx - 1).back();
-    auto& currWptFirstInitialGuessPt = initialGuessPoints.at(wptIdx).front();
-    
-    size_t N_sgmt = controlIntervalCounts.at(wptIdx - 1);
-    size_t guessPointCount = initialGuessPoints.at(wptIdx).size();
-    size_t N_guessSgmt = N_sgmt / guessPointCount;
-    linspace(initialGuess.x,
-             sampIdx,
-             sampIdx + N_guessSgmt,
-             prevWptFinalInitialGuessPt.x,
-             currWptFirstInitialGuessPt.x);
-    linspace(initialGuess.y,
-             sampIdx,
-             sampIdx + N_guessSgmt,
-             prevWptFinalInitialGuessPt.y,
-             currWptFirstInitialGuessPt.y);
-    linspace(initialGuess.theta,
-             sampIdx,
-             sampIdx + N_guessSgmt,
-             prevWptFinalInitialGuessPt.heading,
-             currWptFirstInitialGuessPt.heading);
-    for (size_t guessPointIdx = 1; guessPointIdx < guessPointCount - 1;
-         guessPointIdx++) {  // if three or more guess points
-      size_t prevGuessPointSampIdx = sampIdx + guessPointIdx * N_guessSgmt;
-      size_t guessPointSampleIndex = sampIdx + (guessPointIdx + 1) * N_guessSgmt;
-      linspace(initialGuess.x, prevGuessPointSampIdx,
-               guessPointSampleIndex,
-               initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).x,
-               initialGuessPoints.at(wptIdx).at(guessPointIdx).x);
-      linspace(initialGuess.y, prevGuessPointSampIdx,
-               guessPointSampleIndex,
-               initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).y,
-               initialGuessPoints.at(wptIdx).at(guessPointIdx).y);
-      linspace(initialGuess.theta, prevGuessPointSampIdx,
-               guessPointSampleIndex,
-               initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).heading,
-               initialGuessPoints.at(wptIdx).at(guessPointIdx).heading);
-    }
-    if (guessPointCount > 1) {  // if two or more guess points
-      size_t secondToLastGuessPointSampleIdx =
-          sampIdx + (guessPointCount - 1) * N_guessSgmt;
-      size_t finalGuessPointSampleIndex = sampIdx + N_sgmt;
-      linspace(initialGuess.x, secondToLastGuessPointSampleIdx,
-               finalGuessPointSampleIndex,
-               initialGuessPoints.at(wptIdx).at(guessPointCount - 2).x,
-               initialGuessPoints.at(wptIdx).at(guessPointCount - 1).x);
-      linspace(initialGuess.y, secondToLastGuessPointSampleIdx,
-               finalGuessPointSampleIndex,
-               initialGuessPoints.at(wptIdx).at(guessPointCount - 2).y,
-               initialGuessPoints.at(wptIdx).at(guessPointCount - 1).y);
-      linspace(initialGuess.theta, secondToLastGuessPointSampleIdx,
-               finalGuessPointSampleIndex,
-               initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
-               initialGuessPoints.at(wptIdx).at(guessPointCount - 1).heading);
-    }
-    sampIdx += N_sgmt;
-  }
-  return initialGuess;
+  return GenerateLinearInitialGuess(initialGuessPoints, controlIntervalCounts);
 }
 
 std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
@@ -264,7 +186,7 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
   std::vector<HolonomicConstraint> constraints;
 
   // robot bumper edge to obstacle point constraints
-  for (const ObstaclePoint& obstaclePoint : obstacle.points) {
+  for (auto& obstaclePoint : obstacle.points) {
     // First apply constraint for all but last edge
     for (size_t bumperCornerIndex = 0;
         bumperCornerIndex < bumperCornerCount - 1; bumperCornerIndex++) {
@@ -292,7 +214,7 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
   }
 
   // obstacle edge to bumper corner constraints
-  for (const ObstaclePoint& bumperCorner : bumpers.points) {
+  for (auto& bumperCorner : bumpers.points) {
     for (size_t obstacleCornerIndex = 0;
       obstacleCornerIndex < obstacleCornerCount - 1; obstacleCornerIndex++) {
       constraints.emplace_back(PointLineConstraint{

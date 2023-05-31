@@ -163,22 +163,20 @@ SwerveTrajectoryOptimizationProblem<Expr, Opti>::SwerveTrajectoryOptimizationPro
   ApplyInitialGuess(opti, initialGuess, x, y, theta);
 }
 
-template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-std::pair<Expr, Expr> SwerveTrajectoryOptimizationProblem<Expr, Opti>
-    ::RotateVector(const Expr& x, const Expr& y, const Expr& theta) {
+template<typename Expr> requires ExprSys<Expr>
+std::pair<Expr, Expr> RotateVector(const Expr& x, const Expr& y, const Expr& theta) {
   return {x * cos(theta) - y * sin(theta),
           x * sin(theta) + y * cos(theta)};
 }
 
-template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-std::pair<Expr, Expr> SwerveTrajectoryOptimizationProblem<Expr, Opti>
-    ::RotateConstantVector(double x, double y, const Expr& theta) {
+template<typename Expr> requires ExprSys<Expr>
+std::pair<Expr, Expr> RotateConstantVector(double x, double y, const Expr& theta) {
   return {x * cos(theta) - y * sin(theta),
           x * sin(theta) + y * cos(theta)};
 }
 
-template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-std::pair<Expr, Expr> SwerveTrajectoryOptimizationProblem<Expr, Opti>::SolveNetForce(
+template<typename Expr> requires ExprSys<Expr>
+std::pair<Expr, Expr> SolveNetForce(
     const std::vector<Expr>& Fx,
     const std::vector<Expr>& Fy) {
   Expr Fx_net = 0;
@@ -194,8 +192,8 @@ std::pair<Expr, Expr> SwerveTrajectoryOptimizationProblem<Expr, Opti>::SolveNetF
   return {Fx_net, Fy_net};
 }
 
-template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-Expr SwerveTrajectoryOptimizationProblem<Expr, Opti>::SolveNetTorque(
+template<typename Expr> requires ExprSys<Expr>
+Expr SolveNetTorque(
     const Expr& theta,
     const std::vector<Expr>& Fx,
     const std::vector<Expr>& Fy,
@@ -215,7 +213,7 @@ Expr SwerveTrajectoryOptimizationProblem<Expr, Opti>::SolveNetTorque(
 }
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-void SwerveTrajectoryOptimizationProblem<Expr, Opti>::ApplyDynamicsConstraints(
+void ApplyDynamicsConstraints(
     Opti& opti,
     const Expr& ax,
     const Expr& ay,
@@ -231,7 +229,7 @@ void SwerveTrajectoryOptimizationProblem<Expr, Opti>::ApplyDynamicsConstraints(
 }
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-void SwerveTrajectoryOptimizationProblem<Expr, Opti>::ApplyKinematicsConstraints(
+void ApplyKinematicsConstraints(
     Opti& opti,
     const std::vector<Expr>& x,
     const std::vector<Expr>& y,
@@ -272,7 +270,7 @@ void SwerveTrajectoryOptimizationProblem<Expr, Opti>::ApplyKinematicsConstraints
 }
 
 template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-void SwerveTrajectoryOptimizationProblem<Expr, Opti>::ApplyPowerConstraints(
+void ApplyPowerConstraints(
     Opti& opti,
     const Expr& theta,
     const Expr& vx,
@@ -318,8 +316,7 @@ void SwerveTrajectoryOptimizationProblem<Expr, Opti>::ApplyPowerConstraints(
 }
 
 template <typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-SwerveSolution SwerveTrajectoryOptimizationProblem<Expr, Opti>
-    ::ConstructSwerveSolution(
+SwerveSolution ConstructSwerveSolution(
     const Opti& opti,
     const std::vector<Expr>& x,
     const std::vector<Expr>& y,

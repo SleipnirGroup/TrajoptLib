@@ -54,46 +54,52 @@ class SwerveTrajectoryOptimizationProblem {
 
   Opti opti;
 
-  static std::pair<Expr, Expr> RotateVector(const Expr& x, const Expr& y, const Expr& theta);
-  static std::pair<Expr, Expr> RotateConstantVector(double x, double y, const Expr& theta);
-
-  /**
-   * @brief Gives an expression for the position of a swerve module relative
-   * to the nonrotating robot coordinate system, given the robot's heading.
-   * The first row contains the x-coordinate, and the second row
-   * contains the y-coordinate.
-   *
-   * @param theta the instantaneous heading of the robot
-   * @param module the swerve module to find the position for
-   * @return a 2 x 1 vector of positions where each row is a coordinate
-   */
-//   static const std::pair<Expr, Expr> SolveModulePosition(const Expr& theta,
-//                                                   const SwerveModule& module);
-
  public:
-  static std::pair<Expr, Expr> SolveNetForce(
-      const std::vector<Expr>& Fx,
-      const std::vector<Expr>& Fy);
+  /**
+   * @brief Construct a new CasADi Swerve Trajectory Optimization Problem
+   * with a swerve drivetrain and holonomic path.
+   *
+   * @param swerveDrivetrain the swerve drivetrain
+   * @param holonomicPath the holonomic path
+   */
+  explicit SwerveTrajectoryOptimizationProblem(
+        const SwervePath& path,
+        const std::vector<size_t>& N,
+        const Solution& initialGuess);
+};
 
-  static Expr SolveNetTorque(
-      const Expr& theta,
-      const std::vector<Expr>& Fx,
-      const std::vector<Expr>& Fy,
-      const std::vector<SwerveModule>& swerveModules);
+template<typename Expr> requires ExprSys<Expr>
+std::pair<Expr, Expr> RotateVector(const Expr& x, const Expr& y, const Expr& theta);
 
-  static void ApplyKinematicsConstraints(
-      Opti& opti,
-      const std::vector<Expr>& x,
-      const std::vector<Expr>& y,
-      const std::vector<Expr>& theta,
-      const std::vector<Expr>& vx,
-      const std::vector<Expr>& vy,
-      const std::vector<Expr>& omega,
-      const std::vector<Expr>& ax,
-      const std::vector<Expr>& ay,
-      const std::vector<Expr>& alpha,
-      const std::vector<Expr>& dt,
-      const std::vector<size_t> N);
+template<typename Expr> requires ExprSys<Expr>
+std::pair<Expr, Expr> RotateConstantVector(double x, double y, const Expr& theta);
+
+template<typename Expr> requires ExprSys<Expr>
+std::pair<Expr, Expr> SolveNetForce(
+    const std::vector<Expr>& Fx,
+    const std::vector<Expr>& Fy);
+
+template<typename Expr> requires ExprSys<Expr>
+Expr SolveNetTorque(
+    const Expr& theta,
+    const std::vector<Expr>& Fx,
+    const std::vector<Expr>& Fy,
+    const std::vector<SwerveModule>& swerveModules);
+
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+void ApplyKinematicsConstraints(
+    Opti& opti,
+    const std::vector<Expr>& x,
+    const std::vector<Expr>& y,
+    const std::vector<Expr>& theta,
+    const std::vector<Expr>& vx,
+    const std::vector<Expr>& vy,
+    const std::vector<Expr>& omega,
+    const std::vector<Expr>& ax,
+    const std::vector<Expr>& ay,
+    const std::vector<Expr>& alpha,
+    const std::vector<Expr>& dt,
+    const std::vector<size_t> N);
 
   /**
    * @brief Applies the drivetrain-specific constraints to the optimizer. These
@@ -123,59 +129,45 @@ class SwerveTrajectoryOptimizationProblem {
    * velocity for each sample point
    * @param swerveDrivetrain the swerve drivetrain
    */
-  static void ApplyDynamicsConstraints(
-      Opti& opti,
-      const Expr& ax,
-      const Expr& ay,
-      const Expr& alpha,
-      const Expr& Fx_net,
-      const Expr& Fy_net,
-      const Expr& tau_net,
-      double mass,
-      double moi);
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+void ApplyDynamicsConstraints(
+    Opti& opti,
+    const Expr& ax,
+    const Expr& ay,
+    const Expr& alpha,
+    const Expr& Fx_net,
+    const Expr& Fy_net,
+    const Expr& tau_net,
+    double mass,
+    double moi);
 
-  static void ApplyPowerConstraints(
-      Opti& opti,
-      const Expr& theta,
-      const Expr& vx,
-      const Expr& vy,
-      const Expr& omega,
-      const std::vector<Expr>& Fx,
-      const std::vector<Expr>& Fy,
-      const SwerveDrivetrain& swerveDrivetrain);
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+void ApplyPowerConstraints(
+    Opti& opti,
+    const Expr& theta,
+    const Expr& vx,
+    const Expr& vy,
+    const Expr& omega,
+    const std::vector<Expr>& Fx,
+    const std::vector<Expr>& Fy,
+    const SwerveDrivetrain& swerveDrivetrain);
 
-  static SwerveSolution ConstructSwerveSolution(
-      const Opti& opti,
-      const std::vector<Expr>& x,
-      const std::vector<Expr>& y,
-      const std::vector<Expr>& theta,
-      const std::vector<Expr>& vx,
-      const std::vector<Expr>& vy,
-      const std::vector<Expr>& omega,
-      const std::vector<Expr>& ax,
-      const std::vector<Expr>& ay,
-      const std::vector<Expr>& alpha,
-      const std::vector<std::vector<Expr>>& Fx,
-      const std::vector<std::vector<Expr>>& Fy,
-      const std::vector<Expr>& dt,
-      const std::vector<size_t>& N);
-
-  /**
-   * @brief Construct a new CasADi Swerve Trajectory Optimization Problem
-   * with a swerve drivetrain and holonomic path.
-   *
-   * @param swerveDrivetrain the swerve drivetrain
-   * @param holonomicPath the holonomic path
-   */
-  explicit SwerveTrajectoryOptimizationProblem(
-        const SwervePath& path,
-        const std::vector<size_t>& N,
-        const Solution& initialGuess);
-
-#ifdef DEBUG_OUTPUT
-  void PrintSolution() const;
-#endif
-};
+template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+SwerveSolution ConstructSwerveSolution(
+    const Opti& opti,
+    const std::vector<Expr>& x,
+    const std::vector<Expr>& y,
+    const std::vector<Expr>& theta,
+    const std::vector<Expr>& vx,
+    const std::vector<Expr>& vy,
+    const std::vector<Expr>& omega,
+    const std::vector<Expr>& ax,
+    const std::vector<Expr>& ay,
+    const std::vector<Expr>& alpha,
+    const std::vector<std::vector<Expr>>& Fx,
+    const std::vector<std::vector<Expr>>& Fy,
+    const std::vector<Expr>& dt,
+    const std::vector<size_t>& N);
 }  // namespace trajopt
 
 #include "optimization/SwerveTrajectoryOptimizationProblem.inc"

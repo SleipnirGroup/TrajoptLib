@@ -18,7 +18,6 @@ TEST(TrajoptUtilTest, ApplyKinematicsConstraints) {
   //                  dt{         2.0,   2.0,   4.0,   4.0,   4.0,   4.0}
   std::vector<double> dt{2.0, 4.0};
   std::vector<size_t>  N{2, 4};
-  trajopt::SwerveTrajectoryOptimizationProblem<double, TestOpti>::
-      ApplyKinematicsConstraints(opti, x, x, x, v, v, v, a, a, a, dt, N);
+  trajopt::ApplyKinematicsConstraints(opti, x, x, x, v, v, v, a, a, a, dt, N);
   EXPECT_FALSE(opti.IsViolating());
 }
