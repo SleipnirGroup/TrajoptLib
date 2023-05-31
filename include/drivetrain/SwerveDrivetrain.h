@@ -20,7 +20,9 @@ namespace trajopt {
  * be four. The order the swerve modules are listed does not matter.
  */
 struct TRAJOPT_DLLEXPORT SwerveDrivetrain {
+  /// the mass of the robot
   double mass;
+  /// the moment of inertial of the robot about the origin
   double moi;
   /// The list of swerve modules that make the robot move, usually one in each
   /// corner.

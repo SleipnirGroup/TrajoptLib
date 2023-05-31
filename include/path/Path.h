@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "SymbolExports.h"
 #include "constraint/differential/DifferentialConstraint.h"
 #include "constraint/holonomic/HolonomicConstraint.h"
 #include "drivetrain/DifferentialDrivetrain.h"
@@ -17,36 +18,43 @@
 
 namespace trajopt {
 
-template <typename Constraint, typename Drivetrain>
-requires((std::is_same<Constraint, HolonomicConstraint>::value &&
-          std::is_same<Drivetrain, SwerveDrivetrain>::value) ||
-         (std::is_same<Constraint, DifferentialConstraint>::value &&
-          std::is_same<Drivetrain,
-                       DifferentialDrivetrain>::value)) struct TRAJOPT_DLLEXPORT
-    Waypoint {
-  std::vector<Constraint> waypointConstraints;
-  std::vector<Constraint> segmentConstraints;
-  // std::optional<Drivetrain> segmentDrivetrain;
+/**
+ * A swerve path waypoint
+ */
+struct TRAJOPT_DLLEXPORT SwerveWaypoint {
+  /// instantaneous constraints at the waypoint
+  std::vector<HolonomicConstraint> waypointConstraints;
+  /// continuous constraints along the segment
+  std::vector<HolonomicConstraint> segmentConstraints;
 };
 
-template <typename Constraint, typename Drivetrain, typename Solution>
-requires(
-    (std::is_same<Constraint, HolonomicConstraint>::value &&
-     std::is_same<Drivetrain, SwerveDrivetrain>::value &&
-     std::is_same<Solution, SwerveSolution>::value) ||
-    (std::is_same<Constraint, DifferentialConstraint>::value &&
-     std::is_same<Drivetrain, DifferentialDrivetrain>::value &&
-     std::is_same<Solution,
-                  DifferentialSolution>::value)) struct TRAJOPT_DLLEXPORT Path {
-  std::vector<Waypoint<Constraint, Drivetrain>> waypoints;
-  Drivetrain drivetrain;
+/**
+ * A differential path waypoint
+ */
+struct TRAJOPT_DLLEXPORT DifferentialWaypoint {
+  /// instantaneous constraints at the waypoint
+  std::vector<DifferentialConstraint> waypointConstraints;
+  /// continuous constraints along the segment
+  std::vector<DifferentialConstraint> segmentConstraints;
 };
 
-using SwerveWaypoint = Waypoint<HolonomicConstraint, SwerveDrivetrain>;
-using SwervePath = Path<HolonomicConstraint, SwerveDrivetrain, SwerveSolution>;
+/**
+ * Swerve path
+ */
+struct TRAJOPT_DLLEXPORT SwervePath {
+  /// waypoints along the path
+  std::vector<SwerveWaypoint> waypoints;
+  /// drivetrain of the robot
+  SwerveDrivetrain drivetrain;
+};
 
-using DifferentialWaypoint =
-    Waypoint<DifferentialConstraint, DifferentialDrivetrain>;
-using DifferentialPath =
-    Path<DifferentialConstraint, DifferentialDrivetrain, DifferentialSolution>;
+/**
+ * Differential path
+ */
+struct TRAJOPT_DLLEXPORT DifferentialPath {
+  /// waypoints along the path
+  std::vector<DifferentialWaypoint> waypoints;
+  /// drivetrain of the robot
+  DifferentialDrivetrain drivetrain;
+};
 }  // namespace trajopt

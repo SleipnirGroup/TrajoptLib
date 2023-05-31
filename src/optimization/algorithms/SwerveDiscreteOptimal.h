@@ -56,7 +56,7 @@ requires OptiSys<Expr, Opti> class SwerveDiscreteOptimal {
 
  public:
   /**
-   * @brief Construct a new CasADi Swerve Trajectory Optimization Problem
+   * Construct a new CasADi Swerve Trajectory Optimization Problem
    * with a swerve drivetrain and holonomic path.
    *
    * @param swerveDrivetrain the swerve drivetrain

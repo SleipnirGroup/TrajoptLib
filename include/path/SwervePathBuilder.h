@@ -15,28 +15,28 @@
 namespace trajopt {
 
 /**
- * @brief Builds a swerve path using information about how the robot
+ * Builds a swerve path using information about how the robot
  * must travel through a series of waypoints. This path can be converted
  * to a trajectory using OptimalTrajectoryGenerator.
  */
 class TRAJOPT_DLLEXPORT SwervePathBuilder {
  public:
   /**
-   * @brief Get the SwervePath being constructed
+   * Get the SwervePath being constructed
    *
    * @return the path
    */
   const SwervePath& GetPath() const;
 
   /**
-   * @brief Set the Drivetrain object
+   * Set the Drivetrain object
    *
    * @param drivetrain the new drivetrain
    */
   void SetDrivetrain(SwerveDrivetrain drivetrain);
 
   /**
-   * @brief Create a pose waypoint constraint on the waypoint at the provided
+   * Create a pose waypoint constraint on the waypoint at the provided
    * index, and add an initial guess with the same pose This specifies that the
    * position and heading of the robot at the waypoint must be fixed at the
    * values provided.
@@ -48,7 +48,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    */
   void PoseWpt(size_t idx, double x, double y, double heading);
   /**
-   * @brief Create a translation waypoint constraint on the waypoint at the
+   * Create a translation waypoint constraint on the waypoint at the
    * provided index, and add an initial guess point with the same translation.
    * This specifies that the position of the robot at the waypoint must be fixed
    * at the value provided.
@@ -62,7 +62,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
                       double headingGuess = 0.0);
 
   /**
-   * @brief Add an initial guess point between two waypoints. The initial guess
+   * Add an initial guess point between two waypoints. The initial guess
    * point is inserted between the waypoints at fromIdx and (fromIdx + 1).
    *
    * @param fromIdx index of the waypoint the initial guess point
@@ -74,7 +74,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void AddInitialGuessPoint(size_t fromIdx, double x, double y, double heading);
 
   /**
-   * @brief Specify the required direction of the velocity vector of the robot
+   * Specify the required direction of the velocity vector of the robot
    * at a waypoint.
    *
    * @param idx index of the waypoint
@@ -83,7 +83,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void WptVelocityDirection(size_t idx, double angle);
 
   /**
-   * @brief Specify the required maximum magnitude of the velocity vector of the
+   * Specify the required maximum magnitude of the velocity vector of the
    * robot at a waypoint.
    *
    * @param idx index of the waypoint
@@ -92,7 +92,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void WptVelocityMagnitude(size_t idx, double v);
 
   /**
-   * @brief Specify the required velocity vector of the robot at a waypoint to
+   * Specify the required velocity vector of the robot at a waypoint to
    * be zero.
    *
    * @param idx index of the waypoint
@@ -100,7 +100,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void WptZeroVelocity(size_t idx);
 
   /**
-   * @brief Specify the exact required velocity vector of the robot at a
+   * Specify the exact required velocity vector of the robot at a
    * waypoint.
    *
    * @param idx index of the waypoint
@@ -109,7 +109,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    */
   void WptVelocityPolar(size_t idx, double vr, double vtheta);
   /**
-   * @brief Specify the required angular velocity of the robot to be zero
+   * Specify the required angular velocity of the robot to be zero
    * at a waypoint
    *
    * @param idx index of the waypoint
@@ -117,7 +117,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void WptZeroAngularVelocity(size_t idx);
 
   /**
-   * @brief Specify the required direction of the velocity vector of the robot
+   * Specify the required direction of the velocity vector of the robot
    * for the continuum of robot state between two waypoints.
    *
    * @param fromIdx the waypoint at the beginning of the continuum
@@ -131,7 +131,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
                              bool includeWpts = true);
 
   /**
-   * @brief Specify the required maximum magnitude of the velocity vector of the
+   * Specify the required maximum magnitude of the velocity vector of the
    * robot for the continuum of robot state between two waypoints.
    *
    * @param fromIdx the waypoint at the beginning of the continuum
@@ -145,7 +145,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
                              bool includeWpts = true);
 
   /**
-   * @brief Specify the required angular velocity of the robot to be zero
+   * Specify the required angular velocity of the robot to be zero
    * for the continuum of robot state between two waypoints.
    *
    * @param fromIdx index of the waypoint at the beginning of the continuum
@@ -159,7 +159,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
                                bool includeWpts = true);
 
   /**
-   * @brief Apply a custom holonomic constraint at a waypoint
+   * Apply a custom holonomic constraint at a waypoint
    *
    * @param idx index of the waypoint
    * @param constraint the constraint to be applied
@@ -167,7 +167,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void WptConstraint(size_t idx, const HolonomicConstraint& constraint);
 
   /**
-   * @brief Apply a custom holonomic constraint to the continuum of state
+   * Apply a custom holonomic constraint to the continuum of state
    * between two waypoints.
    *
    * @param fromIdx index of the waypoint at the beginning of the continuum
@@ -181,7 +181,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
                       bool includeWpts = true);
 
   /**
-   * @brief Add polygon or circle shaped bumpers to a list used when applying
+   * Add polygon or circle shaped bumpers to a list used when applying
    * obstacle constraints.
    *
    * @param newBumpers bumpers to add
@@ -189,7 +189,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void AddBumpers(Bumpers&& newBumpers);
 
   /**
-   * @brief Apply an obstacle constraint to a waypoint.
+   * Apply an obstacle constraint to a waypoint.
    *
    * @param idx index of the waypoint
    * @param obstacle the obstacle
@@ -197,7 +197,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void WptObstacle(size_t idx, const Obstacle& obstacle);
 
   /**
-   * @brief Apply an obstacle constraint to the continuum of state between two
+   * Apply an obstacle constraint to the continuum of state between two
    * waypoints.
    *
    * @param fromIdx index of the waypoint at the beginning of the continuum
@@ -211,7 +211,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
                     bool includeWpts = true);
 
   /**
-   * @brief If using a discrete algorithm, specify the number of discrete
+   * If using a discrete algorithm, specify the number of discrete
    * samples for every segment of the trajectory
    *
    * @param counts the sequence of control interval counts per segment, length
@@ -220,14 +220,14 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void ControlIntervalCounts(std::vector<size_t>&& counts);
 
   /**
-   * @brief Get the Control Interval Counts object
+   * Get the Control Interval Counts object
    *
    * @return const std::vector<size_t>&
    */
   const std::vector<size_t>& GetControlIntervalCounts() const;
 
   /**
-   * @brief Calculate a discrete, linear initial guess of the x, y, and heading
+   * Calculate a discrete, linear initial guess of the x, y, and heading
    * of the robot that goes through each segment.
    *
    * @return the initial guess, as a solution

@@ -33,7 +33,7 @@ requires OptiSys<Expr, Opti> void ApplyKinematicsConstraints(
     const std::vector<size_t> N);
 
 /**
- * @brief Applies the drivetrain-specific constraints to the optimizer. These
+ * Applies the drivetrain-specific constraints to the optimizer. These
  * constraints prevent motors from spinning too fast or with too much power.
  * For swerve, this applies constraints that connect the speed and direction
  * of each swerve module wheel to the overall kinematics and dynamics of the
