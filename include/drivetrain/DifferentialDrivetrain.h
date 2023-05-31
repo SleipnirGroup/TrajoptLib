@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 #pragma once
 
 #include "SymbolExports.h"
@@ -18,4 +20,4 @@ struct TRAJOPT_DLLEXPORT DifferentialDrivetrain {
   DifferentialDriverail left;
   DifferentialDriverail right;
 };
-}
+}  // namespace trajopt

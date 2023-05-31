@@ -3,9 +3,10 @@
 #pragma once
 
 #include <cstddef>
-#include <fmt/format.h>
 #include <string>
 #include <vector>
+
+#include <fmt/format.h>
 
 #include "SymbolExports.h"
 #include "solution/HolonomicSolution.h"

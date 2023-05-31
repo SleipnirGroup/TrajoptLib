@@ -1,7 +1,8 @@
 // Copyright (c) TrajoptLib contributors
 
-#include <gtest/gtest.h>
 #include <vector>
+
+#include <gtest/gtest.h>
 
 #include "TestOpti.h"
 #include "optimization/TrajoptUtil.h"
@@ -44,23 +45,23 @@ TEST(TrajoptUtilTest, ApplyIntervalSet1d) {
   };
 
   // correct
-  for (auto test : std::initializer_list<IntervalSet1dTest>{
-  //  {  set,   val,  isViolating}
-      {case1,    1.0,       false},
-      {case1,    3.0,       false},
-      {case1,    4.0,        true},
-      {case2,   -4.0,       false},
-      {case2,   10.0,        true},
-      {case3, negInf,       false},
-      {case3,   -6.0,       false},
-      {case3,    5.0,        true},
-      {case4,    7.0,       false},
-      {case4, posInf,       false},
-      {case4,    5.0,        true}}) {
+  for (auto test :
+       std::initializer_list<IntervalSet1dTest>{//  {  set,   val,  isViolating}
+                                                {case1, 1.0, false},
+                                                {case1, 3.0, false},
+                                                {case1, 4.0, true},
+                                                {case2, -4.0, false},
+                                                {case2, 10.0, true},
+                                                {case3, negInf, false},
+                                                {case3, -6.0, false},
+                                                {case3, 5.0, true},
+                                                {case4, 7.0, false},
+                                                {case4, posInf, false},
+                                                {case4, 5.0, true}}) {
     TestOpti opti;
     trajopt::ApplyIntervalSet1dConstraint(opti, test.val, test.set);
     EXPECT_EQ(opti.IsViolating(), test.isViolating);
-  } 
+  }
 }
 
 TEST(TrajoptUtilTest, Linspace) {
@@ -71,13 +72,10 @@ TEST(TrajoptUtilTest, Linspace) {
 
 TEST(TrajoptUtilTest, LinearInitialGuess) {
   std::vector<std::vector<trajopt::InitialGuessPoint>> initialGuessPoints{
-    {{1, 0, 0}},
-    {{2, 0, 0}, {3, 0, 0}},
-    {{6, 0, 0}}
-  };
+      {{1, 0, 0}}, {{2, 0, 0}, {3, 0, 0}}, {{6, 0, 0}}};
   std::vector<size_t> controlIntervalCounts{2, 3};
   std::vector<double> expectedX{1, 2, 3, 4, 5, 6};
-  auto result = trajopt::GenerateLinearInitialGuess(
-      initialGuessPoints, controlIntervalCounts);
+  auto result = trajopt::GenerateLinearInitialGuess(initialGuessPoints,
+                                                    controlIntervalCounts);
   EXPECT_EQ(expectedX, result.x);
 }

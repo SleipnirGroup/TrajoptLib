@@ -55,8 +55,10 @@ struct fmt::formatter<trajopt::DifferentialCentripetalAccelerationConstraint> {
    * @param ctx Format string context.
    */
   template <typename FormatContext>
-  auto format(const trajopt::DifferentialCentripetalAccelerationConstraint& constraint,
-              FormatContext& ctx) {
-    return fmt::format_to(ctx.out(), "diff centrip accel {}", constraint.velocityBound);
+  auto format(
+      const trajopt::DifferentialCentripetalAccelerationConstraint& constraint,
+      FormatContext& ctx) {
+    return fmt::format_to(ctx.out(), "diff centrip accel {}",
+                          constraint.velocityBound);
   }
 };

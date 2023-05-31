@@ -1,7 +1,9 @@
+// Copyright (c) TrajoptLib contributors
+
 #pragma once
 
-template<typename Expr> 
-concept ExprSys = requires (Expr expr, const Expr constExpr, double num) {
+template <typename Expr>
+concept ExprSys = requires(Expr expr, const Expr constExpr, double num) {
   Expr();
   Expr(num);
   Expr(constExpr);
@@ -10,21 +12,22 @@ concept ExprSys = requires (Expr expr, const Expr constExpr, double num) {
   -constExpr;
   constExpr + constExpr;
   constExpr - constExpr;
-  constExpr * constExpr;
+  constExpr* constExpr;
   constExpr / constExpr;
 
   expr += constExpr;
-  
-  expr = sin(constExpr);
-  expr = cos(constExpr);
 
-  expr = fmin(constExpr, constExpr);
-  expr = fmax(constExpr, constExpr);
-};
+  expr = std::sin(constExpr);
+  expr = std::cos(constExpr);
 
-template<typename Expr, typename Opti> 
-concept OptiSys = ExprSys<Expr> and
-    requires (Expr expr, const Expr constExpr, Opti opti, const Opti constOpti, double num) {
+  expr = std::fmin(constExpr, constExpr);
+  expr = std::fmax(constExpr, constExpr);
+};  // NOLINT
+
+template <typename Expr, typename Opti>
+concept OptiSys =
+    ExprSys<Expr> && requires(Expr expr, const Expr constExpr, Opti opti,
+                              const Opti constOpti, double num) {
   Opti();
   expr = opti.DecisionVariable();
   opti.Minimize(-expr);
@@ -35,4 +38,4 @@ concept OptiSys = ExprSys<Expr> and
   opti.SetInitial(expr, num);
   opti.Solve();
   num = constOpti.SolutionValue(expr);
-};
+};  // NOLINT

@@ -50,12 +50,9 @@ enum class CoordinateSystem {
   kRobot,
 };
 
-using Constraint = std::variant<
-    TranslationConstraint,
-    HeadingConstraint,
-    LinePointConstraint,
-    PointLineConstraint,
-    PointPointConstraint>;
+using Constraint =
+    std::variant<TranslationConstraint, HeadingConstraint, LinePointConstraint,
+                 PointLineConstraint, PointPointConstraint>;
 
 /**
  * Returns an error if the state doesn't satisfy the constraint.

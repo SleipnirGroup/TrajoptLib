@@ -1,4 +1,8 @@
+// Copyright (c) TrajoptLib contributors
+
 #pragma once
+
+#include <vector>
 
 #include "drivetrain/SwerveDrivetrain.h"
 #include "obstacle/Bumpers.h"
@@ -17,7 +21,8 @@ class SwervePathBuilder {
   void SetDrivetrain(SwerveDrivetrain drivetrain);
 
   void PoseWpt(size_t idx, double x, double y, double heading);
-  void TranslationWpt(size_t idx, double x, double y, double headingGuess = 0.0);
+  void TranslationWpt(size_t idx, double x, double y,
+                      double headingGuess = 0.0);
 
   void NewWpts(size_t finalIndex);
 
@@ -29,18 +34,24 @@ class SwervePathBuilder {
   void WptVelocityPolar(size_t idx, double vr, double vtheta);
   void WptZeroAngularVelocity(size_t idx);
 
-  void SgmtVelocityDirection(size_t fromIdx, size_t toIdx, double angle, bool includeWpts = true);
-  void SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx, double v, bool includeWpts = true);
-  void SgmtZeroAngularVelocity(size_t fromIdx, size_t toIdx, bool includeWpts = true);
+  void SgmtVelocityDirection(size_t fromIdx, size_t toIdx, double angle,
+                             bool includeWpts = true);
+  void SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx, double v,
+                             bool includeWpts = true);
+  void SgmtZeroAngularVelocity(size_t fromIdx, size_t toIdx,
+                               bool includeWpts = true);
 
   void WptConstraint(size_t idx, const HolonomicConstraint& constraint);
-  void SgmtConstraint(size_t fromIdx, size_t toIdx, const HolonomicConstraint& constraint, bool includeWpts = true);
+  void SgmtConstraint(size_t fromIdx, size_t toIdx,
+                      const HolonomicConstraint& constraint,
+                      bool includeWpts = true);
 
   void StartZeroVelocity();
 
   void AddBumpers(Bumpers&& newBumpers);
   void WptObstacle(size_t idx, const Obstacle& obstacle);
-  void SgmtObstacle(size_t fromIdx, size_t toIdx, const Obstacle& obstacle, bool includeWpts = true);
+  void SgmtObstacle(size_t fromIdx, size_t toIdx, const Obstacle& obstacle,
+                    bool includeWpts = true);
 
   void ControlIntervalCounts(std::vector<size_t>&& counts);
   const std::vector<size_t>& GetControlIntervalCounts() const;
@@ -55,6 +66,7 @@ class SwervePathBuilder {
   std::vector<std::vector<InitialGuessPoint>> initialGuessPoints;
   std::vector<size_t> controlIntervalCounts;
 
-  static std::vector<HolonomicConstraint> GetConstraintsForObstacle(const Bumpers& bumpers, const Obstacle& obstacle);
+  static std::vector<HolonomicConstraint> GetConstraintsForObstacle(
+      const Bumpers& bumpers, const Obstacle& obstacle);
 };
-}
+}  // namespace trajopt

@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 #pragma once
 
 #include "set/IntervalSet1d.h"
@@ -13,4 +15,4 @@ struct PointLineConstraint {
   double fieldLineEndY;
   IntervalSet1d distance;
 };
-}
+}  // namespace trajopt

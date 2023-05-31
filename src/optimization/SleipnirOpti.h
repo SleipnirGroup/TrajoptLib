@@ -4,10 +4,11 @@
 
 #include <vector>
 
-#include "optimization/OptiSys.h"
 #include <sleipnir/autodiff/Variable.hpp>
 #include <sleipnir/optimization/Constraints.hpp>
 #include <sleipnir/optimization/OptimizationProblem.hpp>
+
+#include "optimization/OptiSys.h"
 
 namespace trajopt {
 
@@ -17,7 +18,7 @@ struct SleipnirExpr {
   SleipnirExpr() = default;
   SleipnirExpr(const SleipnirExpr& expr) = default;
   explicit SleipnirExpr(sleipnir::Variable&& vari);
-  SleipnirExpr(double value); // NOLINT
+  SleipnirExpr(double value);  // NOLINT
 
   SleipnirExpr& operator=(const SleipnirExpr& b) = default;
   SleipnirExpr& operator=(SleipnirExpr&& b) = default;
@@ -37,9 +38,12 @@ struct SleipnirExpr {
   friend SleipnirExpr fmin(const SleipnirExpr& a, const SleipnirExpr& b);
   friend SleipnirExpr fmax(const SleipnirExpr& a, const SleipnirExpr& b);
 
-  friend sleipnir::EqualityConstraints operator==(const SleipnirExpr& a, const SleipnirExpr& b);
-  friend sleipnir::InequalityConstraints operator>=(const SleipnirExpr& a, const SleipnirExpr& b);
-  friend sleipnir::InequalityConstraints operator<=(const SleipnirExpr& a, const SleipnirExpr& b);
+  friend sleipnir::EqualityConstraints operator==(const SleipnirExpr& a,
+                                                  const SleipnirExpr& b);
+  friend sleipnir::InequalityConstraints operator>=(const SleipnirExpr& a,
+                                                    const SleipnirExpr& b);
+  friend sleipnir::InequalityConstraints operator<=(const SleipnirExpr& a,
+                                                    const SleipnirExpr& b);
 };
 
 class SleipnirOpti {

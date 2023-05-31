@@ -58,7 +58,6 @@ struct fmt::formatter<trajopt::SwerveDrivetrain> {
                           "  mass = {},\n"
                           "  moi = {},\n"
                           "  modules = (no impl yet)",
-                          swerveDrivetrain.mass,
-                          swerveDrivetrain.moi);
+                          swerveDrivetrain.mass, swerveDrivetrain.moi);
   }
 };

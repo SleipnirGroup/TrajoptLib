@@ -8,17 +8,18 @@
 
 #include "SymbolExports.h"
 #include "constraint/AngularVelocityConstraint.h"
-#include "constraint/differential/DifferentialTangentialVelocityConstraint.h"
-#include "constraint/differential/DifferentialCentripetalAccelerationConstraint.h"
-#include "constraint/AngularVelocityConstraint.h"
 #include "constraint/Constraint.h"
+#include "constraint/differential/DifferentialCentripetalAccelerationConstraint.h"
+#include "constraint/differential/DifferentialTangentialVelocityConstraint.h"
 #include "solution/SolutionChecking.h"
 #include "util/AppendVariant.h"
 
 namespace trajopt {
 
-using DifferentialConstraint = decltype(_append_variant(
-    Constraint{}, AngularVelocityConstraint{}, DifferentialTangentialVelocityConstraint{}, DifferentialCentripetalAccelerationConstraint{}));
+using DifferentialConstraint =
+    decltype(_append_variant(Constraint{}, AngularVelocityConstraint{},
+                             DifferentialTangentialVelocityConstraint{},
+                             DifferentialCentripetalAccelerationConstraint{}));
 
 /**
  * Returns an error if the given state doesn't satisfy the constraint.
@@ -35,8 +36,8 @@ using DifferentialConstraint = decltype(_append_variant(
  * @param tolerances The tolerances considered to satisfy the constraint.
  */
 std::optional<SolutionError> CheckState(
-    const DifferentialConstraint& constraint, double x, double y, double heading,
-    double leftVelocity, double rightVelocity,
+    const DifferentialConstraint& constraint, double x, double y,
+    double heading, double leftVelocity, double rightVelocity,
     const SolutionTolerances& tolerances) noexcept;
 }  // namespace trajopt
 
@@ -68,12 +69,16 @@ struct fmt::formatter<trajopt::DifferentialConstraint> {
     if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
                             std::get<AngularVelocityConstraint>(constraint));
-    } else if (std::holds_alternative<DifferentialTangentialVelocityConstraint>(constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<DifferentialTangentialVelocityConstraint>(constraint));
-    } else if (std::holds_alternative<DifferentialCentripetalAccelerationConstraint>(constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<DifferentialCentripetalAccelerationConstraint>(constraint));
+    } else if (std::holds_alternative<DifferentialTangentialVelocityConstraint>(
+                   constraint)) {
+      return fmt::format_to(
+          ctx.out(), "constraint: {}",
+          std::get<DifferentialTangentialVelocityConstraint>(constraint));
+    } else if (std::holds_alternative<
+                   DifferentialCentripetalAccelerationConstraint>(constraint)) {
+      return fmt::format_to(
+          ctx.out(), "constraint: {}",
+          std::get<DifferentialCentripetalAccelerationConstraint>(constraint));
     } else {
       return ctx.out();
     }

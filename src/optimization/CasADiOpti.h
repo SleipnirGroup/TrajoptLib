@@ -3,7 +3,9 @@
 #pragma once
 
 #include <optional>
+
 #include <casadi/casadi.hpp>
+
 #include "optimization/OptiSys.h"
 
 namespace trajopt {

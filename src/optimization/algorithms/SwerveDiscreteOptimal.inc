@@ -9,44 +9,33 @@
 #include "DebugOptions.h"
 #include "TrajectoryGenerationException.h"
 #include "drivetrain/SwerveDrivetrain.h"
-#include "optimization/algorithms/SwerveDiscreteOptimal.h"
 #include "optimization/SwerveTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
+#include "optimization/algorithms/SwerveDiscreteOptimal.h"
 #include "path/Path.h"
 #include "solution/SwerveSolution.h"
 
 namespace trajopt {
 
-template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-SwerveSolution SwerveDiscreteOptimal<Expr, Opti>::Generate() {
+template <typename Expr, typename Opti>
+requires OptiSys<Expr, Opti> SwerveSolution
+SwerveDiscreteOptimal<Expr, Opti>::Generate() {
   try {
     opti.Solve();
-    return ConstructSwerveSolution(
-        opti,
-        x,
-        y,
-        theta,
-        vx,
-        vy,
-        omega,
-        ax,
-        ay,
-        alpha,
-        Fx,
-        Fy,
-        dt,
-        N);
+    return ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
+                                   alpha, Fx, Fy, dt, N);
   } catch (const std::exception& e) {
     throw TrajectoryGenerationException("Error optimizing trajectory: " +
                                         std::string(e.what()));
   }
 }
 
-template<typename Expr, typename Opti> requires OptiSys<Expr, Opti>
+template <typename Expr, typename Opti>
+requires OptiSys<Expr, Opti>
 SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
-    const SwervePath& path, const std::vector<size_t>& N, const Solution& initialGuess)
+    const SwervePath& path, const std::vector<size_t>& N,
+    const Solution& initialGuess)
     : path(path), N(N) {
-
   size_t wptCnt = 1 + N.size();
   size_t sgmtCnt = N.size();
   size_t sampTot = GetIdx(N, wptCnt, 0);
@@ -95,68 +84,40 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
   }
 
   ApplyDiscreteTimeObjective(opti, dt, N);
-  ApplyKinematicsConstraints(opti,
-      x, y, theta, vx, vy, omega, ax, ay, alpha, dt, N);
+  ApplyKinematicsConstraints(opti, x, y, theta, vx, vy, omega, ax, ay, alpha,
+                             dt, N);
 
   for (size_t idx = 0; idx < sampTot; ++idx) {
     auto [Fx_net, Fy_net] = SolveNetForce(Fx.at(idx), Fy.at(idx));
     ApplyDynamicsConstraints(
-        opti,
-        ax.at(idx),
-        ay.at(idx),
-        alpha.at(idx),
-        Fx_net,
-        Fy_net,
-        SolveNetTorque(theta.at(idx), Fx.at(idx), Fy.at(idx), path.drivetrain.modules),
-        path.drivetrain.mass,
-        path.drivetrain.moi);
+        opti, ax.at(idx), ay.at(idx), alpha.at(idx), Fx_net, Fy_net,
+        SolveNetTorque(theta.at(idx), Fx.at(idx), Fy.at(idx),
+                       path.drivetrain.modules),
+        path.drivetrain.mass, path.drivetrain.moi);
 
-    ApplyPowerConstraints(opti,
-        theta.at(idx),
-        vx.at(idx),
-        vy.at(idx),
-        omega.at(idx),
-        Fx.at(idx),
-        Fy.at(idx),
-        path.drivetrain);
+    ApplyPowerConstraints(opti, theta.at(idx), vx.at(idx), vy.at(idx),
+                          omega.at(idx), Fx.at(idx), Fy.at(idx),
+                          path.drivetrain);
   }
 
   for (size_t wptIdx = 0; wptIdx < wptCnt; ++wptIdx) {
     for (auto& constraint : path.waypoints.at(wptIdx).waypointConstraints) {
-      size_t idx = GetIdx(N, wptIdx + 1, 0) - 1; // first idx of next wpt - 1
+      size_t idx = GetIdx(N, wptIdx + 1, 0) - 1;  // first idx of next wpt - 1
       ApplyHolonomicConstraint(
-          opti,
-          x.at(idx),
-          y.at(idx),
-          theta.at(idx),
-          vx.at(idx),
-          vy.at(idx),
-          omega.at(idx),
-          ax.at(idx),
-          ay.at(idx),
-          alpha.at(idx),
-          constraint);
+          opti, x.at(idx), y.at(idx), theta.at(idx), vx.at(idx), vy.at(idx),
+          omega.at(idx), ax.at(idx), ay.at(idx), alpha.at(idx), constraint);
     }
-  } // TODO: try changing the path struct so instead of having waypoint objects
-    //       it's just two vectors of waypoint constraints and segment constraints,
-    //       the waypoint one would be one larger by size
+  }  // TODO: try changing the path struct so instead of having waypoint objects
+     //       it's just two vectors of waypoint constraints and segment
+     //       constraints, the waypoint one would be one larger by size
   for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
     for (auto& constraint : path.waypoints.at(sgmtIdx + 1).segmentConstraints) {
       size_t startIdx = GetIdx(N, sgmtIdx + 1, 0);
       size_t endIdx = GetIdx(N, sgmtIdx + 2, 0);
       for (size_t idx = startIdx; idx < endIdx; ++idx) {
         ApplyHolonomicConstraint(
-            opti,
-            x.at(idx),
-            y.at(idx),
-            theta.at(idx),
-            vx.at(idx),
-            vy.at(idx),
-            omega.at(idx),
-            ax.at(idx),
-            ay.at(idx),
-            alpha.at(idx),
-            constraint);
+            opti, x.at(idx), y.at(idx), theta.at(idx), vx.at(idx), vy.at(idx),
+            omega.at(idx), ax.at(idx), ay.at(idx), alpha.at(idx), constraint);
       }
     }
   }

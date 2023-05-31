@@ -1,8 +1,10 @@
+// Copyright (c) TrajoptLib contributors
+
 #pragma once
 
-#include <vector>
-#include <memory>
 #include <cmath>
+#include <memory>
+#include <vector>
 
 #include "optimization/OptiSys.h"
 
@@ -12,14 +14,10 @@ class TestOpti {
   bool isViolating = false;
 
  public:
-  double DecisionVariable() {return 0.0;}
+  double DecisionVariable() { return 0.0; }
 
-  void Minimize(double expr) {
-    minimizeObjective = expr;
-  }
-  void Maximize(double expr) {
-    maximizeObjective = expr;
-  }
+  void Minimize(double expr) { minimizeObjective = expr; }
+  void Maximize(double expr) { maximizeObjective = expr; }
 
   void SubjectTo(bool constraint) {
     if (constraint == false) {
@@ -30,19 +28,11 @@ class TestOpti {
 
   void Solve() {}
 
-  double SolutionValue(double expr) const {
-    return expr;
-  }
+  double SolutionValue(double expr) const { return expr; }
 
-  double GetMaximizeObjective() {
-    return maximizeObjective;
-  }
-  double GetMinimizeObjective() {
-    return minimizeObjective;
-  }
-  bool IsViolating() {
-    return isViolating;
-  }
+  double GetMaximizeObjective() { return maximizeObjective; }
+  double GetMinimizeObjective() { return minimizeObjective; }
+  bool IsViolating() { return isViolating; }
 };
 
 static_assert(OptiSys<double, TestOpti>);

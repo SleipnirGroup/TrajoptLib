@@ -14,8 +14,8 @@
 #include "constraint/holonomic/HolonomicConstraint.h"
 #include "drivetrain/SwerveDrivetrain.h"
 #include "obstacle/Obstacle.h"
-#include "path/Path.h"
 #include "path/InitialGuessPoint.h"
+#include "path/Path.h"
 #include "path/SwervePathBuilder.h"
 #include "set/ConeSet2d.h"
 #include "solution/SwerveSolution.h"
@@ -23,11 +23,12 @@
 
 int main() {
   using namespace trajopt;
-  SwerveDrivetrain swerveDrivetrain{.mass = 45, .moi = 6,
-                                    .modules={{+0.6, +0.6, 0.04, 70, 2},
-                                              {+0.6, -0.6, 0.04, 70, 2},
-                                              {-0.6, +0.6, 0.04, 70, 2},
-                                              {-0.6, -0.6, 0.04, 70, 2}}};
+  SwerveDrivetrain swerveDrivetrain{.mass = 45,
+                                    .moi = 6,
+                                    .modules = {{+0.6, +0.6, 0.04, 70, 2},
+                                                {+0.6, -0.6, 0.04, 70, 2},
+                                                {-0.6, +0.6, 0.04, 70, 2},
+                                                {-0.6, -0.6, 0.04, 70, 2}}};
 
   Obstacle bumpers{0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}}};
 
@@ -42,8 +43,7 @@ int main() {
 
   // SOLVE
   try {
-    SwerveSolution solution =
-        OptimalTrajectoryGenerator::Generate(path);
+    SwerveSolution solution = OptimalTrajectoryGenerator::Generate(path);
     fmt::print("[{}]\n", fmt::join(path.CalculateInitialGuess().x, ","));
     fmt::print("{}\n", solution);
     // fmt::print("{}\n", HolonomicTrajectory(solution));

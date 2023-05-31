@@ -34,20 +34,23 @@ void SwervePathBuilder::SetDrivetrain(SwerveDrivetrain drivetrain) {
   path.drivetrain = std::move(drivetrain);
 }
 
-void SwervePathBuilder::PoseWpt(size_t index, double x, double y, double heading) {
+void SwervePathBuilder::PoseWpt(size_t index, double x, double y,
+                                double heading) {
   NewWpts(index);
   path.waypoints.at(index).waypointConstraints.emplace_back(
-    TranslationConstraint{RectangularSet2d{x, y}});
+      TranslationConstraint{RectangularSet2d{x, y}});
   path.waypoints.at(index).waypointConstraints.emplace_back(
-    HeadingConstraint{heading});
+      HeadingConstraint{heading});
   initialGuessPoints.at(index).emplace_back(InitialGuessPoint{x, y, heading});
 }
 
-void SwervePathBuilder::TranslationWpt(size_t index, double x, double y, double headingGuess) {
+void SwervePathBuilder::TranslationWpt(size_t index, double x, double y,
+                                       double headingGuess) {
   NewWpts(index);
   path.waypoints.at(index).waypointConstraints.emplace_back(
-    TranslationConstraint{RectangularSet2d{x, y}});
-  initialGuessPoints.at(index).emplace_back(InitialGuessPoint{x, y, headingGuess});
+      TranslationConstraint{RectangularSet2d{x, y}});
+  initialGuessPoints.at(index).emplace_back(
+      InitialGuessPoint{x, y, headingGuess});
 }
 
 void SwervePathBuilder::NewWpts(size_t finalIndex) {
@@ -62,59 +65,70 @@ void SwervePathBuilder::NewWpts(size_t finalIndex) {
   }
 }
 
-void SwervePathBuilder::AddInitialGuessPoint(size_t fromIdx, double x, double y, double heading) {
+void SwervePathBuilder::AddInitialGuessPoint(size_t fromIdx, double x, double y,
+                                             double heading) {
   NewWpts(fromIdx + 1);
-  initialGuessPoints.at(fromIdx + 1).push_back(InitialGuessPoint{x, y, heading});
+  initialGuessPoints.at(fromIdx + 1)
+      .push_back(InitialGuessPoint{x, y, heading});
 }
 
 void SwervePathBuilder::WptVelocityDirection(size_t idx, double angle) {
-  WptConstraint(idx, HolonomicVelocityConstraint{
-      LinearSet2d{angle}, CoordinateSystem::kField});
+  WptConstraint(idx, HolonomicVelocityConstraint{LinearSet2d{angle},
+                                                 CoordinateSystem::kField});
 }
 
 void SwervePathBuilder::WptVelocityMagnitude(size_t idx, double v) {
-  WptConstraint(idx, HolonomicVelocityConstraint{
-      EllipticalSet2d::CircularSet2d(v), CoordinateSystem::kField});
+  WptConstraint(idx,
+                HolonomicVelocityConstraint{EllipticalSet2d::CircularSet2d(v),
+                                            CoordinateSystem::kField});
 }
 
 void SwervePathBuilder::WptZeroVelocity(size_t idx) {
-  WptConstraint(idx, HolonomicVelocityConstraint{
-      RectangularSet2d{0.0, 0.0}, CoordinateSystem::kField});
+  WptConstraint(idx, HolonomicVelocityConstraint{RectangularSet2d{0.0, 0.0},
+                                                 CoordinateSystem::kField});
 }
 
 void SwervePathBuilder::WptVelocityPolar(size_t idx, double vr, double vtheta) {
   WptConstraint(idx, HolonomicVelocityConstraint{
-      RectangularSet2d::PolarExactSet2d(vr, vtheta), CoordinateSystem::kField});
+                         RectangularSet2d::PolarExactSet2d(vr, vtheta),
+                         CoordinateSystem::kField});
 }
 
 void SwervePathBuilder::WptZeroAngularVelocity(size_t idx) {
   WptConstraint(idx, AngularVelocityConstraint{0.0});
 }
 
-void SwervePathBuilder::SgmtVelocityDirection(size_t fromIdx, size_t toIdx, double angle, bool includeWpts) {
-  SgmtConstraint(fromIdx, toIdx, HolonomicVelocityConstraint{
-      LinearSet2d{angle}, CoordinateSystem::kField}, includeWpts);
+void SwervePathBuilder::SgmtVelocityDirection(size_t fromIdx, size_t toIdx,
+                                              double angle, bool includeWpts) {
+  SgmtConstraint(
+      fromIdx, toIdx,
+      HolonomicVelocityConstraint{LinearSet2d{angle}, CoordinateSystem::kField},
+      includeWpts);
 }
 
-void SwervePathBuilder::SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx, double v, bool includeWpts) {
+void SwervePathBuilder::SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx,
+                                              double v, bool includeWpts) {
   SgmtConstraint(fromIdx, toIdx,
-    HolonomicVelocityConstraint{
-      EllipticalSet2d{v, v, EllipticalSet2d::Direction::kInside}, CoordinateSystem::kField},
-    includeWpts);
+                 HolonomicVelocityConstraint{
+                     EllipticalSet2d{v, v, EllipticalSet2d::Direction::kInside},
+                     CoordinateSystem::kField},
+                 includeWpts);
 }
 
-void SwervePathBuilder::SgmtZeroAngularVelocity(size_t fromIdx, size_t toIdx, bool includeWpts) {
-  SgmtConstraint(fromIdx, toIdx,
-    AngularVelocityConstraint{0.0},
-    includeWpts);
+void SwervePathBuilder::SgmtZeroAngularVelocity(size_t fromIdx, size_t toIdx,
+                                                bool includeWpts) {
+  SgmtConstraint(fromIdx, toIdx, AngularVelocityConstraint{0.0}, includeWpts);
 }
 
-void SwervePathBuilder::WptConstraint(size_t idx, const HolonomicConstraint& constraint) {
+void SwervePathBuilder::WptConstraint(size_t idx,
+                                      const HolonomicConstraint& constraint) {
   NewWpts(idx);
   path.waypoints.at(idx).waypointConstraints.push_back(constraint);
 }
 
-void SwervePathBuilder::SgmtConstraint(size_t fromIdx, size_t toIdx, const HolonomicConstraint& constraint, bool includeWpts) {
+void SwervePathBuilder::SgmtConstraint(size_t fromIdx, size_t toIdx,
+                                       const HolonomicConstraint& constraint,
+                                       bool includeWpts) {
   if (!(fromIdx < toIdx)) {
     throw std::runtime_error("fromIdx >= toIdx");
   }
@@ -148,7 +162,8 @@ void SwervePathBuilder::WptObstacle(size_t idx, const Obstacle& obstacle) {
 }
 
 void SwervePathBuilder::SgmtObstacle(size_t fromIdx, size_t toIdx,
-    const Obstacle& obstacle, bool includeWpts) {
+                                     const Obstacle& obstacle,
+                                     bool includeWpts) {
   for (auto& _bumpers : bumpers) {
     auto constraints = GetConstraintsForObstacle(_bumpers, obstacle);
     for (auto& constraint : constraints) {
@@ -171,7 +186,6 @@ Solution SwervePathBuilder::CalculateInitialGuess() const {
 
 std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
     const Bumpers& bumpers, const Obstacle& obstacle) {
-
   auto distConst =
       IntervalSet1d::LessThan(bumpers.safetyDistance + obstacle.safetyDistance);
 
@@ -180,7 +194,8 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
   if (bumperCornerCount == 1 && obstacleCornerCount == 1) {
     // if the bumpers and obstacle are only one point
     return {PointPointConstraint{bumpers.points.at(0).x, bumpers.points.at(0).y,
-        obstacle.points.at(0).x, obstacle.points.at(0).y, distConst}};
+                                 obstacle.points.at(0).x,
+                                 obstacle.points.at(0).y, distConst}};
   }
 
   std::vector<HolonomicConstraint> constraints;
@@ -189,52 +204,41 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
   for (auto& obstaclePoint : obstacle.points) {
     // First apply constraint for all but last edge
     for (size_t bumperCornerIndex = 0;
-        bumperCornerIndex < bumperCornerCount - 1; bumperCornerIndex++) {
-      constraints.emplace_back(LinePointConstraint{
-          bumpers.points.at(bumperCornerIndex).x,
-          bumpers.points.at(bumperCornerIndex).y,
-          bumpers.points.at(bumperCornerIndex + 1).x,
-          bumpers.points.at(bumperCornerIndex + 1).y,
-          obstaclePoint.x,
-          obstaclePoint.y,
-          distConst});
+         bumperCornerIndex < bumperCornerCount - 1; bumperCornerIndex++) {
+      constraints.emplace_back(
+          LinePointConstraint{bumpers.points.at(bumperCornerIndex).x,
+                              bumpers.points.at(bumperCornerIndex).y,
+                              bumpers.points.at(bumperCornerIndex + 1).x,
+                              bumpers.points.at(bumperCornerIndex + 1).y,
+                              obstaclePoint.x, obstaclePoint.y, distConst});
     }
     // apply to last edge: the edge connecting the last point to the first
     // must have at least three points to need this
     if (bumperCornerCount >= 3) {
       constraints.emplace_back(LinePointConstraint{
           bumpers.points.at(bumperCornerCount - 1).x,
-          bumpers.points.at(bumperCornerCount - 1).y,
-          bumpers.points.at(0).x,
-          bumpers.points.at(0).y,
-          obstaclePoint.x,
-          obstaclePoint.y,
-          distConst});
+          bumpers.points.at(bumperCornerCount - 1).y, bumpers.points.at(0).x,
+          bumpers.points.at(0).y, obstaclePoint.x, obstaclePoint.y, distConst});
     }
   }
 
   // obstacle edge to bumper corner constraints
   for (auto& bumperCorner : bumpers.points) {
     for (size_t obstacleCornerIndex = 0;
-      obstacleCornerIndex < obstacleCornerCount - 1; obstacleCornerIndex++) {
+         obstacleCornerIndex < obstacleCornerCount - 1; obstacleCornerIndex++) {
       constraints.emplace_back(PointLineConstraint{
-          bumperCorner.x,
-          bumperCorner.y,
+          bumperCorner.x, bumperCorner.y,
           obstacle.points.at(obstacleCornerIndex).x,
           obstacle.points.at(obstacleCornerIndex).y,
           obstacle.points.at(obstacleCornerIndex + 1).x,
-          obstacle.points.at(obstacleCornerIndex + 1).y,
-          distConst});
+          obstacle.points.at(obstacleCornerIndex + 1).y, distConst});
     }
     if (obstacleCornerCount >= 3) {
       constraints.emplace_back(PointLineConstraint{
-          bumperCorner.x,
-          bumperCorner.y,
+          bumperCorner.x, bumperCorner.y,
           obstacle.points.at(bumperCornerCount - 1).x,
-          obstacle.points.at(bumperCornerCount - 1).y,
-          obstacle.points.at(0).x,
-          obstacle.points.at(0).y,
-          distConst});
+          obstacle.points.at(bumperCornerCount - 1).y, obstacle.points.at(0).x,
+          obstacle.points.at(0).y, distConst});
     }
   }
   return constraints;

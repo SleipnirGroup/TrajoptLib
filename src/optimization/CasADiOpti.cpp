@@ -3,14 +3,13 @@
 #ifdef OPTIMIZER_BACKEND_CASADI
 #include "optimization/CasADiOpti.h"
 
+#include <casadi/casadi.hpp>
 #include <casadi/core/exception.hpp>
 #include <casadi/core/generic_matrix.hpp>
-#include <casadi/casadi.hpp>
 #include <casadi/core/mx.hpp>
 
 #include "DebugOptions.h"
 namespace trajopt {
-
 casadi::MX CasADiOpti::DecisionVariable() {
   return opti.variable();
 }

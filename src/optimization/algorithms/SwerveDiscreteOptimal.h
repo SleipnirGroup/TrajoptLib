@@ -4,19 +4,18 @@
 
 #include <vector>
 
-#include "optimization/HolonomicTrajoptUtil.h"
-#include "optimization/TrajoptUtil.h"
-#include "optimization/OptiSys.h"
-#include "path/Path.h"
 #include "drivetrain/SwerveDrivetrain.h"
+#include "optimization/HolonomicTrajoptUtil.h"
+#include "optimization/OptiSys.h"
+#include "optimization/TrajoptUtil.h"
+#include "path/Path.h"
 #include "solution/SwerveSolution.h"
 
 namespace trajopt {
 
-template <typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-class SwerveDiscreteOptimal {
+template <typename Expr, typename Opti>
+requires OptiSys<Expr, Opti> class SwerveDiscreteOptimal {
  public:
-
   /**
    * @brief Optimizes the given path using IPOPT. Note this function call
    * may take a long time to complete. It may also fail, and throw a
@@ -63,10 +62,9 @@ class SwerveDiscreteOptimal {
    * @param swerveDrivetrain the swerve drivetrain
    * @param holonomicPath the holonomic path
    */
-  explicit SwerveDiscreteOptimal(
-        const SwervePath& path,
-        const std::vector<size_t>& N,
-        const Solution& initialGuess);
+  explicit SwerveDiscreteOptimal(const SwervePath& path,
+                                 const std::vector<size_t>& N,
+                                 const Solution& initialGuess);
 };
 }  // namespace trajopt
 

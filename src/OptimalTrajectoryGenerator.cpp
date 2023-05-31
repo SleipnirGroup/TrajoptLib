@@ -1,6 +1,7 @@
 // Copyright (c) TrajoptLib contributors
 
 #include "OptimalTrajectoryGenerator.h"
+
 #include "path/SwervePathBuilder.h"
 
 #if defined(OPTIMIZER_BACKEND_CASADI)
@@ -20,10 +21,9 @@ namespace trajopt {
 
 SwerveSolution OptimalTrajectoryGenerator::Generate(
     const SwervePathBuilder& path) {
-  SwerveDiscreteOptimal<_OPTI_BACKEND> problem(
-      path.GetPath(),
-      path.GetControlIntervalCounts(),
-      path.CalculateInitialGuess());
+  SwerveDiscreteOptimal<_OPTI_BACKEND> problem(path.GetPath(),
+                                               path.GetControlIntervalCounts(),
+                                               path.CalculateInitialGuess());
   return problem.Generate();
 }
 }  // namespace trajopt
