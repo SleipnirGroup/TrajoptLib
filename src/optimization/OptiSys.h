@@ -17,11 +17,11 @@ concept ExprSys = requires(Expr expr, const Expr constExpr, double num) {
 
   expr += constExpr;
 
-  expr = std::sin(constExpr);
-  expr = std::cos(constExpr);
+  expr = sin(constExpr);
+  expr = cos(constExpr);
 
-  expr = std::fmin(constExpr, constExpr);
-  expr = std::fmax(constExpr, constExpr);
+  expr = fmin(constExpr, constExpr);
+  expr = fmax(constExpr, constExpr);
 };  // NOLINT
 
 template <typename Expr, typename Opti>

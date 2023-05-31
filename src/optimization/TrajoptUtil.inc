@@ -32,15 +32,15 @@ namespace trajopt {
 template <ExprSys Expr>
 std::pair<Expr, Expr> RotateVector(const Expr& x, const Expr& y,
                                    const Expr& theta) {
-  return {x * std::cos(theta) - y * std::sin(theta),
-          x * std::sin(theta) + y * std::cos(theta)};
+  return {x * cos(theta) - y * sin(theta),
+          x * sin(theta) + y * cos(theta)};
 }
 
 template <ExprSys Expr>
 std::pair<Expr, Expr> RotateConstantVector(double x, double y,
                                            const Expr& theta) {
-  return {x * std::cos(theta) - y * std::sin(theta),
-          x * std::sin(theta) + y * std::cos(theta)};
+  return {x * cos(theta) - y * sin(theta),
+          x * sin(theta) + y * cos(theta)};
 }
 
 size_t GetIdx(const std::vector<size_t>& N, size_t wptIdx, size_t sampIdx) {
@@ -181,7 +181,7 @@ decltype(LineNumberType() + PointNumberType()) linePointDist(
   auto dot = vX * lX + vY * lY;
   auto lNormSquared = lX * lX + lY * lY;
   auto t = dot / lNormSquared;
-  auto tBounded = std::fmax(std::fmin(t, 1), 0);
+  auto tBounded = fmax(fmin(t, 1), 0);
   auto iX = (1 - tBounded) * lineStartX + tBounded * lineEndX;
   auto iY = (1 - tBounded) * lineStartY + tBounded * lineEndY;
   auto distSquared =
