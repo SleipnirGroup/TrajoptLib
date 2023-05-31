@@ -35,10 +35,10 @@ void SleipnirExpr::operator+=(const SleipnirExpr& b) {
   expr += b.expr;
 }
 SleipnirExpr sin(const SleipnirExpr& a) {
-  return SleipnirExpr(std::sin(a.expr));
+  return SleipnirExpr(sin(a.expr));  // NOLINT
 }
 SleipnirExpr cos(const SleipnirExpr& a) {
-  return SleipnirExpr(std::cos(a.expr));
+  return SleipnirExpr(cos(a.expr));  // NOLINT
 }
 SleipnirExpr fmax(const SleipnirExpr& a, const SleipnirExpr& b) {
   return SleipnirExpr(+0.5 * (1 + sign(b.expr - a.expr)) * (b.expr - a.expr) +
