@@ -55,6 +55,7 @@ class SwerveTrajectoryOptimizationProblem {
   Opti opti;
 
   static std::pair<Expr, Expr> RotateVector(const Expr& x, const Expr& y, const Expr& theta);
+  static std::pair<Expr, Expr> RotateConstantVector(double x, double y, const Expr& theta);
 
   /**
    * @brief Gives an expression for the position of a swerve module relative
@@ -75,6 +76,7 @@ class SwerveTrajectoryOptimizationProblem {
       const std::vector<Expr>& Fy);
 
   static Expr SolveNetTorque(
+      const Expr& theta,
       const std::vector<Expr>& Fx,
       const std::vector<Expr>& Fy,
       const std::vector<SwerveModule>& swerveModules);
@@ -123,7 +125,6 @@ class SwerveTrajectoryOptimizationProblem {
    */
   static void ApplyDynamicsConstraints(
       Opti& opti,
-      const Expr& theta,
       const Expr& ax,
       const Expr& ay,
       const Expr& alpha,
@@ -135,6 +136,7 @@ class SwerveTrajectoryOptimizationProblem {
 
   static void ApplyPowerConstraints(
       Opti& opti,
+      const Expr& theta,
       const Expr& vx,
       const Expr& vy,
       const Expr& omega,
@@ -144,7 +146,6 @@ class SwerveTrajectoryOptimizationProblem {
 
   static SwerveSolution ConstructSwerveSolution(
       const Opti& opti,
-      const std::vector<Expr>& dt,
       const std::vector<Expr>& x,
       const std::vector<Expr>& y,
       const std::vector<Expr>& theta,
@@ -155,7 +156,9 @@ class SwerveTrajectoryOptimizationProblem {
       const std::vector<Expr>& ay,
       const std::vector<Expr>& alpha,
       const std::vector<std::vector<Expr>>& Fx,
-      const std::vector<std::vector<Expr>>& Fy);
+      const std::vector<std::vector<Expr>>& Fy,
+      const std::vector<Expr>& dt,
+      const std::vector<size_t>& N);
 
   /**
    * @brief Construct a new CasADi Swerve Trajectory Optimization Problem

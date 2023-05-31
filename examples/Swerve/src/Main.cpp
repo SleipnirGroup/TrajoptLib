@@ -34,24 +34,24 @@ int main() {
                                               {-0.6, +0.6, 0.04, 70, 2},
                                               {-0.6, -0.6, 0.04, 70, 2}}};
 
-  fmt::print("{}\n", swerveDrivetrain);
+  // fmt::print("{}\n", swerveDrivetrain);
 
   Obstacle bumpers{0, {{+0.5, +0.5}, {-0.5, +0.5}, {-0.5, -0.5}, {+0.5, -0.5}}};
 
   // One Meter Forward
   SwervePathBuilder path;
   path.SetDrivetrain(swerveDrivetrain);
-  path.TranslationWpt(0, 0.0, 0.0);
-  path.TranslationWpt(1, 1.0, 0.0);
+  path.PoseWpt(0, 0.0, 0.0, 0.0);
+  path.PoseWpt(1, 5.0, 0.0, 2.0);
   path.WptZeroVelocity(0);
   path.WptZeroVelocity(1);
-  path.ControlIntervalCounts({20});
+  path.ControlIntervalCounts({80});
 
   // SOLVE
   try {
     SwerveSolution solution =
         OptimalTrajectoryGenerator::Generate(path);
-    fmt::print("[{}]", fmt::join(path.CalculateInitialGuess().x, ","));
+    fmt::print("[{}]\n", fmt::join(path.CalculateInitialGuess().x, ","));
     // fmt::print("Initial Guess: {}\n", SwerveSolution{path.CalculateInitialGuess(), {}, {}, {}, {}, {}, {}, {}, {}});
     fmt::print("{}\n", solution);
     // fmt::print("{}\n", HolonomicTrajectory(solution));

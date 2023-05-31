@@ -1,5 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
+#include <casadi/core/exception.hpp>
 #include <casadi/core/generic_matrix.hpp>
 #ifdef OPTIMIZER_BACKEND_CASADI
 #include "optimization/CasADiOpti.h"
@@ -40,7 +41,11 @@ void CasADiOpti::Solve() {
 }
 double CasADiOpti::SolutionValue(const casadi::MX& expression) const {
   if (solution) {
-    return static_cast<double>(solution->value(expression));
+    try {
+      return static_cast<double>(solution->value(expression));
+    } catch (...) {
+      return 0.0;
+    }
   } else {
     throw std::runtime_error("Solution not generated properly");
   }
