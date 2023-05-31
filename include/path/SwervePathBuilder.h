@@ -14,7 +14,7 @@
 
 namespace trajopt {
 
-class SwervePathBuilder {
+class TRAJOPT_DLLEXPORT SwervePathBuilder {
  public:
   const SwervePath& GetPath() const;
 
