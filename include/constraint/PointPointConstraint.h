@@ -7,7 +7,8 @@
 namespace trajopt {
 
 /**
- * @brief Specifies the required distance between a point on the robot's frame and a point on the field.
+ * Specifies the required distance between a point on the robot's frame
+ * and a point on the field.
  */
 struct PointPointConstraint {
   /// robot point x

@@ -7,7 +7,8 @@
 namespace trajopt {
 
 /**
- * @brief Specifies the required minimum distance between a line segment on the robot's frame and a point on the field.
+ * Specifies the required minimum distance between a line segment on the
+ * robot's frame and a point on the field.
  */
 struct LinePointConstraint {
   /// robot line start x
