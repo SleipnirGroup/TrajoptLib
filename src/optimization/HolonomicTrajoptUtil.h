@@ -26,4 +26,4 @@ void ApplyHolonomicConstraint(
     const HolonomicConstraint& constraint);
 }  // namespace trajopt
 
-#include "optimization/HolonomicTrajectoryOptimizationProblem.inc"
+#include "optimization/HolonomicTrajoptUtil.inc"

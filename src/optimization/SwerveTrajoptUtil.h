@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "optimization/HolonomicTrajectoryOptimizationProblem.h"
+#include "optimization/HolonomicTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
 #include "optimization/OptiSys.h"
 #include "path/Path.h"
