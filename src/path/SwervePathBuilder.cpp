@@ -15,7 +15,7 @@
 #include "constraint/holonomic/HolonomicVelocityConstraint.h"
 #include "drivetrain/SwerveDrivetrain.h"
 #include "obstacle/Obstacle.h"
-#include "optimization/TrajectoryOptimizationProblem.h"
+#include "optimization/TrajoptUtil.h"
 #include "path/InitialGuessPoint.h"
 #include "path/Path.h"
 #include "set/EllipticalSet2d.h"

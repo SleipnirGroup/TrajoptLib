@@ -5,68 +5,13 @@
 #include <vector>
 
 #include "optimization/HolonomicTrajectoryOptimizationProblem.h"
+#include "optimization/TrajoptUtil.h"
 #include "optimization/OptiSys.h"
 #include "path/Path.h"
 #include "drivetrain/SwerveDrivetrain.h"
 #include "solution/SwerveSolution.h"
 
 namespace trajopt {
-
-template <typename Expr, typename Opti> requires OptiSys<Expr, Opti>
-class SwerveTrajectoryOptimizationProblem {
- public:
-
-  /**
-   * @brief Optimizes the given path using IPOPT. Note this function call
-   * may take a long time to complete. It may also fail, and throw a
-   * CasadiException.
-   *
-   * @return a holonomic trajectory
-   */
-  SwerveSolution Generate();
-
- private:
-  /**
-   * @brief the swerve drivetrain
-   */
-  const SwervePath& path;
-
-  /// State Variables
-  std::vector<Expr> x;
-  std::vector<Expr> y;
-  std::vector<Expr> theta;
-  std::vector<Expr> vx;
-  std::vector<Expr> vy;
-  std::vector<Expr> omega;
-  std::vector<Expr> ax;
-  std::vector<Expr> ay;
-  std::vector<Expr> alpha;
-
-  /// Input Variables
-  std::vector<std::vector<Expr>> Fx;
-  std::vector<std::vector<Expr>> Fy;
-
-  /// Time Variables
-  std::vector<Expr> dt;
-
-  /// Discretization Constants
-  const std::vector<size_t>& N;
-
-  Opti opti;
-
- public:
-  /**
-   * @brief Construct a new CasADi Swerve Trajectory Optimization Problem
-   * with a swerve drivetrain and holonomic path.
-   *
-   * @param swerveDrivetrain the swerve drivetrain
-   * @param holonomicPath the holonomic path
-   */
-  explicit SwerveTrajectoryOptimizationProblem(
-        const SwervePath& path,
-        const std::vector<size_t>& N,
-        const Solution& initialGuess);
-};
 
 template<typename Expr> requires ExprSys<Expr>
 std::pair<Expr, Expr> RotateVector(const Expr& x, const Expr& y, const Expr& theta);

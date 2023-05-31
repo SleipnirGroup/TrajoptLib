@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "TestOpti.h"
-#include "optimization/TrajectoryOptimizationProblem.h"
+#include "optimization/TrajoptUtil.h"
 #include "path/InitialGuessPoint.h"
 #include "set/IntervalSet1d.h"
 

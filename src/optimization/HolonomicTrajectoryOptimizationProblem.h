@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "obstacle/Obstacle.h"
-#include "optimization/TrajectoryOptimizationProblem.h"
+#include "optimization/TrajoptUtil.h"
 #include "solution/HolonomicSolution.h"
 
 namespace trajopt {

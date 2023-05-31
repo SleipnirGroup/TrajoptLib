@@ -17,7 +17,7 @@
 #include "constraint/PointPointConstraint.h"
 #include "constraint/TranslationConstraint.h"
 #include "obstacle/Obstacle.h"
-#include "optimization/TrajectoryOptimizationProblem.h"
+#include "optimization/TrajoptUtil.h"
 #include "path/Path.h"
 #include "set/ConeSet2d.h"
 #include "set/EllipticalSet2d.h"

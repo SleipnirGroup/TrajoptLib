@@ -14,7 +14,7 @@
 #include "constraint/TranslationConstraint.h"
 #include "obstacle/Obstacle.h"
 #include "optimization/HolonomicTrajectoryOptimizationProblem.h"
-#include "optimization/TrajectoryOptimizationProblem.h"
+#include "optimization/TrajoptUtil.h"
 #include "path/Path.h"
 #include "solution/HolonomicSolution.h"
 

@@ -89,4 +89,4 @@ static void ApplyInitialGuess(Opti& opti, const Solution& solution,
                                  std::vector<Expr>& theta);
 }  // namespace trajopt
 
-#include "optimization/TrajectoryOptimizationProblem.inc"
+#include "optimization/TrajoptUtil.inc"
