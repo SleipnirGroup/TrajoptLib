@@ -25,9 +25,11 @@ concept ExprSys = requires(Expr expr, const Expr constExpr, double num) {
 };                                    // NOLINT
 
 template <typename Expr, typename Opti>
+// clang-format off
 concept OptiSys =
     ExprSys<Expr> && requires(Expr expr, const Expr constExpr, Opti opti,
                               const Opti constOpti, double num) {
+// clang-format on
   Opti();
   expr = opti.DecisionVariable();
   opti.Minimize(-expr);
