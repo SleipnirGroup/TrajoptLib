@@ -44,7 +44,19 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    */
   static IntervalSet1d R1();
 
+  /**
+   * Returns an IntervalSet1d that contains all the real numbers less than or equal to a maximum value
+   * 
+   * @param max the maximum value
+   * @return [-∞, max]
+   */
   static IntervalSet1d LessThan(double max);
+  /**
+   * Returns an IntervalSet1d that contains all the real numbers greater than or equal to a minimum value
+   * 
+   * @param min the minimum value
+   * @return [min, ∞]
+   */
   static IntervalSet1d GreaterThan(double min);
 
   /**
