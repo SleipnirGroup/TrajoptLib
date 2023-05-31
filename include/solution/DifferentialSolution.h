@@ -17,7 +17,9 @@ struct TRAJOPT_DLLEXPORT DifferentialSolution : public Solution {
   std::vector<double> vL;
   /// The y velocities.
   std::vector<double> vR;
+  /// the torque of the left driverail wheels
   std::vector<double> tauL;
+  /// the torque of the right driverail wheels
   std::vector<double> tauR;
 };
 

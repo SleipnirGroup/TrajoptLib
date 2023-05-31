@@ -18,6 +18,9 @@ struct TRAJOPT_DLLEXPORT DifferentialDriverail {
   double wheelMaxTorque;
 };
 
+/**
+ * A differential drivetrain physical model
+ */
 struct TRAJOPT_DLLEXPORT DifferentialDrivetrain {
   /// mass of the robot
   double mass;

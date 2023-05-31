@@ -14,7 +14,7 @@
 namespace trajopt {
 
 /**
- * .
+ * Differential centripetal acceleration constraint
  */
 struct TRAJOPT_DLLEXPORT DifferentialCentripetalAccelerationConstraint {
   /// Acceleration bound.

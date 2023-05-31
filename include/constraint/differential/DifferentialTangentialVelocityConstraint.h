@@ -14,22 +14,11 @@
 namespace trajopt {
 
 /**
- * Velocity constraint.
+ * Differential Tangential Velocity constraint.
  */
 struct TRAJOPT_DLLEXPORT DifferentialTangentialVelocityConstraint {
   /// Velocity bound.
   IntervalSet1d velocityBound;
-
-  /**
-   * Returns an error if the given velocity doesn't satisfy the constraint.
-   *
-   * @param velocityX The velocity's x component.
-   * @param velocityY The velocity's y component.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckVelocity(
-      double leftVelocity, double rightVelocity,
-      const SolutionTolerances& tolerances) const noexcept;
 };
 }  // namespace trajopt
 

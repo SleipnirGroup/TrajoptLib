@@ -150,7 +150,6 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    *
    * @param fromIdx index of the waypoint at the beginning of the continuum
    * @param toIdx index of the waypoint at the end of the continuum
-   * @param v the maximum velocity magnitude
    * @param includeWpts if using a discrete algorithm, false does not apply the
    * constraint at the instantaneous state at waypoints at indices fromIdx and
    * toIdx

@@ -25,9 +25,8 @@ class TRAJOPT_DLLEXPORT OptimalTrajectoryGenerator {
    * drivetrain. This function may throw an exception if the optimizer is unable
    * to find the optizer
    *
-   * @param swerveDrivetrain the swerve drivetrain
-   * @param holonomicPath the holonomic path
-   * @return the optimized holonomic trajectory
+   * @param path the path
+   * @return the optimized swerve trajectory solution
    */
   static SwerveSolution Generate(const SwervePathBuilder& path);
 };
