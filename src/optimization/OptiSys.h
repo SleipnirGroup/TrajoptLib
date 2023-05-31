@@ -17,12 +17,12 @@ concept ExprSys = requires(Expr expr, const Expr constExpr, double num) {
 
   expr += constExpr;
 
-  expr = sin(constExpr);
-  expr = cos(constExpr);
+  expr = sin(constExpr);  // NOLINT
+  expr = cos(constExpr);  // NOLINT
 
-  expr = fmin(constExpr, constExpr);
-  expr = fmax(constExpr, constExpr);
-};  // NOLINT
+  expr = fmin(constExpr, constExpr);  // NOLINT
+  expr = fmax(constExpr, constExpr);  // NOLINT
+};                                    // NOLINT
 
 template <typename Expr, typename Opti>
 concept OptiSys =
