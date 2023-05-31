@@ -5,7 +5,7 @@
 
 #include "TestOpti.h"
 #include "optimization/TrajoptUtil.h"
-#include "optimization/SwerveTrajectoryOptimizationProblem.h"
+#include "optimization/SwerveTrajoptUtil.h"
 #include "path/InitialGuessPoint.h"
 #include "set/IntervalSet1d.h"
 

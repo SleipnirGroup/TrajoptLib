@@ -115,4 +115,4 @@ SwerveSolution ConstructSwerveSolution(
     const std::vector<size_t>& N);
 }  // namespace trajopt
 
-#include "optimization/SwerveTrajectoryOptimizationProblem.inc"
+#include "optimization/SwerveTrajoptUtil.inc"
