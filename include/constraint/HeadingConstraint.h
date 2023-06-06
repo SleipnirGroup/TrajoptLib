@@ -53,7 +53,7 @@ struct fmt::formatter<trajopt::HeadingConstraint> {
    * @param ctx Format string context.
    */
   auto format(const trajopt::HeadingConstraint& constraint,
-              fmt::format_context& ctx) {
+              fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "heading {}", constraint.headingBound);
   }
 };
