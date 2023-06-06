@@ -60,7 +60,7 @@ struct fmt::formatter<trajopt::HolonomicTrajectory> {
    * @param ctx Format string context.
    */
   auto format(const trajopt::HolonomicTrajectory& trajectory,
-              fmt::format_context& ctx) {
+              fmt::format_context& ctx) const {
     std::string sampsStr = fmt::format("{}", trajectory.samples[0]);
     for (size_t i = 1; i < trajectory.samples.size(); i++) {
       sampsStr += fmt::format(", {}", trajectory.samples[i]);
