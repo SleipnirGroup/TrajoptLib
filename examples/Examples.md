@@ -1,110 +1,122 @@
 # Examples
 
+`SwervePathBuilderBuilder` is the class used to build paths that are optimized into full trajectories.
+`Wpt` is the abbreviation for waypoint, an instantaneous moment in the path where certain constrains on the
+robot's state are applied, and `Sgmt` is the abbreviation for segments, the continuum of state between waypoints where
+constraints can also be applied.
+
 ## Swerve Drivetrain model
 
 ```cpp
-SwerveDrivetrain swerveDrivetrain{.mass = 45_kg, .moi = 6_kg_m_sq,
-                                  {{+0.6_m, +0.6_m, 0.04_m, 70_rad_per_s, 2_N_m},
-                                   {+0.6_m, -0.6_m, 0.04_m, 70_rad_per_s, 2_N_m},
-                                   {-0.6_m, +0.6_m, 0.04_m, 70_rad_per_s, 2_N_m},
-                                   {-0.6_m, -0.6_m, 0.04_m, 70_rad_per_s, 2_N_m}}};
+SwerveDrivetrain swerveDrivetrain{.mass = 45, .moi = 6,
+                                  {{+0.6, +0.6, 0.04, 70, 2},
+                                   {+0.6, -0.6, 0.04, 70, 2},
+                                   {-0.6, +0.6, 0.04, 70, 2},
+                                   {-0.6, -0.6, 0.04, 70, 2}}};
 ```
 
 ### Example 1: Swerve, one meter forward motion profile
 
 ```cpp
-SwervePath path;
+SwervePathBuilderBuilder path;
 path.SetDrivetrain(swerveDrivetrain);
-path.PoseWaypoint(Pose2d{Translation2d{0_m, 0_m}, 0_deg});
-path.PoseWaypoint(Pose2d{Translation2d{1_m, 0_m}, 0_deg});
-path.BoundZeroVelocity();
-path.CtrlIntCnts({40});
-auto solution = TrajectoryOptimizer::Generate(path);
+path.PoseWpt(0, 0.0, 0.0, 0.0);
+path.PoseWpt(1, 1.0, 0.0, 0.0);
+path.WptZeroVelocity(0);
+path.WptZeroVelocity(1);
+path.ControlIntervalCounts({40});
+auto solution = OptimalTrajectoryGenerator::Generate(path);
 ```
 
 ### Example 2: Swerve, basic curve
 
 ```cpp
-SwervePath path;
+SwervePathBuilderBuilder path;
 path.SetDrivetrain(swerveDrivetrain);
-path.PoseWaypoint(Pose2d{Translation2d{1_m, 1_m}, Rotation2d{-90_deg}});
-path.PoseWaypoint(Pose2d{Translation2d{2_m, 0_m}, Rotation2d{0_deg}});
-path.BoundZeroVelocity();
-path.CtrlIntCnts({40});
-auto solution = TrajectoryOptimizer::Generate(path);
+path.PoseWpt(0, 1.0, 1.0, -PI/2);
+path.PoseWpt(1, 2.0, 0.0, 0.0);
+path.WptZeroVelocity(0);
+path.WptZeroVelocity(1);
+path.ControlIntervalCounts({40});
+auto solution = OptimalTrajectoryGenerator::Generate(path);
 ```
 
 ### Example 3: Swerve, three waypoints
 
 ```cpp
-SwervePath path;
+SwervePathBuilder path;
 path.SetDrivetrain(swerveDrivetrain);
-path.PoseWaypoint(Pose2d{Translation2d{0_m, 0_m}, Rotation2d{90_deg}});
-path.PoseWaypoint(Pose2d{Translation2d{1_m, 1_m}, Rotation2d{0_deg}});
-path.PoseWaypoint(Pose2d{Translation2d{2_m, 0_m}, Rotation2d{90_deg}});
-path.BoundZeroVelocity();
-path.CtrlIntCnts({40, 40});
-auto solution = TrajectoryOptimizer::Generate(path);
+path.PoseWpt(0, 0.0, 0.0, PI/2);
+path.PoseWpt(1, 1.0, 1.0, 0.0);
+path.PoseWpt(2, 2.0, 0.0, PI/2);
+path.WptZeroVelocity(0);
+path.WptZeroVelocity(2);
+path.ControlIntervalCounts({40, 40});
+auto solution = OptimalTrajectoryGenerator::Generate(path);
 ```
 
 ### Example 4: Swerve, ending velocity
 
 ```cpp
-SwervePath path;
+SwervePathBuilder path;
 path.SetDrivetrain(swerveDrivetrain);
-path.PoseWaypoint(Pose2d{Translation2d{0_m, 0_m}, Rotation2d{0_deg}});
-path.PoseWaypoint(Pose2d{Translation2d{0_m, 1_m}, Rotation2d{0_deg}});
-path.WaypointVelocity(0.2_mps, 0.0_mps);
-// path.WaypointVelocityMagnitude(0.2_mps); // <--- alternative formulation
-// path.WaypointVelocityDirection(0_deg);   // <---------------------------
-path.InitialZeroVelocity();
-path.CtrlIntCnts({40});
-auto solution = TrajectoryOptimizer::Generate(path);
+path.PoseWpt(0, 0.0, 0.0, 0.0);
+path.PoseWpt(1, 0.0, 1.0, 0.0);
+path.WptZeroVelocity(0);
+path.WptVelocityPolar(1, 0.2, 0.0);
+path.ControlIntervalCounts({40});
+auto solution = OptimalTrajectoryGenerator::Generate(path);
 ```
 
 ### Example 5: Swerve, circle obstacle
 
 ```cpp
-SwervePath path;
+SwervePathBuilderBuilder path;
 path.SetDrivetrain(swerveDrivetrain);
-path.PoseWaypoint(Pose2d{Translation2d{0_m, 0_m}, Rotation2d{0_deg}});
-path.SegmentObstacle(CircleObstacle(0.5_m, 0.5_m, 0.1_m));
-path.PoseWaypoint(Pose2d{Translation2d{1_m, 0_m}, Rotation2d{0_deg}});
-path.BoundZeroVelocity();
-path.CtrlIntCnts({40});
-auto solution = TrajectoryOptimizer::Generate(path);
+path.PoseWpt(0, 0.0 0_m, 0_deg);
+Obstacle obstacle{
+    .safetyDistance = 0.1, // radius of 0.1
+    .points = {{0.5, 0.5}}
+};
+path.SgmtObstacle(0, 1, obstacle);
+path.PoseWpt(1, 1.0, 0.0, 0.0);
+path.WptZeroVelocity(0);
+path.WptZeroVelocity(1);
+path.ControlIntervalCounts({40});
+auto solution = OptimalTrajectoryGenerator::Generate(path);
 ```
 
 ### Example 6: Approach a pick up station at a certain direction
 
 ```cpp
-SwervePath path;
+SwervePathBuilder path;
 path.SetDrivetrain(swerveDrivetrain);
 
 // starting position
-path.PoseWaypoint(Pose2d{Translation2d{0_m, 0_m}, Rotation2d{0_deg}});
+path.PoseWpt(0, 0.0, 0.0, 0.0);
 
 // align towards the station one meter behind
-path.PoseWaypoint(Pose2d{Translation2d{1_m, 1_m}, Rotation2d{90_deg}});
-path.WaypointZeroAngularVelocity();
-path.WaypointVelocityDirection(90_deg);
+path.PoseWpt(1, 1.0, 1.0, PI/2);
+path.WptZeroAngularVelocity(1);
+path.WptVelocityDirection(1, PI/2);
 
 // go up to the station
 // In practice, the optimizer will still end up aligning the heading without
 // the pose constraint since it's most optimal
-path.TranslationWaypoint(Translation2d{1_m, 2_m});
+path.TranslationWpt(2, 1.0, 2.0);
 
 // realign behind the station
-path.PoseWaypoint(Pose2d{Translation2d{1_m, 1_m}, Rotation2d{90_deg}});
-path.WaypointZeroAngularVelocity();
-path.WaypointVelocityDirection(90_deg);
+path.PoseWpt(3, 1.0, 1.0, PI/2);
+path.WptZeroAngularVelocity(3);
+path.WptVelocityDirection(3, PI/2);
 
 // ending position
-path.PoseWaypoint(Pose2d{Translation2d{2_m, 0_m}, Rotation2d{180_deg}});
+path.PoseWpt(4, 2.0, 0.0, PI);
 
-path.BoundZeroVelocity();
-path.CtrlIntCnts({40, 30, 30, 40});
-auto solution = TrajectoryOptimizer::Generate(path);
+path.WptZeroVelocity(0);
+path.WptZeroVelocity(4);
+path.ControlIntervalCounts({40, 30, 30, 40});
+auto solution = OptimalTrajectoryGenerator::Generate(path);
 ```
 
 ### Example 7: Circular path with a point-point constraint
@@ -113,21 +125,23 @@ Note that forcing a circular path is not a common problem in FRC, this example
 is only to demonstrate how various constraints work.
 
 ```cpp
-SwervePath path;
+SwervePathBuilder path;
 path.SetDrivetrain(swerveDrivetrain);
 
-path.PoseWaypoint(Pose2d{Translation2d{0_m, 0_m}, Rotation2d{0_deg}});
-path.SegmentPointPointConstraint(
-    Point2d{0_m, 0_m} // robot point--center of bot
-    Point2d{1_m, 0_m} // field point to orbit around
-    1_m); // stay a distance of 1_m away to force circular motion
+path.PoseWpt(0, 0.0, 0.0, 0.0);
+path.SgmtConstraint(0, 1
+    PointPointConstraint{
+        0.0, 0.0, // robot point--center of bot
+        1.0, 0.0, // field point to orbit around
+        1.0});     // stay a distance of 1_m away to force circular motion
 
 // tell optimizer to go in +y direction rather than -y
-path.AddInitialGuess(Pose2d{Translation2d{0_m, 0_m}, Rotation2d{0_deg}});
+path.AddInitialGuess(0, 0.0, 0.0, 0.0);
 
-path.PoseWaypoint(Pose2d{Translation2d{2_m, 0_m}, Rotation2d{0_deg}});
+path.PoseWpt(1, 2.0, 0.0, 0.0);
 
-path.BoundZeroVelocity();
-path.CtrlIntCnts({30});
-auto solution = TrajectoryOptimizer::Generate(path);
+path.WptZeroVelocity(0);
+path.WptZeroVelocity(1);
+path.ControlIntervalCounts({30});
+auto solution = OptimalTrajectoryGenerator::Generate(path);
 ```
