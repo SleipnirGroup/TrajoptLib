@@ -45,7 +45,7 @@ struct fmt::formatter<trajopt::DifferentialTangentialVelocityConstraint> {
    */
   auto format(
       const trajopt::DifferentialTangentialVelocityConstraint& constraint,
-      fmt::format_context& ctx) {
+      fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "diff velocity magnitude {}",
                           constraint.velocityBound);
   }

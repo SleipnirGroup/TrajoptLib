@@ -61,7 +61,8 @@ struct fmt::formatter<trajopt::LinearSet2d> {
    * @param linearSet LinearSet2d instance.
    * @param ctx Format string context.
    */
-  auto format(const trajopt::LinearSet2d& linearSet, fmt::format_context& ctx) {
+  auto format(const trajopt::LinearSet2d& linearSet,
+              fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "polar line: θ = {}", linearSet.theta);
   }
 };

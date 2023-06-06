@@ -45,7 +45,7 @@ struct fmt::formatter<trajopt::DifferentialCentripetalAccelerationConstraint> {
    */
   auto format(
       const trajopt::DifferentialCentripetalAccelerationConstraint& constraint,
-      fmt::format_context& ctx) {
+      fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "diff centrip acceleration bound");
   }
 };

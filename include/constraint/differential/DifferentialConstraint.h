@@ -44,7 +44,7 @@ struct fmt::formatter<trajopt::DifferentialConstraint> {
    * @param ctx Format string context.
    */
   auto format(const trajopt::DifferentialConstraint& constraint,
-              fmt::format_context& ctx) {
+              fmt::format_context& ctx) const {
     using namespace trajopt;
     if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",

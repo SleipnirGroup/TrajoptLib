@@ -61,7 +61,7 @@ struct fmt::formatter<trajopt::HolonomicConstraint> {
    * @param ctx Format string context.
    */
   auto format(const trajopt::HolonomicConstraint& constraint,
-              fmt::format_context& ctx) {
+              fmt::format_context& ctx) const {
     using namespace trajopt;
     if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",

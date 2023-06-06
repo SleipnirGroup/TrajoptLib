@@ -58,7 +58,7 @@ struct fmt::formatter<trajopt::HolonomicVelocityConstraint> {
    * @param ctx Format string context.
    */
   auto format(const trajopt::HolonomicVelocityConstraint& constraint,
-              fmt::format_context& ctx) {
+              fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "velocity {}", constraint.velocityBound);
   }
 };

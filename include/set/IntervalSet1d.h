@@ -148,7 +148,8 @@ struct fmt::formatter<trajopt::IntervalSet1d> {
    * @param set1d IntervalSet1d instance.
    * @param ctx Format string context.
    */
-  auto format(const trajopt::IntervalSet1d& set1d, fmt::format_context& ctx) {
+  auto format(const trajopt::IntervalSet1d& set1d,
+              fmt::format_context& ctx) const {
     if (set1d.IsExact()) {
       return fmt::format_to(ctx.out(), "= {}", set1d.lower);
     } else {
