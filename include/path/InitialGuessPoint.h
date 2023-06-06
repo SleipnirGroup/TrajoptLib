@@ -46,9 +46,8 @@ struct fmt::formatter<trajopt::InitialGuessPoint> {
    * @param initialGuessPoint InitialGuessPoint instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
   auto format(const trajopt::InitialGuessPoint& initialGuessPoint,
-              FormatContext& ctx) {
+              fmt::format_context& ctx) {
     return fmt::format_to(ctx.out(), "Initial Guess Point");
   }
 };

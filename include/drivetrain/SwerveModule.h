@@ -61,8 +61,7 @@ struct fmt::formatter<trajopt::SwerveModule> {
    * @param swerveModule SwerveModule instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
-  auto format(const trajopt::SwerveModule& swerveModule, FormatContext& ctx) {
+  auto format(const trajopt::SwerveModule& swerveModule, fmt::format_context& ctx) {
     return fmt::format_to(
         ctx.out(),
         "swerve module: (x, y) = ({}, {}), r = {}, ωₘₐₓ = {}, τₘₐₓ = {}",

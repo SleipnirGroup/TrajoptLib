@@ -57,9 +57,8 @@ struct fmt::formatter<trajopt::HolonomicVelocityConstraint> {
    * @param constraint VelocityConstraint instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
   auto format(const trajopt::HolonomicVelocityConstraint& constraint,
-              FormatContext& ctx) {
+              fmt::format_context& ctx) {
     return fmt::format_to(ctx.out(), "velocity {}", constraint.velocityBound);
   }
 };

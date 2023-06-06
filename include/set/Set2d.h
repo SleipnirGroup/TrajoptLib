@@ -65,8 +65,7 @@ struct fmt::formatter<trajopt::Set2d> {
    * @param set2d Set2d instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
-  auto format(const trajopt::Set2d& set2d, FormatContext& ctx) {
+  auto format(const trajopt::Set2d& set2d, fmt::format_context& ctx) {
     using namespace trajopt;
     if (std::holds_alternative<RectangularSet2d>(set2d)) {
       return fmt::format_to(ctx.out(), "2d {}",

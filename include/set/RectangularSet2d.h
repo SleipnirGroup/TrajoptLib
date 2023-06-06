@@ -77,9 +77,8 @@ struct fmt::formatter<trajopt::RectangularSet2d> {
    * @param rectangularSet RectangularSet2d instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
   auto format(const trajopt::RectangularSet2d& rectangularSet,
-              FormatContext& ctx) {
+              fmt::format_context& ctx) {
     return fmt::format_to(ctx.out(), "x {}, y {}", rectangularSet.xBound,
                           rectangularSet.yBound);
   }

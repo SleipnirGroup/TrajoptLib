@@ -52,9 +52,8 @@ struct fmt::formatter<trajopt::SwerveDrivetrain> {
    * @param swerveDrivetrain SwerveDrivetrain instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
   auto format(const trajopt::SwerveDrivetrain& swerveDrivetrain,
-              FormatContext& ctx) {
+              fmt::format_context& ctx) {
     return fmt::format_to(ctx.out(),
                           "swerve drivetrain:\n"
                           "  mass = {},\n"
