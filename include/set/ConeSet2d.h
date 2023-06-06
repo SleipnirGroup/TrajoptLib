@@ -52,12 +52,11 @@ struct fmt::formatter<trajopt::ConeSet2d> {
   /**
    * Writes out a formatted ConeSet2d.
    *
-   * @tparam FormatContext Format string context type.
    * @param coneSet ConeSet2d instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
-  auto format(const trajopt::ConeSet2d& coneSet, FormatContext& ctx) {
+  auto format(const trajopt::ConeSet2d& coneSet,
+              fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "cone: θ = {}", coneSet.thetaBound);
   }
 };

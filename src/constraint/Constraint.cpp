@@ -8,8 +8,6 @@
 #include <fmt/format.h>
 
 #include "constraint/HeadingConstraint.h"
-#include "constraint/ObstacleConstraint.h"
-#include "constraint/PoseConstraint.h"
 #include "constraint/TranslationConstraint.h"
 #include "solution/SolutionChecking.h"
 
@@ -34,14 +32,6 @@ std::optional<SolutionError> CheckState(
     if (check.has_value()) {
       return SolutionError{fmt::format(
           "({}) violated: {}", "GetHeadingConstraint()", check->errorMessage)};
-    }
-  } else if (std::holds_alternative<PoseConstraint>(constraint)) {
-    std::optional<SolutionError> check =
-        std::get<PoseConstraint>(constraint)
-            .CheckPose(x, y, heading, tolerances);
-    if (check.has_value()) {
-      return SolutionError{fmt::format(
-          "({}) violated: {}", "GetPoseConstraint()", check->errorMessage)};
     }
   }
   return std::nullopt;

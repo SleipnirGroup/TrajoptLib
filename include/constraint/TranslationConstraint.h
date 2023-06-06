@@ -48,13 +48,11 @@ struct fmt::formatter<trajopt::TranslationConstraint> {
   /**
    * Writes out a formatted TranslationConstraint.
    *
-   * @tparam FormatContext Format string context type.
    * @param constraint TranslationConstraint instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
   auto format(const trajopt::TranslationConstraint& constraint,
-              FormatContext& ctx) {
+              fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "translation {}",
                           constraint.translationBound);
   }

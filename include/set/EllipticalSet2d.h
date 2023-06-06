@@ -92,13 +92,11 @@ struct fmt::formatter<trajopt::EllipticalSet2d> {
   /**
    * Writes out a formatted EllipticalSet2d.
    *
-   * @tparam FormatContext Format string context type.
    * @param ellipticalSet EllipticalSet2d instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
   auto format(const trajopt::EllipticalSet2d& ellipticalSet,
-              FormatContext& ctx) {
+              fmt::format_context& ctx) const {
     std::string shape;
     if (ellipticalSet.IsCircular()) {
       shape = "circle";

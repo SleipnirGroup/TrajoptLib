@@ -3,8 +3,8 @@
 #pragma once
 
 #include "SymbolExports.h"
-#include "drivetrain/SwerveDrivetrain.h"
-#include "path/HolonomicPath.h"
+#include "path/Path.h"
+#include "path/SwervePathBuilder.h"
 #include "solution/SwerveSolution.h"
 
 namespace trajopt {
@@ -25,11 +25,9 @@ class TRAJOPT_DLLEXPORT OptimalTrajectoryGenerator {
    * drivetrain. This function may throw an exception if the optimizer is unable
    * to find the optizer
    *
-   * @param swerveDrivetrain the swerve drivetrain
-   * @param holonomicPath the holonomic path
-   * @return the optimized holonomic trajectory
+   * @param path the path
+   * @return the optimized swerve trajectory solution
    */
-  static SwerveSolution Generate(const SwerveDrivetrain& swerveDrivetrain,
-                                 const HolonomicPath& holonomicPath);
+  static SwerveSolution Generate(const SwervePathBuilder& path);
 };
 }  // namespace trajopt

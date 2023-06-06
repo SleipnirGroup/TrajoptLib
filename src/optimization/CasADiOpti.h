@@ -2,26 +2,28 @@
 
 #pragma once
 
+#include <optional>
+
 #include <casadi/casadi.hpp>
+
+#include "optimization/OptiSys.h"
 
 namespace trajopt {
 
 class CasADiOpti {
- public:
-  using Expression = casadi::MX;
-
  private:
   casadi::Opti opti;
-  casadi::OptiSol* solution;
+  std::optional<casadi::OptiSol> solution;
 
  public:
-  CasADiOpti();
-
-  Expression Variable();
-  void Minimize(const Expression& objective);
-  void SubjectTo(const Expression& relation);
-  void SetInitial(const Expression& expression, double value);
+  casadi::MX DecisionVariable();
+  void Minimize(const casadi::MX& objective);
+  void Maximize(const casadi::MX& objective);
+  void SubjectTo(const casadi::MX& constraint);
+  void SetInitial(const casadi::MX& expr, double value);
   void Solve();
-  double SolutionValue(const Expression& expression) const;
+  double SolutionValue(const casadi::MX& expr) const;
 };
 }  // namespace trajopt
+
+static_assert(OptiSys<casadi::MX, trajopt::CasADiOpti>);

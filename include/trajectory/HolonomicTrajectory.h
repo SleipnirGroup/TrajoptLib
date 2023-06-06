@@ -55,13 +55,11 @@ struct fmt::formatter<trajopt::HolonomicTrajectory> {
   /**
    * Writes out a formatted HolonomicTrajectory.
    *
-   * @tparam FormatContext Format string context type.
    * @param trajectory HolonomicTrajectory instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
   auto format(const trajopt::HolonomicTrajectory& trajectory,
-              FormatContext& ctx) {
+              fmt::format_context& ctx) const {
     std::string sampsStr = fmt::format("{}", trajectory.samples[0]);
     for (size_t i = 1; i < trajectory.samples.size(); i++) {
       sampsStr += fmt::format(", {}", trajectory.samples[i]);

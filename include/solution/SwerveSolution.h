@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include <fmt/format.h>
+
 #include "SymbolExports.h"
 #include "solution/HolonomicSolution.h"
 
@@ -41,13 +43,11 @@ struct fmt::formatter<trajopt::SwerveSolution> {
   /**
    * Writes out a formatted SwerveSolution.
    *
-   * @tparam FormatContext Format string context type.
    * @param swerveSolution SwerveSolution instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
   auto format(const trajopt::SwerveSolution& swerveSolution,
-              FormatContext& ctx) {
+              fmt::format_context& ctx) const {
     std::string tableEntries;
     for (size_t index = 1; index < swerveSolution.x.size(); index++) {
       tableEntries += fmt::format(

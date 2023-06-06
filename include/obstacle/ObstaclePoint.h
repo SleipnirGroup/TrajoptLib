@@ -9,8 +9,7 @@ namespace trajopt {
 /**
  * @brief A point of an obstacle, usually representing a vertex of a polygon.
  */
-class TRAJOPT_DLLEXPORT ObstaclePoint {
- public:
+struct TRAJOPT_DLLEXPORT ObstaclePoint {
   /**
    * @brief the x-coordinate of obstacle point
    */
@@ -19,14 +18,6 @@ class TRAJOPT_DLLEXPORT ObstaclePoint {
    * @brief the y-coordinate of obstacle point
    */
   double y;
-
-  /**
-   * @brief Construct a new Obstacle Point object with its position
-   *
-   * @param x x-coordinate
-   * @param y y-coordinate
-   */
-  ObstaclePoint(double x, double y);
 };
 
 }  // namespace trajopt

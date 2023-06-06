@@ -15,8 +15,7 @@ namespace trajopt {
  * of the robot coordinate system to the center of the module. The wheel radius,
  * max speed, and max torque must also be specified per module.
  */
-class TRAJOPT_DLLEXPORT SwerveModule {
- public:
+struct TRAJOPT_DLLEXPORT SwerveModule {
   /**
    * @brief x-coordinate of swerve module relative to robot coordinate system
    */
@@ -37,19 +36,6 @@ class TRAJOPT_DLLEXPORT SwerveModule {
    * @brief maximum torque applied to wheel
    */
   double wheelMaxTorque;
-
-  /**
-   * @brief Construct a new Swerve Module object with its position, radius, and
-   * constraints.
-   *
-   * @param x x-coordinate of swerve module
-   * @param y y-coordinate of swerve module
-   * @param wheelRadius radius of wheel
-   * @param wheelMaxAngularVelocity maximum angular velocity of wheel
-   * @param wheelMaxTorque maximum torque applied to wheel
-   */
-  SwerveModule(double x, double y, double wheelRadius,
-               double wheelMaxAngularVelocity, double wheelMaxTorque);
 };
 
 }  // namespace trajopt
@@ -71,12 +57,11 @@ struct fmt::formatter<trajopt::SwerveModule> {
   /**
    * Writes out a formatted SwerveModule.
    *
-   * @tparam FormatContext Format string context type.
    * @param swerveModule SwerveModule instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
-  auto format(const trajopt::SwerveModule& swerveModule, FormatContext& ctx) {
+  auto format(const trajopt::SwerveModule& swerveModule,
+              fmt::format_context& ctx) const {
     return fmt::format_to(
         ctx.out(),
         "swerve module: (x, y) = ({}, {}), r = {}, ωₘₐₓ = {}, τₘₐₓ = {}",

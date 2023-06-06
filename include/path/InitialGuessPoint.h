@@ -12,8 +12,7 @@ namespace trajopt {
  * @brief An initial guess of a possible state the robot may be in during the
  * trajectory.
  */
-class TRAJOPT_DLLEXPORT InitialGuessPoint {
- public:
+struct TRAJOPT_DLLEXPORT InitialGuessPoint {
   /// The initial guess of the x-coordinate of the robot.
   double x;
 
@@ -22,15 +21,6 @@ class TRAJOPT_DLLEXPORT InitialGuessPoint {
 
   /// The initial guess of the heading of the robot.
   double heading;
-
-  /**
-   * Construct a InitialGuessPoint.
-   *
-   * @param x The x coordinate.
-   * @param y The y coordinate.
-   * @param heading The heading.
-   */
-  InitialGuessPoint(double x, double y, double heading);
 };
 
 }  // namespace trajopt
@@ -52,13 +42,11 @@ struct fmt::formatter<trajopt::InitialGuessPoint> {
   /**
    * Writes out a formatted InitialGuessPoint.
    *
-   * @tparam FormatContext Format string context type.
    * @param initialGuessPoint InitialGuessPoint instance.
    * @param ctx Format string context.
    */
-  template <typename FormatContext>
   auto format(const trajopt::InitialGuessPoint& initialGuessPoint,
-              FormatContext& ctx) {
+              fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "Initial Guess Point");
   }
 };
