@@ -48,7 +48,6 @@ struct fmt::formatter<trajopt::SwerveDrivetrain> {
   /**
    * Writes out a formatted SwerveDrivetrain.
    *
-   * @tparam FormatContext Format string context type.
    * @param swerveDrivetrain SwerveDrivetrain instance.
    * @param ctx Format string context.
    */

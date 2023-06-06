@@ -69,7 +69,6 @@ struct fmt::formatter<trajopt::HolonomicTrajectorySample> {
   /**
    * Writes out a formatted HolonomicTrajectorySample.
    *
-   * @tparam FormatContext Format string context type.
    * @param sample HolonomicTrajectorySample instance.
    * @param ctx Format string context.
    */

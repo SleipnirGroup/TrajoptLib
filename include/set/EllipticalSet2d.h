@@ -92,7 +92,6 @@ struct fmt::formatter<trajopt::EllipticalSet2d> {
   /**
    * Writes out a formatted EllipticalSet2d.
    *
-   * @tparam FormatContext Format string context type.
    * @param ellipticalSet EllipticalSet2d instance.
    * @param ctx Format string context.
    */

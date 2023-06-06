@@ -84,7 +84,6 @@ struct fmt::formatter<trajopt::Constraint> {
   /**
    * Writes out a formatted Constraint.
    *
-   * @tparam FormatContext Format string context type.
    * @param constraint Constraint instance.
    * @param ctx Format string context.
    */

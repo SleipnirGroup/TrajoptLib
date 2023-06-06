@@ -61,7 +61,6 @@ struct fmt::formatter<trajopt::Set2d> {
   /**
    * Writes out a formatted Set2d.
    *
-   * @tparam FormatContext Format string context type.
    * @param set2d Set2d instance.
    * @param ctx Format string context.
    */

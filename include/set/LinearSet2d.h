@@ -57,7 +57,6 @@ struct fmt::formatter<trajopt::LinearSet2d> {
   /**
    * Writes out a formatted LinearSet2d.
    *
-   * @tparam FormatContext Format string context type.
    * @param linearSet LinearSet2d instance.
    * @param ctx Format string context.
    */

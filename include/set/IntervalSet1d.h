@@ -144,7 +144,6 @@ struct fmt::formatter<trajopt::IntervalSet1d> {
   /**
    * Writes out a formatted IntervalSet1d.
    *
-   * @tparam FormatContext Format string context type.
    * @param set1d IntervalSet1d instance.
    * @param ctx Format string context.
    */

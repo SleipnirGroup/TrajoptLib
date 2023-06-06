@@ -43,7 +43,6 @@ struct fmt::formatter<trajopt::SwerveSolution> {
   /**
    * Writes out a formatted SwerveSolution.
    *
-   * @tparam FormatContext Format string context type.
    * @param swerveSolution SwerveSolution instance.
    * @param ctx Format string context.
    */

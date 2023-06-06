@@ -39,7 +39,6 @@ struct fmt::formatter<trajopt::DifferentialTangentialVelocityConstraint> {
   /**
    * Writes out a formatted VelocityConstraint.
    *
-   * @tparam FormatContext Format string context type.
    * @param constraint VelocityConstraint instance.
    * @param ctx Format string context.
    */

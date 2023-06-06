@@ -52,7 +52,6 @@ struct fmt::formatter<trajopt::ConeSet2d> {
   /**
    * Writes out a formatted ConeSet2d.
    *
-   * @tparam FormatContext Format string context type.
    * @param coneSet ConeSet2d instance.
    * @param ctx Format string context.
    */

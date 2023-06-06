@@ -42,7 +42,6 @@ struct fmt::formatter<trajopt::InitialGuessPoint> {
   /**
    * Writes out a formatted InitialGuessPoint.
    *
-   * @tparam FormatContext Format string context type.
    * @param initialGuessPoint InitialGuessPoint instance.
    * @param ctx Format string context.
    */

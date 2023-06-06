@@ -41,7 +41,6 @@ struct fmt::formatter<trajopt::PointPointConstraint> {
   /**
    * Writes out a formatted PointPointConstraint.
    *
-   * @tparam FormatContext Format string context type.
    * @param constraint PointPointConstraint instance.
    * @param ctx Format string context.
    */

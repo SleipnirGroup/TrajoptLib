@@ -49,7 +49,6 @@ struct fmt::formatter<trajopt::AngularVelocityConstraint> {
   /**
    * Writes out a formatted AngularVelocityConstraint.
    *
-   * @tparam FormatContext Format string context type.
    * @param constraint AngularVelocityConstraint instance.
    * @param ctx Format string context.
    */

@@ -39,7 +39,6 @@ struct fmt::formatter<trajopt::DifferentialCentripetalAccelerationConstraint> {
   /**
    * Writes out a formatted DifferentialCentripetalAccelerationConstraint.
    *
-   * @tparam FormatContext Format string context type.
    * @param constraint DifferentialCentripetalAccelerationConstraint instance.
    * @param ctx Format string context.
    */

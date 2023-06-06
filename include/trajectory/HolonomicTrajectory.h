@@ -55,7 +55,6 @@ struct fmt::formatter<trajopt::HolonomicTrajectory> {
   /**
    * Writes out a formatted HolonomicTrajectory.
    *
-   * @tparam FormatContext Format string context type.
    * @param trajectory HolonomicTrajectory instance.
    * @param ctx Format string context.
    */

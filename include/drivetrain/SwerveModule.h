@@ -57,7 +57,6 @@ struct fmt::formatter<trajopt::SwerveModule> {
   /**
    * Writes out a formatted SwerveModule.
    *
-   * @tparam FormatContext Format string context type.
    * @param swerveModule SwerveModule instance.
    * @param ctx Format string context.
    */

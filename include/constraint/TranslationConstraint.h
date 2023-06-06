@@ -48,7 +48,6 @@ struct fmt::formatter<trajopt::TranslationConstraint> {
   /**
    * Writes out a formatted TranslationConstraint.
    *
-   * @tparam FormatContext Format string context type.
    * @param constraint TranslationConstraint instance.
    * @param ctx Format string context.
    */

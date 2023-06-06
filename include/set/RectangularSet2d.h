@@ -73,7 +73,6 @@ struct fmt::formatter<trajopt::RectangularSet2d> {
   /**
    * Writes out a formatted RectangularSet2d.
    *
-   * @tparam FormatContext Format string context type.
    * @param rectangularSet RectangularSet2d instance.
    * @param ctx Format string context.
    */

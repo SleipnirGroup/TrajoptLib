@@ -48,7 +48,6 @@ struct fmt::formatter<trajopt::HeadingConstraint> {
   /**
    * Writes out a formatted HeadingConstraint.
    *
-   * @tparam FormatContext Format string context type.
    * @param constraint HeadingConstraint instance.
    * @param ctx Format string context.
    */

@@ -39,7 +39,6 @@ struct fmt::formatter<trajopt::DifferentialConstraint> {
   /**
    * Writes out a formatted HolonomicConstraint.
    *
-   * @tparam FormatContext Format string context type.
    * @param constraint HolonomicConstraint instance.
    * @param ctx Format string context.
    */
