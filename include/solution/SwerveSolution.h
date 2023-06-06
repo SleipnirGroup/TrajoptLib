@@ -48,7 +48,7 @@ struct fmt::formatter<trajopt::SwerveSolution> {
    * @param ctx Format string context.
    */
   auto format(const trajopt::SwerveSolution& swerveSolution,
-              fmt::format_context& ctx) {
+              fmt::format_context& ctx) const {
     std::string tableEntries;
     for (size_t index = 1; index < swerveSolution.x.size(); index++) {
       tableEntries += fmt::format(
