@@ -88,7 +88,7 @@ struct fmt::formatter<trajopt::Constraint> {
    * @param constraint Constraint instance.
    * @param ctx Format string context.
    */
-  auto format(const trajopt::Constraint& constraint, fmt::format_context& ctx) {
+  auto format(const trajopt::Constraint& constraint, fmt::format_context& ctx) const {
     using namespace trajopt;
     if (std::holds_alternative<TranslationConstraint>(constraint)) {
       return fmt::format_to(ctx.out(), "constraint: {}",
