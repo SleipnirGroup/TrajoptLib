@@ -50,7 +50,7 @@ struct fmt::formatter<trajopt::PointLineConstraint> {
    * @param ctx Format string context.
    */
   auto format(const trajopt::PointLineConstraint& constraint,
-              fmt::format_context& ctx) {
+              fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "point line constraint");
   }
 };
