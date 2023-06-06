@@ -15,16 +15,19 @@
 namespace trajopt {
 
 template <typename Expr>
-requires ExprSys<Expr> std::pair<Expr, Expr> SolveNetForce(
-    const std::vector<Expr>& Fx, const std::vector<Expr>& Fy);
+  requires ExprSys<Expr>
+std::pair<Expr, Expr> SolveNetForce(const std::vector<Expr>& Fx,
+                                    const std::vector<Expr>& Fy);
 
 template <typename Expr>
-requires ExprSys<Expr> Expr SolveNetTorque(
-    const Expr& theta, const std::vector<Expr>& Fx, const std::vector<Expr>& Fy,
-    const std::vector<SwerveModule>& swerveModules);
+  requires ExprSys<Expr>
+Expr SolveNetTorque(const Expr& theta, const std::vector<Expr>& Fx,
+                    const std::vector<Expr>& Fy,
+                    const std::vector<SwerveModule>& swerveModules);
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> void ApplyKinematicsConstraints(
+  requires OptiSys<Expr, Opti>
+void ApplyKinematicsConstraints(
     Opti& opti, const std::vector<Expr>& x, const std::vector<Expr>& y,
     const std::vector<Expr>& theta, const std::vector<Expr>& vx,
     const std::vector<Expr>& vy, const std::vector<Expr>& omega,
@@ -61,19 +64,23 @@ requires OptiSys<Expr, Opti> void ApplyKinematicsConstraints(
  * @param swerveDrivetrain the swerve drivetrain
  */
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> void ApplyDynamicsConstraints(
-    Opti& opti, const Expr& ax, const Expr& ay, const Expr& alpha,
-    const Expr& Fx_net, const Expr& Fy_net, const Expr& tau_net, double mass,
-    double moi);
+  requires OptiSys<Expr, Opti>
+void ApplyDynamicsConstraints(Opti& opti, const Expr& ax, const Expr& ay,
+                              const Expr& alpha, const Expr& Fx_net,
+                              const Expr& Fy_net, const Expr& tau_net,
+                              double mass, double moi);
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> void ApplyPowerConstraints(
-    Opti& opti, const Expr& theta, const Expr& vx, const Expr& vy,
-    const Expr& omega, const std::vector<Expr>& Fx, const std::vector<Expr>& Fy,
-    const SwerveDrivetrain& swerveDrivetrain);
+  requires OptiSys<Expr, Opti>
+void ApplyPowerConstraints(Opti& opti, const Expr& theta, const Expr& vx,
+                           const Expr& vy, const Expr& omega,
+                           const std::vector<Expr>& Fx,
+                           const std::vector<Expr>& Fy,
+                           const SwerveDrivetrain& swerveDrivetrain);
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> SwerveSolution ConstructSwerveSolution(
+  requires OptiSys<Expr, Opti>
+SwerveSolution ConstructSwerveSolution(
     const Opti& opti, const std::vector<Expr>& x, const std::vector<Expr>& y,
     const std::vector<Expr>& theta, const std::vector<Expr>& vx,
     const std::vector<Expr>& vy, const std::vector<Expr>& omega,

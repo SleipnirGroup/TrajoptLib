@@ -56,8 +56,9 @@ size_t GetIdx(const std::vector<size_t>& N, size_t wptIdx, size_t sampIdx) {
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> void ApplyDiscreteTimeObjective(
-    Opti& opti, std::vector<Expr>& dt, const std::vector<size_t> N) {
+  requires OptiSys<Expr, Opti>
+void ApplyDiscreteTimeObjective(Opti& opti, std::vector<Expr>& dt,
+                                const std::vector<size_t> N) {
   Expr T_tot = 0;
   for (size_t sgmtIdx = 0; sgmtIdx < N.size(); ++sgmtIdx) {
     auto& dt_sgmt = dt.at(sgmtIdx);
@@ -72,8 +73,9 @@ requires OptiSys<Expr, Opti> void ApplyDiscreteTimeObjective(
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> void ApplyIntervalSet1dConstraint(
-    Opti& opti, const Expr& scalar, const IntervalSet1d& set1d) {
+  requires OptiSys<Expr, Opti>
+void ApplyIntervalSet1dConstraint(Opti& opti, const Expr& scalar,
+                                  const IntervalSet1d& set1d) {
   if (set1d.IsExact()) {
     opti.SubjectTo(scalar == set1d.lower);
   } else {
@@ -87,10 +89,9 @@ requires OptiSys<Expr, Opti> void ApplyIntervalSet1dConstraint(
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> void ApplySet2dConstraint(Opti& opti,
-                                                       const Expr& vectorX,
-                                                       const Expr& vectorY,
-                                                       const Set2d& set2d) {
+  requires OptiSys<Expr, Opti>
+void ApplySet2dConstraint(Opti& opti, const Expr& vectorX, const Expr& vectorY,
+                          const Set2d& set2d) {
   if (std::holds_alternative<RectangularSet2d>(set2d)) {
     auto& rectangularSet2d = std::get<RectangularSet2d>(set2d);
     ApplyIntervalSet1dConstraint(opti, vectorX, rectangularSet2d.xBound);
@@ -129,8 +130,9 @@ requires OptiSys<Expr, Opti> void ApplySet2dConstraint(Opti& opti,
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> std::vector<double> RowSolutionValue(
-    const Opti& opti, const std::vector<Expr>& rowVector) {
+  requires OptiSys<Expr, Opti>
+std::vector<double> RowSolutionValue(const Opti& opti,
+                                     const std::vector<Expr>& rowVector) {
   std::vector<double> valueRowVector;
   valueRowVector.reserve(rowVector.size());
   for (auto& expression : rowVector) {
@@ -140,9 +142,9 @@ requires OptiSys<Expr, Opti> std::vector<double> RowSolutionValue(
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> std::vector<std::vector<double>>
-MatrixSolutionValue(const Opti& opti,
-                    const std::vector<std::vector<Expr>>& matrix) {
+  requires OptiSys<Expr, Opti>
+std::vector<std::vector<double>> MatrixSolutionValue(
+    const Opti& opti, const std::vector<std::vector<Expr>>& matrix) {
   std::vector<std::vector<double>> valueMatrix;
   valueMatrix.reserve(matrix.size());
   for (auto& row : matrix) {
@@ -152,9 +154,12 @@ MatrixSolutionValue(const Opti& opti,
 }
 
 template <typename Expr>
-requires ExprSys<Expr> const std::pair<Expr, Expr> SolveRobotPointPosition(
-    const Expr& x, const Expr& y, const Expr& theta, double robotPointX,
-    double robotPointY) {
+  requires ExprSys<Expr>
+const std::pair<Expr, Expr> SolveRobotPointPosition(const Expr& x,
+                                                    const Expr& y,
+                                                    const Expr& theta,
+                                                    double robotPointX,
+                                                    double robotPointY) {
   std::pair<Expr, Expr> position{0.0, 0.0};
   if (robotPointX == 0.0 && robotPointY == 0.0) {
     position.first = x;
@@ -190,9 +195,9 @@ decltype(LineNumberType() + PointNumberType()) linePointDist(
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> void ApplyConstraint(
-    Opti& opti, const Expr& x, const Expr& y, const Expr& theta,
-    const Constraint& constraint) {
+  requires OptiSys<Expr, Opti>
+void ApplyConstraint(Opti& opti, const Expr& x, const Expr& y,
+                     const Expr& theta, const Constraint& constraint) {
   if (std::holds_alternative<TranslationConstraint>(constraint)) {
     auto& translationConstraint = std::get<TranslationConstraint>(constraint);
     ApplySet2dConstraint(opti, x, y, translationConstraint.translationBound);
@@ -333,11 +338,10 @@ Solution GenerateLinearInitialGuess(
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> void ApplyInitialGuess(Opti& opti,
-                                                    const Solution& solution,
-                                                    std::vector<Expr>& x,
-                                                    std::vector<Expr>& y,
-                                                    std::vector<Expr>& theta) {
+  requires OptiSys<Expr, Opti>
+void ApplyInitialGuess(Opti& opti, const Solution& solution,
+                       std::vector<Expr>& x, std::vector<Expr>& y,
+                       std::vector<Expr>& theta) {
   size_t sampleTotal = x.size();
   for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
     opti.SetInitial(x[sampleIndex], solution.x[sampleIndex]);

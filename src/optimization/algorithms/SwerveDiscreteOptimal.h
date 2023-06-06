@@ -14,7 +14,8 @@
 namespace trajopt {
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> class SwerveDiscreteOptimal {
+  requires OptiSys<Expr, Opti>
+class SwerveDiscreteOptimal {
  public:
   /**
    * @brief Optimizes the given path using IPOPT. Note this function call
