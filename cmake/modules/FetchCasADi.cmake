@@ -62,7 +62,6 @@ macro(fetch_casadi)
         ${CASADI_LIBDIR}/libcasadi.so
         ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.so)
     endif()
-    add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
     set(CASADI_INSTALL_DEST "lib")
   endif()
   message(STATUS "Downloading CasADi from ${CASADI_URL}")
