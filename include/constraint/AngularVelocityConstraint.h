@@ -54,7 +54,7 @@ struct fmt::formatter<trajopt::AngularVelocityConstraint> {
    * @param ctx Format string context.
    */
   auto format(const trajopt::AngularVelocityConstraint& constraint,
-              fmt::format_context& ctx) {
+              fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "ω {}", constraint.angularVelocityBound);
   }
 };
