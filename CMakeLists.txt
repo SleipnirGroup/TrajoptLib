@@ -6,7 +6,7 @@ FATAL: In-source builds are not allowed.
 ")
 endif()
 
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.24)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 project(TrajoptLib LANGUAGES CXX)
@@ -88,47 +88,13 @@ if (${OPTIMIZER_BACKEND} STREQUAL "casadi")
   include(FetchCasADi)
   fetch_casadi()
   target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_CASADI)
-  if (${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS" OR WIN32)
-    target_include_directories(TrajoptLib SYSTEM PRIVATE ${CMAKE_BINARY_DIR}/_deps/casadi-src/casadi/include)
-    target_link_directories(TrajoptLib PRIVATE ${CMAKE_BINARY_DIR}/_deps/casadi-src/casadi)
-  elseif (APPLE)
-    target_include_directories(TrajoptLib SYSTEM PRIVATE ${CMAKE_BINARY_DIR}/_deps/casadi-src/casadi/include)
-    target_link_directories(TrajoptLib PRIVATE ${CMAKE_BINARY_DIR}/_deps/casadi-src/casadi)
-  elseif (UNIX)
-    target_include_directories(TrajoptLib SYSTEM PRIVATE ${CMAKE_BINARY_DIR}/_deps/casadi-src/include)
-    target_link_directories(TrajoptLib PRIVATE ${CMAKE_BINARY_DIR}/_deps/casadi-src/lib)
-  endif()
+  target_include_directories(TrajoptLib SYSTEM PRIVATE ${CASADI_INCLUDEDIR})
+  target_link_directories(TrajoptLib PRIVATE ${CASADI_LIBDIR})
   target_link_libraries(TrajoptLib PRIVATE casadi)
 
   # Install CasADi libraries since FetchContent setting that up properly
-  if (${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS" OR WIN32)
-    target_include_directories(TrajoptLib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32)
-    set(CASADI_LIBDIR ${CMAKE_BINARY_DIR}/_deps/casadi-src/casadi)
-    install(FILES
-      ${CASADI_LIBDIR}/libcasadi.dll
-      ${CASADI_LIBDIR}/libstdc++-6.dll
-      ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.dll
-      ${CASADI_LIBDIR}/libquadmath-0.dll
-      ${CASADI_LIBDIR}/libgcc_s_seh-1.dll
-      DESTINATION "bin")
-  elseif (APPLE)
-    target_include_directories(TrajoptLib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/jni/darwin)
-    set(CASADI_LIBDIR ${CMAKE_BINARY_DIR}/_deps/casadi-src/casadi)
-    install(FILES
-      ${CASADI_LIBDIR}/libcasadi.dylib
-      ${CASADI_LIBDIR}/libc++.1.dylib
-      ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.dylib
-      ${CASADI_LIBDIR}/libquadmath.0.dylib
-      ${CASADI_LIBDIR}/libgcc_s.1.dylib
-      DESTINATION "lib")
-  elseif (UNIX)
-    target_include_directories(TrajoptLib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/jni/linux)
-    set(CASADI_LIBDIR ${CMAKE_BINARY_DIR}/_deps/casadi-src/lib)
-    install(FILES
-      ${CASADI_LIBDIR}/libcasadi.so
-      ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.so
-      DESTINATION "lib")
-  endif()
+  install(FILES ${CASADI_INSTALL_LIBS} DESTINATION ${CASADI_INSTALL_DEST})
+
 elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
   message(STATUS "Using Sleipnir optimizer")
   include(FetchSleipnir)
