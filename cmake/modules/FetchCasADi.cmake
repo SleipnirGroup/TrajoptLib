@@ -55,9 +55,7 @@ macro(fetch_casadi)
     else()
       message(STATUS "Building for Linux x64")
       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH};$ORIGIN/../lib;$ORIGIN")
-      set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.5.5/libcasadi-linux-gcc5-v3.5.5.tar.gz)
-      set(CASADI_LIBDIR ${CMAKE_BINARY_DIR}/_deps/casadi-src/lib)
-      set(CASADI_INCLUDEDIR ${CMAKE_BINARY_DIR}/_deps/casadi-src/include)
+      set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.6.3/casadi-3.6.3-linux64-py311.zip)
       set(CASADI_INSTALL_LIBS
         ${CASADI_LIBDIR}/libcasadi.so
         ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.so)
