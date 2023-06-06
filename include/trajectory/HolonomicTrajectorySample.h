@@ -74,7 +74,7 @@ struct fmt::formatter<trajopt::HolonomicTrajectorySample> {
    * @param ctx Format string context.
    */
   auto format(const trajopt::HolonomicTrajectorySample& sample,
-              fmt::format_context& ctx) {
+              fmt::format_context& ctx) const {
     return fmt::format_to(
         ctx.out(),
         "{{\"timestamp\": {}, \"x\": {}, \"y\": {}, \"heading\": {}, "
