@@ -18,8 +18,9 @@
 namespace trajopt {
 
 template <typename Expr>
-requires ExprSys<Expr> std::pair<Expr, Expr> SolveNetForce(
-    const std::vector<Expr>& Fx, const std::vector<Expr>& Fy) {
+  requires ExprSys<Expr>
+std::pair<Expr, Expr> SolveNetForce(const std::vector<Expr>& Fx,
+                                    const std::vector<Expr>& Fy) {
   Expr Fx_net = 0;
   Expr Fy_net = 0;
 
@@ -34,9 +35,10 @@ requires ExprSys<Expr> std::pair<Expr, Expr> SolveNetForce(
 }
 
 template <typename Expr>
-requires ExprSys<Expr> Expr SolveNetTorque(
-    const Expr& theta, const std::vector<Expr>& Fx, const std::vector<Expr>& Fy,
-    const std::vector<SwerveModule>& swerveModules) {
+  requires ExprSys<Expr>
+Expr SolveNetTorque(const Expr& theta, const std::vector<Expr>& Fx,
+                    const std::vector<Expr>& Fy,
+                    const std::vector<SwerveModule>& swerveModules) {
   Expr tau_net = 0;
 
   for (size_t moduleIdx = 0; moduleIdx < swerveModules.size(); ++moduleIdx) {
@@ -52,7 +54,8 @@ requires ExprSys<Expr> Expr SolveNetTorque(
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> void ApplyKinematicsConstraints(
+  requires OptiSys<Expr, Opti>
+void ApplyKinematicsConstraints(
     Opti& opti, const std::vector<Expr>& x, const std::vector<Expr>& y,
     const std::vector<Expr>& theta, const std::vector<Expr>& vx,
     const std::vector<Expr>& vy, const std::vector<Expr>& omega,
@@ -92,20 +95,23 @@ requires OptiSys<Expr, Opti> void ApplyKinematicsConstraints(
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> void ApplyDynamicsConstraints(
-    Opti& opti, const Expr& ax, const Expr& ay, const Expr& alpha,
-    const Expr& Fx_net, const Expr& Fy_net, const Expr& tau_net, double mass,
-    double moi) {
+  requires OptiSys<Expr, Opti>
+void ApplyDynamicsConstraints(Opti& opti, const Expr& ax, const Expr& ay,
+                              const Expr& alpha, const Expr& Fx_net,
+                              const Expr& Fy_net, const Expr& tau_net,
+                              double mass, double moi) {
   opti.SubjectTo(Fx_net == mass * ax);
   opti.SubjectTo(Fy_net == mass * ax);
   opti.SubjectTo(tau_net == moi * alpha);
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> void ApplyPowerConstraints(
-    Opti& opti, const Expr& theta, const Expr& vx, const Expr& vy,
-    const Expr& omega, const std::vector<Expr>& Fx, const std::vector<Expr>& Fy,
-    const SwerveDrivetrain& swerveDrivetrain) {
+  requires OptiSys<Expr, Opti>
+void ApplyPowerConstraints(Opti& opti, const Expr& theta, const Expr& vx,
+                           const Expr& vy, const Expr& omega,
+                           const std::vector<Expr>& Fx,
+                           const std::vector<Expr>& Fy,
+                           const SwerveDrivetrain& swerveDrivetrain) {
   auto [vx_prime, vy_prime] = RotateVector(vx, vy, -theta);
 
   size_t moduleCount = swerveDrivetrain.modules.size();
@@ -139,7 +145,8 @@ requires OptiSys<Expr, Opti> void ApplyPowerConstraints(
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> SwerveSolution ConstructSwerveSolution(
+  requires OptiSys<Expr, Opti>
+SwerveSolution ConstructSwerveSolution(
     const Opti& opti, const std::vector<Expr>& x, const std::vector<Expr>& y,
     const std::vector<Expr>& theta, const std::vector<Expr>& vx,
     const std::vector<Expr>& vy, const std::vector<Expr>& omega,

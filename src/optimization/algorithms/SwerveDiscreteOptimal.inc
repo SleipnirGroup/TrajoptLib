@@ -18,8 +18,8 @@
 namespace trajopt {
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti> SwerveSolution
-SwerveDiscreteOptimal<Expr, Opti>::Generate() {
+  requires OptiSys<Expr, Opti>
+SwerveSolution SwerveDiscreteOptimal<Expr, Opti>::Generate() {
   try {
     opti.Solve();
     return ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
@@ -31,7 +31,7 @@ SwerveDiscreteOptimal<Expr, Opti>::Generate() {
 }
 
 template <typename Expr, typename Opti>
-requires OptiSys<Expr, Opti>
+  requires OptiSys<Expr, Opti>
 SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     const SwervePath& path, const std::vector<size_t>& N,
     const Solution& initialGuess)
