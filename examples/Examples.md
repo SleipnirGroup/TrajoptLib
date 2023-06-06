@@ -1,4 +1,4 @@
-# Examples
+# Examples with possible new API
 
 `SwervePathBuilderBuilder` is the class used to build paths that are optimized into full trajectories.
 `Wpt` is the abbreviation for waypoint, an instantaneous moment in the path where certain constrains on the
