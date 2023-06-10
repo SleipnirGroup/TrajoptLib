@@ -60,7 +60,6 @@ public final class HolonomicWaypoint extends Waypoint {
             + ", \"angular_velocity_constrained\": " + angularVelocityConstrained
             + ", \"control_interval_count\": " + controlIntervalCount
             + ", \"initial_guess_points\": " + initialGuessPoints
-            + ", \"obstacles\": " + obstacles
             + "}";
     }
 }

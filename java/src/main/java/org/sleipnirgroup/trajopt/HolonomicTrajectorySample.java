@@ -7,10 +7,10 @@ public class HolonomicTrajectorySample extends TrajectorySample {
     public final double velocityY;
     public final double angularVelocity;
 
-    public HolonomicTrajectorySample(double intervalDuration,
+    public HolonomicTrajectorySample(double timestamp,
             double x, double y, double heading,
             double velocityX, double velocityY, double angularVelocity) {
-        super(intervalDuration, x, y, heading);
+        super(timestamp, x, y, heading);
 
         this.velocityX = velocityX;
         this.velocityY = velocityY;
@@ -19,7 +19,7 @@ public class HolonomicTrajectorySample extends TrajectorySample {
 
     @Override
     public String toString() {
-        return "{\"interval_duration\": " + intervalDuration
+        return "{\"timestamp\": " + timestamp
             + ", \"x\": " + x
             + ", \"y\": " + y
             + ", \"heading\": " + heading

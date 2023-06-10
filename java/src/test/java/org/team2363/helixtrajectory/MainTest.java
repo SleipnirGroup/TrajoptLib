@@ -26,7 +26,7 @@ class MainTest {
             new HolonomicWaypoint(-4,  0,    0, 0, 0, 0, true, true, true, false, false, false, false,  10, List.of(), List.of()),
             new HolonomicWaypoint( 0, -4, 3.14, 0, 0, 0, true, true, true, false, false, false, false,  10, List.of(), List.of()),
             new HolonomicWaypoint( 4,  0, 4.71, 0, 0, 0, true, true, true,  true,  true,  true,  true,  10, List.of(), List.of())
-        ));
+        ), List.of());
 
         System.out.println("Drivetrain:\n");
         System.out.println(swerveDrivetrain);

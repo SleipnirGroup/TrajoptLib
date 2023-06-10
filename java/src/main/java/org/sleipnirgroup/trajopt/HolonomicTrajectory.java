@@ -7,19 +7,19 @@ import static org.sleipnirgroup.util.ObjectChecker.requireNonNullAndWrapUnmodifi
 import java.util.List;
 
 public final class HolonomicTrajectory extends Trajectory {
-    public final List<? extends HolonomicTrajectorySegment> holonomicSegments;
+    public final List<? extends HolonomicTrajectorySample> holonomicSamples;
 
     @SuppressWarnings("unchecked")
-    public HolonomicTrajectory(List<? extends HolonomicTrajectorySegment> holonomicSegments) throws NullPointerException {
-        super(requireNonNullAndWrapUnmodifiable(holonomicSegments,
-                "List of holonomic trajectory segments cannot be null",
-                "Holonomic trajectory segment cannot be null"));
+    public HolonomicTrajectory(List<? extends HolonomicTrajectorySample> holonomicSamples)
+            throws NullPointerException {
+        super(requireNonNullAndWrapUnmodifiable(holonomicSamples,
+                "List of holonomic samples cannot be null", "Holonomic sample cannot be null"));
 
-        this.holonomicSegments = (List<? extends HolonomicTrajectorySegment>) segments;
+        this.holonomicSamples = (List<? extends HolonomicTrajectorySample>) samples;
     }
 
     @Override
     public String toString() {
-        return holonomicSegments.toString();
+        return holonomicSamples.toString();
     }
 }

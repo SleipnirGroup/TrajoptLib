@@ -2,13 +2,18 @@
 
 package org.sleipnirgroup.trajopt;
 
+import static org.sleipnirgroup.util.ObjectChecker.requireNonNullAndWrapUnmodifiable;
+
 import java.util.List;
 
 public abstract class Path {
     public final List<? extends Waypoint> waypoints;
+    public final List<Obstacle> obstacles;
 
-    protected Path(List<? extends Waypoint> waypoints) {
+    protected Path(List<? extends Waypoint> waypoints, List<Obstacle> obstacles) {
         this.waypoints = waypoints;
+        this.obstacles = requireNonNullAndWrapUnmodifiable(obstacles,
+                "List of obstacles cannot be null", "Obstacle cannot be null");
     }
 
     public int controlIntervalTotal() {

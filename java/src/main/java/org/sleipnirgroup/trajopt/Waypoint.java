@@ -20,8 +20,6 @@ public abstract class Waypoint {
 
     public final List<? extends InitialGuessPoint> initialGuessPoints;
 
-    public final List<? extends Obstacle> obstacles;
-
     protected Waypoint(double x, double y, double heading,
             boolean xConstrained, boolean yConstrained, boolean headingConstrained,
             int controlIntervalCount,
@@ -39,9 +37,6 @@ public abstract class Waypoint {
 
         this.initialGuessPoints = requireNonNullAndWrapUnmodifiable(initialGuessPoints,
                 "List of initial guess points cannot be null", "Initial guess point cannot be null");
-
-        this.obstacles = requireNonNullAndWrapUnmodifiable(obstacles,
-                "List of obstacles cannot be null", "Obstacle cannot be null");
     }
 
     public boolean isInitialWaypoint() {

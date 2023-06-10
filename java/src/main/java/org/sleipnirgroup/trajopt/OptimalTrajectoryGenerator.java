@@ -21,7 +21,17 @@ public final class OptimalTrajectoryGenerator {
                                 libName, RuntimeLoader.getDefaultExtractionRoot(), OptimalTrajectoryGenerator.class).loadLibrary();
                     }
                 } else if (osName.startsWith("Mac")) {
-                    for (String libName : new String[]{"libcasadi.dylib", "libc++.1.dylib", "libcasadi_nlpsol_ipopt.dylib", "libgfortran.4.dylib", "libquadmath.0.dylib", "libgcc_s.1.dylib"}) {
+                    for (String libName : new String[]{
+                            "libcasadi.3.7.dylib",
+                            "libc++.1.0.dylib",
+                            "libcasadi_nlpsol_ipopt.3.7.dylib",
+                            "libipopt.3.dylib",
+                            "libcoinmumps.3.dylib",
+                            "libcoinmetis.2.dylib",
+                            "libgfortran.5.dylib",
+                            "libquadmath.0.dylib",
+                            "libgcc_s.1.1.dylib",
+                            "libgcc_s.1.dylib"}) {
                         new DependencyExtractor<OptimalTrajectoryGenerator>(
                                 libName, RuntimeLoader.getDefaultExtractionRoot(), OptimalTrajectoryGenerator.class).loadLibrary();
                     }
