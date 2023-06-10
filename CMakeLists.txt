@@ -70,6 +70,9 @@ target_compile_definitions(TrajoptLib PRIVATE TRAJOPT_EXPORTS)
 include(FetchContent)
 
 # fmt dependency
+set(BUILD_SHARED_LIBS_SAVE ${BUILD_SHARED_LIBS})
+set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(FMT_INSTALL ON)
 FetchContent_Declare(
   fmt
@@ -77,6 +80,7 @@ FetchContent_Declare(
   GIT_TAG        9.1.0
 )
 FetchContent_MakeAvailable(fmt)
+set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVE})
 
 if (${OPTIMIZER_BACKEND} STREQUAL "casadi" AND
     ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND
