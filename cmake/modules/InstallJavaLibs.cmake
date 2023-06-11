@@ -1,6 +1,6 @@
 macro(installjavalibs)
   set(JAVA_LIB_TARGET_PATH ${CMAKE_CURRENT_SOURCE_DIR}/java/src/main/resources)
-  file(REMOVE_RECURSE ${JAVA_LIB_TARGET_PATH}/*)
+  file(REMOVE_RECURSE ${JAVA_LIB_TARGET_PATH})
   if (${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS" OR WIN32)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
       set(JAVA_LIB_TARGET_PATH ${JAVA_LIB_TARGET_PATH}/windows/x86_64)
@@ -16,10 +16,19 @@ macro(installjavalibs)
   elseif (UNIX)
     set(JAVA_LIB_TARGET_PATH ${JAVA_LIB_TARGET_PATH}/linux/x86_64)
   endif()
+
   message(STATUS "Path to use for java: ${JAVA_LIB_TARGET_PATH}")
-  install(TARGETS TrajoptLib-java RUNTIME DESTINATION ${JAVA_LIB_TARGET_PATH})
+  install(TARGETS TrajoptLib RUNTIME_DEPENDENCIES DESTINATION ${JAVA_LIB_TARGET_PATH})
+  install(TARGETS TrajoptLib-java RUNTIME_DEPENDENCIES DESTINATION ${JAVA_LIB_TARGET_PATH})
 
   if (OPTIMIZER_BACKEND STREQUAL "casadi")
     install(FILES ${CASADI_INSTALL_LIBS} DESTINATION ${JAVA_LIB_TARGET_PATH})
   endif()
+
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/GenerateJNILibsJSON.cmake.in"
+    "${CMAKE_BINARY_DIR}/GenerateJNILibsJSON.cmake"
+    @ONLY
+  )
+  install(SCRIPT "${CMAKE_BINARY_DIR}/GenerateJNILibsJSON.cmake")
 endmacro()
