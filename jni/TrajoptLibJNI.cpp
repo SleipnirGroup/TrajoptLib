@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <tuple>
 #include <memory>
 
 #include "InvalidPathException.h"
@@ -20,6 +21,7 @@
 #include "org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator.h"
 #include "path/Path.h"
 #include "path/InitialGuessPoint.h"
+#include "path/SwervePathBuilder.h"
 #include "set/EllipticalSet2d.h"
 #include "set/IntervalSet1d.h"
 #include "set/RectangularSet2d.h"
@@ -66,21 +68,15 @@ ObstaclePoint obstaclePointFromJObstaclePoint(JNIEnv* env,
 Obstacle obstacleFromJObstacle(JNIEnv* env, jobject jObstacle) {
   jclass jListClass = env->FindClass("java/util/List");
   jmethodID jListClassSizeMethod = env->GetMethodID(jListClass, "size", "()I");
-  jmethodID jListClassGetMethod =
-      env->GetMethodID(jListClass, "get", "(I)Ljava/lang/Object;");
 
   jclass jObstacleClass = env->FindClass("org/sleipnirgroup/trajopt/Obstacle");
   jfieldID jObstacleClassSafetyDistanceField =
       env->GetFieldID(jObstacleClass, "safetyDistance", "D");
-  jfieldID jObstacleClassApplyToAllSegmentsField =
-      env->GetFieldID(jObstacleClass, "applyToAllSegments", "Z");
   jfieldID jObstacleClassPointsField =
       env->GetFieldID(jObstacleClass, "points", "Ljava/util/List;");
 
   jdouble jObstacleSafetyDistance =
       env->GetDoubleField(jObstacle, jObstacleClassSafetyDistanceField);
-  jboolean jObstacleApplyToAllSegments =
-      env->GetBooleanField(jObstacle, jObstacleClassApplyToAllSegmentsField);
   jobject jObstaclePoints =
       env->GetObjectField(jObstacle, jObstacleClassPointsField);
   jint jObstaclePointsSize =
@@ -149,10 +145,6 @@ SwerveModule swerveModuleFromJSwerveModule(JNIEnv* env, jobject jSwerveModule) {
 
 SwerveDrivetrain swerveDrivetrainFromJSwerveDrivetrain(
     JNIEnv* env, jobject jSwerveDrivetrain) {
-  jclass jListClass = env->FindClass("java/util/List");
-  jmethodID jListClassSizeMethod = env->GetMethodID(jListClass, "size", "()I");
-  jmethodID jListClassGetMethod =
-      env->GetMethodID(jListClass, "get", "(I)Ljava/lang/Object;");
 
   jclass jSwerveDrivetrainClass =
       env->FindClass("org/sleipnirgroup/trajopt/SwerveDrivetrain");
@@ -228,7 +220,7 @@ std::vector<HolonomicConstraint> velocityConstraintsFrom(double velocityX, doubl
   return constrs;
 }
 
-std::vector<HolonomicConstraint> holonomicConstraintsFromJHolonomicWaypoint(
+std::tuple<std::vector<HolonomicConstraint>, std::vector<InitialGuessPoint>, size_t> holonomicConstraintsFromJHolonomicWaypoint(
     JNIEnv* env, jobject jHolonomicWaypoint) {
   jclass jHolonomicWaypointClass =
       env->FindClass("org/sleipnirgroup/trajopt/HolonomicWaypoint");
@@ -304,6 +296,8 @@ std::vector<HolonomicConstraint> holonomicConstraintsFromJHolonomicWaypoint(
                       initialGuessPointFromJInitialGuessPoint>(
           env, jHolonomicWaypointInitialGuessPoints);
 
+  initialGuessPoints.push_back(InitialGuessPoint{jHolonomicWaypointX, jHolonomicWaypointY, jHolonomicWaypointHeading});
+
   auto constraints = poseConstraintsFrom(jHolonomicWaypointX, jHolonomicWaypointY, jHolonomicWaypointHeading,
       jHolonomicWaypointXConstrained, jHolonomicWaypointYConstrained, jHolonomicWaypointHeadingConstrained);
 
@@ -314,7 +308,7 @@ std::vector<HolonomicConstraint> holonomicConstraintsFromJHolonomicWaypoint(
 
   constraints.insert(constraints.end(), velocityConstraints.begin(), velocityConstraints.end());
 
-  return constraints;
+  return {constraints, initialGuessPoints, jHolonomicWaypointControlIntervalCount};
 }
 
 SwervePathBuilder swervePathFromJHolonomicPath(JNIEnv* env,
@@ -336,18 +330,31 @@ SwervePathBuilder swervePathFromJHolonomicPath(JNIEnv* env,
   SwervePathBuilder path;
 
   auto holonomicWaypoints =
-      vectorFromJList<std::vector<HolonomicConstraint>,
+      vectorFromJList<std::tuple<std::vector<HolonomicConstraint>, std::vector<InitialGuessPoint>, size_t>,
                       &holonomicConstraintsFromJHolonomicWaypoint>(
           env, jHolonomicPathHolonomicWaypoints);
 
   size_t wptCnt = holonomicWaypoints.size();
 
+  std::vector<size_t> controlIntervalCounts;
+  controlIntervalCounts.reserve(wptCnt - 1);
+
   for (size_t wptIdx = 0; wptIdx < wptCnt; ++wptIdx) {
-    auto& wptConstraints = holonomicWaypoints.at(wptIdx);
+    std::vector<HolonomicConstraint>& wptConstraints = std::get<0>(holonomicWaypoints.at(wptIdx));
+    std::vector<InitialGuessPoint>& wptInitialGuessPts = std::get<1>(holonomicWaypoints.at(wptIdx));
+    size_t wptControlIntervalCount = std::get<2>(holonomicWaypoints.at(wptIdx));
     for (auto& constraint : wptConstraints) {
       path.WptConstraint(wptIdx, constraint);
     }
+    path.WptInitialGuessPoint(wptIdx, wptInitialGuessPts.back());
+    wptInitialGuessPts.pop_back();
+    if (wptIdx > 0) {
+      path.SgmtInitialGuessPoints(wptIdx - 1, wptInitialGuessPts);
+      controlIntervalCounts.push_back(wptControlIntervalCount);
+    }
   }
+
+  path.ControlIntervalCounts(std::move(controlIntervalCounts));
 
   std::vector<Obstacle> obstacles =
       vectorFromJList<Obstacle, obstacleFromJObstacle>(
@@ -418,18 +425,17 @@ jobject jHolonomicTrajectoryFromHolonomicTrajectory(
  */
 JNIEXPORT jobject JNICALL
 Java_org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator_generateHolonomicTrajectory
-  (JNIEnv* env, jobject jObject, jobject jSwerveDrivetrain,
-   jobject jHolonomicPath)
-{
+    (JNIEnv* env, jobject jObject, jobject jSwerveDrivetrain,
+     jobject jHolonomicPath) {
   auto swerveDrivetrain =
       swerveDrivetrainFromJSwerveDrivetrain(env, jSwerveDrivetrain);
-  auto holonomicPath =
+  trajopt::SwervePathBuilder path =
       swervePathFromJHolonomicPath(env, jHolonomicPath);
-  holonomicPath.SetDrivetrain(swerveDrivetrain);
+  path.SetDrivetrain(swerveDrivetrain);
 
   try {
     auto solution =
-        OptimalTrajectoryGenerator::Generate(holonomicPath);
+        OptimalTrajectoryGenerator::Generate(path);
     auto trajectory = HolonomicTrajectory(solution);
     return jHolonomicTrajectoryFromHolonomicTrajectory(env,
                                                        trajectory);

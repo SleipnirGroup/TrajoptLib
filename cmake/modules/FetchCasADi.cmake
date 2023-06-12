@@ -20,7 +20,7 @@ macro(fetch_casadi)
       set(CASADI_INSTALL_LIBS
         ${CASADI_LIBDIR}/libcasadi.3.7.dylib
         ${CASADI_LIBDIR}/libc++.1.0.dylib
-        ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.3.7.dylib
+        ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.dylib
         ${CASADI_LIBDIR}/libipopt.3.dylib
         ${CASADI_LIBDIR}/libcoinmumps.3.dylib
         ${CASADI_LIBDIR}/libcoinmetis.2.dylib

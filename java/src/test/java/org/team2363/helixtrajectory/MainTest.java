@@ -40,10 +40,5 @@ class MainTest {
             System.out.println("Trajectory:\n");
             System.out.println(holonomicTrajectory);
         });
-
-        assertDoesNotThrow(() -> {
-            OptimalTrajectoryGenerator.testFunc();
-        });
-        // assertTrue(false);
     }
 }
