@@ -9,7 +9,7 @@ public final class RuntimeDetector {
     private static String fileExtension;
     private static String filePath;
 
-    private static synchronized void computePlatform() {
+    private static void computePlatform() {
         if (fileExtension != null && filePath != null && filePrefix != null) {
             return;
         }
@@ -19,37 +19,37 @@ public final class RuntimeDetector {
         boolean arm64 = isArm64();
 
         if (isWindows()) {
-        filePrefix = "lib";
-        fileExtension = ".dll";
-        if (intel32) {
-            filePath = "/windows/x86/";
-        } else {
-            filePath = "/windows/x86_64/";
-        }
+            filePrefix = "lib";
+            fileExtension = ".dll";
+            if (intel32) {
+                filePath = "windows/x86/";
+            } else {
+                filePath = "windows/x86_64/";
+            }
         } else if (isMac()) {
-        filePrefix = "lib";
-        fileExtension = ".dylib";
-        if (intel32) {
-            filePath = "/osx/x86/";
-        } else if (arm64) {
-            filePath = "/osx/arm64/";
-        } else {
-            filePath = "/osx/x86_64/";
-        }
+            filePrefix = "lib";
+            fileExtension = ".dylib";
+            if (intel32) {
+                filePath = "osx/x86/";
+            } else if (arm64) {
+                filePath = "osx/arm64/";
+            } else {
+                filePath = "osx/x86_64/";
+            }
         } else if (isLinux()) {
-        filePrefix = "lib";
-        fileExtension = ".so";
-        if (intel32) {
-            filePath = "/linux/x86/";
-        } else if (intel64) {
-            filePath = "/linux/x86_64/";
-        } else if (isArm32()) {
-            filePath = "/linux/arm32/";
-        } else if (arm64) {
-            filePath = "/linux/arm64/";
-        } else {
-            filePath = "/linux/nativearm/";
-        }
+            filePrefix = "lib";
+            fileExtension = ".so";
+            if (intel32) {
+                filePath = "linux/x86/";
+            } else if (intel64) {
+                filePath = "linux/x86_64/";
+            } else if (isArm32()) {
+                filePath = "linux/arm32/";
+            } else if (arm64) {
+                filePath = "linux/arm64/";
+            } else {
+                filePath = "linux/nativearm/";
+            }
         } else {
             throw new IllegalStateException("Failed to determine OS");
         }
@@ -60,7 +60,7 @@ public final class RuntimeDetector {
      *
      * @return The file prefix.
      */
-    public static synchronized String getFilePrefix() {
+    public static String getFilePrefix() {
         computePlatform();
 
         return filePrefix;
@@ -71,7 +71,7 @@ public final class RuntimeDetector {
      *
      * @return The file extension.
      */
-    public static synchronized String getFileExtension() {
+    public static String getFileExtension() {
         computePlatform();
 
         return fileExtension;
@@ -82,7 +82,7 @@ public final class RuntimeDetector {
      *
      * @return The platform path.
      */
-    public static synchronized String getPlatformPath() {
+    public static String getPlatformPath() {
         computePlatform();
 
         return filePath;
@@ -94,10 +94,10 @@ public final class RuntimeDetector {
      * @param libName Library name.
      * @return The path to the requested resource.
      */
-    public static synchronized String getLibraryResource(String libName) {
+    public static String getLibraryResource(String libName) {
         computePlatform();
 
-        return filePath + filePrefix + libName + fileExtension;
+        return "/" + filePath + filePrefix + libName + fileExtension;
     }
 
     /**
@@ -106,10 +106,10 @@ public final class RuntimeDetector {
      * @param libFileName Library file name.
      * @return The path to the requested resource.
      */
-    public static synchronized String getLibraryFileResource(String libFileName) {
+    public static String getLibraryFileResource(String libFileName) {
         computePlatform();
 
-        return filePath + libFileName;
+        return "/" + filePath + libFileName;
     }
 
     /**
@@ -118,7 +118,7 @@ public final class RuntimeDetector {
      * @param libName Library name.
      * @return The path to the hash to the requested resource.
      */
-    public static synchronized String getHashLibraryResource(String libName) {
+    public static String getHashLibraryResource(String libName) {
         computePlatform();
 
         return filePath + libName + ".hash";

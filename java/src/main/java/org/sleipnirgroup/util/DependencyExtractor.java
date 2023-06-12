@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 public final class DependencyExtractor<T> {
     private static String defaultExtractionRoot;
 
     /**
-     * Gets the default extration root location (~/.wpilib/nativecache).
+     * Gets the default extration root location (~/.trajoptlib/nativecache).
      *
      * @return The default extraction root location.
      */
@@ -25,7 +25,7 @@ public final class DependencyExtractor<T> {
             return defaultExtractionRoot;
         }
         String home = System.getProperty("user.home");
-        defaultExtractionRoot = Paths.get(home, ".helixtrajectory", "nativecache").toString();
+        defaultExtractionRoot = Path.of(home, ".trajoptlib", "nativecache").toString();
         return defaultExtractionRoot;
     }
 

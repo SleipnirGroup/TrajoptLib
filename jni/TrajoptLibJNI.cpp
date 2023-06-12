@@ -49,7 +49,7 @@ std::vector<Type> vectorFromJList(JNIEnv* env, jobject jList) {
 ObstaclePoint obstaclePointFromJObstaclePoint(JNIEnv* env,
                                               jobject jObstaclePoint) {
   jclass jObstaclePointClass =
-      env->FindClass("org/team2363/trajopt/ObstaclePoint");
+      env->FindClass("org/sleipnirgroup/trajopt/ObstaclePoint");
   jfieldID jObstaclePointClassXField =
       env->GetFieldID(jObstaclePointClass, "x", "D");
   jfieldID jObstaclePointClassYField =
@@ -69,7 +69,7 @@ Obstacle obstacleFromJObstacle(JNIEnv* env, jobject jObstacle) {
   jmethodID jListClassGetMethod =
       env->GetMethodID(jListClass, "get", "(I)Ljava/lang/Object;");
 
-  jclass jObstacleClass = env->FindClass("org/team2363/trajopt/Obstacle");
+  jclass jObstacleClass = env->FindClass("org/sleipnirgroup/trajopt/Obstacle");
   jfieldID jObstacleClassSafetyDistanceField =
       env->GetFieldID(jObstacleClass, "safetyDistance", "D");
   jfieldID jObstacleClassApplyToAllSegmentsField =
@@ -98,7 +98,7 @@ Obstacle obstacleFromJObstacle(JNIEnv* env, jobject jObstacle) {
 InitialGuessPoint initialGuessPointFromJInitialGuessPoint(
     JNIEnv* env, jobject jInitialGuessPoint) {
   jclass jInitialGuessPointClass =
-      env->FindClass("org/team2363/trajopt/InitialGuessPoint");
+      env->FindClass("org/sleipnirgroup/trajopt/InitialGuessPoint");
   jfieldID jInitialGuessPointClassXField =
       env->GetFieldID(jInitialGuessPointClass, "x", "D");
   jfieldID jInitialGuessPointClassYField =
@@ -119,7 +119,7 @@ InitialGuessPoint initialGuessPointFromJInitialGuessPoint(
 
 SwerveModule swerveModuleFromJSwerveModule(JNIEnv* env, jobject jSwerveModule) {
   jclass jSwerveModuleClass =
-      env->FindClass("org/team2363/trajopt/SwerveModule");
+      env->FindClass("org/sleipnirgroup/trajopt/SwerveModule");
   jfieldID jSwerveModuleClassXField =
       env->GetFieldID(jSwerveModuleClass, "x", "D");
   jfieldID jSwerveModuleClassYField =
@@ -155,7 +155,7 @@ SwerveDrivetrain swerveDrivetrainFromJSwerveDrivetrain(
       env->GetMethodID(jListClass, "get", "(I)Ljava/lang/Object;");
 
   jclass jSwerveDrivetrainClass =
-      env->FindClass("org/team2363/trajopt/SwerveDrivetrain");
+      env->FindClass("org/sleipnirgroup/trajopt/SwerveDrivetrain");
   jfieldID jSwerveDrivetrainClassMassField =
       env->GetFieldID(jSwerveDrivetrainClass, "mass", "D");
   jfieldID jSwerveDrivetrainClassMomentOfInertiaField =
@@ -163,7 +163,7 @@ SwerveDrivetrain swerveDrivetrainFromJSwerveDrivetrain(
   jfieldID jSwerveDrivetrainClassModulesField =
       env->GetFieldID(jSwerveDrivetrainClass, "modules", "Ljava/util/List;");
   jfieldID jSwerveDrivetrainClassBumpersField = env->GetFieldID(
-      jSwerveDrivetrainClass, "bumpers", "Lorg/team2363/trajopt/Obstacle;");
+      jSwerveDrivetrainClass, "bumpers", "Lorg/sleipnirgroup/trajopt/Obstacle;");
 
   jdouble jSwerveDrivetrainMass =
       env->GetDoubleField(jSwerveDrivetrain, jSwerveDrivetrainClassMassField);
@@ -231,7 +231,7 @@ std::vector<HolonomicConstraint> velocityConstraintsFrom(double velocityX, doubl
 std::vector<HolonomicConstraint> holonomicConstraintsFromJHolonomicWaypoint(
     JNIEnv* env, jobject jHolonomicWaypoint) {
   jclass jHolonomicWaypointClass =
-      env->FindClass("org/team2363/trajopt/HolonomicWaypoint");
+      env->FindClass("org/sleipnirgroup/trajopt/HolonomicWaypoint");
   jfieldID jHolonomicWaypointClassXField =
       env->GetFieldID(jHolonomicWaypointClass, "x", "D");
   jfieldID jHolonomicWaypointClassYField =
@@ -320,9 +320,9 @@ std::vector<HolonomicConstraint> holonomicConstraintsFromJHolonomicWaypoint(
 SwervePathBuilder swervePathFromJHolonomicPath(JNIEnv* env,
                                               jobject jHolonomicPath) {
   jclass jPathClass =
-      env->FindClass("org/team2363/trajopt/Path");
+      env->FindClass("org/sleipnirgroup/trajopt/Path");
   jclass jHolonomicPathClass =
-      env->FindClass("org/team2363/trajopt/HolonomicPath");
+      env->FindClass("org/sleipnirgroup/trajopt/HolonomicPath");
   jfieldID jHolonomicPathClassHolonomicWaypointsField = env->GetFieldID(
       jHolonomicPathClass, "holonomicWaypoints", "Ljava/util/List;");
   jfieldID jPathClassObstaclesField =
@@ -363,7 +363,7 @@ SwervePathBuilder swervePathFromJHolonomicPath(JNIEnv* env,
 jobject jHolonomicTrajectorySampleFromHolonomicTrajectorySample(
     JNIEnv* env, const HolonomicTrajectorySample& holonomicTrajectorySample) {
   jclass jHolonomicTrajectorySampleClass =
-      env->FindClass("org/team2363/trajopt/HolonomicTrajectorySample");
+      env->FindClass("org/sleipnirgroup/trajopt/HolonomicTrajectorySample");
   jmethodID jHolonomicTrajectorySampleClassConstructor =
       env->GetMethodID(jHolonomicTrajectorySampleClass, "<init>", "(DDDDDDD)V");
 
@@ -398,7 +398,7 @@ jobject jListFromVector(JNIEnv* env, const std::vector<Type>& vect) {
 jobject jHolonomicTrajectoryFromHolonomicTrajectory(
     JNIEnv* env, const HolonomicTrajectory& holonomicTrajectory) {
   jclass jHolonomicTrajectoryClass =
-      env->FindClass("org/team2363/trajopt/HolonomicTrajectory");
+      env->FindClass("org/sleipnirgroup/trajopt/HolonomicTrajectory");
   jmethodID jHolonomicTrajectoryClassConstructor = env->GetMethodID(
       jHolonomicTrajectoryClass, "<init>", "(Ljava/util/List;)V");
 
@@ -435,12 +435,12 @@ Java_org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator_generateHolonomicTraje
                                                        trajectory);
   } catch (const InvalidPathException& e) {
     jclass jInvalidPathExceptionClass =
-        env->FindClass("org/team2363/trajopt/InvalidPathException");
+        env->FindClass("org/sleipnirgroup/trajopt/InvalidPathException");
     env->ThrowNew(jInvalidPathExceptionClass, e.what());
     return nullptr;
   } catch (const TrajectoryGenerationException& e) {
     jclass jTrajectoryGenerationExceptionClass =
-        env->FindClass("org/team2363/trajopt/TrajectoryGenerationException");
+        env->FindClass("org/sleipnirgroup/trajopt/TrajectoryGenerationException");
     env->ThrowNew(jTrajectoryGenerationExceptionClass, e.what());
     return nullptr;
   }

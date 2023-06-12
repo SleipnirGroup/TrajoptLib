@@ -252,9 +252,10 @@ if (WITH_JAVA)
   include(InstallJavaLibs)
   installjavalibs()
 
+  # Build Jar containing embedded native libraries
   if (UNIX)
-    install(CODE "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gradlew jar)")
+    install(CODE "execute_process(COMMAND ./gradlew jar WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/java)")
   elseif(${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS" OR WIN32)
-    install(CODE "execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gradlew.bat jar)")
+    install(CODE "execute_process(COMMAND .\\gradlew.bat jar WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/java)")
   endif()
 endif()

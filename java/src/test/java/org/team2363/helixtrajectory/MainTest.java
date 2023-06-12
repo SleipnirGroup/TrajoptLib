@@ -5,6 +5,8 @@ package org.sleipnirgroup.trajopt;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.sleipnirgroup.trajopt.OptimalTrajectoryGenerator;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
@@ -38,5 +40,10 @@ class MainTest {
             System.out.println("Trajectory:\n");
             System.out.println(holonomicTrajectory);
         });
+
+        assertDoesNotThrow(() -> {
+            OptimalTrajectoryGenerator.testFunc();
+        });
+        // assertTrue(false);
     }
 }
