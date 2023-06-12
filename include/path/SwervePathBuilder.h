@@ -71,14 +71,13 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
 
   /**
    * Add a sequence of initial guess points between two waypoints. The points
-   * are inserted between the waypoints at fromIdx and (fromIdx + 1).
-   Interpolation
-   * between the waypoint initial guess points and these segment initial guess
-   points
-   * is used as the initial guess of the robot's pose over the trajectory.
+   * are inserted between the waypoints at fromIdx and fromIdx + 1. Linear
+   * interpolation between the waypoint initial guess points and these segment
+   * initial guess points is used as the initial guess of the robot's pose over
+   * the trajectory.
    *
    * @param fromIdx index of the waypoint the initial guess point
-                    comes immediately after
+   *                 comes immediately after
    * @param sgmtPoseGuess the sequence of initial guess points
    */
   void SgmtInitialGuessPoints(
