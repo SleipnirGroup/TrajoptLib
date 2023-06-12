@@ -41,7 +41,7 @@ void SwervePathBuilder::PoseWpt(size_t index, double x, double y,
       TranslationConstraint{RectangularSet2d{x, y}});
   path.waypoints.at(index).waypointConstraints.emplace_back(
       HeadingConstraint{heading});
-  initialGuessPoints.at(index).back() = InitialGuessPoint{x, y, heading};
+  WptInitialGuessPoint(index, InitialGuessPoint{x, y, heading});
 }
 
 void SwervePathBuilder::TranslationWpt(size_t index, double x, double y,
@@ -49,7 +49,7 @@ void SwervePathBuilder::TranslationWpt(size_t index, double x, double y,
   NewWpts(index);
   path.waypoints.at(index).waypointConstraints.emplace_back(
       TranslationConstraint{RectangularSet2d{x, y}});
-  initialGuessPoints.at(index).back() = InitialGuessPoint{x, y, headingGuess};
+  WptInitialGuessPoint(index, InitialGuessPoint{x, y, headingGuess});
 }
 
 void SwervePathBuilder::WptInitialGuessPoint(
