@@ -52,17 +52,19 @@ void SwervePathBuilder::TranslationWpt(size_t index, double x, double y,
   initialGuessPoints.at(index).back() = InitialGuessPoint{x, y, headingGuess};
 }
 
-void SwervePathBuilder::WptInitialGuessPoint(size_t wptIdx, const InitialGuessPoint& poseGuess) {
+void SwervePathBuilder::WptInitialGuessPoint(
+    size_t wptIdx, const InitialGuessPoint& poseGuess) {
   NewWpts(wptIdx);
   initialGuessPoints.at(wptIdx).back() = poseGuess;
 }
 
-void SwervePathBuilder::SgmtInitialGuessPoints(size_t fromIdx, const std::vector<InitialGuessPoint>& sgmtPoseGuess) {
+void SwervePathBuilder::SgmtInitialGuessPoints(
+    size_t fromIdx, const std::vector<InitialGuessPoint>& sgmtPoseGuess) {
   NewWpts(fromIdx + 1);
-  std::vector<InitialGuessPoint>& toInitialGuessPoints
-      = initialGuessPoints.at(fromIdx + 1);
+  std::vector<InitialGuessPoint>& toInitialGuessPoints =
+      initialGuessPoints.at(fromIdx + 1);
   toInitialGuessPoints.insert(toInitialGuessPoints.begin(),
-      sgmtPoseGuess.begin(), sgmtPoseGuess.end());
+                              sgmtPoseGuess.begin(), sgmtPoseGuess.end());
 }
 
 void SwervePathBuilder::WptVelocityDirection(size_t idx, double angle) {
@@ -179,7 +181,8 @@ void SwervePathBuilder::NewWpts(size_t finalIndex) {
   if (targetIdx > greatestIdx) {
     for (int64_t i = greatestIdx + 1; i <= targetIdx; i++) {
       path.waypoints.emplace_back(SwerveWaypoint{});
-      initialGuessPoints.emplace_back(std::vector{InitialGuessPoint{0.0, 0.0, 0.0}});
+      initialGuessPoints.emplace_back(
+          std::vector{InitialGuessPoint{0.0, 0.0, 0.0}});
       controlIntervalCounts.push_back(i == 0 ? 0 : 40);
     }
   }
