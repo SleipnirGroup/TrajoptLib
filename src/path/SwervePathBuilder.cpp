@@ -41,7 +41,7 @@ void SwervePathBuilder::PoseWpt(size_t index, double x, double y,
       TranslationConstraint{RectangularSet2d{x, y}});
   path.waypoints.at(index).waypointConstraints.emplace_back(
       HeadingConstraint{heading});
-  initialGuessPoints.at(index).emplace_back(InitialGuessPoint{x, y, heading});
+  initialGuessPoints.at(index).back() = InitialGuessPoint{x, y, heading};
 }
 
 void SwervePathBuilder::TranslationWpt(size_t index, double x, double y,
@@ -49,15 +49,20 @@ void SwervePathBuilder::TranslationWpt(size_t index, double x, double y,
   NewWpts(index);
   path.waypoints.at(index).waypointConstraints.emplace_back(
       TranslationConstraint{RectangularSet2d{x, y}});
-  initialGuessPoints.at(index).emplace_back(
-      InitialGuessPoint{x, y, headingGuess});
+  initialGuessPoints.at(index).back() = InitialGuessPoint{x, y, headingGuess};
 }
 
-void SwervePathBuilder::AddInitialGuessPoint(size_t fromIdx, double x, double y,
-                                             double heading) {
+void SwervePathBuilder::WptInitialGuessPoint(size_t wptIdx, const InitialGuessPoint& poseGuess) {
+  NewWpts(wptIdx);
+  initialGuessPoints.at(wptIdx).back() = poseGuess;
+}
+
+void SwervePathBuilder::SgmtInitialGuessPoints(size_t fromIdx, const std::vector<InitialGuessPoint>& sgmtPoseGuess) {
   NewWpts(fromIdx + 1);
-  initialGuessPoints.at(fromIdx + 1)
-      .push_back(InitialGuessPoint{x, y, heading});
+  std::vector<InitialGuessPoint>& toInitialGuessPoints
+      = initialGuessPoints.at(fromIdx + 1);
+  toInitialGuessPoints.insert(toInitialGuessPoints.begin(),
+      sgmtPoseGuess.begin(), sgmtPoseGuess.end());
 }
 
 void SwervePathBuilder::WptVelocityDirection(size_t idx, double angle) {
@@ -174,7 +179,7 @@ void SwervePathBuilder::NewWpts(size_t finalIndex) {
   if (targetIdx > greatestIdx) {
     for (int64_t i = greatestIdx + 1; i <= targetIdx; i++) {
       path.waypoints.emplace_back(SwerveWaypoint{});
-      initialGuessPoints.emplace_back(std::vector<InitialGuessPoint>{});
+      initialGuessPoints.emplace_back(std::vector{InitialGuessPoint{0.0, 0.0, 0.0}});
       controlIntervalCounts.push_back(i == 0 ? 0 : 40);
     }
   }

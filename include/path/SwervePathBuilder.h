@@ -61,6 +61,8 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void TranslationWpt(size_t idx, double x, double y,
                       double headingGuess = 0.0);
 
+  void WptInitialGuessPoint(size_t wptIdx, const InitialGuessPoint& poseGuess);
+
   /**
    * Add an initial guess point between two waypoints. The initial guess
    * point is inserted between the waypoints at fromIdx and (fromIdx + 1).
@@ -71,7 +73,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    * @param y guess of y
    * @param heading guess of heading
    */
-  void AddInitialGuessPoint(size_t fromIdx, double x, double y, double heading);
+  void SgmtInitialGuessPoints(size_t fromIdx, const std::vector<InitialGuessPoint>& sgmtPoseGuess);
 
   /**
    * Specify the required direction of the velocity vector of the robot
