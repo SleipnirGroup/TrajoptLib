@@ -61,17 +61,23 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void TranslationWpt(size_t idx, double x, double y,
                       double headingGuess = 0.0);
 
+  /**
+   * Provide a guess of the instantaneous pose of the robot at a waypoint.
+   * 
+   * @param wptIdx the waypoint to apply the guess to
+   * @param poseGuess the guess of the robot's pose
+   */
   void WptInitialGuessPoint(size_t wptIdx, const InitialGuessPoint& poseGuess);
 
   /**
-   * Add an initial guess point between two waypoints. The initial guess
-   * point is inserted between the waypoints at fromIdx and (fromIdx + 1).
+   * Add a sequence of initial guess points between two waypoints. The points
+   * are inserted between the waypoints at fromIdx and (fromIdx + 1). Interpolation
+   * between the waypoint initial guess points and these segment initial guess points
+   * is used as the initial guess of the robot's pose over the trajectory.
    *
    * @param fromIdx index of the waypoint the initial guess point
                     comes immediately after
-   * @param x guess of x
-   * @param y guess of y
-   * @param heading guess of heading
+   * @param sgmtPoseGuess the sequence of initial guess points
    */
   void SgmtInitialGuessPoints(size_t fromIdx, const std::vector<InitialGuessPoint>& sgmtPoseGuess);
 
