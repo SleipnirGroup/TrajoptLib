@@ -1,1 +1,1 @@
-rootProject.name = "TrajoptLib"
+rootProject.name = "trajoptlib"
