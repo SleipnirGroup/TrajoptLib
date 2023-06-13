@@ -1,13 +1,13 @@
 name: Publish Java
 
-on: push
-  # workflow_dispatch:
-  #   inputs:
-  #     version:
-  #       description: "Version: `X.X.X`"
-  #       required: true
-  #       default: '1.0.0'
-  #       type: string
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version: `X.X.X`"
+        required: true
+        default: '1.0.0'
+        type: string
 
 jobs:
   publish:
@@ -31,6 +31,7 @@ jobs:
           workflow: build.yml
           workflow_conclusion: success
           name: all-java-libraries
+          commit: ${{ github.sha }}
           path: java/src/main/resources
 
       - run: cd java/src/main/resources/osx;ls
