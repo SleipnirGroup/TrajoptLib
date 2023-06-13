@@ -46,5 +46,6 @@ jobs:
           path: java/build/libs/*.jar
 
       - name: Publish package
+        working-directory: java
         run: ./gradlew publishMavenPublicationToGithubRepository -Pversion=${{ inputs.version }} -PgithubUsername=$GITHUB_ACTOR -PgithubPassword=${{ secrets.GITHUB_TOKEN }}
  
