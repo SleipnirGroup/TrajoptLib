@@ -12,11 +12,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # - artifact-name: Native - Windows (CasADi)
-          #   cmake-config-env-vars:
-          #   cmake-flags: "-G \"MinGW Makefiles\" -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
-          #   optimizer: casadi
-          #   os: windows-2022
+          - artifact-name: Native - Windows (CasADi)
+            cmake-config-env-vars:
+            cmake-flags: "-G \"MinGW Makefiles\" -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
+            optimizer: casadi
+            os: windows-2022
           - artifact-name: Native - macOS x86_64 (CasADi)
             cmake-config-env-vars: CFLAGS="$CFLAGS -arch x86_64" CXXFLAGS="$CXXFLAGS -arch x86_64"
             cmake-flags: "-DCMAKE_APPLE_SILICON_PROCESSOR=x86_64"
@@ -27,26 +27,26 @@ jobs:
             cmake-flags: "-DCMAKE_APPLE_SILICON_PROCESSOR=arm64"
             optimizer: casadi
             os: macOS-12
-          # - artifact-name: Native - Linux (CasADi)
-          #   cmake-config-env-vars:
-          #   cmake-flags:
-          #   optimizer: casadi
-          #   os: ubuntu-latest
-          # - artifact-name: Native - Windows (Sleipnir)
-          #   cmake-config-env-vars:
-          #   cmake-flags:
-          #   optimizer: sleipnir
-          #   os: windows-2022
-          # - artifact-name: Native - macOS universal (Sleipnir)
-          #   cmake-config-env-vars: CFLAGS="$CFLAGS -arch x86_64 -arch arm64" CXXFLAGS="$CXXFLAGS -arch x86_64 -arch arm64"
-          #   cmake-flags:
-          #   optimizer: sleipnir
-          #   os: macOS-12
-          # - artifact-name: Native - Linux (Sleipnir)
-          #   cmake-config-env-vars:
-          #   cmake-flags:
-          #   optimizer: sleipnir
-          #   os: ubuntu-latest
+          - artifact-name: Native - Linux (CasADi)
+            cmake-config-env-vars:
+            cmake-flags:
+            optimizer: casadi
+            os: ubuntu-latest
+          - artifact-name: Native - Windows (Sleipnir)
+            cmake-config-env-vars:
+            cmake-flags:
+            optimizer: sleipnir
+            os: windows-2022
+          - artifact-name: Native - macOS universal (Sleipnir)
+            cmake-config-env-vars: CFLAGS="$CFLAGS -arch x86_64 -arch arm64" CXXFLAGS="$CXXFLAGS -arch x86_64 -arch arm64"
+            cmake-flags:
+            optimizer: sleipnir
+            os: macOS-12
+          - artifact-name: Native - Linux (Sleipnir)
+            cmake-config-env-vars:
+            cmake-flags:
+            optimizer: sleipnir
+            os: ubuntu-latest
 
     name: "${{ matrix.artifact-name }}"
     runs-on: ${{ matrix.os }}
@@ -79,35 +79,35 @@ jobs:
           name: ${{ matrix.artifact-name }}-java-libraries
           path: java/src/main/resources
 
-  # build-wasm:
-  #   name: "Wasm"
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - uses: actions/checkout@v3
+  build-wasm:
+    name: "Wasm"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
 
-  #     - name: Setup emscripten
-  #       uses: numworks/setup-emscripten@latest
+      - name: Setup emscripten
+        uses: numworks/setup-emscripten@latest
 
-  #     - name: configure
-  #       run: emcmake cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DOPTIMIZER_BACKEND=sleipnir
+      - name: configure
+        run: emcmake cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DOPTIMIZER_BACKEND=sleipnir
 
-  #     - name: build
-  #       run: cmake --build build --config Release --parallel $(nproc)
+      - name: build
+        run: cmake --build build --config Release --parallel $(nproc)
 
-  #     - name: install
-  #       run: cmake --install build --config Release --prefix pkg
+      - name: install
+        run: cmake --install build --config Release --prefix pkg
 
-  #     - uses: actions/upload-artifact@v3.1.1
-  #       with:
-  #         name: Wasm
-  #         path: pkg
+      - uses: actions/upload-artifact@v3.1.1
+        with:
+          name: Wasm
+          path: pkg
 
-  build-java-jar:
+  collect-java-native-libs:
     strategy:
       fail-fast: false
 
     needs: build-cpp
-    name: Build Java Jar
+    name: Collect Java Native Libs
  
     runs-on: ubuntu-latest
     permissions:
@@ -119,12 +119,22 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: Native - macOS arm64 (CasADi)-java-libraries
+          name: Native - Windows (CasADi)-java-libraries
           path: java/src/main/resources
- 
+
       - uses: actions/download-artifact@v3
         with:
           name: Native - macOS x86_64 (CasADi)-java-libraries
+          path: java/src/main/resources
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Native - macOS arm64 (CasADi)-java-libraries
+          path: java/src/main/resources
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Native - Linux (CasADi)-java-libraries
           path: java/src/main/resources
 
       - run: cd java/src/main/resources/osx;ls
