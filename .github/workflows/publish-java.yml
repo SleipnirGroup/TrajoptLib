@@ -8,10 +8,6 @@ on:
         required: true
         default: '1.0.0'
         type: string
-      commit:
-        description: "Commit"
-        required: true
-        type: string
 
 jobs:
   publish:
@@ -23,8 +19,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ inputs.commit }}
 
       - uses: actions/setup-java@v3
         with:
