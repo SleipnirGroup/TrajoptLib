@@ -7,12 +7,10 @@ import java.io.PrintWriter;
 import java.util.stream.Collectors;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.File;
 import java.io.FileWriter;
 
 import org.sleipnirgroup.trajopt.PluginLoadException;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PluginLoader {

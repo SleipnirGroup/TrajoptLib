@@ -20,10 +20,9 @@ public final class HolonomicWaypoint extends Waypoint {
             boolean velocityXConstrained, boolean velocityYConstrained,
             boolean velocityMagnitudeConstrained, boolean angularVelocityConstrained,
             int controlIntervalCount,
-            List<? extends InitialGuessPoint> initialGuessPoints,
-            List<? extends Obstacle> obstacles) throws NullPointerException, IllegalArgumentException {
+            List<? extends InitialGuessPoint> initialGuessPoints) throws NullPointerException, IllegalArgumentException {
         super(x, y, heading, xConstrained, yConstrained, headingConstrained,
-                controlIntervalCount, initialGuessPoints, obstacles);
+                controlIntervalCount, initialGuessPoints);
 
         this.velocityX = velocityX;
         this.velocityY = velocityY;

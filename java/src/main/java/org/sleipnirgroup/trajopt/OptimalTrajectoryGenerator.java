@@ -2,12 +2,9 @@
 
 package org.sleipnirgroup.trajopt;
 
-import java.io.IOException;
 import java.util.Objects;
 
-import org.sleipnirgroup.util.DependencyExtractor;
 import org.sleipnirgroup.util.PluginLoader;
-import org.sleipnirgroup.util.RuntimeLoader;
 
 public final class OptimalTrajectoryGenerator {
 

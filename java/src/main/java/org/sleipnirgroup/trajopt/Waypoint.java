@@ -23,8 +23,7 @@ public abstract class Waypoint {
     protected Waypoint(double x, double y, double heading,
             boolean xConstrained, boolean yConstrained, boolean headingConstrained,
             int controlIntervalCount,
-            List<? extends InitialGuessPoint> initialGuessPoints,
-            List<? extends Obstacle> obstacles) throws NullPointerException, IllegalArgumentException {
+            List<? extends InitialGuessPoint> initialGuessPoints) throws NullPointerException, IllegalArgumentException {
         this.x = x;
         this.y = y;
         this.heading = heading;
