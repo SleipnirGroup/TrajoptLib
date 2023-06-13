@@ -25,10 +25,6 @@ tasks.named<Test>("test") {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "org.sleipnirgroup"
-            artifactId = "trajoptlib" + project.properties["platform_id"];
-            version = "0.0.0-pre0"
-
             from(components["java"])
         }
     }
