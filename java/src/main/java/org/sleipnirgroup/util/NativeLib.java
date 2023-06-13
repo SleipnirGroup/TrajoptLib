@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 package org.sleipnirgroup.util;
 
 import java.io.InputStream;

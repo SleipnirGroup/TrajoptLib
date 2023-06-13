@@ -39,7 +39,7 @@ jobs:
       - name: Build Java
         working-directory: java
         run: ./gradlew jar
-      
+
       - uses: actions/upload-artifact@v3.1.1
         with:
           name: TrajoptLib-jar
@@ -48,4 +48,3 @@ jobs:
       - name: Publish package
         working-directory: java
         run: ./gradlew publishMavenPublicationToGithubRepository -Pversion=${{ inputs.version }} -PgithubUsername=$GITHUB_ACTOR -PgithubPassword=${{ secrets.GITHUB_TOKEN }}
- 

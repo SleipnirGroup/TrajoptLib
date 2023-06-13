@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 package org.sleipnirgroup.util;
 
 import java.util.List;
@@ -7,6 +9,5 @@ public class NativeLibs {
   public List<NativeLib> libs;
 
   public NativeLibs() {
-
   }
 }

@@ -7,11 +7,6 @@ import java.util.Objects;
 import org.sleipnirgroup.util.PluginLoader;
 
 public final class OptimalTrajectoryGenerator {
-
-    public static void testFunc() throws Exception {
-        PluginLoader.loadPlugin();
-    }
-
     private native HolonomicTrajectory generateHolonomicTrajectory(SwerveDrivetrain swerveDrivetrain,
             HolonomicPath holonomicPath) throws InvalidPathException, TrajectoryGenerationException;
 

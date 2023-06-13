@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 package org.sleipnirgroup.util;
 
 import java.io.IOException;
@@ -14,7 +16,6 @@ import org.sleipnirgroup.trajopt.PluginLoadException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PluginLoader {
-
   private static boolean isPluginLoaded = false;
 
   public static void loadPlugin() throws PluginLoadException {
@@ -32,7 +33,7 @@ public class PluginLoader {
       } catch (IOException e) {
         throw new PluginLoadException("Could not load embedded native libraries json.", e);
       }
-      
+
       Path cacheDir = Path.of(System.getProperty("user.home"), ".trajoptlib", "nativecache");
       Path cachePlatformPath = cacheDir.resolve(platformPath);
       Path cacheNativeLibsPath = cachePlatformPath.resolve("native_libs.json");
@@ -68,7 +69,7 @@ public class PluginLoader {
           }
         }
       }
-      
+
       // Load the jni library
       try {
         Path jniLibPath = cachePlatformPath.resolve(jarNativeLibs.jni);
