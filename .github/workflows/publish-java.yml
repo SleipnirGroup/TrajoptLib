@@ -6,7 +6,7 @@ on:
       version:
         description: "Version: `X.X.X`"
         required: true
-        default: '1.0.0'
+        default: '0.0.0'
         type: string
 
 jobs:
@@ -45,6 +45,6 @@ jobs:
           name: TrajoptLib-jar
           path: java/build/libs/*.jar
 
-      # - name: Publish package
-      #   run: ./gradlew publishMavenPublicationToGithubRepository -Pplatform_id=${{ matrix.platform_id }} -PgithubUsername=$GITHUB_ACTOR -PgithubPassword=${{ secrets.GITHUB_TOKEN }}
+      - name: Publish package
+        run: ./gradlew publishMavenPublicationToGithubRepository -Pversion=${{ inputs.version }} -PgithubUsername=$GITHUB_ACTOR -PgithubPassword=${{ secrets.GITHUB_TOKEN }}
  
