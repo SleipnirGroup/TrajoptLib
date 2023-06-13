@@ -236,7 +236,7 @@ endforeach()
 
 # Build the Java bindings
 
-option(WITH_JAVA "Build Java bindings" ON)
+option(WITH_JAVA "Build Java bindings" OFF)
 cmake_dependent_option(JAVA_INSTALL_JAR "Install jar file." ON "WITH_JAVA" ON)
 
 if (WITH_JAVA)
