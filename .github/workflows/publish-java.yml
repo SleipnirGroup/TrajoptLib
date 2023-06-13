@@ -1,13 +1,13 @@
 name: Publish Java
 
-on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Version: `X.X.X`"
-        required: true
-        default: '1.0.0'
-        type: string
+on: push
+  # workflow_dispatch:
+  #   inputs:
+  #     version:
+  #       description: "Version: `X.X.X`"
+  #       required: true
+  #       default: '1.0.0'
+  #       type: string
 
 jobs:
   publish:
