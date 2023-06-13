@@ -61,7 +61,7 @@ jobs:
           platform: x64
 
       - name: configure
-        run: ${{ matrix.cmake-config-env-vars }} cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer }}
+        run: ${{ matrix.cmake-config-env-vars }} cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer }} -DWITH_JAVA=ON -DJAVA_INSTALL_JAR=OFF
 
       - name: build
         run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
@@ -73,6 +73,11 @@ jobs:
         with:
           name: ${{ matrix.artifact-name }}
           path: pkg
+
+      - uses: actions/upload-artifact@v3.1.1
+        with:
+          name: ${{ matrix.artifact-name }}-java-libraries
+          path: java/src/main/resources
 
   build-wasm:
     name: "Wasm"

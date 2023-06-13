@@ -237,6 +237,7 @@ endforeach()
 # Build the Java bindings
 
 option(WITH_JAVA "Build Java bindings" ON)
+cmake_dependent_option(JAVA_INSTALL_JAR "Install jar file." ON "WITH_JAVA" ON)
 
 if (WITH_JAVA)
   add_library(TrajoptLib-java SHARED ${CMAKE_CURRENT_SOURCE_DIR}/jni/TrajoptLibJNI.cpp)
@@ -253,9 +254,13 @@ if (WITH_JAVA)
   installjavalibs()
 
   # Build Jar containing embedded native libraries
-  if (UNIX)
-    install(CODE "execute_process(COMMAND ./gradlew jar WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/java)")
-  elseif(${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS" OR WIN32)
-    install(CODE "execute_process(COMMAND .\\gradlew.bat jar WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/java)")
+  if (JAVA_INSTALL_JAR)
+    if (UNIX)
+      install(CODE "execute_process(COMMAND ./gradlew jar WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/java)")
+    elseif(${CMAKE_SYSTEM_NAME} MATCHES "MINGW" OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS" OR WIN32)
+      install(CODE "execute_process(COMMAND .\\gradlew.bat jar WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/java)")
+    endif()
+    file(GLOB jar_files "${CMAKE_CURRENT_SOURCE_DIR}/java/build/libs/*jar")
+    install(FILES ${jar_files} DESTINATION java)
   endif()
 endif()
