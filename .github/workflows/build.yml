@@ -123,26 +123,25 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: Native - macOS arm64 (CasADi)-java-libraries
-          path: native_builds
+          path: java/src/main/resources
  
       - uses: actions/download-artifact@v3
         with:
           name: Native - macOS x86_64 (CasADi)
-          path: native_builds
+          path: java/src/main/resources
  
-      - run: cd native_builds;ls
- 
-      # - if: ${{ matrix.containsLinux-x86_64 }}
-      #   run: mkdir -p helixtrajectoryj/src/main/resources/linux;cp -R native_builds/HelixTrajectory_Linux-x86_64/lib helixtrajectoryj/src/main/resources/linux;cd helixtrajectoryj/src/main/resources/linux;mv lib x86_64;cd x86_64;HASH=$(md5sum libhelixtrajectory.so | cut -c -32);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.so libhelixtrajectory.so.$HASH
- 
-      # - if: ${{ matrix.containsmacOS-x86_64 }}
-      #   run: mkdir -p helixtrajectoryj/src/main/resources/osx;cp -R native_builds/HelixTrajectory_macOS-x86_64/lib helixtrajectoryj/src/main/resources/osx;cd helixtrajectoryj/src/main/resources/osx;mv lib x86_64;cd x86_64;HASH=$(md5sum libhelixtrajectory.dylib | cut -c -32);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dylib libhelixtrajectory.dylib.$HASH
- 
-      # - if: ${{ matrix.containsWindows-x86_64 }}
-      #   run: mkdir -p helixtrajectoryj/src/main/resources/windows;cp -R native_builds/HelixTrajectory_Windows-x86_64/bin helixtrajectoryj/src/main/resources/windows;cd helixtrajectoryj/src/main/resources/windows;mv bin x86_64;cd x86_64;HASH=$(md5sum libhelixtrajectory.dll | cut -c -32);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dll libhelixtrajectory.dll.$HASH
- 
-      # - name: Build Java
-      #   run: ./gradlew jar
+      - run: cd java/src/main/resources;ls
+
+      - name: Build Java
+        working-directory: java
+        run: ./gradlew jar
+      
+      - uses: actions/upload-artifact@v3.1.1
+        with:
+          name: TrajoptLib-jar
+          path: java/build/libs/*.jar
+      
+        
       # - name: Publish package
       #   run: ./gradlew publishMavenPublicationToGithubRepository -Pplatform_id=${{ matrix.platform_id }} -PgithubUsername=$GITHUB_ACTOR -PgithubPassword=${{ secrets.GITHUB_TOKEN }}
  
