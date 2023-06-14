@@ -61,7 +61,7 @@ jobs:
           platform: x64
 
       - name: configure
-        run: ${{ matrix.cmake-config-env-vars }} cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer }}
+        run: ${{ matrix.cmake-config-env-vars }} cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer }} -DWITH_JAVA=ON -DJAVA_INSTALL_JAR=OFF
 
       - name: build
         run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
@@ -73,6 +73,11 @@ jobs:
         with:
           name: ${{ matrix.artifact-name }}
           path: pkg
+
+      - uses: actions/upload-artifact@v3.1.1
+        with:
+          name: ${{ matrix.artifact-name }}-java-libraries
+          path: java/src/main/resources
 
   build-wasm:
     name: "Wasm"
@@ -97,78 +102,44 @@ jobs:
           name: Wasm
           path: pkg
 
-#  build-java:
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        include:
-#          - artifact-name: Java - Linux x86_64
-#            containsLinux-x86_64: true
-#            containsmacOS-x86_64: false
-#            containsWindows-x86_64: false
-#            platform_id: linux64
-#
-#          - artifact-name: Java - macOS x86_64
-#            containsLinux-x86_64: false
-#            containsmacOS-x86_64: true
-#            containsWindows-x86_64: false
-#            platform_id: mac64
-#
-#          - artifact-name: Java - Windows x86_64
-#            containsLinux-x86_64: false
-#            containsmacOS-x86_64: false
-#            containsWindows-x86_64: true
-#            platform_id: windows64
-#
-#          - artifact-name: Java - Universal
-#            containsLinux-x86_64: true
-#            containsmacOS-x86_64: true
-#            containsWindows-x86_64: true
-#            platform_id: ""
-#
-#    needs: build-cpp
-#    name: "${{ matrix.artifact-name }}"
-#
-#    runs-on: ubuntu-latest
-#    permissions:
-#      contents: read
-#      packages: write
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: actions/setup-java@v1
-#        with:
-#          java-version: 11
-#
-#      - uses: actions/download-artifact@v3
-#        if: ${{ matrix.containsLinux-x86_64 }}
-#        with:
-#          name: HelixTrajectory_Linux-x86_64
-#          path: native_builds/HelixTrajectory_Linux-x86_64
-#
-#      - uses: actions/download-artifact@v3
-#        if: ${{ matrix.containsmacOS-x86_64 }}
-#        with:
-#          name: HelixTrajectory_macOS-x86_64
-#          path: native_builds/HelixTrajectory_macOS-x86_64
-#
-#      - uses: actions/download-artifact@v3
-#        if: ${{ matrix.containsWindows-x86_64 }}
-#        with:
-#          name: HelixTrajectory_Windows-x86_64
-#          path: native_builds/HelixTrajectory_Windows-x86_64
-#
-#      - run: cd native_builds;ls
-#
-#      - if: ${{ matrix.containsLinux-x86_64 }}
-#        run: mkdir -p helixtrajectoryj/src/main/resources/linux;cp -R native_builds/HelixTrajectory_Linux-x86_64/lib helixtrajectoryj/src/main/resources/linux;cd helixtrajectoryj/src/main/resources/linux;mv lib x86_64;cd x86_64;HASH=$(md5sum libhelixtrajectory.so | cut -c -32);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.so libhelixtrajectory.so.$HASH
-#
-#      - if: ${{ matrix.containsmacOS-x86_64 }}
-#        run: mkdir -p helixtrajectoryj/src/main/resources/osx;cp -R native_builds/HelixTrajectory_macOS-x86_64/lib helixtrajectoryj/src/main/resources/osx;cd helixtrajectoryj/src/main/resources/osx;mv lib x86_64;cd x86_64;HASH=$(md5sum libhelixtrajectory.dylib | cut -c -32);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dylib libhelixtrajectory.dylib.$HASH
-#
-#      - if: ${{ matrix.containsWindows-x86_64 }}
-#        run: mkdir -p helixtrajectoryj/src/main/resources/windows;cp -R native_builds/HelixTrajectory_Windows-x86_64/bin helixtrajectoryj/src/main/resources/windows;cd helixtrajectoryj/src/main/resources/windows;mv bin x86_64;cd x86_64;HASH=$(md5sum libhelixtrajectory.dll | cut -c -32);echo $HASH >> helixtrajectory.hash;mv libhelixtrajectory.dll libhelixtrajectory.dll.$HASH
-#
-#      - name: Build Java
-#        run: ./gradlew jar
-#      - name: Publish package
-#        run: ./gradlew publishMavenPublicationToGithubRepository -Pplatform_id=${{ matrix.platform_id }} -PgithubUsername=$GITHUB_ACTOR -PgithubPassword=${{ secrets.GITHUB_TOKEN }}
+  collect-java-native-libs:
+    strategy:
+      fail-fast: false
+
+    needs: build-cpp
+    name: Collect Java Native Libs
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Native - Windows (CasADi)-java-libraries
+          path: java/src/main/resources
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Native - macOS x86_64 (CasADi)-java-libraries
+          path: java/src/main/resources
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Native - macOS arm64 (CasADi)-java-libraries
+          path: java/src/main/resources
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Native - Linux (CasADi)-java-libraries
+          path: java/src/main/resources
+
+      - run: cd java/src/main/resources/osx;ls
+
+      - uses: actions/upload-artifact@v3.1.1
+        with:
+          name: all-java-libraries
+          path: java/src/main/resources

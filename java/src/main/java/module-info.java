@@ -1,5 +1,7 @@
 // Copyright (c) TrajoptLib contributors
 
-module org.team2363.helixtrajectory {
-    exports org.team2363.helixtrajectory;
+module org.sleipnirgroup.trajopt {
+    requires com.fasterxml.jackson.core;
+    requires com.fasterxml.jackson.databind;
+    exports org.sleipnirgroup.trajopt;
 }

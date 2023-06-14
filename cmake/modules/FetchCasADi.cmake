@@ -13,21 +13,21 @@ macro(fetch_casadi)
       ${CASADI_LIBDIR}/libgcc_s_seh-1.dll)
     set(CASADI_INSTALL_DEST "bin")
   elseif (APPLE)
-    if (${CMAKE_APPLE_SILICON_PROCESSOR} MATCHES "arm64")
+    if (CMAKE_APPLE_SILICON_PROCESSOR MATCHES "arm64")
       message(STATUS "Building for macOS arm64")
       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH};@loader_path/../lib;@loader_path")
       set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.6.3/casadi-3.6.3-osx_arm64-py311.zip)
       set(CASADI_INSTALL_LIBS
         ${CASADI_LIBDIR}/libcasadi.3.7.dylib
         ${CASADI_LIBDIR}/libc++.1.0.dylib
-        ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.3.7.dylib
+        ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.dylib
         ${CASADI_LIBDIR}/libipopt.3.dylib
         ${CASADI_LIBDIR}/libcoinmumps.3.dylib
         ${CASADI_LIBDIR}/libcoinmetis.2.dylib
         ${CASADI_LIBDIR}/libgfortran.5.dylib
         ${CASADI_LIBDIR}/libquadmath.0.dylib
         ${CASADI_LIBDIR}/libgcc_s.1.1.dylib)
-    else()
+    elseif(CMAKE_APPLE_SILICON_PROCESSOR MATCHES "x86_64")
       message(STATUS "Building for macOS x86_64")
       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH};@loader_path/../lib;@loader_path")
       set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.6.3/casadi-3.6.3-osx64-py311.zip)

@@ -8,6 +8,8 @@ repositories {
 }
 
 dependencies {
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 }
 
@@ -18,24 +20,18 @@ java {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
-    systemProperty("java.library.path", "/Users/jlbabilino/Documents/TripleHelix/Programming/Repositories/HelixTrajectoryJ/helixtrajectorycpp/build/src/cpp")
 }
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "org.team2363"
-            artifactId = "helixtrajectory" + project.properties["platform_id"];
-            version = "0.0.0-pre5"
-
             from(components["java"])
         }
     }
     repositories {
         maven {
             name = "github"
-            // id = "github"
-            url = uri("https://maven.pkg.github.com/jlbabilino/HelixTrajectory")
+            url = uri("https://maven.pkg.github.com/SleipnirGroup/TrajoptLib")
             credentials(PasswordCredentials::class)
         }
     }

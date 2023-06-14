@@ -27,7 +27,6 @@ void CasADiOpti::Solve() {
   // I don't try-catch this next line since it should always work.
   // I'm assuming the dynamic lib is on the path and casadi can find it.
   opti.solver("ipopt");
-  std::cout << "Located IPOPT Plugin" << std::endl;
 #else
   auto pluginOptions = casadi::Dict();
   pluginOptions["ipopt.print_level"] = 0;
