@@ -28,3 +28,6 @@ compile_commands.json
 # clangd cache
 .clangd/
 .cache/
+
+# Ignore node
+node_modules
