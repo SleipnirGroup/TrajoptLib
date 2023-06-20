@@ -2,7 +2,7 @@
   "name": "trajoptlib",
   "version": "0.0.0",
   "description": "Node bindings to TrajoptLib, a library for generating time-optimal trajectories for FIRST robotics",
-  "main": "index.js",
+  "main": "trajoptlib.js",
   "scripts": {
     "test": "node trajoptlib.js",
     "install": "cmake-js compile"
