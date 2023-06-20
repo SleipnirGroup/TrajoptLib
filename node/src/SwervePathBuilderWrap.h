@@ -1,3 +1,5 @@
+// Copyright (c) TrajoptLib contributors
+
 #pragma once
 
 #include <napi.h>
