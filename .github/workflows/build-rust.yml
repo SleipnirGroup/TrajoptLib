@@ -50,6 +50,10 @@ jobs:
         with:
           version: "16.0.0"
 
+      - name: Build Rust
+        working-directory: rust
+        run: cargo build --target ${{ matrix.rust-target }}
+      
       - name: Run Rust
         working-directory: rust
         run: cargo run --target ${{ matrix.rust-target }}
