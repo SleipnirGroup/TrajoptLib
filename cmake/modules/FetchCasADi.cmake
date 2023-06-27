@@ -6,11 +6,17 @@ macro(fetch_casadi)
     message(STATUS "Building for Windows")
     set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.6.3/casadi-3.6.3-windows64-py311.zip)
     set(CASADI_INSTALL_LIBS
+      ${CASADI_LIBDIR}/libcasadi-tp-openblas.dll
       ${CASADI_LIBDIR}/libcasadi.dll
-      ${CASADI_LIBDIR}/libstdc++-6.dll
       ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.dll
+      ${CASADI_LIBDIR}/libcoinmetis-2.dll
+      ${CASADI_LIBDIR}/libcoinmumps-3.dll
+      ${CASADI_LIBDIR}/libgcc_s_seh-1.dll
+      ${CASADI_LIBDIR}/libgfortran-5.dll
+      ${CASADI_LIBDIR}/libipopt-3.dll
       ${CASADI_LIBDIR}/libquadmath-0.dll
-      ${CASADI_LIBDIR}/libgcc_s_seh-1.dll)
+      ${CASADI_LIBDIR}/libstdc++-6.dll
+      ${CASADI_LIBDIR}/libwinpthread-1.dll)
     set(CASADI_INSTALL_DEST "bin")
   elseif (APPLE)
     if (CMAKE_APPLE_SILICON_PROCESSOR MATCHES "arm64")
