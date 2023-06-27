@@ -31,3 +31,6 @@ compile_commands.json
 
 # Ignore node
 node_modules
+
+# Ignore rust build
+rust/target/
