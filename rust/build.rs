@@ -2,14 +2,27 @@ use cmake::Config;
 
 fn main() -> miette::Result<()> {
 
-  let dst = Config::new("cpp")
-    .generator("MinGW Makefiles")
-    .define("CMAKE_CXX_COMPILER", "x86_64-w64-mingw32-g++")
-    .define("CMAKE_C_COMPILER", "x86_64-w64-mingw32-gcc")
-    .define("CMAKE_SHARED_LINKER_FLAGS", "-static-libgcc -static-libstdc++")
-    .define("CMAKE_EXE_LINKER_FLAGS", "-static-libgcc -static-libstdc++")
-    .profile("RelWithDebInfo")
-    .build();
+  let mut cmake_config = Config::new("cpp");
+  
+  cmake_config.profile("RelWithDebInfo");
+
+  if cfg!(target_os = "windows") {
+    cmake_config.generator("MinGW Makefiles")
+        .define("CMAKE_CXX_COMPILER", "x86_64-w64-mingw32-g++")
+        .define("CMAKE_C_COMPILER", "x86_64-w64-mingw32-gcc")
+        .define("CMAKE_SHARED_LINKER_FLAGS", "-static-libgcc -static-libstdc++")
+        .define("CMAKE_EXE_LINKER_FLAGS", "-static-libgcc -static-libstdc++");
+  }
+
+  if cfg!(target_os = "macos") {
+    if cfg!(target_arch = "aarch64") {
+      cmake_config.define("CMAKE_APPLE_SILICON_PROCESSOR", "arm64");
+    } else {
+      cmake_config.define("CMAKE_APPLE_SILICON_PROCESSOR", "x86_64");
+    }
+  }
+
+  let dst = cmake_config.build();
 
   println!("cargo:rustc-link-search=native={}/bin", dst.display());
   println!("cargo:rustc-link-lib=trajoptlib-rust-cpp-interface");
