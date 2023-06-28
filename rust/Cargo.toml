@@ -1,5 +1,5 @@
 [package]
-name = "rust-cpp-cmake-bindings"
+name = "trajoptlib"
 version = "0.1.0"
 edition = "2021"
 

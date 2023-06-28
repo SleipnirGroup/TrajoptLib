@@ -712,17 +712,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "436b050e76ed2903236f032a59761c1eb99e1b0aead2c257922771dab1fc8c78"
 
 [[package]]
-name = "rust-cpp-cmake-bindings"
-version = "0.1.0"
-dependencies = [
- "autocxx",
- "autocxx-build",
- "cmake",
- "cxx",
- "miette",
-]
-
-[[package]]
 name = "rustc-demangle"
 version = "0.1.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -928,6 +917,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.22",
+]
+
+[[package]]
+name = "trajoptlib"
+version = "0.1.0"
+dependencies = [
+ "autocxx",
+ "autocxx-build",
+ "cmake",
+ "cxx",
+ "miette",
 ]
 
 [[package]]
