@@ -60,8 +60,3 @@ jobs:
         if: matrix.rust-target != 'aarch64-apple-darwin'
         working-directory: rust
         run: cargo run --target ${{ matrix.rust-target }}
-
-      - name: Print File Tree
-        if: always()
-        working-directory: rust/target
-        run: tree
