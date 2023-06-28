@@ -45,10 +45,14 @@ jobs:
         with:
           targets: ${{matrix.rust-target}}
 
-      - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1.8.1
-        with:
-          version: "16.0.0"
+      # - name: Install LLVM and Clang
+      #   uses: KyleMayes/install-llvm-action@v1.8.1
+      #   with:
+      #     version: "16.0.0"
+
+      - name: Install LLVM
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt install clang lldb lld
 
       - name: Build Rust
         working-directory: rust
