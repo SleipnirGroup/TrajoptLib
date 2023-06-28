@@ -25,6 +25,7 @@ fn main() -> miette::Result<()> {
   let dst = cmake_config.build();
 
   println!("cargo:rustc-link-search=native={}/bin", dst.display());
+  println!("cargo:rustc-link-search=native={}/lib", dst.display());
   println!("cargo:rustc-link-lib=trajoptlib-rust-cpp-interface");
 
   let inc_path = std::path::PathBuf::from("cpp/include");
