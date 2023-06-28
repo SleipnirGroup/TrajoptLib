@@ -62,6 +62,6 @@ jobs:
         run: cargo run --target ${{ matrix.rust-target }}
 
       - name: Print File Tree
-        if: matrix.os == 'ubuntu-latest'
+        if: always()
         working-directory: rust/target
         run: tree
