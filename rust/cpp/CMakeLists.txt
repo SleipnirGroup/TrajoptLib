@@ -11,9 +11,6 @@ target_include_directories(trajoptlib-rust-cpp-interface PUBLIC ${CMAKE_CURRENT_
 
 set(OPTIMIZER_BACKEND casadi)
 
-set(CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++")
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
-
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../.. ${CMAKE_CURRENT_SOURCE_DIR}/../../build)
 
 target_link_libraries(trajoptlib-rust-cpp-interface PRIVATE TrajoptLib)
