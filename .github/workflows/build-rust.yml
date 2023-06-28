@@ -57,6 +57,7 @@ jobs:
         run: cargo build --target ${{ matrix.rust-target }}
       
       - name: Run Rust
+        if: matrix.rust-target != 'aarch64-apple-darwin'
         working-directory: rust
         run: cargo run --target ${{ matrix.rust-target }}
 
