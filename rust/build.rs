@@ -21,6 +21,11 @@ fn main() -> miette::Result<()> {
       cmake_config.define("CMAKE_APPLE_SILICON_PROCESSOR", "x86_64");
     }
   }
+  if cfg!(target_os = "linux") {
+    cmake_config
+        .define("CMAKE_CXX_COMPILER", "g++")
+        .define("CMAKE_C_COMPILER", "gcc");
+  }
 
   let dst = cmake_config.build();
 
