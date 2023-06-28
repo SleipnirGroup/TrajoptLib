@@ -11,3 +11,9 @@ cxx = "1.0"
 autocxx-build = "0.26.0"
 miette = { version = "5", features = ["fancy"] } # gives nicer error messages!
 cmake = "0.1"
+
+[lib]
+name = "trajoptlib"
+
+[[example]]
+name = "myexamp"

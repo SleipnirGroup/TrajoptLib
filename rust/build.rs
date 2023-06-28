@@ -34,7 +34,7 @@ fn main() -> miette::Result<()> {
   println!("cargo:rustc-link-lib=trajoptlib-rust-cpp-interface");
 
   let inc_path = std::path::PathBuf::from("cpp/include");
-  let mut b = autocxx_build::Builder::new("src/main.rs", &[&inc_path]).build()?;
+  let mut b = autocxx_build::Builder::new("src/lib.rs", &[&inc_path]).build()?;
 
   b.flag_if_supported("-std=c++20")
    .compile("rust-cpp-cmake-bindings");

@@ -1,4 +1,3 @@
-// Use all the autocxx types which might be handy.
 use autocxx::prelude::*;
 
 include_cpp! {
@@ -7,6 +6,6 @@ include_cpp! {
     generate!("my_special_function") // allowlist a function
 }
 
-fn main() {
-    println!("hi: {}", ffi::my_special_function(1.0));
+pub fn my_ffi_func() -> f64 {
+    ffi::my_special_function(1.0)
 }
