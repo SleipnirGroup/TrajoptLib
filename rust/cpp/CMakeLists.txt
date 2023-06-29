@@ -23,7 +23,7 @@ target_link_libraries(trajoptlib-rust-cpp-interface PRIVATE TrajoptLib)
 
 install(TARGETS trajoptlib-rust-cpp-interface
     RUNTIME DESTINATION "bin"
-    LIBRARY DESTINATION "bin"
+    LIBRARY DESTINATION "lib"
     )
 
 
