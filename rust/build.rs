@@ -14,13 +14,6 @@ fn main() -> miette::Result<()> {
         .define("CMAKE_EXE_LINKER_FLAGS", "-static-libgcc -static-libstdc++");
   }
 
-  if cfg!(target_os = "macos") {
-    if cfg!(target_arch = "aarch64") {
-      // cmake_config.define("CMAKE_APPLE_SILICON_PROCESSOR", "arm64");
-    } else {
-      // cmake_config.define("CMAKE_APPLE_SILICON_PROCESSOR", "x86_64");
-    }
-  }
   if cfg!(target_os = "linux") {
     cmake_config
         .define("CMAKE_CXX_COMPILER", "g++")
