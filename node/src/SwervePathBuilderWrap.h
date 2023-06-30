@@ -3,7 +3,7 @@
 #pragma once
 
 #include <napi.h>
-#include <path/SwervePathBuilder.h>
+#include <trajopt/path/SwervePathBuilder.h>
 
 class SwervePathBuilderWrap : public Napi::ObjectWrap<SwervePathBuilderWrap> {
  public:
