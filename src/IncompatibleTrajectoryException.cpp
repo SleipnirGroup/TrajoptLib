@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "IncompatibleTrajectoryException.h"
+#include "trajopt/IncompatibleTrajectoryException.h"
 
 namespace trajopt {
 

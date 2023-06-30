@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "trajectory/HolonomicTrajectorySample.h"
+#include "trajopt/trajectory/HolonomicTrajectorySample.h"
 
 namespace trajopt {
 

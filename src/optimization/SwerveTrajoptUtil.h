@@ -5,12 +5,12 @@
 #include <utility>
 #include <vector>
 
-#include "drivetrain/SwerveDrivetrain.h"
+#include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "optimization/HolonomicTrajoptUtil.h"
 #include "optimization/OptiSys.h"
 #include "optimization/TrajoptUtil.h"
-#include "path/Path.h"
-#include "solution/SwerveSolution.h"
+#include "trajopt/path/Path.h"
+#include "trajopt/solution/SwerveSolution.h"
 
 namespace trajopt {
 

@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "TrajectoryGenerationException.h"
+#include "trajopt/TrajectoryGenerationException.h"
 
 #include <stdexcept>
 #include <string>

@@ -1,8 +1,8 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "OptimalTrajectoryGenerator.h"
+#include "trajopt/OptimalTrajectoryGenerator.h"
 
-#include "path/SwervePathBuilder.h"
+#include "trajopt/path/SwervePathBuilder.h"
 
 #if defined(OPTIMIZER_BACKEND_CASADI)
 #include "optimization/CasADiOpti.h"
@@ -12,10 +12,10 @@
 #define _OPTI_BACKEND SleipnirExpr, SleipnirOpti
 #endif
 #include "DebugOptions.h"
-#include "InvalidPathException.h"
-#include "drivetrain/SwerveDrivetrain.h"
+#include "trajopt/InvalidPathException.h"
+#include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "optimization/algorithms/SwerveDiscreteOptimal.h"
-#include "solution/SwerveSolution.h"
+#include "trajopt/solution/SwerveSolution.h"
 
 namespace trajopt {
 

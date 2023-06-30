@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "InvalidPathException.h"
+#include "trajopt/InvalidPathException.h"
 
 namespace trajopt {
 

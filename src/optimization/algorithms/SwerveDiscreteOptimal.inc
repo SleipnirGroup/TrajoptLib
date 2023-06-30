@@ -7,13 +7,13 @@
 #include <vector>
 
 #include "DebugOptions.h"
-#include "TrajectoryGenerationException.h"
-#include "drivetrain/SwerveDrivetrain.h"
+#include "trajopt/TrajectoryGenerationException.h"
+#include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "optimization/SwerveTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
 #include "optimization/algorithms/SwerveDiscreteOptimal.h"
-#include "path/Path.h"
-#include "solution/SwerveSolution.h"
+#include "trajopt/path/Path.h"
+#include "trajopt/solution/SwerveSolution.h"
 
 namespace trajopt {
 

@@ -1,13 +1,13 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "constraint/HeadingConstraint.h"
+#include "trajopt/constraint/HeadingConstraint.h"
 
 #include <optional>
 
 #include <fmt/format.h>
 
-#include "set/IntervalSet1d.h"
-#include "solution/SolutionChecking.h"
+#include "trajopt/set/IntervalSet1d.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 

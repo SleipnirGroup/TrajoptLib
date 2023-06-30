@@ -5,18 +5,18 @@
 #include <vector>
 
 #include "DebugOptions.h"
-#include "TrajectoryGenerationException.h"
-#include "constraint/Constraint.h"
-#include "constraint/HeadingConstraint.h"
-#include "constraint/LinePointConstraint.h"
-#include "constraint/PointLineConstraint.h"
-#include "constraint/PointPointConstraint.h"
-#include "constraint/TranslationConstraint.h"
-#include "obstacle/Obstacle.h"
+#include "trajopt/TrajectoryGenerationException.h"
+#include "trajopt/constraint/Constraint.h"
+#include "trajopt/constraint/HeadingConstraint.h"
+#include "trajopt/constraint/LinePointConstraint.h"
+#include "trajopt/constraint/PointLineConstraint.h"
+#include "trajopt/constraint/PointPointConstraint.h"
+#include "trajopt/constraint/TranslationConstraint.h"
+#include "trajopt/obstacle/Obstacle.h"
 #include "optimization/HolonomicTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
-#include "path/Path.h"
-#include "solution/HolonomicSolution.h"
+#include "trajopt/path/Path.h"
+#include "trajopt/solution/HolonomicSolution.h"
 
 namespace trajopt {
 

@@ -1,12 +1,12 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "set/IntervalSet1d.h"
+#include "trajopt/set/IntervalSet1d.h"
 
 #include <cmath>
 #include <limits>
 #include <optional>
 
-#include "solution/SolutionChecking.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 

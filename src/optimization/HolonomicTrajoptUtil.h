@@ -5,9 +5,9 @@
 #include <memory>
 #include <vector>
 
-#include "obstacle/Obstacle.h"
+#include "trajopt/obstacle/Obstacle.h"
 #include "optimization/TrajoptUtil.h"
-#include "solution/HolonomicSolution.h"
+#include "trajopt/solution/HolonomicSolution.h"
 
 namespace trajopt {
 

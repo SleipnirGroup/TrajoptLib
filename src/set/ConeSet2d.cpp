@@ -1,12 +1,12 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "set/ConeSet2d.h"
+#include "trajopt/set/ConeSet2d.h"
 
 #include <cmath>
 #include <numbers>
 #include <optional>
 
-#include "solution/SolutionChecking.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 

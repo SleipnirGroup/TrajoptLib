@@ -1,28 +1,28 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "path/SwervePathBuilder.h"
+#include "trajopt/path/SwervePathBuilder.h"
 
 #include <memory>
 #include <stdexcept>
 #include <vector>
 
-#include "constraint/AngularVelocityConstraint.h"
-#include "constraint/Constraint.h"
-#include "constraint/HeadingConstraint.h"
-#include "constraint/LinePointConstraint.h"
-#include "constraint/PointLineConstraint.h"
-#include "constraint/TranslationConstraint.h"
-#include "constraint/holonomic/HolonomicVelocityConstraint.h"
-#include "drivetrain/SwerveDrivetrain.h"
-#include "obstacle/Obstacle.h"
+#include "trajopt/constraint/AngularVelocityConstraint.h"
+#include "trajopt/constraint/Constraint.h"
+#include "trajopt/constraint/HeadingConstraint.h"
+#include "trajopt/constraint/LinePointConstraint.h"
+#include "trajopt/constraint/PointLineConstraint.h"
+#include "trajopt/constraint/TranslationConstraint.h"
+#include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.h"
+#include "trajopt/drivetrain/SwerveDrivetrain.h"
+#include "trajopt/obstacle/Obstacle.h"
 #include "optimization/TrajoptUtil.h"
-#include "path/InitialGuessPoint.h"
-#include "path/Path.h"
-#include "set/EllipticalSet2d.h"
-#include "set/IntervalSet1d.h"
-#include "set/LinearSet2d.h"
-#include "set/RectangularSet2d.h"
-#include "solution/Solution.h"
+#include "trajopt/path/InitialGuessPoint.h"
+#include "trajopt/path/Path.h"
+#include "trajopt/set/EllipticalSet2d.h"
+#include "trajopt/set/IntervalSet1d.h"
+#include "trajopt/set/LinearSet2d.h"
+#include "trajopt/set/RectangularSet2d.h"
+#include "trajopt/solution/Solution.h"
 
 namespace trajopt {
 
