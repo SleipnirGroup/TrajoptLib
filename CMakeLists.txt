@@ -119,7 +119,7 @@ endif()
 target_include_directories(TrajoptLib
                            PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                           $<INSTALL_INTERFACE:include>)
+                           $<INSTALL_INTERFACE:include/TrajoptLib>)
 
 install(TARGETS TrajoptLib
         EXPORT TrajoptLibTargets
@@ -130,7 +130,7 @@ install(TARGETS TrajoptLib
 export(TARGETS TrajoptLib
        FILE TrajoptLib.cmake
        NAMESPACE TrajoptLib::)
-install(DIRECTORY include/ DESTINATION "include")
+install(DIRECTORY include/ DESTINATION "include/TrajoptLib")
 install(EXPORT TrajoptLibTargets
         FILE TrajoptLib.cmake
         NAMESPACE TrajoptLib::
