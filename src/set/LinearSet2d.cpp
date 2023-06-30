@@ -1,13 +1,13 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "set/LinearSet2d.h"
+#include "trajopt/set/LinearSet2d.h"
 
 #include <cmath>
 #include <optional>
 
-#include "set/IntervalSet1d.h"
-#include "set/RectangularSet2d.h"
-#include "solution/SolutionChecking.h"
+#include "trajopt/set/IntervalSet1d.h"
+#include "trajopt/set/RectangularSet2d.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 

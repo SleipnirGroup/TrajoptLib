@@ -2,12 +2,12 @@
 
 #include <cmath>
 
-#include <OptimalTrajectoryGenerator.h>
-#include <drivetrain/SwerveDrivetrain.h>
-#include <solution/SwerveSolution.h>
-#include <trajectory/HolonomicTrajectory.h>
+#include <trajopt/OptimalTrajectoryGenerator.h>
+#include <trajopt/drivetrain/SwerveDrivetrain.h>
+#include <trajopt/solution/SwerveSolution.h>
+#include <trajopt/trajectory/HolonomicTrajectory.h>
 #include <napi.h>
-#include <path/SwervePathBuilder.h>
+#include <trajopt/path/SwervePathBuilder.h>
 
 SwervePathBuilderWrap::SwervePathBuilderWrap(const Napi::CallbackInfo& info) : ObjectWrap(info) {
 }

@@ -1,13 +1,13 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "set/EllipticalSet2d.h"
+#include "trajopt/set/EllipticalSet2d.h"
 
 #include <cmath>
 #include <limits>
 #include <optional>
 #include <string>
 
-#include "solution/SolutionChecking.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 

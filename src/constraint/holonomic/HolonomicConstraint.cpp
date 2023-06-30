@@ -1,15 +1,15 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "constraint/holonomic/HolonomicConstraint.h"
+#include "trajopt/constraint/holonomic/HolonomicConstraint.h"
 
 #include <optional>
 #include <variant>
 
 #include <fmt/format.h>
 
-#include "constraint/AngularVelocityConstraint.h"
-#include "constraint/holonomic/HolonomicVelocityConstraint.h"
-#include "solution/SolutionChecking.h"
+#include "trajopt/constraint/AngularVelocityConstraint.h"
+#include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 

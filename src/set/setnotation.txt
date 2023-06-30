@@ -57,3 +57,54 @@ AngularVelocityHolonmicConstraint:
 Constraint:
     format_string = "constraint: {constraint}"
     violation_string = "({constraint}) violated: {constraint violation_string}"
+
+
+Other ways of formatting/examples:
+
+"translation constraint: position x ∈ [1, 2], y ∈ [1, 2]" applied to waypoint index 0 violated: position x = 6 is outside the interval [1, 2].
+translation constraint applied to segment index 0 violated:
+
+position x of 3 is outside bound [{}, {}]
+
+Set 1d:
+    Interval Set 1d:
+        if lower == upper:
+            "= {lower}"
+        else:
+            "∈ [{lower}, {upper}]"
+
+Set 2d:
+
+
+    Rectangular Set 2d:
+        "x-component {xBound}, y-component {yBound}""
+
+    Linear Set 2d:
+        (x-component, y-component) must be on the polar line θ = {theta}
+    Cone Set 2d:
+        (x-component, y-component) must be within the polar cone r ≥ 0, {} ≤ θ ≤ {}
+
+    Elliptical Set 2d:
+        "(x-component, y-component) must be <direction> <shape>"
+        <direction> =
+            if inside:
+                "on or within"
+            else if centered:
+                "on"
+            else if outside:
+                "on or outside"
+        <shape> =
+            if circular:
+                "a circle of radius = {xRadius}"
+            else:
+                "an ellipse of rₓ = {xRadius}, rᵧ = {yRadius}"
+
+
+Constraint:
+    HeadingConstraint:
+        "constraint heading {headingBound} violated: theta = {theta}"
+    TranslationConstraint:
+    PoseConstraint:
+
+
+heading constraint: θ

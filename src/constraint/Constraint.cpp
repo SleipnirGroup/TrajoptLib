@@ -1,15 +1,15 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "constraint/Constraint.h"
+#include "trajopt/constraint/Constraint.h"
 
 #include <optional>
 #include <variant>
 
 #include <fmt/format.h>
 
-#include "constraint/HeadingConstraint.h"
-#include "constraint/TranslationConstraint.h"
-#include "solution/SolutionChecking.h"
+#include "trajopt/constraint/HeadingConstraint.h"
+#include "trajopt/constraint/TranslationConstraint.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 

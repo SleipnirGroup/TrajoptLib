@@ -5,13 +5,13 @@
 #include <utility>
 #include <vector>
 
-#include "constraint/Constraint.h"
-#include "obstacle/Obstacle.h"
 #include "optimization/OptiSys.h"
-#include "path/Path.h"
-#include "set/IntervalSet1d.h"
-#include "set/Set2d.h"
-#include "solution/Solution.h"
+#include "trajopt/constraint/Constraint.h"
+#include "trajopt/obstacle/Obstacle.h"
+#include "trajopt/path/Path.h"
+#include "trajopt/set/IntervalSet1d.h"
+#include "trajopt/set/Set2d.h"
+#include "trajopt/solution/Solution.h"
 
 namespace trajopt {
 

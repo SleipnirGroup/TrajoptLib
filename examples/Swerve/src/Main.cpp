@@ -7,19 +7,19 @@
 
 #include <fmt/core.h>
 
-#include "IncompatibleTrajectoryException.h"
-#include "OptimalTrajectoryGenerator.h"
-#include "constraint/Constraint.h"
-#include "constraint/TranslationConstraint.h"
-#include "constraint/holonomic/HolonomicConstraint.h"
-#include "drivetrain/SwerveDrivetrain.h"
-#include "obstacle/Obstacle.h"
-#include "path/InitialGuessPoint.h"
-#include "path/Path.h"
-#include "path/SwervePathBuilder.h"
-#include "set/ConeSet2d.h"
-#include "solution/SwerveSolution.h"
-#include "trajectory/HolonomicTrajectory.h"
+#include "trajopt/IncompatibleTrajectoryException.h"
+#include "trajopt/OptimalTrajectoryGenerator.h"
+#include "trajopt/constraint/Constraint.h"
+#include "trajopt/constraint/TranslationConstraint.h"
+#include "trajopt/constraint/holonomic/HolonomicConstraint.h"
+#include "trajopt/drivetrain/SwerveDrivetrain.h"
+#include "trajopt/obstacle/Obstacle.h"
+#include "trajopt/path/InitialGuessPoint.h"
+#include "trajopt/path/Path.h"
+#include "trajopt/path/SwervePathBuilder.h"
+#include "trajopt/set/ConeSet2d.h"
+#include "trajopt/solution/SwerveSolution.h"
+#include "trajopt/trajectory/HolonomicTrajectory.h"
 
 int main() {
   using namespace trajopt;

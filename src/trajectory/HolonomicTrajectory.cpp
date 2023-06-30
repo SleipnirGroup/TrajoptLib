@@ -1,10 +1,10 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "trajectory/HolonomicTrajectory.h"
+#include "trajopt/trajectory/HolonomicTrajectory.h"
 
 #include <memory>
 
-#include "solution/HolonomicSolution.h"
+#include "trajopt/solution/HolonomicSolution.h"
 
 namespace trajopt {
 

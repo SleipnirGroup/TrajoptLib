@@ -12,20 +12,20 @@
 #include <vector>
 
 #include "DebugOptions.h"
-#include "TrajectoryGenerationException.h"
-#include "constraint/LinePointConstraint.h"
-#include "constraint/PointLineConstraint.h"
-#include "constraint/PointPointConstraint.h"
-#include "constraint/TranslationConstraint.h"
-#include "obstacle/Obstacle.h"
 #include "optimization/TrajoptUtil.h"
-#include "path/Path.h"
-#include "set/ConeSet2d.h"
-#include "set/EllipticalSet2d.h"
-#include "set/IntervalSet1d.h"
-#include "set/LinearSet2d.h"
-#include "set/RectangularSet2d.h"
-#include "set/Set2d.h"
+#include "trajopt/TrajectoryGenerationException.h"
+#include "trajopt/constraint/LinePointConstraint.h"
+#include "trajopt/constraint/PointLineConstraint.h"
+#include "trajopt/constraint/PointPointConstraint.h"
+#include "trajopt/constraint/TranslationConstraint.h"
+#include "trajopt/obstacle/Obstacle.h"
+#include "trajopt/path/Path.h"
+#include "trajopt/set/ConeSet2d.h"
+#include "trajopt/set/EllipticalSet2d.h"
+#include "trajopt/set/IntervalSet1d.h"
+#include "trajopt/set/LinearSet2d.h"
+#include "trajopt/set/RectangularSet2d.h"
+#include "trajopt/set/Set2d.h"
 
 namespace trajopt {
 

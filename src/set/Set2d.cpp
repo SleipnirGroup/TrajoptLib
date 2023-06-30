@@ -1,15 +1,15 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "set/Set2d.h"
+#include "trajopt/set/Set2d.h"
 
 #include <optional>
 #include <variant>
 
-#include "set/ConeSet2d.h"
-#include "set/EllipticalSet2d.h"
-#include "set/LinearSet2d.h"
-#include "set/RectangularSet2d.h"
-#include "solution/SolutionChecking.h"
+#include "trajopt/set/ConeSet2d.h"
+#include "trajopt/set/EllipticalSet2d.h"
+#include "trajopt/set/LinearSet2d.h"
+#include "trajopt/set/RectangularSet2d.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 
