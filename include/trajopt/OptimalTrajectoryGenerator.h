@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "SymbolExports.h"
-#include "path/Path.h"
-#include "path/SwervePathBuilder.h"
-#include "solution/SwerveSolution.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/path/Path.h"
+#include "trajopt/path/SwervePathBuilder.h"
+#include "trajopt/solution/SwerveSolution.h"
 
 namespace trajopt {
 

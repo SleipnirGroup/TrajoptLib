@@ -6,9 +6,9 @@
 
 #include <fmt/format.h>
 
-#include "SymbolExports.h"
-#include "set/Set2d.h"
-#include "solution/SolutionChecking.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/set/Set2d.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 

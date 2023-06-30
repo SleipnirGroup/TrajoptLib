@@ -4,7 +4,7 @@
 
 #include <fmt/format.h>
 
-#include "SymbolExports.h"
+#include "trajopt/SymbolExports.h"
 
 namespace trajopt {
 

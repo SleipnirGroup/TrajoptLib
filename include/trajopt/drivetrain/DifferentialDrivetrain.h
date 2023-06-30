@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "SymbolExports.h"
+#include "trajopt/SymbolExports.h"
 
 namespace trajopt {
 

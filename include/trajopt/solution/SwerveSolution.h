@@ -8,8 +8,8 @@
 
 #include <fmt/format.h>
 
-#include "SymbolExports.h"
-#include "solution/HolonomicSolution.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/solution/HolonomicSolution.h"
 
 namespace trajopt {
 

@@ -7,14 +7,14 @@
 #include <type_traits>
 #include <vector>
 
-#include "SymbolExports.h"
-#include "constraint/differential/DifferentialConstraint.h"
-#include "constraint/holonomic/HolonomicConstraint.h"
-#include "drivetrain/DifferentialDrivetrain.h"
-#include "drivetrain/SwerveDrivetrain.h"
-#include "path/InitialGuessPoint.h"
-#include "solution/DifferentialSolution.h"
-#include "solution/SwerveSolution.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/constraint/differential/DifferentialConstraint.h"
+#include "trajopt/constraint/holonomic/HolonomicConstraint.h"
+#include "trajopt/drivetrain/DifferentialDrivetrain.h"
+#include "trajopt/drivetrain/SwerveDrivetrain.h"
+#include "trajopt/path/InitialGuessPoint.h"
+#include "trajopt/solution/DifferentialSolution.h"
+#include "trajopt/solution/SwerveSolution.h"
 
 namespace trajopt {
 

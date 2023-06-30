@@ -6,10 +6,10 @@
 
 #include <fmt/core.h>
 
-#include "SymbolExports.h"
-#include "drivetrain/SwerveModule.h"
-#include "obstacle/Obstacle.h"
-#include "trajectory/HolonomicTrajectory.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/drivetrain/SwerveModule.h"
+#include "trajopt/obstacle/Obstacle.h"
+#include "trajopt/trajectory/HolonomicTrajectory.h"
 
 namespace trajopt {
 

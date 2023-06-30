@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "set/IntervalSet1d.h"
+#include "trajopt/set/IntervalSet1d.h"
 
 namespace trajopt {
 

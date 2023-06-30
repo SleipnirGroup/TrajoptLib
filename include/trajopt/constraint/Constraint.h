@@ -7,14 +7,14 @@
 
 #include <fmt/format.h>
 
-#include "SymbolExports.h"
-#include "constraint/AngularVelocityConstraint.h"
-#include "constraint/HeadingConstraint.h"
-#include "constraint/LinePointConstraint.h"
-#include "constraint/PointLineConstraint.h"
-#include "constraint/PointPointConstraint.h"
-#include "constraint/TranslationConstraint.h"
-#include "solution/SolutionChecking.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/constraint/AngularVelocityConstraint.h"
+#include "trajopt/constraint/HeadingConstraint.h"
+#include "trajopt/constraint/LinePointConstraint.h"
+#include "trajopt/constraint/PointLineConstraint.h"
+#include "trajopt/constraint/PointPointConstraint.h"
+#include "trajopt/constraint/TranslationConstraint.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 

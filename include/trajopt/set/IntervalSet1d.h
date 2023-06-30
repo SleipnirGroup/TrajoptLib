@@ -6,8 +6,8 @@
 
 #include <fmt/format.h>
 
-#include "SymbolExports.h"
-#include "solution/SolutionChecking.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 

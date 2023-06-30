@@ -7,9 +7,9 @@
 
 #include <fmt/format.h>
 
-#include "SymbolExports.h"
-#include "solution/HolonomicSolution.h"
-#include "trajectory/HolonomicTrajectorySample.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/solution/HolonomicSolution.h"
+#include "trajopt/trajectory/HolonomicTrajectorySample.h"
 
 namespace trajopt {
 

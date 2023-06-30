@@ -5,7 +5,7 @@
 #include <optional>
 #include <string>
 
-#include "SymbolExports.h"
+#include "trajopt/SymbolExports.h"
 
 /**
  * Solution error.

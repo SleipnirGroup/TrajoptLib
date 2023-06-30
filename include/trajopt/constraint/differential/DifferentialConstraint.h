@@ -6,13 +6,13 @@
 
 #include <fmt/format.h>
 
-#include "SymbolExports.h"
-#include "constraint/AngularVelocityConstraint.h"
-#include "constraint/Constraint.h"
-#include "constraint/differential/DifferentialCentripetalAccelerationConstraint.h"
-#include "constraint/differential/DifferentialTangentialVelocityConstraint.h"
-#include "solution/SolutionChecking.h"
-#include "util/AppendVariant.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/constraint/AngularVelocityConstraint.h"
+#include "trajopt/constraint/Constraint.h"
+#include "trajopt/constraint/differential/DifferentialCentripetalAccelerationConstraint.h"
+#include "trajopt/constraint/differential/DifferentialTangentialVelocityConstraint.h"
+#include "trajopt/solution/SolutionChecking.h"
+#include "trajopt/util/AppendVariant.h"
 
 namespace trajopt {
 

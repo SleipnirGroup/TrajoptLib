@@ -4,9 +4,9 @@
 
 #include <optional>
 
-#include "SymbolExports.h"
-#include "set/IntervalSet1d.h"
-#include "solution/SolutionChecking.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/set/IntervalSet1d.h"
+#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 

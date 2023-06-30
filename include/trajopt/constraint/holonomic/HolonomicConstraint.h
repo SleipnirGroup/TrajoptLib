@@ -6,11 +6,11 @@
 
 #include <fmt/format.h>
 
-#include "SymbolExports.h"
-#include "constraint/AngularVelocityConstraint.h"
-#include "constraint/holonomic/HolonomicVelocityConstraint.h"
-#include "solution/SolutionChecking.h"
-#include "util/AppendVariant.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/constraint/AngularVelocityConstraint.h"
+#include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.h"
+#include "trajopt/solution/SolutionChecking.h"
+#include "trajopt/util/AppendVariant.h"
 
 namespace trajopt {
 

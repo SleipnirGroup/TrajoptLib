@@ -4,8 +4,8 @@
 
 #include <array>
 
-#include "SymbolExports.h"
-#include "constraint/Constraint.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/constraint/Constraint.h"
 
 namespace trajopt {
 

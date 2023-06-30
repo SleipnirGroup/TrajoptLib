@@ -4,8 +4,8 @@
 
 #include <vector>
 
-#include "SymbolExports.h"
-#include "solution/Solution.h"
+#include "trajopt/SymbolExports.h"
+#include "trajopt/solution/Solution.h"
 
 namespace trajopt {
 

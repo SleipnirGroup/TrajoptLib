@@ -4,13 +4,13 @@
 
 #include <vector>
 
-#include "drivetrain/SwerveDrivetrain.h"
-#include "obstacle/Bumpers.h"
-#include "obstacle/Obstacle.h"
-#include "path/InitialGuessPoint.h"
-#include "path/Path.h"
-#include "set/IntervalSet1d.h"
-#include "set/Set2d.h"
+#include "trajopt/drivetrain/SwerveDrivetrain.h"
+#include "trajopt/obstacle/Bumpers.h"
+#include "trajopt/obstacle/Obstacle.h"
+#include "trajopt/path/InitialGuessPoint.h"
+#include "trajopt/path/Path.h"
+#include "trajopt/set/IntervalSet1d.h"
+#include "trajopt/set/Set2d.h"
 
 namespace trajopt {
 
