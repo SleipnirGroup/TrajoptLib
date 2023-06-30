@@ -5,10 +5,10 @@
 #include <utility>
 #include <vector>
 
-#include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "optimization/HolonomicTrajoptUtil.h"
 #include "optimization/OptiSys.h"
 #include "optimization/TrajoptUtil.h"
+#include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "trajopt/path/Path.h"
 #include "trajopt/solution/SwerveSolution.h"
 

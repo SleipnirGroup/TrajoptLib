@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "optimization/TrajoptUtil.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/Constraint.h"
 #include "trajopt/constraint/HeadingConstraint.h"
@@ -15,7 +16,6 @@
 #include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "trajopt/obstacle/Obstacle.h"
-#include "optimization/TrajoptUtil.h"
 #include "trajopt/path/InitialGuessPoint.h"
 #include "trajopt/path/Path.h"
 #include "trajopt/set/EllipticalSet2d.h"

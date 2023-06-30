@@ -12,13 +12,13 @@
 #include <vector>
 
 #include "DebugOptions.h"
+#include "optimization/TrajoptUtil.h"
 #include "trajopt/TrajectoryGenerationException.h"
 #include "trajopt/constraint/LinePointConstraint.h"
 #include "trajopt/constraint/PointLineConstraint.h"
 #include "trajopt/constraint/PointPointConstraint.h"
 #include "trajopt/constraint/TranslationConstraint.h"
 #include "trajopt/obstacle/Obstacle.h"
-#include "optimization/TrajoptUtil.h"
 #include "trajopt/path/Path.h"
 #include "trajopt/set/ConeSet2d.h"
 #include "trajopt/set/EllipticalSet2d.h"

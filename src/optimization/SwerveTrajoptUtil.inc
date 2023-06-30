@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "DebugOptions.h"
-#include "trajopt/TrajectoryGenerationException.h"
-#include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "optimization/SwerveTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
+#include "trajopt/TrajectoryGenerationException.h"
+#include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "trajopt/path/Path.h"
 #include "trajopt/solution/SwerveSolution.h"
 

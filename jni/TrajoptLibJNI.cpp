@@ -5,6 +5,8 @@
 #include <memory>
 #include <tuple>
 
+#include "jni.h"
+#include "org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator.h"
 #include "trajopt/InvalidPathException.h"
 #include "trajopt/OptimalTrajectoryGenerator.h"
 #include "trajopt/TrajectoryGenerationException.h"
@@ -15,10 +17,8 @@
 #include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "trajopt/drivetrain/SwerveModule.h"
-#include "jni.h"
 #include "trajopt/obstacle/Obstacle.h"
 #include "trajopt/obstacle/ObstaclePoint.h"
-#include "org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator.h"
 #include "trajopt/path/InitialGuessPoint.h"
 #include "trajopt/path/Path.h"
 #include "trajopt/path/SwervePathBuilder.h"
