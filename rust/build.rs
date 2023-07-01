@@ -2,9 +2,10 @@ use cmake::Config;
 
 fn main() -> miette::Result<()> {
 
-  let mut cmake_config = Config::new("cpp");
+  let mut cmake_config = Config::new("..");
   
-  cmake_config.profile("RelWithDebInfo");
+  cmake_config.profile("RelWithDebInfo")
+      .define("OPTIMIZER_BACKEND", "casadi");
 
   if cfg!(target_os = "windows") {
     cmake_config.generator("MinGW Makefiles")
@@ -24,14 +25,17 @@ fn main() -> miette::Result<()> {
 
   println!("cargo:rustc-link-search=native={}/bin", dst.display());
   println!("cargo:rustc-link-search=native={}/lib", dst.display());
-  println!("cargo:rustc-link-lib=trajoptlib-rust-cpp-interface");
+  println!("cargo:rustc-link-lib=TrajoptLib");
 
-  let inc_path = std::path::PathBuf::from("cpp/include");
-  let mut b = autocxx_build::Builder::new("src/lib.rs", &[&inc_path]).build()?;
+  let inc_path = std::path::PathBuf::from(format!("{}/include", dst.display()));
+  let mut b = autocxx_build::Builder::new("src/lib.rs", &[&inc_path])
+      .extra_clang_args(&["-std=c++20"])
+      .build()?;
 
   b.flag_if_supported("-std=c++20")
-   .compile("rust-cpp-cmake-bindings");
-  println!("cargo:rerun-if-changed=src/main.rs");
-  println!("cargo:rerun-if-changed=cpp/CMakeLists.txt");
+   .compile("trajoptlib-rust");
+  println!("cargo:rerun-if-changed=include/trajoptlib.h");
+  println!("cargo:rerun-if-changed=src/trajoptlib.cc");
+  println!("cargo:rerun-if-changed=src/lib.rs");
   Ok(())
 }
