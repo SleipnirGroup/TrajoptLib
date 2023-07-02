@@ -27,13 +27,13 @@ fn main() -> miette::Result<()> {
   println!("cargo:rustc-link-search=native={}/lib", dst.display());
   println!("cargo:rustc-link-lib=TrajoptLib");
 
-  let inc_path = std::path::PathBuf::from(format!("{}/include", dst.display()));
-  let mut b = autocxx_build::Builder::new("src/lib.rs", &[&inc_path])
-      .extra_clang_args(&["-std=c++20"])
-      .build()?;
+  cxx_build::bridge("src/lib.rs")  // returns a cc::Build
+        .file("src/trajoptlib.cc")
+        .include("include")
+        .include(format!("{}/include", dst.display()))
+        .flag_if_supported("-std=c++20")
+        .compile("trajoptlib-rust");
 
-  b.flag_if_supported("-std=c++20")
-   .compile("trajoptlib-rust");
   println!("cargo:rerun-if-changed=include/trajoptlib.h");
   println!("cargo:rerun-if-changed=src/trajoptlib.cc");
   println!("cargo:rerun-if-changed=src/lib.rs");
