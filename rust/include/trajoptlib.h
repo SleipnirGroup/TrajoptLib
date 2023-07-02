@@ -3,9 +3,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace trajopt {
-  class SwervePathBuilder;
-}
+#include <trajopt/path/SwervePathBuilder.h>
 
 namespace trajoptlibrust {
 
@@ -23,10 +21,10 @@ class SwervePathBuilderImpl {
 
   HolonomicTrajectory generate() const;
 
-  SwervePathBuilderImpl();
+  SwervePathBuilderImpl() = default;
 
  private:
-  std::unique_ptr<trajopt::SwervePathBuilder, void(*)(trajopt::SwervePathBuilder*)> path;
+  trajopt::SwervePathBuilder path;
 };
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl();

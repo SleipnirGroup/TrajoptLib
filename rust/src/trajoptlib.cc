@@ -72,19 +72,19 @@ trajopt::SwerveDrivetrain _convert_swerve_drivetrain(const SwerveDrivetrain& dri
 }
 
 void SwervePathBuilderImpl::set_drivetrain(const SwerveDrivetrain& drivetrain) {
-  path->SetDrivetrain(_convert_swerve_drivetrain(drivetrain));
+  path.SetDrivetrain(_convert_swerve_drivetrain(drivetrain));
 }
 
 void SwervePathBuilderImpl::pose_wpt(size_t idx, double x, double y, double heading) {
-  path->PoseWpt(idx, x, y, heading);
+  path.PoseWpt(idx, x, y, heading);
 }
 
 void SwervePathBuilderImpl::wpt_zero_velocity(size_t idx) {
-  path->WptZeroVelocity(idx);
+  path.WptZeroVelocity(idx);
 }
 
 void SwervePathBuilderImpl::wpt_zero_angular_velocity(size_t idx) {
-  path->WptZeroAngularVelocity(idx);
+  path.WptZeroAngularVelocity(idx);
 }
 
 HolonomicTrajectorySample _convert_holonomic_trajectory_sample(const trajopt::HolonomicTrajectorySample& sample) {
@@ -110,17 +110,7 @@ HolonomicTrajectory _convert_holonomic_trajectory(const trajopt::HolonomicTrajec
 
 HolonomicTrajectory SwervePathBuilderImpl::generate() const {
   return _convert_holonomic_trajectory(
-    trajopt::HolonomicTrajectory{trajopt::OptimalTrajectoryGenerator::Generate(*path)});
-}
-
-void _delete_swerve_path_builder(trajopt::SwervePathBuilder* path) {
-  delete path;
-}
-
-SwervePathBuilderImpl::SwervePathBuilderImpl()
-    : path(std::unique_ptr<trajopt::SwervePathBuilder, void(*)(trajopt::SwervePathBuilder*)>{
-        new trajopt::SwervePathBuilder(),
-        &_delete_swerve_path_builder}) {
+    trajopt::HolonomicTrajectory{trajopt::OptimalTrajectoryGenerator::Generate(path)});
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
