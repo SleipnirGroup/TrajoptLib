@@ -15,4 +15,4 @@ cmake = "0.1"
 name = "trajoptlib"
 
 [[example]]
-name = "myexamp"
+name = "swerve"

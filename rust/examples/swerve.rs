@@ -45,5 +45,4 @@ fn main() {
   path.wpt_zero_angular_velocity(0);
   path.wpt_zero_angular_velocity(1);
   println!("{:?}", path.generate());
-
 }
