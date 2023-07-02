@@ -78,8 +78,11 @@ impl SwervePathBuilder {
         crate::ffi::SwervePathBuilderImpl::wpt_zero_angular_velocity(self.path.pin_mut(), idx);
     }
 
-    pub fn generate(&self) -> Result<HolonomicTrajectory, cxx::Exception> {
-        self.path.generate()
+    pub fn generate(&self) -> Result<HolonomicTrajectory, String> {
+        match self.path.generate() {
+            Ok(traj) => Ok(traj),
+            Err(msg) => Err(msg.what().to_string())
+        }
     }
 }
 
