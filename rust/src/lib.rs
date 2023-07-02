@@ -20,6 +20,7 @@
 
 #[cxx::bridge(namespace = "trajoptlibrust")]
 mod ffi {
+    #[derive(Debug)]
     struct SwerveModule {
         x: f64,
         y: f64,
@@ -27,12 +28,14 @@ mod ffi {
         wheel_max_angular_velocity: f64,
         wheel_max_torque: f64
     }
+    #[derive(Debug)]
     struct SwerveDrivetrain {
         mass: f64,
         moi: f64,
         modules: Vec<SwerveModule>
     }
 
+    #[derive(Debug)]
     struct HolonomicTrajectorySample {
         timestamp: f64,
         x: f64,
@@ -42,6 +45,8 @@ mod ffi {
         velocity_y: f64,
         angular_velocity: f64
     }
+
+    #[derive(Debug)]
     struct HolonomicTrajectory {
         samples: Vec<HolonomicTrajectorySample>
     }
@@ -81,22 +86,21 @@ impl SwervePathBuilder {
         crate::ffi::SwervePathBuilderImpl::set_drivetrain(self.path.pin_mut(), drivetrain);
     }
 
+    pub fn pose_wpt(&mut self, idx: usize, x: f64, y: f64, heading: f64) {
+        crate::ffi::SwervePathBuilderImpl::pose_wpt(self.path.pin_mut(), idx, x, y, heading);
+    }
 
+    pub fn wpt_zero_velocity(&mut self, idx: usize) {
+        crate::ffi::SwervePathBuilderImpl::wpt_zero_velocity(self.path.pin_mut(), idx);
+    }
 
-    // fn pose_wpt(&mut self, idx: usize, x: f64, y: f64, heading: f64) {
-    //     self.path.pose_wpt(idx, x, y, heading);
-    // }
+    pub fn wpt_zero_angular_velocity(&mut self, idx: usize) {
+        crate::ffi::SwervePathBuilderImpl::wpt_zero_angular_velocity(self.path.pin_mut(), idx);
+    }
 
-    // fn wpt_zero_velocity(&mut self, idx: usize) {
-    //     self.path.wpt_zero_velocity(idx);
-    // }
-    // fn wpt_zero_angular_velocity(&mut self, idx: usize) {
-    //     self.path.wpt_zero_angular_velocity(idx);
-    // }
-    
-    // fn generate(&self) {
-    //     self.path.generate()
-    // }
+    pub fn generate(&self) -> Result<HolonomicTrajectory, cxx::Exception> {
+        self.path.generate()
+    }
 }
 
 pub use ffi::*;

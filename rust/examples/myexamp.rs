@@ -1,8 +1,6 @@
 use trajoptlib::{SwervePathBuilder, SwerveDrivetrain, SwerveModule};
 
 fn main() {
-  println!("{}", "no_impl_yet lol");
-
   let drivetrain = SwerveDrivetrain {
     mass: 45.0,
     moi: 20.0,
@@ -40,5 +38,12 @@ fn main() {
 
   let mut path = SwervePathBuilder::new();
   path.set_drivetrain(&drivetrain);
+  path.pose_wpt(0, 0.0, 0.0, 0.0);
+  path.pose_wpt(1, 1.0, 0.0, 0.0);
+  path.wpt_zero_velocity(0);
+  path.wpt_zero_velocity(1);
+  path.wpt_zero_angular_velocity(0);
+  path.wpt_zero_angular_velocity(1);
+  println!("{:?}", path.generate());
 
 }
