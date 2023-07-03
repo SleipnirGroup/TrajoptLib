@@ -19,7 +19,7 @@ macro(fetch_casadi)
       ${CASADI_LIBDIR}/libwinpthread-1.dll)
     set(CASADI_INSTALL_DEST "bin")
   elseif (APPLE)
-    if (CMAKE_APPLE_SILICON_PROCESSOR MATCHES "arm64")
+    if (CMAKE_APPLE_SILICON_PROCESSOR MATCHES "arm64" OR CMAKE_OSX_ARCHITECTURES MATCHES "arm64")
       message(STATUS "Building for macOS arm64")
       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH};@loader_path/../lib;@loader_path")
       set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.6.3/casadi-3.6.3-osx_arm64-py311.zip)
@@ -33,14 +33,14 @@ macro(fetch_casadi)
         ${CASADI_LIBDIR}/libgfortran.5.dylib
         ${CASADI_LIBDIR}/libquadmath.0.dylib
         ${CASADI_LIBDIR}/libgcc_s.1.1.dylib)
-    elseif(CMAKE_APPLE_SILICON_PROCESSOR MATCHES "x86_64")
+    elseif(CMAKE_APPLE_SILICON_PROCESSOR MATCHES "x86_64" OR CMAKE_OSX_ARCHITECTURES MATCHES "x86_64")
       message(STATUS "Building for macOS x86_64")
       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH};@loader_path/../lib;@loader_path")
       set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.6.3/casadi-3.6.3-osx64-py311.zip)
       set(CASADI_INSTALL_LIBS
         ${CASADI_LIBDIR}/libcasadi.3.7.dylib
         ${CASADI_LIBDIR}/libc++.1.0.dylib
-        ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.3.7.dylib
+        ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.dylib
         ${CASADI_LIBDIR}/libipopt.3.dylib
         ${CASADI_LIBDIR}/libcoinmumps.3.dylib
         ${CASADI_LIBDIR}/libcoinmetis.2.dylib
@@ -56,15 +56,27 @@ macro(fetch_casadi)
       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH};$ORIGIN/../lib;$ORIGIN")
       set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.6.3/casadi-3.6.3-linux-aarch64-py311.zip)
       set(CASADI_INSTALL_LIBS
-        ${CASADI_LIBDIR}/libcasadi.so
-        ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.so)
+        ${CASADI_LIBDIR}/libcasadi.so.3.7
+        ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.so
+        ${CASADI_LIBDIR}/libipopt.so.3
+        ${CASADI_LIBDIR}/libcoinmumps.so.3
+        ${CASADI_LIBDIR}/libcoinmetis.so.2
+        ${CASADI_LIBDIR}/libgfortran-040039e1.so.5.0.0
+        ${CASADI_LIBDIR}/libquadmath-96973f99.so.0.0.0
+        ${CASADI_LIBDIR}/libcasadi-tp-openblas.so.0)
     else()
       message(STATUS "Building for Linux x64")
       set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH};$ORIGIN/../lib;$ORIGIN")
       set(CASADI_URL https://github.com/casadi/casadi/releases/download/3.6.3/casadi-3.6.3-linux64-py311.zip)
       set(CASADI_INSTALL_LIBS
-        ${CASADI_LIBDIR}/libcasadi.so
-        ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.so)
+        ${CASADI_LIBDIR}/libcasadi.so.3.7
+        ${CASADI_LIBDIR}/libcasadi_nlpsol_ipopt.so
+        ${CASADI_LIBDIR}/libipopt.so.3
+        ${CASADI_LIBDIR}/libcoinmumps.so.3
+        ${CASADI_LIBDIR}/libcoinmetis.so.2
+        ${CASADI_LIBDIR}/libgfortran-040039e1.so.5.0.0
+        ${CASADI_LIBDIR}/libquadmath-96973f99.so.0.0.0
+        ${CASADI_LIBDIR}/libcasadi-tp-openblas.so.0)
     endif()
     set(CASADI_INSTALL_DEST "lib")
   endif()
