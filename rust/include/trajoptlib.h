@@ -1,9 +1,11 @@
+// Copyright (c) TrajoptLib contributors
+
 #pragma once
+
+#include <trajopt/path/SwervePathBuilder.h>
 
 #include <cstddef>
 #include <memory>
-
-#include <trajopt/path/SwervePathBuilder.h>
 
 namespace trajoptlibrust {
 
@@ -29,4 +31,4 @@ class SwervePathBuilderImpl {
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl();
 
-}
+}  // namespace trajoptlibrust

@@ -36,14 +36,14 @@ mod ffi {
         include!("trajoptlib/include/trajoptlib.h");
 
         type SwervePathBuilderImpl;
-        
+
         fn set_drivetrain(self: Pin<&mut SwervePathBuilderImpl>, drivetrain: &SwerveDrivetrain);
-        
+
         fn pose_wpt(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, x: f64, y: f64, heading: f64);
-        
+
         fn wpt_zero_velocity(self: Pin<&mut SwervePathBuilderImpl>, idx: usize);
         fn wpt_zero_angular_velocity(self: Pin<&mut SwervePathBuilderImpl>, idx: usize);
-        
+
         fn generate(self: &SwervePathBuilderImpl) -> Result<HolonomicTrajectory>;
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;

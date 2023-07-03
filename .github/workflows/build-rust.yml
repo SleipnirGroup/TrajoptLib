@@ -55,7 +55,7 @@ jobs:
       - name: Build Rust
         working-directory: rust
         run: cargo build --target ${{ matrix.rust-target }}
-      
+
       - name: Run Rust
         if: matrix.rust-target != 'aarch64-apple-darwin' && matrix.rust-target != 'x86_64-pc-windows-gnu'
         working-directory: rust

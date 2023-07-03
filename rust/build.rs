@@ -3,7 +3,7 @@ use cmake::Config;
 fn main() -> miette::Result<()> {
 
   let mut cmake_config = Config::new("..");
-  
+
   cmake_config.profile("RelWithDebInfo")
       .define("OPTIMIZER_BACKEND", "casadi");
 
