@@ -1,6 +1,6 @@
 #[cxx::bridge(namespace = "trajoptlibrust")]
 mod ffi {
-    #[derive(Debug)]
+    #[derive(Debug, Deserialize, Serialize)]
     struct SwerveModule {
         x: f64,
         y: f64,
@@ -8,14 +8,15 @@ mod ffi {
         wheel_max_angular_velocity: f64,
         wheel_max_torque: f64
     }
-    #[derive(Debug)]
+
+    #[derive(Debug, Deserialize, Serialize)]
     struct SwerveDrivetrain {
         mass: f64,
         moi: f64,
         modules: Vec<SwerveModule>
     }
 
-    #[derive(Debug)]
+    #[derive(Debug, Deserialize, Serialize)]
     struct HolonomicTrajectorySample {
         timestamp: f64,
         x: f64,
@@ -26,7 +27,7 @@ mod ffi {
         angular_velocity: f64
     }
 
-    #[derive(Debug)]
+    #[derive(Debug, Deserialize, Serialize)]
     struct HolonomicTrajectory {
         samples: Vec<HolonomicTrajectorySample>
     }
