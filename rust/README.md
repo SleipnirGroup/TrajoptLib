@@ -1,9 +1,11 @@
-# rust-cpp-cmake-bindings
+# TrajoptLib Rust
 
-A Rust executable that depends on autocxx native c++ code, built and linked automatically with a cmake integration.
+This library crate enables TrajoptLib usage in Rust through a foreign function interface.
 
-## Building
+## Windows Building
 
-```
+On windows, it is required to use the gnu toolchain:
+
+```console
 cargo build --target x86_64-pc-windows-gnu
 ```
