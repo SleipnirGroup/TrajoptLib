@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: configure
-        run: cmake -B build -S . -DOPTIMIZER_BACKEND=casadi -DBUILD_TESTING=ON
+        run: cmake -B build -S . -DOPTIMIZER_BACKEND=casadi -DBUILD_TESTING=ON -DCMAKE_APPLE_SILICON_PROCESSOR=x86_64
 
       - name: build
         run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
