@@ -4,6 +4,8 @@
 
 #include <optional>
 
+#include <nlohmann/json.hpp>
+
 #include <fmt/format.h>
 
 #include "trajopt/SymbolExports.h"
@@ -34,6 +36,12 @@ struct TRAJOPT_DLLEXPORT HolonomicVelocityConstraint {
       double velocityX, double velocityY,
       const SolutionTolerances& tolerances) const noexcept;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    HolonomicVelocityConstraint,
+    velocityBound,
+    coordinateSystem)
+
 }  // namespace trajopt
 
 /**

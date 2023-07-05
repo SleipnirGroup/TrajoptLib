@@ -4,6 +4,8 @@
 
 #include <optional>
 
+#include <nlohmann/json.hpp>
+
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/set/RectangularSet2d.h"
@@ -38,6 +40,11 @@ struct TRAJOPT_DLLEXPORT LinearSet2d {
   static RectangularSet2d RBoundToRectangular(double theta,
                                               const IntervalSet1d& rBound);
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    LinearSet2d,
+    theta)
+
 }  // namespace trajopt
 
 /**

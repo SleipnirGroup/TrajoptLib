@@ -5,6 +5,8 @@
 #include <optional>
 #include <string>
 
+#include <nlohmann/json.hpp>
+
 #include <fmt/format.h>
 
 #include "trajopt/SymbolExports.h"
@@ -72,6 +74,12 @@ struct TRAJOPT_DLLEXPORT EllipticalSet2d {
    */
   bool IsValid() const noexcept;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    EllipticalSet2d,
+    xRadius,
+    yRadius,
+    direction)
 
 }  // namespace trajopt
 

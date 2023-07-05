@@ -4,6 +4,8 @@
 
 #include <optional>
 
+#include <nlohmann/json.hpp>
+
 #include <fmt/format.h>
 
 #include "trajopt/SymbolExports.h"
@@ -29,6 +31,11 @@ struct TRAJOPT_DLLEXPORT TranslationConstraint {
   std::optional<SolutionError> CheckTranslation(
       double x, double y, const SolutionTolerances& tolerances) const noexcept;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    TranslationConstraint,
+    translationBound)
+
 }  // namespace trajopt
 
 /**

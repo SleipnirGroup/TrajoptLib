@@ -4,6 +4,8 @@
 
 #include <optional>
 
+#include <nlohmann/json.hpp>
+
 #include <fmt/format.h>
 
 #include "trajopt/SymbolExports.h"
@@ -125,6 +127,10 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    */
   bool IsValid() const noexcept;
 };
+
+void to_json(nlohmann::json& j, const IntervalSet1d& set1d);
+void from_json(const nlohmann::json& j, IntervalSet1d& set1d);
+
 }  // namespace trajopt
 
 /**

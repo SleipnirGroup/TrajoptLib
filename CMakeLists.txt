@@ -90,6 +90,20 @@ endif()
 
 target_link_libraries(TrajoptLib PUBLIC fmt)
 
+# json dependency
+set(BUILD_SHARED_LIBS_SAVE ${BUILD_SHARED_LIBS})
+set(BUILD_SHARED_LIBS OFF)
+set(JSON_Install ON)
+FetchContent_Declare(
+  nlohmann_json
+  GIT_REPOSITORY https://github.com/nlohmann/json
+  GIT_TAG        v3.11.2
+)
+FetchContent_MakeAvailable(nlohmann_json)
+set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVE})
+
+target_link_libraries(TrajoptLib PUBLIC nlohmann_json)
+
 set(OPTIMIZER_BACKEND "casadi" CACHE STRING "Optimizer backend")
 set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS casadi sleipnir)
 

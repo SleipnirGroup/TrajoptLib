@@ -5,6 +5,9 @@
 #include <cmath>
 #include <limits>
 #include <optional>
+#include <string>
+
+#include <nlohmann/json.hpp>
 
 #include "trajopt/solution/SolutionChecking.h"
 
@@ -59,4 +62,41 @@ std::optional<SolutionError> IntervalSet1d::CheckScalar(
 bool IntervalSet1d::IsValid() const noexcept {
   return lower <= upper;
 }
+
+void to_json(nlohmann::json& j, const IntervalSet1d& set1d) {
+  if (set1d.IsExact()) {
+    j = set1d.lower;
+  } else {
+    if (set1d.IsLowerBounded()) {
+      j = nlohmann::json{{"lower", set1d.lower}};
+    } else {
+      j.update({"lower", "-inf"});
+    }
+    if (set1d.IsUpperBounded()) {
+      j.push_back({"upper", set1d.upper});
+    } else {
+      j.push_back({"upper", "+inf"});
+    }
+  }
+}
+
+void from_json(const nlohmann::json& j, IntervalSet1d& set1d) {
+  if (j.is_number()) {
+    set1d = IntervalSet1d(j.get<double>());
+  } else {
+    auto lower = j.at("lower");
+    if (lower.is_string() && lower.get<std::string>() == "-inf") {
+      set1d.lower = -std::numeric_limits<double>::infinity();
+    } else if (lower.is_number()) {
+      set1d.lower = lower.get<double>();
+    }
+    auto upper = j.at("upper");
+    if (upper.is_string() && upper.get<std::string>() == "+inf") {
+      set1d.upper = +std::numeric_limits<double>::infinity();
+    } else if (upper.is_number()) {
+      set1d.upper = upper.get<double>();
+    }
+  }
+}
+
 }  // namespace trajopt

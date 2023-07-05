@@ -4,6 +4,8 @@
 
 #include <optional>
 
+#include <nlohmann/json.hpp>
+
 #include <fmt/format.h>
 
 #include "trajopt/SymbolExports.h"
@@ -28,6 +30,10 @@ struct TRAJOPT_DLLEXPORT HeadingConstraint {
   std::optional<SolutionError> CheckHeading(
       double theta, const SolutionTolerances& tolerances) const noexcept;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    HeadingConstraint,
+    headingBound)
 
 }  // namespace trajopt
 

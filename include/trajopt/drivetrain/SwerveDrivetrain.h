@@ -4,6 +4,8 @@
 
 #include <vector>
 
+#include <nlohmann/json.hpp>
+
 #include <fmt/core.h>
 
 #include "trajopt/SymbolExports.h"
@@ -28,6 +30,12 @@ struct TRAJOPT_DLLEXPORT SwerveDrivetrain {
   /// corner.
   std::vector<SwerveModule> modules;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    SwerveDrivetrain,
+    mass,
+    moi,
+    modules)
 
 }  // namespace trajopt
 

@@ -4,6 +4,8 @@
 
 #include <optional>
 
+#include <nlohmann/json.hpp>
+
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/solution/SolutionChecking.h"
@@ -54,6 +56,12 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
    */
   bool IsValid() const noexcept;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    RectangularSet2d,
+    xBound,
+    yBound)
+
 }  // namespace trajopt
 
 /**

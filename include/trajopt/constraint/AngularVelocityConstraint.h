@@ -4,6 +4,8 @@
 
 #include <optional>
 
+#include <nlohmann/json.hpp>
+
 #include <fmt/format.h>
 
 #include "trajopt/SymbolExports.h"
@@ -29,6 +31,10 @@ struct TRAJOPT_DLLEXPORT AngularVelocityConstraint {
       double angularVelocity,
       const SolutionTolerances& tolerances) const noexcept;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    AngularVelocityConstraint,
+    angularVelocityBound)
 
 }  // namespace trajopt
 

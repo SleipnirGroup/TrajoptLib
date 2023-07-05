@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <nlohmann/json.hpp>
+
 #include <fmt/format.h>
 
 #include "trajopt/SymbolExports.h"
@@ -22,6 +24,12 @@ struct TRAJOPT_DLLEXPORT InitialGuessPoint {
   /// The initial guess of the heading of the robot.
   double heading;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    InitialGuessPoint,
+    x,
+    y,
+    heading)
 
 }  // namespace trajopt
 

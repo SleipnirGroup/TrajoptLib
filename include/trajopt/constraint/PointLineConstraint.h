@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <nlohmann/json.hpp>
+
 #include "trajopt/set/IntervalSet1d.h"
 
 namespace trajopt {
@@ -26,6 +28,17 @@ struct PointLineConstraint {
   /// the required minimum distance between the point and line, must be positive
   IntervalSet1d distance;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
+    PointLineConstraint,
+    robotPointX,
+    robotPointY,
+    fieldLineStartX,
+    fieldLineStartY,
+    fieldLineEndX,
+    fieldLineEndY,
+    distance)
+
 }  // namespace trajopt
 
 /**
