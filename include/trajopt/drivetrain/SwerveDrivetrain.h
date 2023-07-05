@@ -30,11 +30,7 @@ struct TRAJOPT_DLLEXPORT SwerveDrivetrain {
   std::vector<SwerveModule> modules;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    SwerveDrivetrain,
-    mass,
-    moi,
-    modules)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwerveDrivetrain, mass, moi, modules)
 
 }  // namespace trajopt
 

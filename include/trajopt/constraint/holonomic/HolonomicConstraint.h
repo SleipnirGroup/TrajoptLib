@@ -48,12 +48,13 @@ std::optional<SolutionError> CheckState(
 // issue.
 //! @cond Doxygen_Suppress
 namespace nlohmann {
-  template <>
-  struct adl_serializer<trajopt::HolonomicConstraint> {
-    static void to_json(json& j, const trajopt::HolonomicConstraint& constraint);
-    static void from_json(const json& j, trajopt::HolonomicConstraint& constraint);
-  };
-}
+template <>
+struct adl_serializer<trajopt::HolonomicConstraint> {
+  static void to_json(json& j, const trajopt::HolonomicConstraint& constraint);
+  static void from_json(const json& j,
+                        trajopt::HolonomicConstraint& constraint);
+};
+}  // namespace nlohmann
 //! @endcond
 
 _JSON_FMT_FORMATTER(trajopt::HolonomicConstraint)

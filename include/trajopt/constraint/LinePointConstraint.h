@@ -30,15 +30,10 @@ struct LinePointConstraint {
   IntervalSet1d distance;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    LinePointConstraint,
-    robotLineStartX,
-    robotLineStartY,
-    robotLineEndX,
-    robotLineEndY,
-    fieldPointX,
-    fieldPointY,
-    distance)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinePointConstraint, robotLineStartX,
+                                   robotLineStartY, robotLineEndX,
+                                   robotLineEndY, fieldPointX, fieldPointY,
+                                   distance)
 
 }  // namespace trajopt
 

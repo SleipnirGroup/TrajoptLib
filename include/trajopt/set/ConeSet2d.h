@@ -37,9 +37,7 @@ struct TRAJOPT_DLLEXPORT ConeSet2d {
   bool IsValid() const noexcept;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    ConeSet2d,
-    thetaBound)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ConeSet2d, thetaBound)
 
 }  // namespace trajopt
 

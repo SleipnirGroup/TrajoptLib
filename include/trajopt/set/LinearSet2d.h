@@ -12,7 +12,6 @@
 #include "trajopt/solution/SolutionChecking.h"
 #include "trajopt/util/JsonFmtFormatter.h"
 
-
 namespace trajopt {
 
 /**
@@ -43,9 +42,7 @@ struct TRAJOPT_DLLEXPORT LinearSet2d {
                                               const IntervalSet1d& rBound);
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    LinearSet2d,
-    theta)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinearSet2d, theta)
 
 }  // namespace trajopt
 

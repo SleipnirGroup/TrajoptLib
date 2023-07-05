@@ -24,11 +24,7 @@ struct TRAJOPT_DLLEXPORT InitialGuessPoint {
   double heading;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    InitialGuessPoint,
-    x,
-    y,
-    heading)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(InitialGuessPoint, x, y, heading)
 
 }  // namespace trajopt
 

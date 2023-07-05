@@ -36,10 +36,8 @@ struct TRAJOPT_DLLEXPORT HolonomicVelocityConstraint {
       const SolutionTolerances& tolerances) const noexcept;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    HolonomicVelocityConstraint,
-    velocityBound,
-    coordinateSystem)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(HolonomicVelocityConstraint, velocityBound,
+                                   coordinateSystem)
 
 }  // namespace trajopt
 

@@ -41,13 +41,8 @@ struct TRAJOPT_DLLEXPORT SwerveModule {
   double wheelMaxTorque;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    SwerveModule,
-    x,
-    y,
-    wheelRadius,
-    wheelMaxAngularVelocity,
-    wheelMaxTorque)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwerveModule, x, y, wheelRadius,
+                                   wheelMaxAngularVelocity, wheelMaxTorque)
 
 }  // namespace trajopt
 

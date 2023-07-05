@@ -35,30 +35,26 @@ std::optional<SolutionError> CheckVector(const Set2d& set2d, double xComp,
 
 namespace nlohmann {
 
-void adl_serializer<trajopt::Set2d>::to_json(
-    json& j,
-    const trajopt::Set2d& set2d) {
-
-  if (const auto* _set2d =
-      std::get_if<trajopt::RectangularSet2d>(&set2d)) {
+void adl_serializer<trajopt::Set2d>::to_json(json& j,
+                                             const trajopt::Set2d& set2d) {
+  if (const auto* _set2d = std::get_if<trajopt::RectangularSet2d>(&set2d)) {
     j = json{{"set2dType", "rectangular"}};
     j.update(*_set2d);
-  } else if (const auto* _set2d =
-      std::get_if<trajopt::LinearSet2d>(&set2d)) {
+  } else if (const auto* _set2d = std::get_if<trajopt::LinearSet2d>(&set2d)) {
     j = json{{"set2dType", "linear"}};
     j.update(*_set2d);
   } else if (const auto* _set2d =
-      std::get_if<trajopt::EllipticalSet2d>(&set2d)) {
+                 std::get_if<trajopt::EllipticalSet2d>(&set2d)) {
     j = json{{"set2dType", "elliptical"}};
     j.update(*_set2d);
-  } else if (const auto* _set2d =
-      std::get_if<trajopt::ConeSet2d>(&set2d)) {
+  } else if (const auto* _set2d = std::get_if<trajopt::ConeSet2d>(&set2d)) {
     j = json{{"set2dType", "cone"}};
     j.update(*_set2d);
   }
 }
 
-void adl_serializer<trajopt::Set2d>::from_json(const json& j, trajopt::Set2d& set2d) {
+void adl_serializer<trajopt::Set2d>::from_json(const json& j,
+                                               trajopt::Set2d& set2d) {
   std::string type = j.at("set2dType").get<std::string>();
   if (type == "rectangular") {
     set2d = j.get<trajopt::RectangularSet2d>();
@@ -71,4 +67,4 @@ void adl_serializer<trajopt::Set2d>::from_json(const json& j, trajopt::Set2d& se
   }
 }
 
-}
+}  // namespace nlohmann

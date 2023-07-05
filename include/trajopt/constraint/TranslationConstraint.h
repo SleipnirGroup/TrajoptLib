@@ -31,9 +31,7 @@ struct TRAJOPT_DLLEXPORT TranslationConstraint {
       double x, double y, const SolutionTolerances& tolerances) const noexcept;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    TranslationConstraint,
-    translationBound)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(TranslationConstraint, translationBound)
 
 }  // namespace trajopt
 

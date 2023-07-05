@@ -31,9 +31,8 @@ struct TRAJOPT_DLLEXPORT AngularVelocityConstraint {
       const SolutionTolerances& tolerances) const noexcept;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    AngularVelocityConstraint,
-    angularVelocityBound)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AngularVelocityConstraint,
+                                   angularVelocityBound)
 
 }  // namespace trajopt
 

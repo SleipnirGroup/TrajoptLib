@@ -61,15 +61,10 @@ struct TRAJOPT_DLLEXPORT DifferentialPath {
   DifferentialDrivetrain drivetrain;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    SwerveWaypoint,
-    waypointConstraints,
-    segmentConstraints)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwerveWaypoint, waypointConstraints,
+                                   segmentConstraints)
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
-    SwervePath,
-    waypoints,
-    drivetrain)
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwervePath, waypoints, drivetrain)
 
 }  // namespace trajopt
 
