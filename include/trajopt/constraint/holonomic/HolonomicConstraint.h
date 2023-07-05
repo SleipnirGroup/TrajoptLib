@@ -6,13 +6,12 @@
 
 #include <nlohmann/json.hpp>
 
-#include <fmt/format.h>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.h"
 #include "trajopt/solution/SolutionChecking.h"
 #include "trajopt/util/AppendVariant.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -55,38 +54,4 @@ namespace nlohmann {
   };
 }
 
-/**
- * Formatter for HolonomicConstraint.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::HolonomicConstraint> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted HolonomicConstraint.
-   *
-   * @param constraint HolonomicConstraint instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::HolonomicConstraint& constraint,
-              fmt::format_context& ctx) const {
-    using namespace trajopt;
-    if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<AngularVelocityConstraint>(constraint));
-    } else if (std::holds_alternative<HolonomicVelocityConstraint>(
-                   constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<HolonomicVelocityConstraint>(constraint));
-    } else {
-      return ctx.out();
-    }
-  }
-};
+_JSON_FMT_FORMATTER(trajopt::HolonomicConstraint)

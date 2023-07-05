@@ -5,6 +5,7 @@
 #include <nlohmann/json.hpp>
 
 #include "trajopt/set/IntervalSet1d.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -41,28 +42,4 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
 
 }  // namespace trajopt
 
-/**
- * Formatter for PointLineConstraint.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::PointLineConstraint> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted PointLineConstraint.
-   *
-   * @param constraint PointLineConstraint instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::PointLineConstraint& constraint,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(ctx.out(), "point line constraint");
-  }
-};
+_JSON_FMT_FORMATTER(trajopt::PointLineConstraint)

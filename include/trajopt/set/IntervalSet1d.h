@@ -6,10 +6,9 @@
 
 #include <nlohmann/json.hpp>
 
-#include <fmt/format.h>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/solution/SolutionChecking.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -133,32 +132,4 @@ void from_json(const nlohmann::json& j, IntervalSet1d& set1d);
 
 }  // namespace trajopt
 
-/**
- * Formatter for IntervalSet1d.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::IntervalSet1d> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted IntervalSet1d.
-   *
-   * @param set1d IntervalSet1d instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::IntervalSet1d& set1d,
-              fmt::format_context& ctx) const {
-    if (set1d.IsExact()) {
-      return fmt::format_to(ctx.out(), "= {}", set1d.lower);
-    } else {
-      return fmt::format_to(ctx.out(), "∈ [{}, {}]", set1d.lower, set1d.upper);
-    }
-  }
-};
+_JSON_FMT_FORMATTER(trajopt::IntervalSet1d)

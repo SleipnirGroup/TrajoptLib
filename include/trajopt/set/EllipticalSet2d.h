@@ -7,10 +7,9 @@
 
 #include <nlohmann/json.hpp>
 
-#include <fmt/format.h>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/solution/SolutionChecking.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -75,6 +74,12 @@ struct TRAJOPT_DLLEXPORT EllipticalSet2d {
   bool IsValid() const noexcept;
 };
 
+NLOHMANN_JSON_SERIALIZE_ENUM(EllipticalSet2d::Direction, {
+    {EllipticalSet2d::Direction::kInside, "inside"},
+    {EllipticalSet2d::Direction::kCentered, "centered"},
+    {EllipticalSet2d::Direction::kOutside, "outside"},
+})
+
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
     EllipticalSet2d,
     xRadius,
@@ -83,49 +88,4 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
 
 }  // namespace trajopt
 
-/**
- * Formatter for EllipticalSet2d.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::EllipticalSet2d> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted EllipticalSet2d.
-   *
-   * @param ellipticalSet EllipticalSet2d instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::EllipticalSet2d& ellipticalSet,
-              fmt::format_context& ctx) const {
-    std::string shape;
-    if (ellipticalSet.IsCircular()) {
-      shape = "circle";
-    } else {
-      shape = "ellipse";
-    }
-    using enum trajopt::EllipticalSet2d::Direction;
-    std::string direction;
-    switch (ellipticalSet.direction) {
-      case kInside:
-        direction = "inside";
-        break;
-      case kCentered:
-        direction = "centered";
-        break;
-      case kOutside:
-        direction = "outside";
-        break;
-    }
-    return fmt::format_to(ctx.out(), "{}: {}, rₓ = {}, rᵧ = {}", shape,
-                          direction, ellipticalSet.xRadius,
-                          ellipticalSet.yRadius);
-  }
-};
+_JSON_FMT_FORMATTER(trajopt::EllipticalSet2d)

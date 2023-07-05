@@ -17,6 +17,7 @@
 #include "trajopt/path/InitialGuessPoint.h"
 #include "trajopt/solution/DifferentialSolution.h"
 #include "trajopt/solution/SwerveSolution.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -71,3 +72,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
     drivetrain)
 
 }  // namespace trajopt
+
+_JSON_FMT_FORMATTER(trajopt::SwerveWaypoint)
+
+_JSON_FMT_FORMATTER(trajopt::SwervePath)

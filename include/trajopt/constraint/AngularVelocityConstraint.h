@@ -6,11 +6,10 @@
 
 #include <nlohmann/json.hpp>
 
-#include <fmt/format.h>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/solution/SolutionChecking.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -38,28 +37,4 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(
 
 }  // namespace trajopt
 
-/**
- * Formatter for AngularVelocityConstraint.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::AngularVelocityConstraint> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted AngularVelocityConstraint.
-   *
-   * @param constraint AngularVelocityConstraint instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::AngularVelocityConstraint& constraint,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(ctx.out(), "ω {}", constraint.angularVelocityBound);
-  }
-};
+_JSON_FMT_FORMATTER(trajopt::AngularVelocityConstraint)
