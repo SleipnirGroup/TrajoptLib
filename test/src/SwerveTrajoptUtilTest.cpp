@@ -38,10 +38,14 @@ TEST(SwerveTrajoptUtilTest, SolveNetTorque) {
   std::vector<double> Fx{-3.0, -5.0, -4.0, 2.0};
   std::vector<double> Fy{4.0, -5.0, -2.0, -4.0};
   std::vector<trajopt::SwerveModule> swerveModules = {
-    {.x =  1.0, .y =  1.0,},
-    {.x =  1.0, .y = -1.0,},
-    {.x = -1.0, .y =  1.0,},
-    {.x = -1.0, .y = -1.0,},
+    {.x =  1.0, .y =  1.0, .wheelRadius = 0.0, .wheelMaxAngularVelocity = 0.0,
+        .wheelMaxTorque = 0.0},
+    {.x =  1.0, .y = -1.0, .wheelRadius = 0.0, .wheelMaxAngularVelocity = 0.0,
+        .wheelMaxTorque = 0.0},
+    {.x = -1.0, .y =  1.0, .wheelRadius = 0.0, .wheelMaxAngularVelocity = 0.0,
+        .wheelMaxTorque = 0.0},
+    {.x = -1.0, .y = -1.0, .wheelRadius = 0.0, .wheelMaxAngularVelocity = 0.0,
+        .wheelMaxTorque = 0.0},
   };
   std::array<double, 4> tau = {2.94064515627, -5.40302305868, 1.55887186559, 1.55887186559};
   double tau_net = std::accumulate(tau.begin(), tau.end(), 0.0);
