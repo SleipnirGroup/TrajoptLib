@@ -47,6 +47,7 @@ std::optional<SolutionError> CheckVector(const Set2d& set2d, double xComp,
 
 }  // namespace trajopt
 
+//! @cond Doxygen_Suppress
 namespace nlohmann {
   template <>
   struct adl_serializer<trajopt::Set2d> {
@@ -54,5 +55,6 @@ namespace nlohmann {
     static void from_json(const json& j, trajopt::Set2d& set2d);
   };
 }
+//! @endcond
 
 _JSON_FMT_FORMATTER(trajopt::Set2d)
