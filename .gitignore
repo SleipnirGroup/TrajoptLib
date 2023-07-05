@@ -34,3 +34,7 @@ node_modules
 
 # Ignore rust build
 rust/target/
+
+# Ignore local build scripts
+/build.sh
+/test.sh
