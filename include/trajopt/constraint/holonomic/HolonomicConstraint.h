@@ -46,6 +46,7 @@ std::optional<SolutionError> CheckState(
 // conversion from each of those types to HolonomicConstraint (because of
 // std::variant) requires using this style of serialization that avoids that
 // issue.
+//! @cond Doxygen_Suppress
 namespace nlohmann {
   template <>
   struct adl_serializer<trajopt::HolonomicConstraint> {
@@ -53,5 +54,6 @@ namespace nlohmann {
     static void from_json(const json& j, trajopt::HolonomicConstraint& constraint);
   };
 }
+//! @endcond
 
 _JSON_FMT_FORMATTER(trajopt::HolonomicConstraint)
