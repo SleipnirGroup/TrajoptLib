@@ -16,3 +16,5 @@ struct fmt::formatter<Type> {                                                 \
         "{}", nlohmann::json(value).dump(2));                                 \
   }                                                                           \
 };
+
+// avoid newline backslash warning
