@@ -34,10 +34,8 @@ TEST(SwerveTrajoptUtilTest, SolveNetTorque) {
     {.x = -1.0, .y = -1.0, .wheelRadius = 0.0, .wheelMaxAngularVelocity = 0.0,
         .wheelMaxTorque = 0.0},
   };
-  std::array<double, 4> tau = {2.94064515627, -5.40302305868, 1.55887186559, 1.55887186559};
-  double tau_net = std::accumulate(tau.begin(), tau.end(), 0.0);
-  double solved_tau_net = trajopt::SolveNetTorque(theta, Fx, Fy, swerveModules);
-  EXPECT_NEAR(solved_tau_net, tau_net, 0.001);
+  double tau_net = trajopt::SolveNetTorque(theta, Fx, Fy, swerveModules);
+  EXPECT_NEAR(tau_net, 0.6553658, 0.001);
 }
 
 TEST(SwerveTrajoptUtilTest, ApplyKinematicsConstraints) {
@@ -52,3 +50,18 @@ TEST(SwerveTrajoptUtilTest, ApplyKinematicsConstraints) {
   trajopt::ApplyKinematicsConstraints(opti, x, x, x, v, v, v, a, a, a, dt, N);
   EXPECT_FALSE(opti.IsViolating());
 }
+
+// Uncomment when fix is made for this function in future PR
+// TEST(SwerveTrajoptUtilTest, ApplyDynamicsConstraints) {
+//   TestOpti opti;
+//   double ax = 1.0;
+//   double ay = -2.0;
+//   double alpha = 9.0;
+//   double Fx_net = 45.0;
+//   double Fy_net = -90.0;
+//   double tau_net = 54.0;
+//   double mass = 45.0;
+//   double moi = 6.0;
+//   trajopt::ApplyDynamicsConstraints(opti, ax, ay, alpha, Fx_net, Fy_net, tau_net, mass, moi);
+//   EXPECT_FALSE(opti.IsViolating());
+// }
