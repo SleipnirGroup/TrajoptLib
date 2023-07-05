@@ -101,7 +101,7 @@ void ApplyDynamicsConstraints(Opti& opti, const Expr& ax, const Expr& ay,
                               const Expr& Fy_net, const Expr& tau_net,
                               double mass, double moi) {
   opti.SubjectTo(Fx_net == mass * ax);
-  opti.SubjectTo(Fy_net == mass * ax);
+  opti.SubjectTo(Fy_net == mass * ay);
   opti.SubjectTo(tau_net == moi * alpha);
 }
 
