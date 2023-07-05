@@ -1,0 +1,21 @@
+name: Test
+
+on: [pull_request, push]
+
+jobs:
+  test:
+    name: "Test CasADi C++ on Linux"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: configure
+        run: cmake -B build -S . -DOPTIMIZER_BACKEND=casadi -DBUILD_TESTING=ON
+
+      - name: build
+        run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
+
+      - name: test
+        working-directory: build
+        run: ctest -C RelWithDebInfo --output-on-failure
