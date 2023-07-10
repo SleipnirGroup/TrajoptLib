@@ -5,12 +5,15 @@
 #include <optional>
 #include <variant>
 
+#include <nlohmann/json.hpp>
+
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/ConeSet2d.h"
 #include "trajopt/set/EllipticalSet2d.h"
 #include "trajopt/set/LinearSet2d.h"
 #include "trajopt/set/RectangularSet2d.h"
 #include "trajopt/solution/SolutionChecking.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -44,38 +47,14 @@ std::optional<SolutionError> CheckVector(const Set2d& set2d, double xComp,
 
 }  // namespace trajopt
 
-/**
- * Formatter for Set2d.
- */
 //! @cond Doxygen_Suppress
+namespace nlohmann {
 template <>
-struct fmt::formatter<trajopt::Set2d> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted Set2d.
-   *
-   * @param set2d Set2d instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::Set2d& set2d, fmt::format_context& ctx) const {
-    using namespace trajopt;
-    if (std::holds_alternative<RectangularSet2d>(set2d)) {
-      return fmt::format_to(ctx.out(), "2d {}",
-                            std::get<RectangularSet2d>(set2d));
-    } else if (std::holds_alternative<LinearSet2d>(set2d)) {
-      return fmt::format_to(ctx.out(), "2d {}", std::get<LinearSet2d>(set2d));
-    } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
-      return fmt::format_to(ctx.out(), "2d {}",
-                            std::get<EllipticalSet2d>(set2d));
-    } else /*if (set2d.IsCone())*/ {
-      return fmt::format_to(ctx.out(), "2d {}", std::get<ConeSet2d>(set2d));
-    }
-  }
+struct adl_serializer<trajopt::Set2d> {
+  static void to_json(json& j, const trajopt::Set2d& set2d);
+  static void from_json(const json& j, trajopt::Set2d& set2d);
 };
+}  // namespace nlohmann
+//! @endcond
+
+_JSON_FMT_FORMATTER(trajopt::Set2d)

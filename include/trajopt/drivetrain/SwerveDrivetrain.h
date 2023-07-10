@@ -4,12 +4,13 @@
 
 #include <vector>
 
-#include <fmt/core.h>
+#include <nlohmann/json.hpp>
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/drivetrain/SwerveModule.h"
 #include "trajopt/obstacle/Obstacle.h"
 #include "trajopt/trajectory/HolonomicTrajectory.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -29,35 +30,8 @@ struct TRAJOPT_DLLEXPORT SwerveDrivetrain {
   std::vector<SwerveModule> modules;
 };
 
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwerveDrivetrain, mass, moi, modules)
+
 }  // namespace trajopt
 
-/**
- * Formatter for SwerveDrivetrain.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::SwerveDrivetrain> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted SwerveDrivetrain.
-   *
-   * @param swerveDrivetrain SwerveDrivetrain instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::SwerveDrivetrain& swerveDrivetrain,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(ctx.out(),
-                          "swerve drivetrain:\n"
-                          "  mass = {},\n"
-                          "  moi = {},\n"
-                          "  modules = (no impl yet)",
-                          swerveDrivetrain.mass, swerveDrivetrain.moi);
-  }
-};
+_JSON_FMT_FORMATTER(trajopt::SwerveDrivetrain)

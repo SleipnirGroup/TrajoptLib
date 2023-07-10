@@ -7,6 +7,8 @@
 #include <type_traits>
 #include <vector>
 
+#include <nlohmann/json.hpp>
+
 #include "trajopt/SymbolExports.h"
 #include "trajopt/constraint/differential/DifferentialConstraint.h"
 #include "trajopt/constraint/holonomic/HolonomicConstraint.h"
@@ -15,6 +17,7 @@
 #include "trajopt/path/InitialGuessPoint.h"
 #include "trajopt/solution/DifferentialSolution.h"
 #include "trajopt/solution/SwerveSolution.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -57,4 +60,14 @@ struct TRAJOPT_DLLEXPORT DifferentialPath {
   /// drivetrain of the robot
   DifferentialDrivetrain drivetrain;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwerveWaypoint, waypointConstraints,
+                                   segmentConstraints)
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwervePath, waypoints, drivetrain)
+
 }  // namespace trajopt
+
+_JSON_FMT_FORMATTER(trajopt::SwerveWaypoint)
+
+_JSON_FMT_FORMATTER(trajopt::SwervePath)

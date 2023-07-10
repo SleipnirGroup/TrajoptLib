@@ -4,11 +4,12 @@
 
 #include <optional>
 
-#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/solution/SolutionChecking.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -29,30 +30,8 @@ struct TRAJOPT_DLLEXPORT HeadingConstraint {
       double theta, const SolutionTolerances& tolerances) const noexcept;
 };
 
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(HeadingConstraint, headingBound)
+
 }  // namespace trajopt
 
-/**
- * Formatter for HeadingConstraint.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::HeadingConstraint> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted HeadingConstraint.
-   *
-   * @param constraint HeadingConstraint instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::HeadingConstraint& constraint,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(ctx.out(), "heading {}", constraint.headingBound);
-  }
-};
+_JSON_FMT_FORMATTER(trajopt::HeadingConstraint)

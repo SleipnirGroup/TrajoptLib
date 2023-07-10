@@ -4,10 +4,13 @@
 
 #include <optional>
 
+#include <nlohmann/json.hpp>
+
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/set/RectangularSet2d.h"
 #include "trajopt/solution/SolutionChecking.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -38,30 +41,9 @@ struct TRAJOPT_DLLEXPORT LinearSet2d {
   static RectangularSet2d RBoundToRectangular(double theta,
                                               const IntervalSet1d& rBound);
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinearSet2d, theta)
+
 }  // namespace trajopt
 
-/**
- * Formatter for LinearSet2d.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::LinearSet2d> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted LinearSet2d.
-   *
-   * @param linearSet LinearSet2d instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::LinearSet2d& linearSet,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(ctx.out(), "polar line: θ = {}", linearSet.theta);
-  }
-};
+_JSON_FMT_FORMATTER(trajopt::LinearSet2d)

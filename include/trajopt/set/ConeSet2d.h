@@ -4,9 +4,12 @@
 
 #include <optional>
 
+#include <nlohmann/json.hpp>
+
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/solution/SolutionChecking.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -33,30 +36,9 @@ struct TRAJOPT_DLLEXPORT ConeSet2d {
    */
   bool IsValid() const noexcept;
 };
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(ConeSet2d, thetaBound)
+
 }  // namespace trajopt
 
-/**
- * Formatter for ConeSet2d.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::ConeSet2d> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted ConeSet2d.
-   *
-   * @param coneSet ConeSet2d instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::ConeSet2d& coneSet,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(ctx.out(), "cone: θ = {}", coneSet.thetaBound);
-  }
-};
+_JSON_FMT_FORMATTER(trajopt::ConeSet2d)

@@ -4,8 +4,11 @@
 
 #include <array>
 
+#include <nlohmann/json.hpp>
+
 #include "trajopt/SymbolExports.h"
 #include "trajopt/constraint/Constraint.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -38,34 +41,9 @@ struct TRAJOPT_DLLEXPORT SwerveModule {
   double wheelMaxTorque;
 };
 
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwerveModule, x, y, wheelRadius,
+                                   wheelMaxAngularVelocity, wheelMaxTorque)
+
 }  // namespace trajopt
 
-/**
- * Formatter for SwerveModule.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::SwerveModule> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted SwerveModule.
-   *
-   * @param swerveModule SwerveModule instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::SwerveModule& swerveModule,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(
-        ctx.out(),
-        "swerve module: (x, y) = ({}, {}), r = {}, ωₘₐₓ = {}, τₘₐₓ = {}",
-        swerveModule.x, swerveModule.y, swerveModule.wheelRadius,
-        swerveModule.wheelMaxAngularVelocity, swerveModule.wheelMaxTorque);
-  }
-};
+_JSON_FMT_FORMATTER(trajopt::SwerveModule)

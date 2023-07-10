@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 
 #include "trajopt/SymbolExports.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -23,30 +24,8 @@ struct TRAJOPT_DLLEXPORT InitialGuessPoint {
   double heading;
 };
 
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(InitialGuessPoint, x, y, heading)
+
 }  // namespace trajopt
 
-/**
- * Formatter for InitialGuessPoint.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::InitialGuessPoint> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted InitialGuessPoint.
-   *
-   * @param initialGuessPoint InitialGuessPoint instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::InitialGuessPoint& initialGuessPoint,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(ctx.out(), "Initial Guess Point");
-  }
-};
+_JSON_FMT_FORMATTER(trajopt::InitialGuessPoint)

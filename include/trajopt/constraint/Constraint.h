@@ -65,6 +65,13 @@ using Constraint =
 std::optional<SolutionError> CheckState(
     const Constraint& constraint, double x, double y, double heading,
     const SolutionTolerances& tolerances) noexcept;
+
+NLOHMANN_JSON_SERIALIZE_ENUM(CoordinateSystem,
+                             {
+                                 {CoordinateSystem::kField, "field"},
+                                 {CoordinateSystem::kRobot, "robot"},
+                             })
+
 }  // namespace trajopt
 
 /**

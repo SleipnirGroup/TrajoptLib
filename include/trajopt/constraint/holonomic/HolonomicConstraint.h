@@ -4,13 +4,14 @@
 
 #include <variant>
 
-#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.h"
 #include "trajopt/solution/SolutionChecking.h"
 #include "trajopt/util/AppendVariant.h"
+#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -39,38 +40,21 @@ std::optional<SolutionError> CheckState(
 
 }  // namespace trajopt
 
-/**
- * Formatter for HolonomicConstraint.
- */
+// For the serialization functions of HolonomicConstraint, we want to use the
+// serialization functions of the various constraint types
+// (TranslationConstraint, HeadingConstraint, etc.), but the implicit
+// conversion from each of those types to HolonomicConstraint (because of
+// std::variant) requires using this style of serialization that avoids that
+// issue.
 //! @cond Doxygen_Suppress
+namespace nlohmann {
 template <>
-struct fmt::formatter<trajopt::HolonomicConstraint> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted HolonomicConstraint.
-   *
-   * @param constraint HolonomicConstraint instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::HolonomicConstraint& constraint,
-              fmt::format_context& ctx) const {
-    using namespace trajopt;
-    if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<AngularVelocityConstraint>(constraint));
-    } else if (std::holds_alternative<HolonomicVelocityConstraint>(
-                   constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<HolonomicVelocityConstraint>(constraint));
-    } else {
-      return ctx.out();
-    }
-  }
+struct adl_serializer<trajopt::HolonomicConstraint> {
+  static void to_json(json& j, const trajopt::HolonomicConstraint& constraint);
+  static void from_json(const json& j,
+                        trajopt::HolonomicConstraint& constraint);
 };
+}  // namespace nlohmann
+//! @endcond
+
+_JSON_FMT_FORMATTER(trajopt::HolonomicConstraint)
