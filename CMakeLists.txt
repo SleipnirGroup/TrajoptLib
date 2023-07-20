@@ -18,17 +18,15 @@ set(CMAKE_SKIP_BUILD_RPATH FALSE)
 # installing)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
-set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)
-
-# add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
+# Add the automatically determined parts of the RPATH which point to directories
+# outside the build tree to the install RPATH
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# the RPATH to be used when installing, but only if it's not a system directory
+# The RPATH to be used when installing, but only if it's not a system directory
 list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
 if ("${isSystemDir}" STREQUAL "-1")
-  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-endif("${isSystemDir}" STREQUAL "-1")
+  list(APPEND CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+endif()
 
 # Set default build type to release with debug info (i.e. release mode
 # optimizations are performed, but debug info still exists).
@@ -115,6 +113,19 @@ if (${OPTIMIZER_BACKEND} STREQUAL "casadi")
   target_include_directories(TrajoptLib SYSTEM PRIVATE ${CASADI_INCLUDEDIR})
   target_link_directories(TrajoptLib PRIVATE ${CASADI_LIBDIR})
   target_link_libraries(TrajoptLib PRIVATE casadi)
+
+  # Add current directory to RPATH
+  if (APPLE)
+    set_property(TARGET TrajoptLib
+                 APPEND PROPERTY INSTALL_RPATH
+                 "@loader_path/../lib;@loader_path"
+    )
+  elseif (UNIX)
+    set_property(TARGET TrajoptLib
+                 APPEND PROPERTY INSTALL_RPATH
+                 "$ORIGIN/../lib;$ORIGIN"
+    )
+  endif()
 
   # Install CasADi libraries since FetchContent setting that up properly
   install(FILES ${CASADI_INSTALL_LIBS} DESTINATION ${CASADI_INSTALL_DEST})
