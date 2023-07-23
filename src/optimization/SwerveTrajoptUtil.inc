@@ -86,7 +86,10 @@ void ApplyKinematicsConstraints(
       auto alpha_n = alpha.at(idx);
       opti.SubjectTo(x_n_1 + vx_n * dt_sgmt == x_n);
       opti.SubjectTo(y_n_1 + vy_n * dt_sgmt == y_n);
-      opti.SubjectTo(theta_n_1 + omega_n * dt_sgmt == theta_n);
+      opti.SubjectTo(cos(theta_n_1 + omega_n * dt_sgmt) ==  // NOLINT
+                     cos(theta_n));                         // NOLINT
+      opti.SubjectTo(sin(theta_n_1 + omega_n * dt_sgmt) ==  // NOLINT
+                     sin(theta_n));                         // NOLINT
       opti.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
       opti.SubjectTo(vy_n_1 + ay_n * dt_sgmt == vy_n);
       opti.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
