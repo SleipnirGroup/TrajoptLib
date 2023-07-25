@@ -39,10 +39,14 @@ mod ffi {
 
         fn set_drivetrain(self: Pin<&mut SwervePathBuilderImpl>, drivetrain: &SwerveDrivetrain);
 
+        fn translation_wpt(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, x: f64, y: f64, heading_guess: f64);
         fn pose_wpt(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, x: f64, y: f64, heading: f64);
 
         fn wpt_zero_velocity(self: Pin<&mut SwervePathBuilderImpl>, idx: usize);
         fn wpt_zero_angular_velocity(self: Pin<&mut SwervePathBuilderImpl>, idx: usize);
+        fn wpt_velocity_direction(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, angle: f64);
+        fn wpt_velocity_magnitude(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, v: f64);
+        fn wpt_velocity_polar(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, vr: f64, vtheta: f64);
 
         fn generate(self: &SwervePathBuilderImpl) -> Result<HolonomicTrajectory>;
 
@@ -67,6 +71,10 @@ impl SwervePathBuilder {
         crate::ffi::SwervePathBuilderImpl::set_drivetrain(self.path.pin_mut(), drivetrain);
     }
 
+    pub fn translation_wpt(&mut self, idx: usize, x: f64, y: f64, heading_guess: f64) {
+        crate::ffi::SwervePathBuilderImpl::translation_wpt(self.path.pin_mut(), idx, x, y, heading_guess);
+    }
+
     pub fn pose_wpt(&mut self, idx: usize, x: f64, y: f64, heading: f64) {
         crate::ffi::SwervePathBuilderImpl::pose_wpt(self.path.pin_mut(), idx, x, y, heading);
     }
@@ -77,6 +85,18 @@ impl SwervePathBuilder {
 
     pub fn wpt_zero_angular_velocity(&mut self, idx: usize) {
         crate::ffi::SwervePathBuilderImpl::wpt_zero_angular_velocity(self.path.pin_mut(), idx);
+    }
+
+    pub fn wpt_velocity_direction(&mut self, idx: usize, angle: f64) {
+        crate::ffi::SwervePathBuilderImpl::wpt_velocity_direction(self.path.pin_mut(), idx, angle);
+    }
+
+    pub fn wpt_velocity_magnitude(&mut self, idx: usize, v: f64) {
+        crate::ffi::SwervePathBuilderImpl::wpt_velocity_magnitude(self.path.pin_mut(), idx, v);
+    }
+
+    pub fn wpt_velocity_polar(&mut self, idx: usize, vr: f64, vtheta: f64) {
+        crate::ffi::SwervePathBuilderImpl::wpt_velocity_polar(self.path.pin_mut(), idx, vr, vtheta);
     }
 
     pub fn generate(&self) -> Result<HolonomicTrajectory, String> {
