@@ -103,6 +103,11 @@ void SwervePathBuilderImpl::wpt_velocity_polar(size_t idx, double vr, double vth
   path.WptVelocityPolar(idx, vr, vtheta);
 }
 
+void SwervePathBuilderImpl::wpt_angular_velocity(size_t idx, double angular_velocity) {
+  // this probably ought to be added to SwervePathBuilder in the C++ API
+  path.WptConstraint(idx, trajopt::AngularVelocityConstraint{angular_velocity});
+}
+
 HolonomicTrajectorySample _convert_holonomic_trajectory_sample(const trajopt::HolonomicTrajectorySample& sample) {
   return HolonomicTrajectorySample{
     .timestamp = sample.timestamp,

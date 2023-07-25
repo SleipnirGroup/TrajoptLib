@@ -47,6 +47,7 @@ mod ffi {
         fn wpt_velocity_direction(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, angle: f64);
         fn wpt_velocity_magnitude(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, v: f64);
         fn wpt_velocity_polar(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, vr: f64, vtheta: f64);
+        fn wpt_angular_velocity(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, angular_velocity: f64);
 
         fn generate(self: &SwervePathBuilderImpl) -> Result<HolonomicTrajectory>;
 
@@ -97,6 +98,10 @@ impl SwervePathBuilder {
 
     pub fn wpt_velocity_polar(&mut self, idx: usize, vr: f64, vtheta: f64) {
         crate::ffi::SwervePathBuilderImpl::wpt_velocity_polar(self.path.pin_mut(), idx, vr, vtheta);
+    }
+
+    pub fn wpt_angular_velocity(&mut self, idx: usize, angular_velocity: f64) {
+        crate::ffi::SwervePathBuilderImpl::wpt_angular_velocity(self.path.pin_mut(), idx, angular_velocity);
     }
 
     pub fn generate(&self) -> Result<HolonomicTrajectory, String> {

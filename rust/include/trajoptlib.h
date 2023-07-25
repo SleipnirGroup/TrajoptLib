@@ -24,6 +24,7 @@ class SwervePathBuilderImpl {
   void wpt_velocity_direction(size_t idx, double angle);
   void wpt_velocity_magnitude(size_t idx, double v);
   void wpt_velocity_polar(size_t idx, double vr, double vtheta);
+  void wpt_angular_velocity(size_t idx, double angular_velocity);
 
   HolonomicTrajectory generate() const;
 
