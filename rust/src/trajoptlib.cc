@@ -75,6 +75,10 @@ void SwervePathBuilderImpl::set_drivetrain(const SwerveDrivetrain& drivetrain) {
   path.SetDrivetrain(_convert_swerve_drivetrain(drivetrain));
 }
 
+void SwervePathBuilderImpl::translation_wpt(size_t idx, double x, double y, double heading_guess) {
+  path.TranslationWpt(idx, x, y, heading_guess);
+}
+
 void SwervePathBuilderImpl::pose_wpt(size_t idx, double x, double y, double heading) {
   path.PoseWpt(idx, x, y, heading);
 }
@@ -85,6 +89,23 @@ void SwervePathBuilderImpl::wpt_zero_velocity(size_t idx) {
 
 void SwervePathBuilderImpl::wpt_zero_angular_velocity(size_t idx) {
   path.WptZeroAngularVelocity(idx);
+}
+
+void SwervePathBuilderImpl::wpt_velocity_direction(size_t idx, double angle) {
+  path.WptVelocityDirection(idx, angle);
+}
+
+void SwervePathBuilderImpl::wpt_velocity_magnitude(size_t idx, double v) {
+  path.WptVelocityMagnitude(idx, v);
+}
+
+void SwervePathBuilderImpl::wpt_velocity_polar(size_t idx, double vr, double vtheta) {
+  path.WptVelocityPolar(idx, vr, vtheta);
+}
+
+void SwervePathBuilderImpl::wpt_angular_velocity(size_t idx, double angular_velocity) {
+  // this probably ought to be added to SwervePathBuilder in the C++ API
+  path.WptConstraint(idx, trajopt::AngularVelocityConstraint{angular_velocity});
 }
 
 HolonomicTrajectorySample _convert_holonomic_trajectory_sample(const trajopt::HolonomicTrajectorySample& sample) {
