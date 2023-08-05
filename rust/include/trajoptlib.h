@@ -10,7 +10,6 @@
 
 namespace trajoptlibrust {
 
-struct CircleObstacle;
 struct HolonomicTrajectory;
 struct InitialGuessPoint;
 struct SwerveDrivetrain;
