@@ -40,9 +40,9 @@ fn main() {
   path.set_drivetrain(&drivetrain);
   path.pose_wpt(0, 0.0, 0.0, 0.0);
   path.pose_wpt(1, 1.0, 0.0, 0.0);
-  path.wpt_zero_velocity(0);
-  path.wpt_zero_velocity(1);
-  path.wpt_zero_angular_velocity(0);
-  path.wpt_zero_angular_velocity(1);
+  path.wpt_linear_velocity_polar(0, 0.0, 0.0);
+  path.wpt_linear_velocity_polar(1, 0.0, 0.0);
+  path.wpt_angular_velocity(0, 0.0);
+  path.wpt_angular_velocity(1, 0.0);
   println!("{:?}", path.generate());
 }

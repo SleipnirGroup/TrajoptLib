@@ -71,41 +71,138 @@ trajopt::SwerveDrivetrain _convert_swerve_drivetrain(const SwerveDrivetrain& dri
   };
 }
 
+trajopt::InitialGuessPoint _convert_initial_guess_point(const InitialGuessPoint& initialGuessPoint) {
+  return trajopt::InitialGuessPoint{
+    .x = initialGuessPoint.x,
+    .y = initialGuessPoint.y,
+    .heading = initialGuessPoint.heading
+  };
+}
+
 void SwervePathBuilderImpl::set_drivetrain(const SwerveDrivetrain& drivetrain) {
   path.SetDrivetrain(_convert_swerve_drivetrain(drivetrain));
 }
 
-void SwervePathBuilderImpl::translation_wpt(size_t idx, double x, double y, double heading_guess) {
-  path.TranslationWpt(idx, x, y, heading_guess);
+void SwervePathBuilderImpl::set_bumpers(double length, double width) {
+  path.AddBumpers(trajopt::Bumpers{
+    .safetyDistance = 0.0,
+    .points = {
+      {+length / 2, +width / 2},
+      {-length / 2, +width / 2},
+      {-length / 2, -width / 2},
+      {+length / 2, -width / 2}
+    }
+  });
 }
 
 void SwervePathBuilderImpl::pose_wpt(size_t idx, double x, double y, double heading) {
   path.PoseWpt(idx, x, y, heading);
 }
 
-void SwervePathBuilderImpl::wpt_zero_velocity(size_t idx) {
-  path.WptZeroVelocity(idx);
+void SwervePathBuilderImpl::translation_wpt(size_t idx, double x, double y, double heading_guess) {
+  path.TranslationWpt(idx, x, y, heading_guess);
 }
 
-void SwervePathBuilderImpl::wpt_zero_angular_velocity(size_t idx) {
-  path.WptZeroAngularVelocity(idx);
+void SwervePathBuilderImpl::empty_wpt(size_t idx, double x_guess, double y_guess, double heading_guess) {
+  path.WptInitialGuessPoint(idx, {x_guess, y_guess, heading_guess});
 }
 
-void SwervePathBuilderImpl::wpt_velocity_direction(size_t idx, double angle) {
+void SwervePathBuilderImpl::sgmt_initial_guess_points(size_t from_idx, const rust::Vec<InitialGuessPoint>& guess_points) {
+  std::vector<trajopt::InitialGuessPoint> convertedGuessPoints =
+      _rust_vec_to_cpp_vector<InitialGuessPoint,
+                              trajopt::InitialGuessPoint,
+                              &_convert_initial_guess_point>(guess_points);
+  path.SgmtInitialGuessPoints(from_idx, convertedGuessPoints);
+}
+
+void SwervePathBuilderImpl::wpt_linear_velocity_direction(size_t idx, double angle) {
   path.WptVelocityDirection(idx, angle);
 }
 
-void SwervePathBuilderImpl::wpt_velocity_magnitude(size_t idx, double v) {
-  path.WptVelocityMagnitude(idx, v);
+void SwervePathBuilderImpl::wpt_linear_velocity_max_magnitude(size_t idx, double magnitude) {
+  path.WptVelocityMagnitude(idx, magnitude);
 }
 
-void SwervePathBuilderImpl::wpt_velocity_polar(size_t idx, double vr, double vtheta) {
-  path.WptVelocityPolar(idx, vr, vtheta);
+void SwervePathBuilderImpl::wpt_linear_velocity_polar(size_t idx, double magnitude, double angle) {
+  path.WptVelocityPolar(idx, magnitude, angle);
 }
 
 void SwervePathBuilderImpl::wpt_angular_velocity(size_t idx, double angular_velocity) {
   // this probably ought to be added to SwervePathBuilder in the C++ API
   path.WptConstraint(idx, trajopt::AngularVelocityConstraint{angular_velocity});
+}
+
+void SwervePathBuilderImpl::wpt_x(size_t idx, double x) {
+  path.WptConstraint(idx, trajopt::TranslationConstraint{
+    trajopt::RectangularSet2d{
+      .xBound = x,
+      .yBound = trajopt::IntervalSet1d::R1()
+    }
+  });
+}
+
+void SwervePathBuilderImpl::wpt_y(size_t idx, double y) {
+  path.WptConstraint(idx, trajopt::TranslationConstraint{
+    trajopt::RectangularSet2d{
+      .xBound = trajopt::IntervalSet1d::R1(),
+      .yBound = y
+    }
+  });
+}
+
+void SwervePathBuilderImpl::wpt_heading(size_t idx, double heading) {
+  path.WptConstraint(idx, trajopt::HeadingConstraint{
+    trajopt::IntervalSet1d(heading)
+  });
+}
+
+void SwervePathBuilderImpl::sgmt_linear_velocity_direction(size_t from_idx, size_t to_idx, double angle) {
+  path.SgmtVelocityDirection(from_idx, to_idx, angle);
+}
+
+void SwervePathBuilderImpl::sgmt_linear_velocity_max_magnitude(size_t from_idx, size_t to_idx, double magnitude) {
+  path.SgmtVelocityMagnitude(from_idx, to_idx, magnitude);
+}
+
+void SwervePathBuilderImpl::sgmt_linear_velocity_polar(size_t from_idx, size_t to_idx, double magnitude, double angle) {
+  path.SgmtConstraint(from_idx, to_idx, trajopt::HolonomicVelocityConstraint{
+    trajopt::RectangularSet2d::PolarExactSet2d(magnitude, angle),
+    trajopt::CoordinateSystem::kField
+  });
+}
+
+void SwervePathBuilderImpl::sgmt_angular_velocity(size_t from_idx, size_t to_idx, double angular_velocity) {
+  path.SgmtConstraint(from_idx, to_idx, trajopt::AngularVelocityConstraint{angular_velocity});
+}
+
+void SwervePathBuilderImpl::sgmt_x(size_t from_idx, size_t to_idx, double x) {
+  path.SgmtConstraint(from_idx, to_idx, trajopt::TranslationConstraint{
+    trajopt::RectangularSet2d{
+      .xBound = x,
+      .yBound = trajopt::IntervalSet1d::R1()
+    }
+  });
+}
+
+void SwervePathBuilderImpl::sgmt_y(size_t from_idx, size_t to_idx, double y) {
+  path.SgmtConstraint(from_idx, to_idx, trajopt::TranslationConstraint{
+    trajopt::RectangularSet2d{
+      .xBound = trajopt::IntervalSet1d::R1(),
+      .yBound = y
+    }
+  });
+}
+
+void SwervePathBuilderImpl::sgmt_heading(size_t from_idx, size_t to_idx, double heading) {
+  path.SgmtConstraint(from_idx, to_idx, trajopt::HeadingConstraint{heading});
+}
+
+void SwervePathBuilderImpl::sgmt_circle_obstacle(size_t from_idx, size_t to_idx, double x, double y, double radius) {
+  auto obstacle = trajopt::Obstacle{
+    .safetyDistance = radius,
+    .points = {{x, y}}
+  };
+  path.SgmtObstacle(from_idx, to_idx, obstacle);
 }
 
 HolonomicTrajectorySample _convert_holonomic_trajectory_sample(const trajopt::HolonomicTrajectorySample& sample) {
