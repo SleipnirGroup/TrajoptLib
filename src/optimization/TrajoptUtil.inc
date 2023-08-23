@@ -155,7 +155,7 @@ void ApplySet2dConstraint(Opti& opti, const Expr& vectorX, const Expr& vectorY,
           opti.SubjectTo(vectorY != 0);
           break;
       }
-    } else if (xRadius != 0 && yRadius != 0) {
+    } else if (xRadius == 0 && yRadius == 0) {
       using enum EllipticalSet2d::Direction;
       switch (ellipticalSet2d.direction) {
         case kInside:
