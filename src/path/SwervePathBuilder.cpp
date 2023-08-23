@@ -74,7 +74,7 @@ void SwervePathBuilder::WptVelocityDirection(size_t idx, double angle) {
 }
 
 void SwervePathBuilder::WptVelocityMagnitude(size_t idx, double v) {
-  if (std::abs(v) < 1e-4) {
+  if (std::abs(v) < 0.0001) {
     WptZeroVelocity(idx);
   } else {
     WptConstraint(idx,
@@ -109,7 +109,7 @@ void SwervePathBuilder::SgmtVelocityDirection(size_t fromIdx, size_t toIdx,
 void SwervePathBuilder::SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx,
                                               double v, bool includeWpts) {
   Set2d set = EllipticalSet2d{v, v, EllipticalSet2d::Direction::kInside};                                              
-  if (std::abs(v) < 1e-4) {
+  if (std::abs(v) < 0.0001) {
     set = RectangularSet2d{0.0, 0.0};
   }                                              
   SgmtConstraint(fromIdx, toIdx,
