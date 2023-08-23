@@ -75,7 +75,7 @@ void SwervePathBuilder::WptVelocityDirection(size_t idx, double angle) {
 }
 
 void SwervePathBuilder::WptVelocityMagnitude(size_t idx, double v) {
-  printf("Velocity from Cpp: %d: %f", idx, v);
+  printf("Velocity from Cpp: %f", v);
   if (std::abs(v) < 0.0001) {
     WptZeroVelocity(idx);
   } else {
