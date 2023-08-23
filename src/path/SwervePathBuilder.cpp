@@ -109,7 +109,7 @@ void SwervePathBuilder::SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx,
                                               double v, bool includeWpts) {
   Set2d set = EllipticalSet2d{v, v, EllipticalSet2d::Direction::kInside};                                              
   if (v == 0) {
-    set = RectangularSet2d{0.0, 0.0, RectangularSet2d::Direction::kInside};
+    set = RectangularSet2d{0.0, 0.0};
   }                                              
   SgmtConstraint(fromIdx, toIdx,
                  HolonomicVelocityConstraint{
