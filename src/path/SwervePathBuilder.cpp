@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
@@ -74,6 +75,7 @@ void SwervePathBuilder::WptVelocityDirection(size_t idx, double angle) {
 }
 
 void SwervePathBuilder::WptVelocityMagnitude(size_t idx, double v) {
+  std::cout << v;
   if (std::abs(v) < 0.0001) {
     WptZeroVelocity(idx);
   } else {
