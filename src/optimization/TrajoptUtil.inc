@@ -103,22 +103,74 @@ void ApplySet2dConstraint(Opti& opti, const Expr& vectorX, const Expr& vectorY,
     opti.SubjectTo(vectorX * sinTheta == vectorY * cosTheta);
   } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
     auto& ellipticalSet2d = std::get<EllipticalSet2d>(set2d);
-    auto scaledVectorXSquared = (vectorX * vectorX) / (ellipticalSet2d.xRadius *
-                                                       ellipticalSet2d.xRadius);
-    auto scaledVectorYSquared = (vectorY * vectorY) / (ellipticalSet2d.yRadius *
-                                                       ellipticalSet2d.yRadius);
-    auto lhs = scaledVectorXSquared + scaledVectorYSquared;
-    using enum EllipticalSet2d::Direction;
-    switch (ellipticalSet2d.direction) {
-      case kInside:
-        opti.SubjectTo(lhs <= 1.0);
-        break;
-      case kCentered:
-        opti.SubjectTo(lhs == 1.0);
-        break;
-      case kOutside:
-        opti.SubjectTo(lhs >= 1.0);
-        break;
+    double xRadius = ellipticalSet2d.xRadius;
+    double yRadius = ellipticalSet2d.yRadius;
+    if (xRadius != 0 && yRadius != 0) {
+      auto scaledVectorXSquared = (vectorX * vectorX) / (xRadius * xRadius);
+      auto scaledVectorYSquared = (vectorY * vectorY) / (yRadius * yRadius);
+      auto lhs = scaledVectorXSquared + scaledVectorYSquared;
+      using enum EllipticalSet2d::Direction;
+      switch (ellipticalSet2d.direction) {
+        case kInside:
+          opti.SubjectTo(lhs <= 1.0);
+          break;
+        case kCentered:
+          opti.SubjectTo(lhs == 1.0);
+          break;
+        case kOutside:
+          opti.SubjectTo(lhs >= 1.0);
+          break;
+      }
+    } else if (xRadius == 0 && yRadius != 0) {
+      auto lhs = (vectorY * vectorY) / (yRadius * yRadius);
+      using enum EllipticalSet2d::Direction;
+      switch (ellipticalSet2d.direction) {
+        case kInside:
+          opti.SubjectTo(vectorX == 0);
+          opti.SubjectTo(lhs <= 1.0);
+          break;
+        case kCentered:
+          opti.SubjectTo(vectorX == 0);
+          opti.SubjectTo(lhs == 1.0);
+          break;
+        case kOutside:
+          opti.SubjectTo(vectorX != 0);
+          opti.SubjectTo(lhs >= 1.0);
+          break;
+      }
+    } else if (xRadius != 0 && yRadius == 0) {
+      auto lhs = (vectorX * vectorX) / (xRadius * xRadius);
+      using enum EllipticalSet2d::Direction;
+      switch (ellipticalSet2d.direction) {
+        case kInside:
+          opti.SubjectTo(lhs <= 1.0);
+          opti.SubjectTo(vectorY == 0);
+          break;
+        case kCentered:
+          opti.SubjectTo(lhs == 1.0);
+          opti.SubjectTo(vectorY == 0);
+          break;
+        case kOutside:
+          opti.SubjectTo(lhs >= 1.0);
+          opti.SubjectTo(vectorY != 0);
+          break;
+      }
+    } else if (xRadius != 0 && yRadius != 0) {
+      using enum EllipticalSet2d::Direction;
+      switch (ellipticalSet2d.direction) {
+        case kInside:
+          opti.SubjectTo(vectorX == 0);
+          opti.SubjectTo(vectorY == 0);
+          break;
+        case kCentered:
+          opti.SubjectTo(vectorX == 0);
+          opti.SubjectTo(vectorY == 0);
+          break;
+        case kOutside:
+          opti.SubjectTo(vectorX != 0);
+          opti.SubjectTo(vectorY != 0);
+          break;
+      }
     }
   } else if (std::holds_alternative<ConeSet2d>(set2d)) {
     auto& coneSet2d = std::get<ConeSet2d>(set2d);
