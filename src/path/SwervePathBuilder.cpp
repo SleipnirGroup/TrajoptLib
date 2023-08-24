@@ -2,6 +2,7 @@
 
 #include "trajopt/path/SwervePathBuilder.h"
 
+#include <cmath>
 #include <memory>
 #include <stdexcept>
 #include <vector>
@@ -73,9 +74,13 @@ void SwervePathBuilder::WptVelocityDirection(size_t idx, double angle) {
 }
 
 void SwervePathBuilder::WptVelocityMagnitude(size_t idx, double v) {
-  WptConstraint(idx,
-                HolonomicVelocityConstraint{EllipticalSet2d::CircularSet2d(v),
-                                            CoordinateSystem::kField});
+  if (std::abs(v) < 1e-4) {
+    WptZeroVelocity(idx);
+  } else {
+    WptConstraint(idx,
+                  HolonomicVelocityConstraint{EllipticalSet2d::CircularSet2d(v),
+                                              CoordinateSystem::kField});
+  }
 }
 
 void SwervePathBuilder::WptZeroVelocity(size_t idx) {
@@ -103,10 +108,12 @@ void SwervePathBuilder::SgmtVelocityDirection(size_t fromIdx, size_t toIdx,
 
 void SwervePathBuilder::SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx,
                                               double v, bool includeWpts) {
+  Set2d set = EllipticalSet2d{v, v, EllipticalSet2d::Direction::kInside};
+  if (std::abs(v) < 1e-4) {
+    set = RectangularSet2d{0.0, 0.0};
+  }
   SgmtConstraint(fromIdx, toIdx,
-                 HolonomicVelocityConstraint{
-                     EllipticalSet2d{v, v, EllipticalSet2d::Direction::kInside},
-                     CoordinateSystem::kField},
+                 HolonomicVelocityConstraint{set, CoordinateSystem::kField},
                  includeWpts);
 }
 
