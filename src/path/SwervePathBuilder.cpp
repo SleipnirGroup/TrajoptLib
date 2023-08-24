@@ -2,10 +2,10 @@
 
 #include "trajopt/path/SwervePathBuilder.h"
 
+#include <cmath>
 #include <memory>
 #include <stdexcept>
 #include <vector>
-#include <cmath>
 
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
