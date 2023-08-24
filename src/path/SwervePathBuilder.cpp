@@ -78,11 +78,13 @@ void SwervePathBuilder::WptVelocityMagnitude(size_t idx, double v) {
   std::cout << v << std::endl;
   if (std::abs(v) < 0.0001) {
     WptZeroVelocity(idx);
+    
   } else {
     WptConstraint(idx,
                   HolonomicVelocityConstraint{EllipticalSet2d::CircularSet2d(v),
                                               CoordinateSystem::kField});
   }
+  std::cout << "Set constraint" << std::endl;
 }
 
 void SwervePathBuilder::WptZeroVelocity(size_t idx) {
