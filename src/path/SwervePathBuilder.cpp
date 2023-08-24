@@ -133,9 +133,9 @@ void SwervePathBuilder::SgmtConstraint(size_t fromIdx, size_t toIdx,
   }
   for (size_t idx = fromIdx + 1; idx <= toIdx; idx++) {
     if (includeWpts) {
-      path.waypoints.at(fromIdx).waypointConstraints.push_back(constraint);
+      path.waypoints.at(idx).waypointConstraints.push_back(constraint);
     }
-    path.waypoints.at(fromIdx).segmentConstraints.push_back(constraint);
+    path.waypoints.at(idx).segmentConstraints.push_back(constraint);
   }
 }
 
