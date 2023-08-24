@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <vector>
 #include <cmath>
-#include <iostream>
 
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
