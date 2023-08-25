@@ -342,6 +342,7 @@ impl SwervePathBuilder {
 
 pub use ffi::HolonomicTrajectory;
 pub use ffi::HolonomicTrajectorySample;
+pub use ffi::InitialGuessPoint;
 pub use ffi::SwerveDrivetrain;
 pub use ffi::SwerveModule;
-pub use ffi::InitialGuessPoint;
+
