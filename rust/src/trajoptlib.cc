@@ -97,7 +97,7 @@ void SwervePathBuilderImpl::set_control_interval_counts(
 
 void SwervePathBuilderImpl::set_bumpers(double length, double width) {
   path.AddBumpers(trajopt::Bumpers{
-    .safetyDistance = 0.0,
+    .safetyDistance = 0.01,
     .points = {
       {+length / 2, +width / 2},
       {-length / 2, +width / 2},
@@ -214,6 +214,20 @@ void SwervePathBuilderImpl::sgmt_circle_obstacle(size_t from_idx, size_t to_idx,
   auto obstacle = trajopt::Obstacle{
     .safetyDistance = radius,
     .points = {{x, y}}
+  };
+  path.SgmtObstacle(from_idx, to_idx, obstacle);
+}
+
+void SwervePathBuilderImpl::sgmt_polygon_obstacle(size_t from_idx, size_t to_idx, const rust::Vec<double> x, const rust::Vec<double> y, double radius) {
+  std::vector<trajopt::ObstaclePoint> points;
+  if (x.size() != y.size()) return;
+  for (size_t i = 0; i < x.size(); i++)
+  {
+    points.push_back({x.at(i), y.at(i)});
+  }
+  auto obstacle = trajopt::Obstacle{
+    .safetyDistance = radius,
+    .points = points
   };
   path.SgmtObstacle(from_idx, to_idx, obstacle);
 }

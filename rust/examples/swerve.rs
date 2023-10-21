@@ -38,6 +38,7 @@ fn main() {
 
     let mut path = SwervePathBuilder::new();
     path.set_drivetrain(&drivetrain);
+    path.set_bumpers(1.3, 1.3);
     path.pose_wpt(0, 0.0, 0.0, 0.0);
     path.pose_wpt(1, 1.0, 0.0, 0.0);
     path.wpt_linear_velocity_polar(0, 0.0, 0.0);

@@ -26,7 +26,7 @@ struct LinePointConstraint {
   double fieldPointX;
   /// field point y
   double fieldPointY;
-  /// the required minimum distance between the line and point, must be positive
+  /// the allowed distances between the line segment and point
   IntervalSet1d distance;
 };
 
