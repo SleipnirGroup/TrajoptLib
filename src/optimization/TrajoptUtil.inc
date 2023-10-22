@@ -68,7 +68,7 @@ void ApplyDiscreteTimeObjective(Opti& opti, std::vector<Expr>& dt,
       auto dt_n = dt.at(idx - 1);
       T_tot += dt_n;
 
-      opti.SubjectTo(dt_n >= 0);
+      opti.SubjectTo(dt_n >= 0.01 / N_sgmt);
       opti.SetInitial(dt_n, 5.0 / N_sgmt);
     }
   }
