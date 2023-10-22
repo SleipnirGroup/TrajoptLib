@@ -68,7 +68,7 @@ void ApplyKinematicsConstraints(
     size_t N_sgmt = N.at(wptIdx - 1);
     for (size_t sampIdx = 0; sampIdx < N_sgmt; ++sampIdx) {
       size_t idx = GetIdx(N, wptIdx, sampIdx);
-      auto dt_sgmt = dt.at(idx - 1);
+      auto dt_n = dt.at(idx - 1);
       auto x_n = x.at(idx);
       auto x_n_1 = x.at(idx - 1);
       auto y_n = y.at(idx);
@@ -84,12 +84,13 @@ void ApplyKinematicsConstraints(
       auto ax_n = ax.at(idx);
       auto ay_n = ay.at(idx);
       auto alpha_n = alpha.at(idx);
-      opti.SubjectTo(x_n_1 + vx_n * dt_sgmt == x_n);
-      opti.SubjectTo(y_n_1 + vy_n * dt_sgmt == y_n);
-      opti.SubjectTo(theta_n_1 + omega_n * dt_sgmt == theta_n);
-      opti.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
-      opti.SubjectTo(vy_n_1 + ay_n * dt_sgmt == vy_n);
-      opti.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
+      opti.SubjectTo(dt_n >= 0);
+      opti.SubjectTo(x_n_1 + vx_n * dt_n == x_n);
+      opti.SubjectTo(y_n_1 + vy_n * dt_n == y_n);
+      opti.SubjectTo(theta_n_1 + omega_n * dt_n == theta_n);
+      opti.SubjectTo(vx_n_1 + ax_n * dt_n == vx_n);
+      opti.SubjectTo(vy_n_1 + ay_n * dt_n == vy_n);
+      opti.SubjectTo(omega_n_1 + alpha_n * dt_n == omega_n);
     }
   }
 }
@@ -154,16 +155,8 @@ SwerveSolution ConstructSwerveSolution(
     const std::vector<Expr>& alpha, const std::vector<std::vector<Expr>>& Fx,
     const std::vector<std::vector<Expr>>& Fy, const std::vector<Expr>& dt,
     const std::vector<size_t>& N) {
-  std::vector<double> dtPerSamp;
-  for (size_t sgmtIdx = 0; sgmtIdx < N.size(); ++sgmtIdx) {
-    size_t N_sgmt = N.at(sgmtIdx);
-    Expr dt_sgmt = dt.at(sgmtIdx);
-    double dt_val = opti.SolutionValue(dt_sgmt);
-    for (size_t i = 0; i < N_sgmt; ++i) {
-      dtPerSamp.push_back(dt_val);
-    }
-  }
-  return SwerveSolution{dtPerSamp,
+
+  return SwerveSolution{RowSolutionValue(opti, dt),
                         RowSolutionValue(opti, x),
                         RowSolutionValue(opti, y),
                         RowSolutionValue(opti, theta),
