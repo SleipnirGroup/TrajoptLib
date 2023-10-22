@@ -68,7 +68,8 @@ void ApplyKinematicsConstraints(
     size_t N_sgmt = N.at(wptIdx - 1);
     for (size_t sampIdx = 0; sampIdx < N_sgmt; ++sampIdx) {
       size_t idx = GetIdx(N, wptIdx, sampIdx);
-      auto dt_n = dt.at(idx - 1);
+      auto dt_n = dt.at(idx);
+      auto dt_n_1 = dt.at(idx - 1);
       auto x_n = x.at(idx);
       auto x_n_1 = x.at(idx - 1);
       auto y_n = y.at(idx);
