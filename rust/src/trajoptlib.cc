@@ -83,6 +83,18 @@ void SwervePathBuilderImpl::set_drivetrain(const SwerveDrivetrain& drivetrain) {
   path.SetDrivetrain(_convert_swerve_drivetrain(drivetrain));
 }
 
+size_t _convert_count(const size_t& count) {
+  return count;
+}
+
+void SwervePathBuilderImpl::set_control_interval_counts(
+  const rust::Vec<size_t> counts) {
+  std::vector<size_t> converted_counts = 
+    _rust_vec_to_cpp_vector<size_t, size_t, &_convert_count>
+    (counts);
+  path.ControlIntervalCounts(std::move(converted_counts));
+}
+
 void SwervePathBuilderImpl::set_bumpers(double length, double width) {
   path.AddBumpers(trajopt::Bumpers{
     .safetyDistance = 0.0,
@@ -107,7 +119,8 @@ void SwervePathBuilderImpl::empty_wpt(size_t idx, double x_guess, double y_guess
   path.WptInitialGuessPoint(idx, {x_guess, y_guess, heading_guess});
 }
 
-void SwervePathBuilderImpl::sgmt_initial_guess_points(size_t from_idx, const rust::Vec<InitialGuessPoint>& guess_points) {
+void SwervePathBuilderImpl::sgmt_initial_guess_points(
+  size_t from_idx, const rust::Vec<InitialGuessPoint>& guess_points) {
   std::vector<trajopt::InitialGuessPoint> convertedGuessPoints =
       _rust_vec_to_cpp_vector<InitialGuessPoint,
                               trajopt::InitialGuessPoint,

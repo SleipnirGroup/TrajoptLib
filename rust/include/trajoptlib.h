@@ -18,6 +18,7 @@ class SwervePathBuilderImpl {
  public:
   void set_drivetrain(const SwerveDrivetrain& drivetrain);
   void set_bumpers(double length, double width);
+  void set_control_interval_counts(const rust::Vec<size_t> counts);
 
   void pose_wpt(size_t idx, double x, double y, double heading);
   void translation_wpt(size_t idx, double x, double y, double heading_guess);
