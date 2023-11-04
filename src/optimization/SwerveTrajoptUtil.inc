@@ -64,6 +64,13 @@ void ApplyKinematicsConstraints(
     const std::vector<size_t> N) {
   size_t wptCnt = N.size() + 1;
 
+  for (size_t i = 0; i < dt.size(); i++)
+  {
+    opti.SubjectTo(dt.at(i) >= 0);
+    opti.SubjectTo(dt.at(i) <= 0.2);
+  }
+  
+
   for (size_t wptIdx = 1; wptIdx < wptCnt; ++wptIdx) {
     size_t N_sgmt = N.at(wptIdx - 1);
     for (size_t sampIdx = 0; sampIdx < N_sgmt; ++sampIdx) {
@@ -85,14 +92,12 @@ void ApplyKinematicsConstraints(
       auto ax_n = ax.at(idx);
       auto ay_n = ay.at(idx);
       auto alpha_n = alpha.at(idx);
-      opti.SubjectTo(dt_n >= 0);
-      opti.SubjectTo(dt_n <= 0.2);
-      opti.SubjectTo(x_n_1 + vx_n * dt_n == x_n);
-      opti.SubjectTo(y_n_1 + vy_n * dt_n == y_n);
-      opti.SubjectTo(theta_n_1 + omega_n * dt_n == theta_n);
-      opti.SubjectTo(vx_n_1 + ax_n * dt_n == vx_n);
-      opti.SubjectTo(vy_n_1 + ay_n * dt_n == vy_n);
-      opti.SubjectTo(omega_n_1 + alpha_n * dt_n == omega_n);
+      opti.SubjectTo(x_n_1 + vx_n * dt_n_1 == x_n);
+      opti.SubjectTo(y_n_1 + vy_n * dt_n_1 == y_n);
+      opti.SubjectTo(theta_n_1 + omega_n * dt_n_1 == theta_n);
+      opti.SubjectTo(vx_n_1 + ax_n * dt_n_1 == vx_n);
+      opti.SubjectTo(vy_n_1 + ay_n * dt_n_1 == vy_n);
+      opti.SubjectTo(omega_n_1 + alpha_n * dt_n_1 == omega_n);
     }
   }
 }
