@@ -60,7 +60,7 @@ template <typename Expr, typename Opti>
 void ApplyDiscreteTimeObjective(Opti& opti, std::vector<Expr>& dt,
                                 const std::vector<size_t> N) {
   Expr T_tot = 0;
-    size_t wptCnt = N.size() + 1;
+  size_t wptCnt = N.size() + 1;
   for (size_t wptIdx = 1; wptIdx < wptCnt; ++wptIdx) {
     size_t N_sgmt = N.at(wptIdx - 1);
     for (size_t sampIdx = 0; sampIdx < N_sgmt; ++sampIdx) {

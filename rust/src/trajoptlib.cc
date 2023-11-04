@@ -89,7 +89,7 @@ size_t _convert_count(const size_t& count) {
 
 void SwervePathBuilderImpl::set_control_interval_counts(
   const rust::Vec<size_t> counts) {
-  std::vector<size_t> converted_counts = 
+  std::vector<size_t> converted_counts =
     _rust_vec_to_cpp_vector<size_t, size_t, &_convert_count>
     (counts);
   path.ControlIntervalCounts(std::move(converted_counts));

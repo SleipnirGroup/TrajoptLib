@@ -162,19 +162,13 @@ SwerveSolution ConstructSwerveSolution(
     const std::vector<Expr>& alpha, const std::vector<std::vector<Expr>>& Fx,
     const std::vector<std::vector<Expr>>& Fy, const std::vector<Expr>& dt,
     const std::vector<size_t>& N) {
-
-  return SwerveSolution{RowSolutionValue(opti, dt),
-                        RowSolutionValue(opti, x),
-                        RowSolutionValue(opti, y),
-                        RowSolutionValue(opti, theta),
-                        RowSolutionValue(opti, vx),
-                        RowSolutionValue(opti, vy),
-                        RowSolutionValue(opti, omega),
-                        RowSolutionValue(opti, ax),
-                        RowSolutionValue(opti, ay),
-                        RowSolutionValue(opti, alpha),
-                        MatrixSolutionValue(opti, Fx),
-                        MatrixSolutionValue(opti, Fy)};
+  return SwerveSolution{
+      RowSolutionValue(opti, dt),    RowSolutionValue(opti, x),
+      RowSolutionValue(opti, y),     RowSolutionValue(opti, theta),
+      RowSolutionValue(opti, vx),    RowSolutionValue(opti, vy),
+      RowSolutionValue(opti, omega), RowSolutionValue(opti, ax),
+      RowSolutionValue(opti, ay),    RowSolutionValue(opti, alpha),
+      MatrixSolutionValue(opti, Fx), MatrixSolutionValue(opti, Fy)};
 }
 
 }  // namespace trajopt
