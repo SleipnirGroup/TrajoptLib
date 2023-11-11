@@ -67,7 +67,7 @@ void ApplyKinematicsConstraints(
   for (size_t i = 0; i < dt.size(); i++)
   {
     opti.SubjectTo(dt.at(i) >= 0);
-    opti.SubjectTo(dt.at(i) <= 0.2);
+    opti.SubjectTo(dt.at(i) <= 0.1);
   }
   
 

@@ -67,7 +67,7 @@ void ApplyDiscreteTimeObjective(Opti& opti, std::vector<Expr>& dt,
       size_t idx = GetIdx(N, wptIdx, sampIdx);
       auto dt_n = dt.at(idx);
       T_tot += dt_n;
-      opti.SetInitial(dt_n, 5.0 / N_sgmt);
+      opti.SetInitial(dt_n, 0.1);
     }
   }
   opti.Minimize(std::move(T_tot));
