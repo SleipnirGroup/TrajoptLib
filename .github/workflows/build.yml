@@ -59,6 +59,7 @@ jobs:
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: x64
+          version: 12.2.0
 
       - name: configure
         run: ${{ matrix.cmake-config-env-vars }} cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer }} -DWITH_JAVA=ON -DJAVA_INSTALL_JAR=OFF
