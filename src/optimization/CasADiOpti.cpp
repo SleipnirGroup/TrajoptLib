@@ -41,7 +41,6 @@ void CasADiOpti::Solve() {
 #endif
 
   solution = opti.solve();
-  delete callback;
 }
 double CasADiOpti::SolutionValue(const casadi::MX& expression) const {
   if (solution) {
