@@ -78,7 +78,7 @@ public:
 //         v = casadi.Sparsity(0,0);
 
 //       end
-  }
+//  }
 
   // Initialize the object
   void init() override {
