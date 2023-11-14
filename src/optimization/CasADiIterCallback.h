@@ -9,6 +9,7 @@ class CasADiIterCallback : public Callback {
   casadi_int nx;
   casadi_int ng;
   casadi_int np;
+  int count;
 public:
   // Constructor
   CasADiIterCallback(const std::string& name,
@@ -47,7 +48,11 @@ public:
 
   // Evaluate numerically
   std::vector<DM> eval(const std::vector<DM>& arg) const override {
-    std::cout << "eval" << std::endl;
+    std::cout << "eval " << count << std::endl;
+    count++;
+    if (count >= 100){
     return {1};
+    }
+    return {0};
   }
 };
