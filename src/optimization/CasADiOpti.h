@@ -5,7 +5,7 @@
 #include <optional>
 
 #include <casadi/casadi.hpp>
-#include "CasAdiIterCallback.h"
+#include "CasADiIterCallback.h"
 
 #include "optimization/OptiSys.h"
 
