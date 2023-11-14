@@ -15,7 +15,7 @@ class CasADiOpti {
  private:
   casadi::Opti opti;
   std::optional<casadi::OptiSol> solution;
-  CasADiIterCallback callback("f", 0, 0, 0);
+  CasADiIterCallback callback {"f", 0, 0, 0};
 
  public:
   casadi::MX DecisionVariable();
