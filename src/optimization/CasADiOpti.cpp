@@ -2,6 +2,7 @@
 
 #ifdef OPTIMIZER_BACKEND_CASADI
 #include "optimization/CasADiOpti.h"
+#include "optimization/CasADiIterCallback.h"
 
 #include <casadi/casadi.hpp>
 #include <casadi/core/exception.hpp>
