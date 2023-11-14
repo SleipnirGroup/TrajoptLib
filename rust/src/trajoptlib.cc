@@ -10,6 +10,7 @@
 #include <trajopt/TrajectoryGenerationException.h>
 #include <trajopt/trajectory/HolonomicTrajectorySample.h>
 #include <trajopt/trajectory/HolonomicTrajectory.h>
+#include <trajopt/cancellation/Cancellation.h>
 
 #include "trajoptlib/src/lib.rs.h"
 
@@ -233,5 +234,9 @@ HolonomicTrajectory SwervePathBuilderImpl::generate() const {
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
   return std::make_unique<SwervePathBuilderImpl>(SwervePathBuilderImpl());
+}
+
+void cancel_all() {
+  trajopt::GetCancellationFlag() = 1;
 }
 }

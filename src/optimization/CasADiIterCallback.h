@@ -3,7 +3,7 @@
 #include "casadi/casadi.hpp"
 #include "casadi/core/nlpsol.hpp"
 #include "casadi/core/sparsity.hpp"
-#include "optimization/Cancellation.h"
+#include "trajopt/cancellation/Cancellation.h"
 using namespace casadi;
 class CasADiIterCallback : public Callback {
   // Data members

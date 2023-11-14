@@ -8,7 +8,7 @@
 #include <casadi/core/exception.hpp>
 #include <casadi/core/generic_matrix.hpp>
 #include <casadi/core/mx.hpp>
-#include "optimization/Cancellation.h"
+#include "trajopt/cancellation/Cancellation.h"
 
 #include "DebugOptions.h"
 namespace trajopt {
@@ -25,6 +25,7 @@ void CasADiOpti::SetInitial(const casadi::MX& expression, double value) {
   opti.set_initial(expression, value);
 }
 void CasADiOpti::Solve() {
+  GetCancellationFlag() = 0;
   const auto callback = new const CasADiIterCallback("f", opti.nx(), opti.ng(), opti.np());
 #ifdef DEBUG_OUTPUT
   // I don't try-catch this next line since it should always work.

@@ -24,9 +24,13 @@
 #include "trajopt/set/LinearSet2d.h"
 #include "trajopt/set/RectangularSet2d.h"
 #include "trajopt/solution/Solution.h"
+#include "trajopt/cancellation/Cancellation.h"
 
 namespace trajopt {
 
+static void CancelAll() {
+  GetCancellationFlag() = 1;
+}
 const SwervePath& SwervePathBuilder::GetPath() const {
   return path;
 }

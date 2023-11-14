@@ -1,5 +1,5 @@
     #include <atomic>
-    #include "optimization/Cancellation.h"
+    #include "trajopt/cancellation/Cancellation.h"
     namespace trajopt {
     std::atomic<int>& GetCancellationFlag() {
         static std::atomic<int> flag(0);
