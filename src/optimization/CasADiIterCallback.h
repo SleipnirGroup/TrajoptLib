@@ -1,3 +1,5 @@
+#pragma once
+
 #include "casadi/casadi.hpp"
 #include "casadi/core/nlpsol.hpp"
 #include "casadi/core/sparsity.hpp"
