@@ -2,8 +2,5 @@
 #include <atomic>
 
 namespace trajopt {
-    std::atomic<int>& GetCancellationFlag() {
-        static std::atomic<int> flag;
-        return flag;
-    }
+    std::atomic<int>& GetCancellationFlag();
 }
