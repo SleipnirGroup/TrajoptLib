@@ -5,6 +5,7 @@
 #include <optional>
 
 #include <casadi/casadi.hpp>
+#include "CasAdiIterCallback.h"
 
 #include "optimization/OptiSys.h"
 
@@ -14,6 +15,7 @@ class CasADiOpti {
  private:
   casadi::Opti opti;
   std::optional<casadi::OptiSol> solution;
+  CasADiIterCallback callback = null;
 
  public:
   casadi::MX DecisionVariable();
