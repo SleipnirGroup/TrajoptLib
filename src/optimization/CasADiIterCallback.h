@@ -49,8 +49,8 @@ public:
   // Evaluate numerically
   std::vector<DM> eval(const std::vector<DM>& arg) const override {
     
-    int flag = GetCancellationFlag();
+    int flag = trajopt::GetCancellationFlag();
     std::cout << "eval " << flag << std::endl;
-    return {flag};
+    return {(double) flag};
   }
 };
