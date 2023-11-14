@@ -29,7 +29,7 @@ void CasADiOpti::Solve() {
   // I'm assuming the dynamic lib is on the path and casadi can find it.
   auto pluginOptions = casadi::Dict();
   pluginOptions["ipopt.iteration_callback"] = CasADiIterCallback("f", 0.5);
-  opti.solver("ipopt");
+  opti.solver("ipopt", pluginOptions);
 #else
   auto pluginOptions = casadi::Dict();
   pluginOptions["ipopt.print_level"] = 0;
