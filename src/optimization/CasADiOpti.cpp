@@ -8,6 +8,7 @@
 #include <casadi/core/exception.hpp>
 #include <casadi/core/generic_matrix.hpp>
 #include <casadi/core/mx.hpp>
+#include "optimization/Cancellation.h"
 
 #include "DebugOptions.h"
 namespace trajopt {

@@ -9,7 +9,6 @@ class CasADiIterCallback : public Callback {
   casadi_int nx;
   casadi_int ng;
   casadi_int np;
-  int count;
 public:
   // Constructor
   CasADiIterCallback(const std::string& name,
@@ -22,6 +21,7 @@ public:
   ~CasADiIterCallback() override {}
 
   // Number of inputs and outputs
+  // boilerplate for us, since we don't use the inputs.
   casadi_int get_n_in() override { return 6;}
   casadi_int get_n_out() override { return 1;}
   Sparsity get_sparsity_in(casadi_int i) override {
@@ -48,11 +48,9 @@ public:
 
   // Evaluate numerically
   std::vector<DM> eval(const std::vector<DM>& arg) const override {
-    std::cout << "eval " << count << std::endl;
-    count++;
-    if (count >= 100){
-    return {1};
-    }
-    return {0};
+    
+    int flag = GetCancellationFlag();
+    std::cout << "eval " << flag << std::endl;
+    return {flag};
   }
 };
