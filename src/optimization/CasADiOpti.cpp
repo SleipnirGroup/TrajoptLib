@@ -41,7 +41,6 @@ CasADiIterCallback cb("f", opti.nx(), opti.ng(), opti.np());
 #endif
 
   solution = opti.solve();
-  delete callback;
 }
 double CasADiOpti::SolutionValue(const casadi::MX& expression) const {
   if (solution) {
