@@ -31,7 +31,7 @@ void CasADiOpti::Solve() {
   auto pluginOptions = casadi::Dict();
   pluginOptions["iteration_callback"] = *callback;
   //auto reference = &pluginOptions["iteration_callback"];
-  opti.solver("ipopt", pluginOptions, solverOptions);
+  opti.solver("ipopt", pluginOptions);
 #else
   auto pluginOptions = casadi::Dict();
   pluginOptions["ipopt.print_level"] = 0;
