@@ -51,7 +51,7 @@ public:
   std::vector<DM> eval(const std::vector<DM>& arg) const override {
     
     int flag = trajopt::GetCancellationFlag();
-    std::cout << "eval " << flag << std::endl;
+    std::cout << "eval flag = " << flag << std::endl;
     return {(double) flag};
   }
 };
