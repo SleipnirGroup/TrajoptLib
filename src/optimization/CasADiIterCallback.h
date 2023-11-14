@@ -14,7 +14,7 @@ public:
   ~CasADiIterCallback() override {}
 
   // Number of inputs and outputs
-  casadi_int get_n_in() override { return 4;}
+  casadi_int get_n_in() override { return 6;}
   casadi_int get_n_out() override { return 1;}
 
   // Initialize the object
