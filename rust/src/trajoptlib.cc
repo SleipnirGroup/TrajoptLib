@@ -237,6 +237,6 @@ std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
 }
 
 void SwervePathBuilderImpl::cancel_all() {
-  SwervePathBuilder::CancelAll();
+  path.CancelAll();
 }
 }
