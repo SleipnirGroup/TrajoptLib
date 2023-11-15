@@ -258,7 +258,7 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
   return constraints;
 }
 
-void CancelAll() {
+void SwervePathBuilder::CancelAll() {
   trajopt::GetCancellationFlag() = 1;
 }
 }  // namespace trajopt
