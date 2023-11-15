@@ -12,17 +12,17 @@
 #include "trajopt/cancellation/Cancellation.h"
 
 namespace trajopt {
-class CasADiIterCallback : public casadi::Callback {
+using namespace casadi;
+class CasADiIterCallback : public Callback {
   // Data members
-  casadi::casadi_int nx;
-  casadi::casadi_int ng;
-  casadi::casadi_int np;
+  casadi_int nx;
+  casadi_int ng;
+  casadi_int np;
 
  public:
   // Constructor
-  CasADiIterCallback(const std::string& name, casadi::casadi_int nx,
-                     casadi::casadi_int ng, casadi::casadi_int np,
-                     const casadi::Dict& opts = Dict())
+  CasADiIterCallback(const std::string& name, casadi_int nx, casadi_int ng,
+                     casadi_int np, const Dict& opts = Dict())
       : nx(nx), ng(ng), np(np) {
     construct(name, opts);
   }
@@ -32,29 +32,28 @@ class CasADiIterCallback : public casadi::Callback {
 
   // Number of inputs and outputs
   // boilerplate for us, since we don't use the inputs.
-  casadi::casadi_int get_n_in() override { return 6; }
-  casadi::casadi_int get_n_out() override { return 1; }
-  casadi::Sparsity get_sparsity_in(casadi::casadi_int i) override {
-    switch (static_cast<casadi::NlpsolOutput>(i)) {
+  casadi_int get_n_in() override { return 6; }
+  casadi_int get_n_out() override { return 1; }
+  Sparsity get_sparsity_in(casadi_int i) override {
+    switch (static_cast<NlpsolOutput>(i)) {
       case NLPSOL_F:
-        return casadi::Sparsity::scalar();
+        return Sparsity::scalar();
       case NLPSOL_X:
       case NLPSOL_LAM_X:
-        return casadi::Sparsity::dense(nx);
+        return Sparsity::dense(nx);
       case NLPSOL_LAM_G:
       case NLPSOL_G:
-        return casadi::Sparsity::dense(ng);
+        return Sparsity::dense(ng);
       case NLPSOL_LAM_P:
-        return casadi::Sparsity::dense(np);
+        return Sparsity::dense(np);
       case NLPSOL_NUM_OUT:
         break;
     }
-    return casadi::Sparsity();
+    return Sparsity();
   }
 
   // Evaluate numerically
-  std::vector<casadi::DM> eval(
-      const std::vector<casadi::DM>& arg) const override {
+  std::vector<DM> eval(const std::vector<DM>& arg) const override {
     int flag = trajopt::GetCancellationFlag();
     return {static_cast<double>(flag)};
   }
