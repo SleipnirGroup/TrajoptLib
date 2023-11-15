@@ -42,10 +42,9 @@ mod ffi {
     unsafe extern "C++" {
         include!("trajoptlib/include/trajoptlib.h");
 
-        fn cancel_all();
-
         type SwervePathBuilderImpl;
 
+        fn cancel_all(self: Pin<&mut SwervePathBuilderImpl>);
         fn set_drivetrain(self: Pin<&mut SwervePathBuilderImpl>, drivetrain: &SwerveDrivetrain);
         fn set_bumpers(self: Pin<&mut SwervePathBuilderImpl>, length: f64, width: f64);
 
@@ -342,8 +341,8 @@ impl SwervePathBuilder {
     }
 }
 
-pub fn cancel_all() -> () {
-    crate::ffi::cancel_all();
+pub fn cancel_all(&mut self) -> () {
+    crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
 }
 
 pub use ffi::HolonomicTrajectory;
