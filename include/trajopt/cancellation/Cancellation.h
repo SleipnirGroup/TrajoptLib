@@ -3,5 +3,5 @@
 #include "trajopt/SymbolExports.h"
 
 namespace trajopt {
-    TRAJOPT_DLLEXPOT std::atomic<int>& GetCancellationFlag();
+    TRAJOPT_DLLEXPORT std::atomic<int>& GetCancellationFlag();
 }
