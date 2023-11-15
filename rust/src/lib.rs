@@ -339,7 +339,7 @@ impl SwervePathBuilder {
             Err(msg) => Err(msg.what().to_string()),
         }
     }
-    
+
     pub fn cancel_all(&mut self) {
         crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
     }

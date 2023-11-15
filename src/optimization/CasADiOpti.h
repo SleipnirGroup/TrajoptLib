@@ -5,8 +5,8 @@
 #include <optional>
 
 #include <casadi/casadi.hpp>
-#include "CasADiIterCallback.h"
 
+#include "CasADiIterCallback.h"
 #include "optimization/OptiSys.h"
 
 namespace trajopt {

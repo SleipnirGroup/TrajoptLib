@@ -2,15 +2,15 @@
 
 #ifdef OPTIMIZER_BACKEND_CASADI
 #include "optimization/CasADiOpti.h"
-#include "optimization/CasADiIterCallback.h"
 
 #include <casadi/casadi.hpp>
 #include <casadi/core/exception.hpp>
 #include <casadi/core/generic_matrix.hpp>
 #include <casadi/core/mx.hpp>
-#include "trajopt/cancellation/Cancellation.h"
 
 #include "DebugOptions.h"
+#include "optimization/CasADiIterCallback.h"
+#include "trajopt/cancellation/Cancellation.h"
 namespace trajopt {
 casadi::MX CasADiOpti::DecisionVariable() {
   return opti.variable();
@@ -26,7 +26,8 @@ void CasADiOpti::SetInitial(const casadi::MX& expression, double value) {
 }
 void CasADiOpti::Solve() {
   GetCancellationFlag() = 0;
-  const auto callback = new const CasADiIterCallback("f", opti.nx(), opti.ng(), opti.np());
+  const auto callback =
+      new const CasADiIterCallback("f", opti.nx(), opti.ng(), opti.np());
   auto pluginOptions = casadi::Dict();
   pluginOptions["iteration_callback"] = *callback;
 #ifndef DEBUG_OUTPUT
@@ -35,6 +36,7 @@ void CasADiOpti::Solve() {
   pluginOptions["print_time"] = 0;
   pluginOptions["ipopt.sb"] = "yes";
 #endif
+
   // I don't try-catch this next line since it should always work.
   // I'm assuming the dynamic lib is on the path and casadi can find it.
   opti.solver("ipopt", pluginOptions);

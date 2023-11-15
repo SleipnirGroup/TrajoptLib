@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "optimization/TrajoptUtil.h"
+#include "trajopt/cancellation/Cancellation.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/Constraint.h"
 #include "trajopt/constraint/HeadingConstraint.h"
@@ -24,7 +25,6 @@
 #include "trajopt/set/LinearSet2d.h"
 #include "trajopt/set/RectangularSet2d.h"
 #include "trajopt/solution/Solution.h"
-#include "trajopt/cancellation/Cancellation.h"
 
 namespace trajopt {
 
