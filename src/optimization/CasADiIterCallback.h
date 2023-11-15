@@ -28,7 +28,7 @@ class CasADiIterCallback : public Callback {
   }
 
   // Destructor
-  ~CasADiIterCallback() override {}
+  ~CasADiIterCallback() override = default;
 
   // Number of inputs and outputs
   // boilerplate for us, since we don't use the inputs.
