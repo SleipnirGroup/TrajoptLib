@@ -237,6 +237,6 @@ std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
 }
 
 void cancel_all() {
-  trajopt::GetCancellationFlag() = 1;
+  SwervePathBuilder::CancelAll();
 }
 }
