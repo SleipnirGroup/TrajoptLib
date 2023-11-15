@@ -25,7 +25,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    * Cancel all currently generating SwervePathBuilders.
    */
   void CancelAll();
-  
+
   /**
    * Get the SwervePath being constructed
    *
