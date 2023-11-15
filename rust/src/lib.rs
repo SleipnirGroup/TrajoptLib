@@ -342,7 +342,7 @@ impl SwervePathBuilder {
 
     
     pub fn cancel_all(&mut self) {
-       self.path.cancel_all();
+        crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
     }
 }
 
