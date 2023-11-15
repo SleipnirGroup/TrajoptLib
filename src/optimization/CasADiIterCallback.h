@@ -9,7 +9,7 @@
 #include <casadi/core/nlpsol.hpp>
 #include <casadi/core/sparsity.hpp>
 
-#include "trajopt/cancellation/Cancellation.h"
+#include "optimization/Cancellation.h"
 
 namespace trajopt {
 using namespace casadi;

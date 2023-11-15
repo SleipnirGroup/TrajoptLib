@@ -7,8 +7,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include "optimization/Cancellation.h"
 #include "optimization/TrajoptUtil.h"
-#include "trajopt/cancellation/Cancellation.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/Constraint.h"
 #include "trajopt/constraint/HeadingConstraint.h"

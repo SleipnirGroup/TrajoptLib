@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "trajopt/cancellation/Cancellation.h"
+#include "optimization/Cancellation.h"
 
 #include <atomic>
 

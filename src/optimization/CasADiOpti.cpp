@@ -9,8 +9,8 @@
 #include <casadi/core/mx.hpp>
 
 #include "DebugOptions.h"
+#include "optimization/Cancellation.h"
 #include "optimization/CasADiIterCallback.h"
-#include "trajopt/cancellation/Cancellation.h"
 namespace trajopt {
 casadi::MX CasADiOpti::DecisionVariable() {
   return opti.variable();
