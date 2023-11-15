@@ -44,7 +44,7 @@ mod ffi {
 
         type SwervePathBuilderImpl;
 
-        fn cancel_all(self: Pin<& SwervePathBuilderImpl>);
+        fn cancel_all(self: Pin<&mut SwervePathBuilderImpl>);
         fn set_drivetrain(self: Pin<&mut SwervePathBuilderImpl>, drivetrain: &SwerveDrivetrain);
         fn set_bumpers(self: Pin<&mut SwervePathBuilderImpl>, length: f64, width: f64);
 
