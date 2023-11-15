@@ -341,7 +341,7 @@ impl SwervePathBuilder {
     }
 
     
-    pub fn cancel_all(&self) -> () {
+    pub fn cancel_all(&self) {
        self.path.cancel_all();
     }
 }
