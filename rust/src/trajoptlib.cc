@@ -236,7 +236,7 @@ std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
   return std::make_unique<SwervePathBuilderImpl>(SwervePathBuilderImpl());
 }
 
-void cancel_all() {
+void SwervePathBuilderImpl::cancel_all() {
   SwervePathBuilder::CancelAll();
 }
 }
