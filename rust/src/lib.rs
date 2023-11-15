@@ -44,7 +44,7 @@ mod ffi {
 
         type SwervePathBuilderImpl;
 
-        fn cancel_all(self: Pin<&mut SwervePathBuilderImpl>);
+        fn cancel_all(self: Pin<& SwervePathBuilderImpl>);
         fn set_drivetrain(self: Pin<&mut SwervePathBuilderImpl>, drivetrain: &SwerveDrivetrain);
         fn set_bumpers(self: Pin<&mut SwervePathBuilderImpl>, length: f64, width: f64);
 
@@ -339,10 +339,11 @@ impl SwervePathBuilder {
             Err(msg) => Err(msg.what().to_string()),
         }
     }
-}
 
-pub fn cancel_all(&mut self) -> () {
-    crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
+    
+    pub fn cancel_all(&self) -> () {
+       self.path.cancel_all();
+    }
 }
 
 pub use ffi::HolonomicTrajectory;
