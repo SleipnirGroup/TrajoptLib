@@ -60,6 +60,4 @@ class SwervePathBuilderImpl {
 };
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl();
-
-void cancel_all();
 }  // namespace trajoptlibrust
