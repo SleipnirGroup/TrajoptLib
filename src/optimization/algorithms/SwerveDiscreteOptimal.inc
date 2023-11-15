@@ -60,7 +60,7 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     _Fy.reserve(moduleCnt);
   }
 
-  dt.reserve(sampTot);
+  dt.reserve(sgmtCnt);
 
   for (size_t idx = 0; idx < sampTot; ++idx) {
     x.emplace_back(opti.DecisionVariable());
@@ -72,12 +72,15 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     ax.emplace_back(opti.DecisionVariable());
     ay.emplace_back(opti.DecisionVariable());
     alpha.emplace_back(opti.DecisionVariable());
-    dt.emplace_back(opti.DecisionVariable());
 
     for (size_t moduleIdx = 0; moduleIdx < moduleCnt; ++moduleIdx) {
       Fx.at(idx).emplace_back(opti.DecisionVariable());
       Fy.at(idx).emplace_back(opti.DecisionVariable());
     }
+  }
+
+  for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
+    dt.emplace_back(opti.DecisionVariable());
   }
 
   ApplyDiscreteTimeObjective(opti, dt, N);
