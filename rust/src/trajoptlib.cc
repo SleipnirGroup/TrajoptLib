@@ -10,7 +10,6 @@
 #include <trajopt/TrajectoryGenerationException.h>
 #include <trajopt/trajectory/HolonomicTrajectorySample.h>
 #include <trajopt/trajectory/HolonomicTrajectory.h>
-#include <trajopt/cancellation/Cancellation.h>
 
 #include "trajoptlib/src/lib.rs.h"
 
