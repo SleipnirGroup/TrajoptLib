@@ -52,6 +52,7 @@ class SwervePathBuilderImpl {
                             double radius);
 
   HolonomicTrajectory generate() const;
+  void cancel_all();
 
   SwervePathBuilderImpl() = default;
 
@@ -60,5 +61,4 @@ class SwervePathBuilderImpl {
 };
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl();
-
 }  // namespace trajoptlibrust

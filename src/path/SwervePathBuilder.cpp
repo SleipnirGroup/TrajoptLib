@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "optimization/Cancellation.h"
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/Constraint.h"
@@ -255,5 +256,9 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
     }
   }
   return constraints;
+}
+
+void SwervePathBuilder::CancelAll() {
+  trajopt::GetCancellationFlag() = 1;
 }
 }  // namespace trajopt

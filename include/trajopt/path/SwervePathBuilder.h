@@ -22,6 +22,11 @@ namespace trajopt {
 class TRAJOPT_DLLEXPORT SwervePathBuilder {
  public:
   /**
+   * Cancel all currently generating SwervePathBuilders.
+   */
+  void CancelAll();
+
+  /**
    * Get the SwervePath being constructed
    *
    * @return the path
