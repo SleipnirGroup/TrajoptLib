@@ -157,7 +157,8 @@ template <typename Expr>
   requires ExprSys<Expr>
 const std::pair<Expr, Expr> SolveRobotPointPosition(const Expr& x,
                                                     const Expr& y,
-                                                    const Expr& theta,
+                                                    const Expr& thetacos,
+                                                    const Expr& thetasin,
                                                     double robotPointX,
                                                     double robotPointY) {
   std::pair<Expr, Expr> position{0.0, 0.0};
@@ -167,8 +168,8 @@ const std::pair<Expr, Expr> SolveRobotPointPosition(const Expr& x,
   } else {
     double cornerDiagonal = std::hypot(robotPointX, robotPointY);
     double cornerAngle = std::atan2(robotPointY, robotPointX);
-    position.first = x + cornerDiagonal * cos(cornerAngle + theta);   // NOLINT
-    position.second = y + cornerDiagonal * sin(cornerAngle + theta);  // NOLINT
+    position.first = x + cornerDiagonal * (thetacos * cos(cornerAngle) - thetasin* sin(cornerAngle));   // NOLINT
+    position.second = y + cornerDiagonal * (thetacos * sin(cornerAngle) + thetasin * cos(cornerAngle));  // NOLINT
   }
   return position;
 }
@@ -197,20 +198,20 @@ decltype(LineNumberType() + PointNumberType()) linePointDist(
 template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 void ApplyConstraint(Opti& opti, const Expr& x, const Expr& y,
-                     const Expr& theta, const Constraint& constraint) {
+                     const Expr& thetacos, const Expr& thetasin, const Constraint& constraint) {
   if (std::holds_alternative<TranslationConstraint>(constraint)) {
     auto& translationConstraint = std::get<TranslationConstraint>(constraint);
     ApplySet2dConstraint(opti, x, y, translationConstraint.translationBound);
   } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
     auto& headingConstraint = std::get<HeadingConstraint>(constraint);
-    ApplyIntervalSet1dConstraint(opti, theta, headingConstraint.headingBound);
+    ApplySet2dConstraint(opti, thetacos, thetasin, headingConstraint.headingBound);
   } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
     auto linePointConstraint = std::get<LinePointConstraint>(constraint);
     auto [lineStartX, lineStartY] = SolveRobotPointPosition(
-        x, y, theta, linePointConstraint.robotLineStartX,
+        x, y, thetacos, thetasin, linePointConstraint.robotLineStartX,
         linePointConstraint.robotLineStartY);
     auto [lineEndX, lineEndY] =
-        SolveRobotPointPosition(x, y, theta, linePointConstraint.robotLineEndX,
+        SolveRobotPointPosition(x, y, thetacos, thetasin, linePointConstraint.robotLineEndX,
                                 linePointConstraint.robotLineEndY);
     double pointX = linePointConstraint.fieldPointX;
     double pointY = linePointConstraint.fieldPointY;
@@ -228,7 +229,7 @@ void ApplyConstraint(Opti& opti, const Expr& x, const Expr& y,
     double lineEndX = pointLineConstraint.fieldLineEndX;
     double lineEndY = pointLineConstraint.fieldLineEndY;
     auto [pointX, pointY] =
-        SolveRobotPointPosition(x, y, theta, pointLineConstraint.robotPointX,
+        SolveRobotPointPosition(x, y, thetacos, thetasin, pointLineConstraint.robotPointX,
                                 pointLineConstraint.robotPointY);
     auto dist = linePointDist(lineStartX, lineStartY, lineEndX, lineEndY,
                               pointX, pointY);
@@ -244,7 +245,7 @@ void ApplyConstraint(Opti& opti, const Expr& x, const Expr& y,
     double fieldPointX = pointPointConstraint.fieldPointX;
     double fieldPointY = pointPointConstraint.fieldPointY;
     auto [bumperCornerX, bumperCornerY] =
-        SolveRobotPointPosition(x, y, theta, robotPointX, robotPointY);
+        SolveRobotPointPosition(x, y, thetacos, thetasin, robotPointX, robotPointY);
     auto dx = fieldPointX - bumperCornerX;
     auto dy = fieldPointY - bumperCornerY;
     auto pointDistSquared = dx * dx + dy * dy;
@@ -279,10 +280,12 @@ Solution GenerateLinearInitialGuess(
   Solution initialGuess{};
   initialGuess.x.reserve(sampTot);
   initialGuess.y.reserve(sampTot);
-  initialGuess.theta.reserve(sampTot);
+  initialGuess.thetacos.reserve(sampTot);
+  initialGuess.thetasin.reserve(sampTot);
   initialGuess.x.push_back(initialGuessPoints.front().front().x);
   initialGuess.y.push_back(initialGuessPoints.front().front().y);
-  initialGuess.theta.push_back(initialGuessPoints.front().front().heading);
+  initialGuess.thetacos.push_back(cos(initialGuessPoints.front().front().heading));
+  initialGuess.thetasin.push_back(sin(initialGuessPoints.front().front().heading));
   for (size_t wptIdx = 1; wptIdx < wptCnt; wptIdx++) {
     size_t N_sgmt = controlIntervalCounts.at(wptIdx - 1);
     size_t guessPointCount = initialGuessPoints.at(wptIdx).size();
@@ -295,10 +298,12 @@ Solution GenerateLinearInitialGuess(
         initialGuess.y,
         Linspace(initialGuessPoints.at(wptIdx - 1).back().y,
                  initialGuessPoints.at(wptIdx).front().y, N_guessSgmt));
-    append_vector(
-        initialGuess.theta,
-        Linspace(initialGuessPoints.at(wptIdx - 1).back().heading,
-                 initialGuessPoints.at(wptIdx).front().heading, N_guessSgmt));
+    auto wptTheta = Linspace(initialGuessPoints.at(wptIdx - 1).back().heading,
+                 initialGuessPoints.at(wptIdx).front().heading, N_guessSgmt);
+    for (auto it = wptTheta.cbegin(); it != wptTheta.cend(); it++) {
+      initialGuess.thetacos.push_back(cos(*it));
+      initialGuess.thetasin.push_back(sin(*it));
+    }
     for (size_t guessPointIdx = 1; guessPointIdx < guessPointCount - 1;
          guessPointIdx++) {  // if three or more guess points
       append_vector(
@@ -311,11 +316,12 @@ Solution GenerateLinearInitialGuess(
           Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).y,
                    initialGuessPoints.at(wptIdx).at(guessPointIdx).y,
                    N_guessSgmt));
-      append_vector(
-          initialGuess.theta,
-          Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).heading,
-                   initialGuessPoints.at(wptIdx).at(guessPointIdx).heading,
-                   N_guessSgmt));
+    auto guessTheta = Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).heading,
+                   initialGuessPoints.at(wptIdx).at(guessPointIdx).heading, N_guessSgmt);
+    for (auto it = guessTheta.cbegin(); it != guessTheta.cend(); it++) {
+      initialGuess.thetacos.push_back(cos(*it));
+      initialGuess.thetasin.push_back(sin(*it));
+    }
     }
     if (guessPointCount > 1) {  // if two or more guess points
       size_t N_lastGuessSgmt = N_sgmt - (guessPointCount - 1) * N_guessSgmt;
@@ -327,11 +333,12 @@ Solution GenerateLinearInitialGuess(
           initialGuess.y,
           Linspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).y,
                    initialGuessPoints.at(wptIdx).back().y, N_lastGuessSgmt));
-      append_vector(
-          initialGuess.theta,
-          Linspace(
-              initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
-              initialGuessPoints.at(wptIdx).back().heading, N_lastGuessSgmt));
+          auto lastTheta = Linspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
+                   initialGuessPoints.at(wptIdx).back().heading, N_lastGuessSgmt);
+    for (auto it = lastTheta.cbegin(); it != lastTheta.cend(); it++) {
+      initialGuess.thetacos.push_back(cos(*it));
+      initialGuess.thetasin.push_back(sin(*it));
+    }
     }
   }
   return initialGuess;
@@ -341,12 +348,13 @@ template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 void ApplyInitialGuess(Opti& opti, const Solution& solution,
                        std::vector<Expr>& x, std::vector<Expr>& y,
-                       std::vector<Expr>& theta) {
+                       std::vector<Expr>& thetacos, std::vector<Expr>& thetasin) {
   size_t sampleTotal = x.size();
   for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
     opti.SetInitial(x[sampleIndex], solution.x[sampleIndex]);
     opti.SetInitial(y[sampleIndex], solution.y[sampleIndex]);
-    opti.SetInitial(theta[sampleIndex], solution.theta[sampleIndex]);
+    opti.SetInitial(thetacos[sampleIndex], cos(solution.thetacos[sampleIndex]));
+    opti.SetInitial(thetasin[sampleIndex], sin(solution.thetasin[sampleIndex]));
   }
 }
 

@@ -19,7 +19,7 @@ HolonomicTrajectory::HolonomicTrajectory(const HolonomicSolution& solution) {
       ts += solution.dt[samp - 1];
     }
     samples.emplace_back(ts, solution.x[samp], solution.y[samp],
-                         solution.theta[samp], solution.vx[samp],
+                         std::atan2(solution.thetasin[samp], solution.thetacos[samp]), solution.vx[samp],
                          solution.vy[samp], solution.omega[samp]);
   }
 }

@@ -22,7 +22,7 @@ template <typename Expr, typename Opti>
 SwerveSolution SwerveDiscreteOptimal<Expr, Opti>::Generate() {
   try {
     opti.Solve();
-    return ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
+    return ConstructSwerveSolution(opti, x, y, thetacos, thetasin, vx, vy, omega, ax, ay,
                                    alpha, Fx, Fy, dt, N);
   } catch (const std::exception& e) {
     throw TrajectoryGenerationException("Error optimizing trajectory: " +
@@ -43,7 +43,8 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
 
   x.reserve(sampTot);
   y.reserve(sampTot);
-  theta.reserve(sampTot);
+  thetacos.reserve(sampTot);
+  thetasin.reserve(sampTot);
   vx.reserve(sampTot);
   vy.reserve(sampTot);
   omega.reserve(sampTot);
@@ -65,7 +66,8 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
   for (size_t idx = 0; idx < sampTot; ++idx) {
     x.emplace_back(opti.DecisionVariable());
     y.emplace_back(opti.DecisionVariable());
-    theta.emplace_back(opti.DecisionVariable());
+    thetacos.emplace_back(opti.DecisionVariable());
+    thetasin.emplace_back(opti.DecisionVariable());
     vx.emplace_back(opti.DecisionVariable());
     vy.emplace_back(opti.DecisionVariable());
     omega.emplace_back(opti.DecisionVariable());
@@ -84,18 +86,18 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
   }
 
   ApplyDiscreteTimeObjective(opti, dt, N);
-  ApplyKinematicsConstraints(opti, x, y, theta, vx, vy, omega, ax, ay, alpha,
+  ApplyKinematicsConstraints(opti, x, y, thetacos, thetasin, vx, vy, omega, ax, ay, alpha,
                              dt, N);
 
   for (size_t idx = 0; idx < sampTot; ++idx) {
     auto [Fx_net, Fy_net] = SolveNetForce(Fx.at(idx), Fy.at(idx));
     ApplyDynamicsConstraints(
         opti, ax.at(idx), ay.at(idx), alpha.at(idx), Fx_net, Fy_net,
-        SolveNetTorque(theta.at(idx), Fx.at(idx), Fy.at(idx),
+        SolveNetTorque(thetacos.at(idx), thetasin.at(idx), Fx.at(idx), Fy.at(idx),
                        path.drivetrain.modules),
         path.drivetrain.mass, path.drivetrain.moi);
 
-    ApplyPowerConstraints(opti, theta.at(idx), vx.at(idx), vy.at(idx),
+    ApplyPowerConstraints(opti, thetacos.at(idx), thetasin.at(idx), vx.at(idx), vy.at(idx),
                           omega.at(idx), Fx.at(idx), Fy.at(idx),
                           path.drivetrain);
   }
@@ -104,7 +106,7 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     for (auto& constraint : path.waypoints.at(wptIdx).waypointConstraints) {
       size_t idx = GetIdx(N, wptIdx + 1, 0) - 1;  // first idx of next wpt - 1
       ApplyHolonomicConstraint(
-          opti, x.at(idx), y.at(idx), theta.at(idx), vx.at(idx), vy.at(idx),
+          opti, x.at(idx), y.at(idx), thetacos.at(idx), thetasin.at(idx), vx.at(idx), vy.at(idx),
           omega.at(idx), ax.at(idx), ay.at(idx), alpha.at(idx), constraint);
     }
   }  // TODO: try changing the path struct so instead of having waypoint objects
@@ -116,12 +118,12 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
       size_t endIdx = GetIdx(N, sgmtIdx + 2, 0);
       for (size_t idx = startIdx; idx < endIdx; ++idx) {
         ApplyHolonomicConstraint(
-            opti, x.at(idx), y.at(idx), theta.at(idx), vx.at(idx), vy.at(idx),
+            opti, x.at(idx), y.at(idx), thetacos.at(idx), thetasin.at(idx), vx.at(idx), vy.at(idx),
             omega.at(idx), ax.at(idx), ay.at(idx), alpha.at(idx), constraint);
       }
     }
   }
 
-  ApplyInitialGuess(opti, initialGuess, x, y, theta);
+  ApplyInitialGuess(opti, initialGuess, x, y, thetacos, thetasin);
 }
 }  // namespace trajopt

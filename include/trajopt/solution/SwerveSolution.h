@@ -53,7 +53,7 @@ struct fmt::formatter<trajopt::SwerveSolution> {
       tableEntries += fmt::format(
           "  {2:>{0}.{1}f} ║ {3:>{0}.{1}f} ║ {4:>{0}.{1}f} ║ {5:>{0}.{1}f}  \n",
           12, 6, swerveSolution.dt[index - 1], swerveSolution.x[index],
-          swerveSolution.y[index], swerveSolution.theta[index]);
+          swerveSolution.y[index], atan2(swerveSolution.thetacos[index], swerveSolution.thetasin[index]));
     }
     return fmt::format_to(
         ctx.out(),
@@ -75,7 +75,7 @@ struct fmt::formatter<trajopt::SwerveSolution> {
         "α",                      // 11
         swerveSolution.x[0],      // 12
         swerveSolution.y[0],      // 13
-        swerveSolution.theta[0],  // 14
+        atan2(swerveSolution.thetacos[0], swerveSolution.thetasin[0]),  // 14
         swerveSolution.vx[0],     // 15
         swerveSolution.vy[0],     // 16
         swerveSolution.omega[0],  // 17

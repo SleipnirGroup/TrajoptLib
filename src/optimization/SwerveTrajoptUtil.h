@@ -21,7 +21,7 @@ std::pair<Expr, Expr> SolveNetForce(const std::vector<Expr>& Fx,
 
 template <typename Expr>
   requires ExprSys<Expr>
-Expr SolveNetTorque(const Expr& theta, const std::vector<Expr>& Fx,
+Expr SolveNetTorque(const Expr& thetacos, const Expr& thetasin, const std::vector<Expr>& Fx,
                     const std::vector<Expr>& Fy,
                     const std::vector<SwerveModule>& swerveModules);
 
@@ -29,7 +29,8 @@ template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 void ApplyKinematicsConstraints(
     Opti& opti, const std::vector<Expr>& x, const std::vector<Expr>& y,
-    const std::vector<Expr>& theta, const std::vector<Expr>& vx,
+    const std::vector<Expr>& thetacos, const std::vector<Expr>& thetasin,
+     const std::vector<Expr>& vx,
     const std::vector<Expr>& vy, const std::vector<Expr>& omega,
     const std::vector<Expr>& ax, const std::vector<Expr>& ay,
     const std::vector<Expr>& alpha, const std::vector<Expr>& dt,
@@ -72,7 +73,7 @@ void ApplyDynamicsConstraints(Opti& opti, const Expr& ax, const Expr& ay,
 
 template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
-void ApplyPowerConstraints(Opti& opti, const Expr& theta, const Expr& vx,
+void ApplyPowerConstraints(Opti& opti, const Expr& thetacos, const Expr& thetasin, const Expr& vx,
                            const Expr& vy, const Expr& omega,
                            const std::vector<Expr>& Fx,
                            const std::vector<Expr>& Fy,
@@ -82,7 +83,7 @@ template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 SwerveSolution ConstructSwerveSolution(
     const Opti& opti, const std::vector<Expr>& x, const std::vector<Expr>& y,
-    const std::vector<Expr>& theta, const std::vector<Expr>& vx,
+    const std::vector<Expr>& thetacos, const std::vector<Expr>& thetasin, const std::vector<Expr>& vx,
     const std::vector<Expr>& vy, const std::vector<Expr>& omega,
     const std::vector<Expr>& ax, const std::vector<Expr>& ay,
     const std::vector<Expr>& alpha, const std::vector<std::vector<Expr>>& Fx,

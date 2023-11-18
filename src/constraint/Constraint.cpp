@@ -14,7 +14,7 @@
 namespace trajopt {
 
 std::optional<SolutionError> CheckState(
-    const Constraint& constraint, double x, double y, double heading,
+    const Constraint& constraint, double x, double y, double headingcos, double headingsin,
     const SolutionTolerances& tolerances) noexcept {
   if (std::holds_alternative<TranslationConstraint>(constraint)) {
     std::optional<SolutionError> check =
@@ -28,7 +28,7 @@ std::optional<SolutionError> CheckState(
     }
   } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
     std::optional<SolutionError> check = std::get<HeadingConstraint>(constraint)
-                                             .CheckHeading(heading, tolerances);
+                                             .CheckHeading(headingcos, headingsin, tolerances);
     if (check.has_value()) {
       return SolutionError{fmt::format(
           "({}) violated: {}", "GetHeadingConstraint()", check->errorMessage)};

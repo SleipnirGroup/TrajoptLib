@@ -35,7 +35,8 @@ class SwerveDiscreteOptimal {
   /// State Variables
   std::vector<Expr> x;
   std::vector<Expr> y;
-  std::vector<Expr> theta;
+  std::vector<Expr> thetacos;
+  std::vector<Expr> thetasin;
   std::vector<Expr> vx;
   std::vector<Expr> vy;
   std::vector<Expr> omega;

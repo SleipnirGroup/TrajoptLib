@@ -21,7 +21,7 @@
 namespace trajopt {
 
 std::optional<SolutionError> CheckState(
-    const HolonomicConstraint& constraint, double x, double y, double heading,
+    const HolonomicConstraint& constraint, double x, double y, double thetacos, double thetasin,
     double velocityX, double velocityY, double angularVelocity,
     double accelerationX, double accelerationY, double angularAcceleration,
     const SolutionTolerances& tolerances) noexcept {

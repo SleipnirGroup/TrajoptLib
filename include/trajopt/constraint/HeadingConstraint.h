@@ -7,7 +7,7 @@
 #include <nlohmann/json.hpp>
 
 #include "trajopt/SymbolExports.h"
-#include "trajopt/set/IntervalSet1d.h"
+#include "trajopt/set/ConeSet2d.h"
 #include "trajopt/solution/SolutionChecking.h"
 #include "trajopt/util/JsonFmtFormatter.h"
 
@@ -18,7 +18,7 @@ namespace trajopt {
  */
 struct TRAJOPT_DLLEXPORT HeadingConstraint {
   /// The heading bound.
-  IntervalSet1d headingBound;
+  ConeSet2d headingBound;
 
   /**
    * Returns an error if the given heading isn't in the heading region.
@@ -27,7 +27,7 @@ struct TRAJOPT_DLLEXPORT HeadingConstraint {
    * @param tolerances The tolerances considered to satisfy the constraint.
    */
   std::optional<SolutionError> CheckHeading(
-      double theta, const SolutionTolerances& tolerances) const noexcept;
+      double thetacos, double thetasin, const SolutionTolerances& tolerances) const noexcept;
 };
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(HeadingConstraint, headingBound)

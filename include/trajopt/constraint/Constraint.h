@@ -63,7 +63,7 @@ using Constraint =
  * @param tolerances The tolerances considered to satisfy the constraint.
  */
 std::optional<SolutionError> CheckState(
-    const Constraint& constraint, double x, double y, double heading,
+    const Constraint& constraint, double x, double y, double headingcos, double headingsin,
     const SolutionTolerances& tolerances) noexcept;
 
 NLOHMANN_JSON_SERIALIZE_ENUM(CoordinateSystem,

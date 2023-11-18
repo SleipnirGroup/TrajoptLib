@@ -22,6 +22,8 @@ struct TRAJOPT_DLLEXPORT Solution {
   std::vector<double> y;
 
   /// Headings.
-  std::vector<double> theta;
+  std::vector<double> thetacos;
+
+  std::vector<double> thetasin;
 };
 }  // namespace trajopt

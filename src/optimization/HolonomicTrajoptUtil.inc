@@ -23,7 +23,7 @@ namespace trajopt {
 template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
-                              const Expr& theta, const Expr& vx, const Expr& vy,
+                              const Expr& thetacos, const Expr& thetasin, const Expr& vx, const Expr& vy,
                               const Expr& omega, const Expr& ax, const Expr& ay,
                               const Expr& alpha,
                               const HolonomicConstraint& holonomicConstraint) {
@@ -41,20 +41,20 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
         opti, omega, angularVelocityConstraint.angularVelocityBound);
   } else if (std::holds_alternative<TranslationConstraint>(
                  holonomicConstraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(opti, x, y, thetacos, thetasin,
                     std::get<TranslationConstraint>(holonomicConstraint));
   } else if (std::holds_alternative<HeadingConstraint>(holonomicConstraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(opti, x, y, thetacos, thetasin,
                     std::get<HeadingConstraint>(holonomicConstraint));
   } else if (std::holds_alternative<LinePointConstraint>(holonomicConstraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(opti, x, y, thetacos, thetasin,
                     std::get<LinePointConstraint>(holonomicConstraint));
   } else if (std::holds_alternative<PointLineConstraint>(holonomicConstraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(opti, x, y, thetacos, thetasin,
                     std::get<PointLineConstraint>(holonomicConstraint));
   } else if (std::holds_alternative<PointPointConstraint>(
                  holonomicConstraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(opti, x, y, thetacos, thetasin,
                     std::get<PointPointConstraint>(holonomicConstraint));
   }  // TODO: Investigate a way to condense the code above
 }

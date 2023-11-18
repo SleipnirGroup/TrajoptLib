@@ -86,7 +86,7 @@ static const std::pair<Expr, Expr> SolveRobotPointPosition(const Expr& x,
 template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 void ApplyConstraint(Opti& opti, const Expr& x, const Expr& y,
-                     const Expr& theta, const Constraint& constraint);
+                     const Expr& thetacos, const Expr& thetasin, const Constraint& constraint);
 
 inline std::vector<double> Linspace(double startValue, double endValue,
                                     size_t numSamples);
