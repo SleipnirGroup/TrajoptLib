@@ -52,7 +52,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up MinGW
         if: matrix.os == 'windows-2022' && matrix.optimizer == 'casadi'
@@ -84,7 +84,7 @@ jobs:
     name: "Wasm"
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup emscripten
         uses: numworks/setup-emscripten@latest
@@ -116,7 +116,7 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
         with:
