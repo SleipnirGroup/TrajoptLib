@@ -79,8 +79,32 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     }
   }
 
+  double minWidth = INFINITY;
+  for (size_t i = 1; i < path.drivetrain.modules.size(); i++)
+  {
+    if (abs(path.drivetrain.modules.at(i - 1).x 
+      - path.drivetrain.modules.at(i).x) != 0) {
+        minWidth = std::min(minWidth, 
+          abs(path.drivetrain.modules.at(i - 1).x 
+          - path.drivetrain.modules.at(i).x));
+      }
+    if (abs(path.drivetrain.modules.at(i - 1).y 
+      - path.drivetrain.modules.at(i).y) != 0) {
+        minWidth = std::min(minWidth, 
+          abs(path.drivetrain.modules.at(i - 1).y 
+          - path.drivetrain.modules.at(i).y));
+      }
+  }
+
+  std::cout << "Min Width: ";
+  std::cout << minWidth;
+  std::cout << "\n";
+
   for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
     dt.emplace_back(opti.DecisionVariable());
+    for (auto module : path.drivetrain.modules) {
+      opti.SubjectTo(dt.at(sgmtIdx) * module.wheelRadius * module.wheelMaxAngularVelocity <= minWidth);
+    }
   }
 
   ApplyDiscreteTimeObjective(opti, dt, N);
