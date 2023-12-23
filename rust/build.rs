@@ -1,7 +1,7 @@
 use cmake::Config;
 
 fn main() -> miette::Result<()> {
-    let mut cmake_config = Config::new("..");
+    let mut cmake_config = Config::new("root");
 
     cmake_config
         .profile("RelWithDebInfo")
