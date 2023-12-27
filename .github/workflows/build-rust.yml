@@ -17,11 +17,11 @@ jobs:
             rust-target: x86_64-pc-windows-gnu
 
           - artifact-name: Rust Native - macOS x86_64 (CasADi)
-            os: macOS-12
+            os: macOS-13
             rust-target: x86_64-apple-darwin
 
           - artifact-name: Rust Native - macOS arm64 (CasADi)
-            os: macOS-12
+            os: macOS-13
             rust-target: aarch64-apple-darwin
 
           - artifact-name: Rust Native - Linux x86_64 (CasADi)
@@ -47,7 +47,7 @@ jobs:
           targets: ${{matrix.rust-target}}
 
       - name: Set up Clang
-        if: matrix.os != 'macOS-12'
+        if: matrix.os != 'macOS-13'
         uses: egor-tensin/setup-clang@v1
         with:
           version: latest

@@ -21,12 +21,12 @@ jobs:
             cmake-config-env-vars: CFLAGS="$CFLAGS -arch x86_64" CXXFLAGS="$CXXFLAGS -arch x86_64"
             cmake-flags: "-DCMAKE_APPLE_SILICON_PROCESSOR=x86_64"
             optimizer: casadi
-            os: macOS-12
+            os: macOS-13
           - artifact-name: Native - macOS arm64 (CasADi)
             cmake-config-env-vars: CFLAGS="$CFLAGS -arch arm64" CXXFLAGS="$CXXFLAGS -arch arm64"
             cmake-flags: "-DCMAKE_APPLE_SILICON_PROCESSOR=arm64"
             optimizer: casadi
-            os: macOS-12
+            os: macOS-13
           - artifact-name: Native - Linux (CasADi)
             cmake-config-env-vars:
             cmake-flags:
@@ -41,7 +41,7 @@ jobs:
             cmake-config-env-vars: CFLAGS="$CFLAGS -arch x86_64 -arch arm64" CXXFLAGS="$CXXFLAGS -arch x86_64 -arch arm64"
             cmake-flags:
             optimizer: sleipnir
-            os: macOS-12
+            os: macOS-13
           - artifact-name: Native - Linux (Sleipnir)
             cmake-config-env-vars:
             cmake-flags:
