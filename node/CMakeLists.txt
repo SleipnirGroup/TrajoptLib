@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-project (trajoptlib-node)
+project(trajoptlib-node)
 
 add_definitions(-DNAPI_VERSION=7)
 
@@ -29,22 +29,31 @@ target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
 
 set(OPTIMIZER_BACKEND casadi)
 set(CMAKE_APPLE_SILICON_PROCESSOR arm64)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_SOURCE_DIR}/../build EXCLUDE_FROM_ALL)
+add_subdirectory(
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
+    ${CMAKE_CURRENT_SOURCE_DIR}/../build
+    EXCLUDE_FROM_ALL
+)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE TrajoptLib)
 
 if(MSVC AND CMAKE_JS_NODELIB_DEF AND CMAKE_JS_NODELIB_TARGET)
-  # Generate node.lib
-  execute_process(COMMAND ${CMAKE_AR} /def:${CMAKE_JS_NODELIB_DEF} /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
+    # Generate node.lib
+    execute_process(
+        COMMAND
+            ${CMAKE_AR} /def:${CMAKE_JS_NODELIB_DEF}
+            /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS}
+    )
 endif()
 
 # Include N-API wrappers
 # $ node -p "require('node-addon-api').include"
 # "/home/will/projects/financialcpp/financialcpp/node_modules/node-addon-api"
-execute_process(COMMAND node -p "require('node-addon-api').include"
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE NODE_ADDON_API_DIR
-        )
+execute_process(
+    COMMAND node -p "require('node-addon-api').include"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE NODE_ADDON_API_DIR
+)
 
 # strip `"` and `\n` from the output above
 string(REPLACE "\n" "" NODE_ADDON_API_DIR ${NODE_ADDON_API_DIR})

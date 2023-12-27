@@ -200,8 +200,8 @@ void SwervePathBuilder::NewWpts(size_t finalIndex) {
 
 std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
     const Bumpers& bumpers, const Obstacle& obstacle) {
-  auto distConst =
-      IntervalSet1d::GreaterThan(bumpers.safetyDistance + obstacle.safetyDistance);
+  auto distConst = IntervalSet1d::GreaterThan(bumpers.safetyDistance +
+                                              obstacle.safetyDistance);
 
   size_t bumperCornerCount = bumpers.points.size();
   size_t obstacleCornerCount = obstacle.points.size();
@@ -240,7 +240,8 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
   for (auto& bumperCorner : bumpers.points) {
     if (obstacleCornerCount > 1) {
       for (size_t obstacleCornerIndex = 0;
-          obstacleCornerIndex < obstacleCornerCount - 1; obstacleCornerIndex++) {
+           obstacleCornerIndex < obstacleCornerCount - 1;
+           obstacleCornerIndex++) {
         constraints.emplace_back(PointLineConstraint{
             bumperCorner.x, bumperCorner.y,
             obstacle.points.at(obstacleCornerIndex).x,
@@ -252,16 +253,13 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
         constraints.emplace_back(PointLineConstraint{
             bumperCorner.x, bumperCorner.y,
             obstacle.points.at(bumperCornerCount - 1).x,
-            obstacle.points.at(bumperCornerCount - 1).y, obstacle.points.at(0).x,
-            obstacle.points.at(0).y, distConst});
+            obstacle.points.at(bumperCornerCount - 1).y,
+            obstacle.points.at(0).x, obstacle.points.at(0).y, distConst});
       }
     } else {
       constraints.emplace_back(PointPointConstraint{
-        bumperCorner.x, bumperCorner.y,
-        obstacle.points.at(0).x,
-        obstacle.points.at(0).y,
-        distConst
-      });
+          bumperCorner.x, bumperCorner.y, obstacle.points.at(0).x,
+          obstacle.points.at(0).y, distConst});
     }
   }
   return constraints;
