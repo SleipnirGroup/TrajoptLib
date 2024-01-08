@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include <fmt/format.h>
+
 #include "DebugOptions.h"
 #include "optimization/SwerveTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
@@ -25,8 +27,8 @@ SwerveSolution SwerveDiscreteOptimal<Expr, Opti>::Generate() {
     return ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
                                    alpha, Fx, Fy, dt, N);
   } catch (const std::exception& e) {
-    throw TrajectoryGenerationException("Error optimizing trajectory: " +
-                                        std::string(e.what()));
+    throw TrajectoryGenerationException{
+        fmt::format("Error optimizing trajectory: {}", e.what())};
   }
 }
 

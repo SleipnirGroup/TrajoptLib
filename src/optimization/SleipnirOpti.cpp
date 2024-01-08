@@ -7,12 +7,14 @@
 #include <memory>
 #include <vector>
 
+#include <fmt/format.h>
 #include <sleipnir/autodiff/Variable.hpp>
 #include <sleipnir/optimization/Constraints.hpp>
 #include <sleipnir/optimization/OptimizationProblem.hpp>
 
 #include "DebugOptions.h"
 #include "optimization/Cancellation.h"
+#include "trajopt/TrajectoryGenerationException.h"
 
 namespace trajopt {
 
@@ -107,7 +109,13 @@ void SleipnirOpti::Solve() {
   opti.Callback([](const sleipnir::SolverIterationInfo&) -> bool {
     return trajopt::GetCancellationFlag();
   });
-  opti.Solve({.diagnostics = true});
+
+  auto status = opti.Solve({.diagnostics = true});
+
+  if (static_cast<int>(status.exitCondition) < 0) {
+    throw TrajectoryGenerationException{
+        sleipnir::ToMessage(status.exitCondition)};
+  }
 }
 
 double SleipnirOpti::SolutionValue(const SleipnirExpr& expression) const {
