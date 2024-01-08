@@ -1,6 +1,5 @@
 // Copyright (c) TrajoptLib contributors
 
-#ifdef OPTIMIZER_BACKEND_CASADI
 #include "optimization/CasADiOpti.h"
 
 #include <casadi/casadi.hpp>
@@ -11,19 +10,25 @@
 #include "DebugOptions.h"
 #include "optimization/Cancellation.h"
 #include "optimization/CasADiIterCallback.h"
+
 namespace trajopt {
+
 casadi::MX CasADiOpti::DecisionVariable() {
   return opti.variable();
 }
+
 void CasADiOpti::Minimize(const casadi::MX& objective) {
   opti.minimize(objective);
 }
+
 void CasADiOpti::SubjectTo(const casadi::MX& constraint) {
   opti.subject_to(constraint);
 }
+
 void CasADiOpti::SetInitial(const casadi::MX& expression, double value) {
   opti.set_initial(expression, value);
 }
+
 void CasADiOpti::Solve() {
   GetCancellationFlag() = 0;
   const auto callback =
@@ -42,6 +47,7 @@ void CasADiOpti::Solve() {
   opti.solver("ipopt", pluginOptions);
   solution = opti.solve();
 }
+
 double CasADiOpti::SolutionValue(const casadi::MX& expression) const {
   if (solution) {
     try {
@@ -53,5 +59,5 @@ double CasADiOpti::SolutionValue(const casadi::MX& expression) const {
     throw std::runtime_error("Solution not generated properly");
   }
 }
+
 }  // namespace trajopt
-#endif
