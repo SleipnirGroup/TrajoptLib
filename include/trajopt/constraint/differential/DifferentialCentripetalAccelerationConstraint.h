@@ -42,9 +42,9 @@ struct fmt::formatter<trajopt::DifferentialCentripetalAccelerationConstraint> {
    * @param constraint DifferentialCentripetalAccelerationConstraint instance.
    * @param ctx Format string context.
    */
-  auto format(
-      const trajopt::DifferentialCentripetalAccelerationConstraint& constraint,
-      fmt::format_context& ctx) const {
+  auto format([[maybe_unused]] const trajopt::
+                  DifferentialCentripetalAccelerationConstraint& constraint,
+              fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "diff centrip acceleration bound");
   }
 };
