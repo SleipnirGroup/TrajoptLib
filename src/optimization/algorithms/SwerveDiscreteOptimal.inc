@@ -3,7 +3,6 @@
 #pragma once
 
 #include <algorithm>
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -95,10 +94,6 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
                                       path.drivetrain.modules.at(i).y));
     }
   }
-
-  std::cout << "Min Width: ";
-  std::cout << minWidth;
-  std::cout << "\n";
 
   for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
     dt.emplace_back(opti.DecisionVariable());
