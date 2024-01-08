@@ -3,7 +3,7 @@
 #pragma once
 
 #include <stdexcept>
-#include <string>
+#include <string_view>
 
 #include "trajopt/SymbolExports.h"
 
@@ -22,7 +22,8 @@ class TRAJOPT_DLLEXPORT TrajectoryGenerationException
    *
    * @param message the string message
    */
-  explicit TrajectoryGenerationException(const std::string& message);
+  explicit TrajectoryGenerationException(std::string_view message);
+
   /**
    * @brief Construct a new Trajectory Generation Exception object with a string
    * message.

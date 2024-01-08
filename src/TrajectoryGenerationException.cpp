@@ -2,16 +2,15 @@
 
 #include "trajopt/TrajectoryGenerationException.h"
 
-#include <stdexcept>
 #include <string>
 
 namespace trajopt {
 
 TrajectoryGenerationException::TrajectoryGenerationException(
-    const std::string& message)
-    : logic_error(message) {}
+    std::string_view message)
+    : std::logic_error{std::string{message}} {}
 
 TrajectoryGenerationException::TrajectoryGenerationException(
     const char* message)
-    : logic_error(message) {}
+    : std::logic_error{message} {}
 }  // namespace trajopt
