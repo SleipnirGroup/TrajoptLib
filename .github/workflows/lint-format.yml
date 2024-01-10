@@ -76,12 +76,11 @@ jobs:
       - name: Run clang-tidy
         run: wpiformat -no-format -tidy-all -compile-commands=build -tidy-extra-args std=c++20 -vv
 
-  rustfmt:
-    name: "rustfmt"
+  format-rust:
+    name: "Format Rust"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Run rustfmt
         working-directory: rust
-        run: cargo fmt
+        run: cargo fmt --check
