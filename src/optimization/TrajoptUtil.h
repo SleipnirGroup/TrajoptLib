@@ -99,8 +99,9 @@ template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 void ApplyInitialGuess(Opti& opti, const Solution& solution,
                        std::vector<Expr>& x, std::vector<Expr>& y,
-                       std::vector<Expr>& theta, std::vector<Expr>& vx, std::vector<Expr>& vy,
-                       std::vector<Expr>& omega, std::vector<Expr>& ax, std::vector<Expr>& ay,
+                       std::vector<Expr>& theta, std::vector<Expr>& vx,
+                       std::vector<Expr>& vy, std::vector<Expr>& omega,
+                       std::vector<Expr>& ax, std::vector<Expr>& ay,
                        std::vector<Expr>& alpha);
 }  // namespace trajopt
 
