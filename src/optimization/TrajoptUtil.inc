@@ -280,9 +280,13 @@ Solution GenerateLinearInitialGuess(
   initialGuess.x.reserve(sampTot);
   initialGuess.y.reserve(sampTot);
   initialGuess.theta.reserve(sampTot);
+  initialGuess.dt.reserve(sampTot);
   initialGuess.x.push_back(initialGuessPoints.front().front().x);
   initialGuess.y.push_back(initialGuessPoints.front().front().y);
   initialGuess.theta.push_back(initialGuessPoints.front().front().heading);
+  for (size_t i = 0; i < sampTot; i++) {
+    initialGuess.dt.push_back((wptCnt * 5.0) / sampTot);
+  }
   for (size_t wptIdx = 1; wptIdx < wptCnt; wptIdx++) {
     size_t N_sgmt = controlIntervalCounts.at(wptIdx - 1);
     size_t guessPointCount = initialGuessPoints.at(wptIdx).size();
