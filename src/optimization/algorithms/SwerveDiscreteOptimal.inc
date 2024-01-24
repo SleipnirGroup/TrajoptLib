@@ -145,6 +145,7 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     }
   }
 
-  ApplyInitialGuess(opti, initialGuess, x, y, theta);
+  ApplyInitialGuess(opti, initialGuess, x, y, theta, vx, vy, omega, ax, ay,
+                    alpha);
 }
 }  // namespace trajopt
