@@ -10,9 +10,10 @@ fn main() -> miette::Result<()> {
     if cfg!(target_os = "windows") {
         cmake_config
             .cxxflag("/EHsc")
-            //.cflag("/std:c++20");
+            
             .generator("Visual Studio 17 2022")
-            .define("CMAKE_GENERATOR_PLATFORM", "x64");
+            .define("CMAKE_GENERATOR_PLATFORM", "x64")
+            .cxxflag("/std:c++20");
             // .define("CMAKE_CXX_COMPILER", "x86_64-w64-mingw32-g++")
             // .define("CMAKE_C_COMPILER", "x86_64-w64-mingw32-gcc")
             // .define(
