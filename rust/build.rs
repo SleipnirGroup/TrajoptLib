@@ -13,7 +13,7 @@ fn main() -> miette::Result<()> {
             
             .generator("Visual Studio 17 2022")
             .define("CMAKE_GENERATOR_PLATFORM", "x64")
-            .cxxflag("/std:c++20");
+            .cxxflag("-std=c++20");
             // .define("CMAKE_CXX_COMPILER", "x86_64-w64-mingw32-g++")
             // .define("CMAKE_C_COMPILER", "x86_64-w64-mingw32-gcc")
             // .define(
@@ -40,6 +40,7 @@ fn main() -> miette::Result<()> {
         .include("include")
         .include(format!("{}/include", dst.display()))
         .flag_if_supported("-std=c++20")
+        .flag_if_supported("/std:c++20")
         .compile("trajoptlib-rust");
 
     println!("cargo:rerun-if-changed=include/trajoptlib.h");
