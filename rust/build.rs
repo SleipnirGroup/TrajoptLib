@@ -9,14 +9,14 @@ fn main() -> miette::Result<()> {
 
     if cfg!(target_os = "windows") {
         cmake_config
-            .generator("MinGW Makefiles")
-            .define("CMAKE_CXX_COMPILER", "x86_64-w64-mingw32-g++")
-            .define("CMAKE_C_COMPILER", "x86_64-w64-mingw32-gcc")
-            .define(
-                "CMAKE_SHARED_LINKER_FLAGS",
-                "-static-libgcc -static-libstdc++",
-            )
-            .define("CMAKE_EXE_LINKER_FLAGS", "-static-libgcc -static-libstdc++");
+            //.generator("MinGW Makefiles")
+            // .define("CMAKE_CXX_COMPILER", "x86_64-w64-mingw32-g++")
+            // .define("CMAKE_C_COMPILER", "x86_64-w64-mingw32-gcc")
+            // .define(
+            //     "CMAKE_SHARED_LINKER_FLAGS",
+            //     "-static-libgcc -static-libstdc++",
+            // )
+            // .define("CMAKE_EXE_LINKER_FLAGS", "-static-libgcc -static-libstdc++");
     }
 
     if cfg!(target_os = "linux") {
