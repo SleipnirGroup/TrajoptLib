@@ -5,7 +5,7 @@ fn main() -> miette::Result<()> {
 
     cmake_config
         .profile("RelWithDebInfo")
-        .define("OPTIMIZER_BACKEND", "casadi");
+        .define("OPTIMIZER_BACKEND", "sleipnir");
 
     if cfg!(target_os = "windows") {
         cmake_config

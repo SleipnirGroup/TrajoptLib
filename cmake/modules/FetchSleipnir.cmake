@@ -4,8 +4,8 @@ macro(fetch_sleipnir)
     fetchcontent_declare(
         Sleipnir
         GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        # main on 2024-01-08
-        GIT_TAG 02c5b2446975b45b38f35f4a40e54f988010d486
+        # main on 2024-02-13
+        GIT_TAG b20cf8f393143e0c7aef08f9d7e728eb6afb6ad1
     )
 
     fetchcontent_getproperties(Sleipnir)
