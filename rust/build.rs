@@ -8,7 +8,7 @@ fn main() -> miette::Result<()> {
         .define("OPTIMIZER_BACKEND", "sleipnir");
 
     if cfg!(target_os = "windows") {
-        cmake_config
+        //cmake_config
             //.generator("MinGW Makefiles")
             // .define("CMAKE_CXX_COMPILER", "x86_64-w64-mingw32-g++")
             // .define("CMAKE_C_COMPILER", "x86_64-w64-mingw32-gcc")
