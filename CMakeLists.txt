@@ -107,13 +107,13 @@ target_link_libraries(TrajoptLib PUBLIC fmt)
 # json dependency
 set(BUILD_SHARED_LIBS_SAVE ${BUILD_SHARED_LIBS})
 set(BUILD_SHARED_LIBS OFF)
+set(JSON_BuildTests OFF)
 set(JSON_Install ON)
 fetchcontent_declare(
     nlohmann_json
     GIT_REPOSITORY https://github.com/nlohmann/json
     GIT_TAG v3.11.2
 )
-set(JSON_BuildTests OFF)
 fetchcontent_makeavailable(nlohmann_json)
 set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVE})
 
