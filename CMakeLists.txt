@@ -113,6 +113,7 @@ fetchcontent_declare(
     GIT_REPOSITORY https://github.com/nlohmann/json
     GIT_TAG v3.11.2
 )
+set(JSON_BuildTests OFF)
 fetchcontent_makeavailable(nlohmann_json)
 set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVE})
 
