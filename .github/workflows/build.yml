@@ -70,12 +70,12 @@ jobs:
       - name: install
         run: cmake --install build --config RelWithDebInfo --prefix pkg
 
-      - uses: actions/upload-artifact@v3.1.1
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
           path: pkg
 
-      - uses: actions/upload-artifact@v3.1.1
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}-java-libraries
           path: java/src/main/resources
@@ -98,7 +98,7 @@ jobs:
       - name: install
         run: cmake --install build --config Release --prefix pkg
 
-      - uses: actions/upload-artifact@v3.1.1
+      - uses: actions/upload-artifact@v4
         with:
           name: Wasm
           path: pkg
@@ -118,29 +118,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Native - Windows (CasADi)-java-libraries
           path: java/src/main/resources
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Native - macOS x86_64 (CasADi)-java-libraries
           path: java/src/main/resources
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Native - macOS arm64 (CasADi)-java-libraries
           path: java/src/main/resources
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Native - Linux (CasADi)-java-libraries
           path: java/src/main/resources
 
       - run: cd java/src/main/resources/osx;ls
 
-      - uses: actions/upload-artifact@v3.1.1
+      - uses: actions/upload-artifact@v4
         with:
           name: all-java-libraries
           path: java/src/main/resources
