@@ -247,7 +247,7 @@ if(BUILD_TESTING)
     )
     target_link_libraries(
         TrajoptLibTest
-        PRIVATE TrajoptLib fmt::fmt GTest::gtest GTest::gtest_main
+        PRIVATE TrajoptLib fmt::fmt GTest::gtest_main
     )
     if(NOT CMAKE_TOOLCHAIN_FILE)
         gtest_discover_tests(TrajoptLibTest)
@@ -289,7 +289,7 @@ foreach(example ${EXAMPLES})
         )
         target_link_libraries(
             ${example}Test
-            PRIVATE TrajoptLib GTest::gtest GTest::gtest_main
+            PRIVATE TrajoptLib GTest::gtest_main
         )
         if(NOT CMAKE_TOOLCHAIN_FILE)
             gtest_discover_tests(${example}Test)
