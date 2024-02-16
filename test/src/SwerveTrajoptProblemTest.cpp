@@ -3,12 +3,12 @@
 #include <vector>
 
 #include <gtest/gtest.h>
+#include <trajopt/path/InitialGuessPoint.h>
+#include <trajopt/set/IntervalSet1d.h>
 
 #include "TestOpti.h"
 #include "optimization/SwerveTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
-#include "path/InitialGuessPoint.h"
-#include "set/IntervalSet1d.h"
 
 TEST(TrajoptUtilTest, ApplyKinematicsConstraints) {
   TestOpti opti;
