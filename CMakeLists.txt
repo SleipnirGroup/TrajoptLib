@@ -146,7 +146,7 @@ if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
         )
     endif()
 
-    # Install CasADi libraries since FetchContent setting that up properly
+    # Install CasADi libraries since FetchContent isn't setting that up properly
     install(FILES ${CASADI_INSTALL_LIBS} DESTINATION ${CASADI_INSTALL_DEST})
 elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     message(STATUS "Using Sleipnir optimizer")
@@ -178,7 +178,7 @@ install(
     INCLUDES DESTINATION include
 )
 export(TARGETS TrajoptLib FILE TrajoptLib.cmake NAMESPACE TrajoptLib::)
-install(DIRECTORY include/ DESTINATION "include")
+install(DIRECTORY include/ COMPONENT TrajoptLib DESTINATION "include")
 install(
     EXPORT TrajoptLibTargets
     FILE TrajoptLib.cmake
@@ -200,6 +200,7 @@ configure_package_config_file(
 # Install the config file
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/TrajoptLibConfig.cmake
+    COMPONENT TrajoptLib
     DESTINATION lib/cmake/TrajoptLib
 )
 
