@@ -6,23 +6,23 @@
 #include <vector>
 
 #include <fmt/core.h>
-
-#include "trajopt/IncompatibleTrajectoryException.h"
-#include "trajopt/OptimalTrajectoryGenerator.h"
-#include "trajopt/constraint/Constraint.h"
-#include "trajopt/constraint/TranslationConstraint.h"
-#include "trajopt/constraint/holonomic/HolonomicConstraint.h"
-#include "trajopt/drivetrain/SwerveDrivetrain.h"
-#include "trajopt/obstacle/Obstacle.h"
-#include "trajopt/path/InitialGuessPoint.h"
-#include "trajopt/path/Path.h"
-#include "trajopt/path/SwervePathBuilder.h"
-#include "trajopt/set/ConeSet2d.h"
-#include "trajopt/solution/SwerveSolution.h"
-#include "trajopt/trajectory/HolonomicTrajectory.h"
+#include <trajopt/IncompatibleTrajectoryException.h>
+#include <trajopt/OptimalTrajectoryGenerator.h>
+#include <trajopt/constraint/Constraint.h>
+#include <trajopt/constraint/TranslationConstraint.h>
+#include <trajopt/constraint/holonomic/HolonomicConstraint.h>
+#include <trajopt/drivetrain/SwerveDrivetrain.h>
+#include <trajopt/obstacle/Obstacle.h>
+#include <trajopt/path/InitialGuessPoint.h>
+#include <trajopt/path/Path.h>
+#include <trajopt/path/SwervePathBuilder.h>
+#include <trajopt/set/ConeSet2d.h>
+#include <trajopt/solution/SwerveSolution.h>
+#include <trajopt/trajectory/HolonomicTrajectory.h>
 
 int main() {
   using namespace trajopt;
+
   SwerveDrivetrain swerveDrivetrain{.mass = 45,
                                     .moi = 6,
                                     .modules = {{+0.6, +0.6, 0.04, 70, 2},

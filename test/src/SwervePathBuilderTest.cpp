@@ -3,9 +3,8 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-
-#include "path/InitialGuessPoint.h"
-#include "path/SwervePathBuilder.h"
+#include <trajopt/path/InitialGuessPoint.h>
+#include <trajopt/path/SwervePathBuilder.h>
 
 TEST(SwervePathBuilderTest, GenerateLinearInitialGuess) {
   using namespace trajopt;
