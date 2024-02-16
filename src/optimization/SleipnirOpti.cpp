@@ -106,6 +106,7 @@ void SleipnirOpti::SetInitial(trajopt::SleipnirExpr& expr, double value) {
 }
 
 void SleipnirOpti::Solve() {
+  GetCancellationFlag() = 0;
   opti.Callback([](const sleipnir::SolverIterationInfo&) -> bool {
     return trajopt::GetCancellationFlag();
   });
