@@ -2,34 +2,34 @@
 
 #include <vector>
 
-#include <gtest/gtest.h>
+#include <catch2/catch_test_macros.hpp>
 #include <trajopt/path/InitialGuessPoint.h>
 #include <trajopt/set/IntervalSet1d.h>
 
 #include "TestOpti.h"
 #include "optimization/TrajoptUtil.h"
 
-TEST(TrajoptUtilTest, GetIdx) {
+TEST_CASE("TrajoptUtil - GetIdx()", "[TrajoptUtil]") {
   auto result0 = trajopt::GetIdx({2, 3}, 0, 0);
   auto result1 = trajopt::GetIdx({2, 3}, 1, 1);
   auto result2 = trajopt::GetIdx({2, 3}, 2, 2);
   auto result3 = trajopt::GetIdx({2, 3}, 3, 0);
-  EXPECT_EQ(result0, 0);
-  EXPECT_EQ(result1, 2);
-  EXPECT_EQ(result2, 5);
-  EXPECT_EQ(result3, 6);
+  CHECK(result0 == 0);
+  CHECK(result1 == 2);
+  CHECK(result2 == 5);
+  CHECK(result3 == 6);
 }
 
-TEST(TrajoptUtilTest, ApplyDiscreteTimeObjective) {
+TEST_CASE("TrajoptUtil - ApplyDiscreteTimeObjective()", "[TrajoptUtil]") {
   TestOpti opti;
   std::vector<double> dt = {-1, 3};
   std::vector<size_t> N = {20, 15};
   trajopt::ApplyDiscreteTimeObjective(opti, dt, N);
-  EXPECT_EQ(opti.GetMinimizeObjective(), 25);
-  EXPECT_TRUE(opti.IsViolating());
+  CHECK(opti.GetMinimizeObjective() == 25);
+  CHECK(opti.IsViolating());
 }
 
-TEST(TrajoptUtilTest, ApplyIntervalSet1d) {
+TEST_CASE("TrajoptUtil - ApplyIntervalSet1d()", "[TrajoptUtil]") {
   auto case1 = trajopt::IntervalSet1d(1, 3);
   auto case2 = trajopt::IntervalSet1d(-4);
   auto case3 = trajopt::IntervalSet1d::LessThan(-6);
@@ -60,22 +60,22 @@ TEST(TrajoptUtilTest, ApplyIntervalSet1d) {
                                                 {case4, 5.0, true}}) {
     TestOpti opti;
     trajopt::ApplyIntervalSet1dConstraint(opti, test.val, test.set);
-    EXPECT_EQ(opti.IsViolating(), test.isViolating);
+    CHECK(opti.IsViolating() == test.isViolating);
   }
 }
 
-TEST(TrajoptUtilTest, Linspace) {
+TEST_CASE("TrajoptUtil - Linspace()", "[TrajoptUtil]") {
   auto result = trajopt::Linspace(0.0, 2.0, 2);
   std::vector correct{1.0, 2.0};
-  EXPECT_EQ(result, correct);
+  CHECK(result == correct);
 }
 
-TEST(TrajoptUtilTest, LinearInitialGuess) {
+TEST_CASE("TrajoptUtil - Linear initial guess", "[TrajoptUtil]") {
   std::vector<std::vector<trajopt::InitialGuessPoint>> initialGuessPoints{
       {{1, 0, 0}}, {{2, 0, 0}, {3, 0, 0}}, {{6, 0, 0}}};
   std::vector<size_t> controlIntervalCounts{2, 3};
   std::vector<double> expectedX{1, 2, 3, 4, 5, 6};
   auto result = trajopt::GenerateLinearInitialGuess(initialGuessPoints,
                                                     controlIntervalCounts);
-  EXPECT_EQ(expectedX, result.x);
+  CHECK(expectedX == result.x);
 }
