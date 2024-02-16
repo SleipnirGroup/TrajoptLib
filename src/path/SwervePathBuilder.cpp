@@ -64,7 +64,7 @@ void SwervePathBuilder::SgmtInitialGuessPoints(
     size_t fromIdx, const std::vector<InitialGuessPoint>& sgmtPoseGuess) {
   NewWpts(fromIdx + 1);
   std::vector<InitialGuessPoint>& toInitialGuessPoints =
-      initialGuessPoints.at(fromIdx);
+      initialGuessPoints.at(fromIdx + 1);
   toInitialGuessPoints.insert(toInitialGuessPoints.begin(),
                               sgmtPoseGuess.begin(), sgmtPoseGuess.end());
 }
