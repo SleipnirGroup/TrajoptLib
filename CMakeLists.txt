@@ -102,7 +102,7 @@ if(
     target_compile_definitions(fmt PRIVATE _GLIBCXX_USE_CXX11_ABI=0)
 endif()
 
-target_link_libraries(TrajoptLib PUBLIC fmt)
+target_link_libraries(TrajoptLib PUBLIC fmt::fmt)
 
 # json dependency
 set(BUILD_SHARED_LIBS_SAVE ${BUILD_SHARED_LIBS})
@@ -117,7 +117,7 @@ fetchcontent_declare(
 fetchcontent_makeavailable(nlohmann_json)
 set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVE})
 
-target_link_libraries(TrajoptLib PUBLIC nlohmann_json)
+target_link_libraries(TrajoptLib PUBLIC nlohmann_json::nlohmann_json)
 
 set(OPTIMIZER_BACKEND "casadi" CACHE STRING "Optimizer backend")
 set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS casadi sleipnir)
