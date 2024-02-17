@@ -5,15 +5,12 @@
 #include <optional>
 #include <variant>
 
-#include <nlohmann/json.hpp>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/ConeSet2d.h"
 #include "trajopt/set/EllipticalSet2d.h"
 #include "trajopt/set/LinearSet2d.h"
 #include "trajopt/set/RectangularSet2d.h"
 #include "trajopt/solution/SolutionChecking.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -46,15 +43,3 @@ std::optional<SolutionError> CheckVector(const Set2d& set2d, double xComp,
                                          const SolutionTolerances& tolerances);
 
 }  // namespace trajopt
-
-//! @cond Doxygen_Suppress
-namespace nlohmann {
-template <>
-struct adl_serializer<trajopt::Set2d> {
-  static void to_json(json& j, const trajopt::Set2d& set2d);
-  static void from_json(const json& j, trajopt::Set2d& set2d);
-};
-}  // namespace nlohmann
-//! @endcond
-
-_JSON_FMT_FORMATTER(trajopt::Set2d)

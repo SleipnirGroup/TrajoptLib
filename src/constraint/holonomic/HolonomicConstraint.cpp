@@ -7,7 +7,6 @@
 #include <variant>
 
 #include <fmt/format.h>
-#include <nlohmann/json.hpp>
 
 #include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/HeadingConstraint.h"
@@ -46,61 +45,3 @@ std::optional<SolutionError> CheckState(
 }
 
 }  // namespace trajopt
-
-namespace nlohmann {
-
-void adl_serializer<trajopt::HolonomicConstraint>::to_json(
-    json& j, const trajopt::HolonomicConstraint& constraint) {
-  if (const auto* _constraint =
-          std::get_if<trajopt::TranslationConstraint>(&constraint)) {
-    j = json{{"constraintType", "translation"}};
-    j.update(*_constraint);
-  } else if (const auto* _constraint =
-                 std::get_if<trajopt::HeadingConstraint>(&constraint)) {
-    j = json{{"constraintType", "heading"}};
-    j.update(*_constraint);
-  } else if (const auto* _constraint =
-                 std::get_if<trajopt::LinePointConstraint>(&constraint)) {
-    j = json{{"constraintType", "linePoint"}};
-    j.update(*_constraint);
-  } else if (const auto* _constraint =
-                 std::get_if<trajopt::PointLineConstraint>(&constraint)) {
-    j = json{{"constraintType", "pointLine"}};
-    j.update(*_constraint);
-  } else if (const auto* _constraint =
-                 std::get_if<trajopt::PointPointConstraint>(&constraint)) {
-    j = json{{"constraintType", "pointPoint"}};
-    j.update(*_constraint);
-  } else if (const auto* _constraint =
-                 std::get_if<trajopt::AngularVelocityConstraint>(&constraint)) {
-    j = json{{"constraintType", "angularVelocity"}};
-    j.update(*_constraint);
-  } else if (const auto* _constraint =
-                 std::get_if<trajopt::HolonomicVelocityConstraint>(
-                     &constraint)) {
-    j = json{{"constraintType", "holonomicVelocity"}};
-    j.update(*_constraint);
-  }
-}
-
-void adl_serializer<trajopt::HolonomicConstraint>::from_json(
-    const json& j, trajopt::HolonomicConstraint& constraint) {
-  std::string type = j.at("constraintType").get<std::string>();
-  if (type == "translation") {
-    constraint = j.get<trajopt::TranslationConstraint>();
-  } else if (type == "heading") {
-    constraint = j.get<trajopt::HeadingConstraint>();
-  } else if (type == "linePoint") {
-    constraint = j.get<trajopt::LinePointConstraint>();
-  } else if (type == "pointLine") {
-    constraint = j.get<trajopt::PointLineConstraint>();
-  } else if (type == "pointPoint") {
-    constraint = j.get<trajopt::PointPointConstraint>();
-  } else if (type == "angularVelocity") {
-    constraint = j.get<trajopt::AngularVelocityConstraint>();
-  } else if (type == "holonomicVelocity") {
-    constraint = j.get<trajopt::HolonomicVelocityConstraint>();
-  }
-}
-
-}  // namespace nlohmann

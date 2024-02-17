@@ -6,6 +6,8 @@
 #include <numbers>
 #include <optional>
 
+#include <fmt/format.h>
+
 #include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {

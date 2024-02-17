@@ -4,13 +4,10 @@
 
 #include <optional>
 
-#include <nlohmann/json.hpp>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/set/RectangularSet2d.h"
 #include "trajopt/solution/SolutionChecking.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -42,8 +39,4 @@ struct TRAJOPT_DLLEXPORT LinearSet2d {
                                               const IntervalSet1d& rBound);
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinearSet2d, theta)
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::LinearSet2d)

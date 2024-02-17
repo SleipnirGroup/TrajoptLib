@@ -4,12 +4,9 @@
 
 #include <optional>
 
-#include <nlohmann/json.hpp>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/solution/SolutionChecking.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -31,9 +28,4 @@ struct TRAJOPT_DLLEXPORT AngularVelocityConstraint {
       const SolutionTolerances& tolerances) const noexcept;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(AngularVelocityConstraint,
-                                   angularVelocityBound)
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::AngularVelocityConstraint)
