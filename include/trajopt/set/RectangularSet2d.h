@@ -2,11 +2,8 @@
 
 #pragma once
 
-#include <optional>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
-#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 
@@ -32,17 +29,6 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
    * Construct a RectangularSet2d spanning R².
    */
   static RectangularSet2d R2();
-
-  /**
-   * Returns an error if the given vector isn't in the region.
-   *
-   * @param xComp The x coordinate.
-   * @param yComp The y coordinate.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckVector(
-      double xComp, double yComp,
-      const SolutionTolerances& tolerances) const noexcept;
 
   /**
    * @brief Check if this planar bound is valid. A planar bound is valid when

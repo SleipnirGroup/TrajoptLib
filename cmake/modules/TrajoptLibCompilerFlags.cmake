@@ -26,17 +26,6 @@ macro(trajoptlib_compiler_flags target)
                 PRIVATE _GLIBCXX_USE_CXX11_ABI=0
             )
         endif()
-
-        # Disable warning false positives in fmt
-        if(
-            ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
-            AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER_EQUAL "13"
-        )
-            target_compile_options(
-                ${target}
-                PRIVATE -Wno-dangling-reference -Wno-stringop-overflow
-            )
-        endif()
     else()
         target_compile_options(
             ${target}

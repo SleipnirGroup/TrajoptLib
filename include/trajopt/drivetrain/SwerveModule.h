@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include <array>
-
 #include "trajopt/SymbolExports.h"
-#include "trajopt/constraint/Constraint.h"
 
 namespace trajopt {
 

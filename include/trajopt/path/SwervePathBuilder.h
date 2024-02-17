@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <vector>
 
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
@@ -11,6 +12,7 @@
 #include "trajopt/path/Path.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/set/Set2d.h"
+#include "trajopt/solution/Solution.h"
 
 namespace trajopt {
 

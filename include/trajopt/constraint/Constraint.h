@@ -2,17 +2,13 @@
 
 #pragma once
 
-#include <optional>
 #include <variant>
 
-#include "trajopt/SymbolExports.h"
-#include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/HeadingConstraint.h"
 #include "trajopt/constraint/LinePointConstraint.h"
 #include "trajopt/constraint/PointLineConstraint.h"
 #include "trajopt/constraint/PointPointConstraint.h"
 #include "trajopt/constraint/TranslationConstraint.h"
-#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 
@@ -51,17 +47,5 @@ enum class CoordinateSystem {
 using Constraint =
     std::variant<TranslationConstraint, HeadingConstraint, LinePointConstraint,
                  PointLineConstraint, PointPointConstraint>;
-
-/**
- * Returns an error if the state doesn't satisfy the constraint.
- *
- * @param x The x coordinate.
- * @param y The y coordinate.
- * @param heading The heading.
- * @param tolerances The tolerances considered to satisfy the constraint.
- */
-std::optional<SolutionError> CheckState(
-    const Constraint& constraint, double x, double y, double heading,
-    const SolutionTolerances& tolerances) noexcept;
 
 }  // namespace trajopt

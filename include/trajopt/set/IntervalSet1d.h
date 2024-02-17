@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include <optional>
-
 #include "trajopt/SymbolExports.h"
-#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 
@@ -104,15 +101,6 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    * Returns true if this IntervalSet1d has an upper bound.
    */
   bool IsUpperBounded() const noexcept;
-
-  /**
-   * Returns an error if the given scalar isn't in the set.
-   *
-   * @param scalar The scalar.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckScalar(
-      double scalar, const SolutionTolerances& tolerances) const noexcept;
 
   /**
    * Check if this scalar bound is valid. A scalar bound is valid
