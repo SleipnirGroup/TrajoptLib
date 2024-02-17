@@ -2,19 +2,13 @@
 
 #pragma once
 
-#include <optional>
 #include <variant>
 
-#include <fmt/format.h>
-
-#include "trajopt/SymbolExports.h"
-#include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/HeadingConstraint.h"
 #include "trajopt/constraint/LinePointConstraint.h"
 #include "trajopt/constraint/PointLineConstraint.h"
 #include "trajopt/constraint/PointPointConstraint.h"
 #include "trajopt/constraint/TranslationConstraint.h"
-#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 
@@ -54,66 +48,4 @@ using Constraint =
     std::variant<TranslationConstraint, HeadingConstraint, LinePointConstraint,
                  PointLineConstraint, PointPointConstraint>;
 
-/**
- * Returns an error if the state doesn't satisfy the constraint.
- *
- * @param x The x coordinate.
- * @param y The y coordinate.
- * @param heading The heading.
- * @param tolerances The tolerances considered to satisfy the constraint.
- */
-std::optional<SolutionError> CheckState(
-    const Constraint& constraint, double x, double y, double heading,
-    const SolutionTolerances& tolerances) noexcept;
-
-NLOHMANN_JSON_SERIALIZE_ENUM(CoordinateSystem,
-                             {
-                                 {CoordinateSystem::kField, "field"},
-                                 {CoordinateSystem::kRobot, "robot"},
-                             })
-
 }  // namespace trajopt
-
-/**
- * Formatter for Constraint.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::Constraint> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted Constraint.
-   *
-   * @param constraint Constraint instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::Constraint& constraint,
-              fmt::format_context& ctx) const {
-    using namespace trajopt;
-    if (std::holds_alternative<TranslationConstraint>(constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<TranslationConstraint>(constraint));
-    } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<HeadingConstraint>(constraint));
-    } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<LinePointConstraint>(constraint));
-    } else if (std::holds_alternative<PointLineConstraint>(constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<PointLineConstraint>(constraint));
-    } else if (std::holds_alternative<PointPointConstraint>(constraint)) {
-      return fmt::format_to(ctx.out(), "constraint: {}",
-                            std::get<PointPointConstraint>(constraint));
-    } else {
-      return ctx.out();
-    }
-  }
-};

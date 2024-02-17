@@ -2,13 +2,7 @@
 
 #pragma once
 
-#include <optional>
-
-#include <nlohmann/json.hpp>
-
 #include "trajopt/SymbolExports.h"
-#include "trajopt/solution/SolutionChecking.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -109,15 +103,6 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
   bool IsUpperBounded() const noexcept;
 
   /**
-   * Returns an error if the given scalar isn't in the set.
-   *
-   * @param scalar The scalar.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckScalar(
-      double scalar, const SolutionTolerances& tolerances) const noexcept;
-
-  /**
    * Check if this scalar bound is valid. A scalar bound is valid
    * if and only if the lower bound is less than or equal to the upper
    * bound.
@@ -127,9 +112,4 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
   bool IsValid() const noexcept;
 };
 
-void to_json(nlohmann::json& j, const IntervalSet1d& set1d);
-void from_json(const nlohmann::json& j, IntervalSet1d& set1d);
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::IntervalSet1d)

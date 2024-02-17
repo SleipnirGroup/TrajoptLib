@@ -145,6 +145,15 @@ mod ffi {
             radius: f64,
         );
 
+        fn sgmt_polygon_obstacle(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            from_idx: usize,
+            to_idx: usize,
+            x: Vec<f64>,
+            y: Vec<f64>,
+            radius: f64,
+        );
+
         fn generate(self: &SwervePathBuilderImpl) -> Result<HolonomicTrajectory>;
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
@@ -329,6 +338,24 @@ impl SwervePathBuilder {
         radius: f64,
     ) {
         crate::ffi::SwervePathBuilderImpl::sgmt_circle_obstacle(
+            self.path.pin_mut(),
+            from_idx,
+            to_idx,
+            x,
+            y,
+            radius,
+        );
+    }
+
+    pub fn sgmt_polygon_obstacle(
+        &mut self,
+        from_idx: usize,
+        to_idx: usize,
+        x: Vec<f64>,
+        y: Vec<f64>,
+        radius: f64,
+    ) {
+        crate::ffi::SwervePathBuilderImpl::sgmt_polygon_obstacle(
             self.path.pin_mut(),
             from_idx,
             to_idx,

@@ -31,7 +31,7 @@ jobs:
       - name: Generate diff
         run: git diff HEAD > wpiformat-fixes.patch
         if: ${{ failure() }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: wpiformat fixes
           path: wpiformat-fixes.patch
@@ -47,7 +47,7 @@ jobs:
   tidy:
     name: "clang-tidy"
     runs-on: ubuntu-latest
-    container: wpilib/roborio-cross-ubuntu:2023-22.04
+    container: wpilib/roborio-cross-ubuntu:2024-22.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -76,12 +76,11 @@ jobs:
       - name: Run clang-tidy
         run: wpiformat -no-format -tidy-all -compile-commands=build -tidy-extra-args std=c++20 -vv
 
-  rustfmt:
-    name: "rustfmt"
+  format-rust:
+    name: "Format Rust"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Run rustfmt
         working-directory: rust
-        run: cargo fmt
+        run: cargo fmt --check

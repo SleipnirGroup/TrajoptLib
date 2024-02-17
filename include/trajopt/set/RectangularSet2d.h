@@ -2,14 +2,8 @@
 
 #pragma once
 
-#include <optional>
-
-#include <nlohmann/json.hpp>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
-#include "trajopt/solution/SolutionChecking.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -37,17 +31,6 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
   static RectangularSet2d R2();
 
   /**
-   * Returns an error if the given vector isn't in the region.
-   *
-   * @param xComp The x coordinate.
-   * @param yComp The y coordinate.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckVector(
-      double xComp, double yComp,
-      const SolutionTolerances& tolerances) const noexcept;
-
-  /**
    * @brief Check if this planar bound is valid. A planar bound is valid when
    * the bounds on a0 and a1 are valid, and additionally for planar bounds, a0
    * is contained within the interval [0, inf] and a1 is contained within the
@@ -58,8 +41,4 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
   bool IsValid() const noexcept;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RectangularSet2d, xBound, yBound)
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::RectangularSet2d)

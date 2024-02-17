@@ -63,6 +63,11 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
 include(TrajoptLibCompilerFlags)
 
 file(GLOB_RECURSE src src/*.cpp)
+if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
+    list(FILTER src EXCLUDE REGEX "SleipnirOpti.cpp")
+elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
+    list(FILTER src EXCLUDE REGEX "CasADiOpti.cpp")
+endif()
 add_library(TrajoptLib ${src})
 trajoptlib_compiler_flags(TrajoptLib)
 target_include_directories(TrajoptLib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -74,44 +79,28 @@ set_target_properties(TrajoptLib PROPERTIES DEBUG_POSTFIX "d")
 set_property(TARGET TrajoptLib PROPERTY FOLDER "libraries")
 target_compile_definitions(TrajoptLib PRIVATE TRAJOPT_EXPORTS)
 
+include(CMakeDependentOption)
+
+cmake_dependent_option(
+    BUILD_TESTING
+    "Enable creation of tests."
+    ON
+    "PROJECT_IS_TOP_LEVEL"
+    OFF
+)
+
 include(FetchContent)
 
-# fmt dependency
-set(BUILD_SHARED_LIBS_SAVE ${BUILD_SHARED_LIBS})
-set(BUILD_SHARED_LIBS OFF)
-set(CMAKE_POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS_SAVE})
-set(FMT_INSTALL ON)
-fetchcontent_declare(
-    fmt
-    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-    GIT_TAG 10.1.1
-)
-fetchcontent_makeavailable(fmt)
-set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVE})
-
-if(
-    ${OPTIMIZER_BACKEND} STREQUAL "casadi"
-    AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux"
-    AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
-)
-    target_compile_definitions(fmt PRIVATE _GLIBCXX_USE_CXX11_ABI=0)
+if(BUILD_TESTING)
+    # Catch2 dependency
+    fetchcontent_declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG v3.5.2
+        CMAKE_ARGS
+    )
+    fetchcontent_makeavailable(Catch2)
 endif()
-
-target_link_libraries(TrajoptLib PUBLIC fmt)
-
-# json dependency
-set(BUILD_SHARED_LIBS_SAVE ${BUILD_SHARED_LIBS})
-set(BUILD_SHARED_LIBS OFF)
-set(JSON_Install ON)
-fetchcontent_declare(
-    nlohmann_json
-    GIT_REPOSITORY https://github.com/nlohmann/json
-    GIT_TAG v3.11.2
-)
-fetchcontent_makeavailable(nlohmann_json)
-set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVE})
-
-target_link_libraries(TrajoptLib PUBLIC nlohmann_json)
 
 set(OPTIMIZER_BACKEND "casadi" CACHE STRING "Optimizer backend")
 set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS casadi sleipnir)
@@ -140,17 +129,19 @@ if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
         )
     endif()
 
-    # Install CasADi libraries since FetchContent setting that up properly
+    # Install CasADi libraries since FetchContent isn't setting that up properly
     install(FILES ${CASADI_INSTALL_LIBS} DESTINATION ${CASADI_INSTALL_DEST})
 elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     message(STATUS "Using Sleipnir optimizer")
-    include(FetchSleipnir)
-    fetch_sleipnir()
+    fetchcontent_declare(
+        Sleipnir
+        GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
+        # main on 2024-02-17
+        GIT_TAG 091731acf3e60252b3fbbebfef776b98d5ef8523
+    )
+    fetchcontent_makeavailable(Sleipnir)
     target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_SLEIPNIR)
     target_link_libraries(TrajoptLib PRIVATE Sleipnir)
-
-    # Install Sleipnir manually because EXCLUDE_FROM_ALL was used during import
-    install(TARGETS Sleipnir)
 endif()
 
 target_include_directories(
@@ -172,7 +163,7 @@ install(
     INCLUDES DESTINATION include
 )
 export(TARGETS TrajoptLib FILE TrajoptLib.cmake NAMESPACE TrajoptLib::)
-install(DIRECTORY include/ DESTINATION "include")
+install(DIRECTORY include/ COMPONENT TrajoptLib DESTINATION "include")
 install(
     EXPORT TrajoptLibTargets
     FILE TrajoptLib.cmake
@@ -194,37 +185,25 @@ configure_package_config_file(
 # Install the config file
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/TrajoptLibConfig.cmake
+    COMPONENT TrajoptLib
     DESTINATION lib/cmake/TrajoptLib
 )
 
-# GoogleTest dependency (static linkage)
-set(BUILD_SHARED_LIBS_SAVE ${BUILD_SHARED_LIBS})
-set(BUILD_SHARED_LIBS OFF)
-option(INSTALL_GMOCK "Install GoogleTest's GMock" OFF)
-option(INSTALL_GTEST "Install GoogleTest's GTest" OFF)
-fetchcontent_declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG v1.14.0
-    CMAKE_ARGS
-    "-DCMAKE_BUILD_TYPE=ReleaseWithDebInfo"
-    FIND_PACKAGE_ARGS NAMES GTest
-)
-fetchcontent_makeavailable(googletest)
-set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVE})
-
-include(CMakeDependentOption)
-
-cmake_dependent_option(
-    BUILD_TESTING
-    "Enable creation of tests."
-    OFF
-    "PROJECT_IS_TOP_LEVEL"
-    OFF
-)
 if(BUILD_TESTING)
     enable_testing()
-    include(GoogleTest)
+    list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
+    include(Catch)
+    if(
+        ${OPTIMIZER_BACKEND} STREQUAL "casadi"
+        AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux"
+        AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
+    )
+        target_compile_definitions(Catch2 PUBLIC "_GLIBCXX_USE_CXX11_ABI=0")
+        target_compile_definitions(
+            Catch2WithMain
+            PUBLIC "_GLIBCXX_USE_CXX11_ABI=0"
+        )
+    endif()
 endif()
 
 # Build TrajoptLib tests
@@ -239,12 +218,9 @@ if(BUILD_TESTING)
             ${CMAKE_CURRENT_SOURCE_DIR}/test/include
             ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/units/include
     )
-    target_link_libraries(
-        TrajoptLibTest
-        PRIVATE TrajoptLib fmt::fmt GTest::gtest GTest::gtest_main
-    )
+    target_link_libraries(TrajoptLibTest PRIVATE TrajoptLib Catch2::Catch2)
     if(NOT CMAKE_TOOLCHAIN_FILE)
-        gtest_discover_tests(TrajoptLibTest)
+        catch_discover_tests(TrajoptLibTest)
     endif()
 endif()
 
@@ -283,10 +259,10 @@ foreach(example ${EXAMPLES})
         )
         target_link_libraries(
             ${example}Test
-            PRIVATE TrajoptLib GTest::gtest GTest::gtest_main
+            PRIVATE TrajoptLib Catch2::Catch2WithMain
         )
         if(NOT CMAKE_TOOLCHAIN_FILE)
-            gtest_discover_tests(${example}Test)
+            catch_discover_tests(${example}Test)
         endif()
     endif()
 endforeach()

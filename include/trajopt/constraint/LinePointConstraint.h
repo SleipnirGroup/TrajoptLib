@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include <nlohmann/json.hpp>
-
 #include "trajopt/set/IntervalSet1d.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -26,15 +23,8 @@ struct LinePointConstraint {
   double fieldPointX;
   /// field point y
   double fieldPointY;
-  /// the required minimum distance between the line and point, must be positive
+  /// the allowed distances between the line segment and point
   IntervalSet1d distance;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LinePointConstraint, robotLineStartX,
-                                   robotLineStartY, robotLineEndX,
-                                   robotLineEndY, fieldPointX, fieldPointY,
-                                   distance)
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::LinePointConstraint)

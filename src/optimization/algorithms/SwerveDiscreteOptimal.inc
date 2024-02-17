@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <iostream>
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -25,8 +25,8 @@ SwerveSolution SwerveDiscreteOptimal<Expr, Opti>::Generate() {
     return ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
                                    alpha, Fx, Fy, dt, N);
   } catch (const std::exception& e) {
-    throw TrajectoryGenerationException("Error optimizing trajectory: " +
-                                        std::string(e.what()));
+    throw TrajectoryGenerationException{
+        std::string{"Error optimizing trajectory: {}"} + e.what()};
   }
 }
 
@@ -79,8 +79,29 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     }
   }
 
+  double minWidth = INFINITY;
+  for (size_t i = 1; i < path.drivetrain.modules.size(); i++) {
+    if (std::abs(path.drivetrain.modules.at(i - 1).x -
+                 path.drivetrain.modules.at(i).x) != 0) {
+      minWidth =
+          std::min(minWidth, std::abs(path.drivetrain.modules.at(i - 1).x -
+                                      path.drivetrain.modules.at(i).x));
+    }
+    if (std::abs(path.drivetrain.modules.at(i - 1).y -
+                 path.drivetrain.modules.at(i).y) != 0) {
+      minWidth =
+          std::min(minWidth, std::abs(path.drivetrain.modules.at(i - 1).y -
+                                      path.drivetrain.modules.at(i).y));
+    }
+  }
+
   for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
     dt.emplace_back(opti.DecisionVariable());
+    for (auto module : path.drivetrain.modules) {
+      opti.SubjectTo(dt.at(sgmtIdx) * module.wheelRadius *
+                         module.wheelMaxAngularVelocity <=
+                     minWidth);
+    }
   }
 
   ApplyDiscreteTimeObjective(opti, dt, N);
@@ -122,6 +143,7 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     }
   }
 
-  ApplyInitialGuess(opti, initialGuess, x, y, theta);
+  ApplyInitialGuess(opti, initialGuess, x, y, theta, vx, vy, omega, ax, ay,
+                    alpha);
 }
 }  // namespace trajopt

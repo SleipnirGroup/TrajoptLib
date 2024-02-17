@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include <nlohmann/json.hpp>
-
 #include "trajopt/SymbolExports.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -24,8 +21,4 @@ struct TRAJOPT_DLLEXPORT InitialGuessPoint {
   double heading;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(InitialGuessPoint, x, y, heading)
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::InitialGuessPoint)
