@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include <fmt/format.h>
 #include <sleipnir/autodiff/Variable.hpp>
 #include <sleipnir/optimization/Constraints.hpp>
 #include <sleipnir/optimization/OptimizationProblem.hpp>

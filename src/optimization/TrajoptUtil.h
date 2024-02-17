@@ -8,6 +8,7 @@
 #include "optimization/OptiSys.h"
 #include "trajopt/constraint/Constraint.h"
 #include "trajopt/obstacle/Obstacle.h"
+#include "trajopt/path/InitialGuessPoint.h"
 #include "trajopt/path/Path.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/set/Set2d.h"

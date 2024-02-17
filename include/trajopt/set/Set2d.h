@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <optional>
 #include <variant>
 
 #include "trajopt/SymbolExports.h"
@@ -10,7 +9,6 @@
 #include "trajopt/set/EllipticalSet2d.h"
 #include "trajopt/set/LinearSet2d.h"
 #include "trajopt/set/RectangularSet2d.h"
-#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 
@@ -37,9 +35,5 @@ namespace trajopt {
  */
 using Set2d =
     std::variant<RectangularSet2d, LinearSet2d, EllipticalSet2d, ConeSet2d>;
-
-std::optional<SolutionError> CheckVector(const Set2d& set2d, double xComp,
-                                         double yComp,
-                                         const SolutionTolerances& tolerances);
 
 }  // namespace trajopt

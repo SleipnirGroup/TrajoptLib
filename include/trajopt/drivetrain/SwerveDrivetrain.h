@@ -6,8 +6,6 @@
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/drivetrain/SwerveModule.h"
-#include "trajopt/obstacle/Obstacle.h"
-#include "trajopt/trajectory/HolonomicTrajectory.h"
 
 namespace trajopt {
 

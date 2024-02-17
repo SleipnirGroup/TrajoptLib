@@ -5,7 +5,6 @@
 #include <numbers>
 #include <vector>
 
-#include <fmt/core.h>
 #include <trajopt/IncompatibleTrajectoryException.h>
 #include <trajopt/OptimalTrajectoryGenerator.h>
 #include <trajopt/constraint/Constraint.h>
@@ -42,12 +41,6 @@ int main() {
   path.ControlIntervalCounts({4});
 
   // SOLVE
-  try {
-    SwerveSolution solution = OptimalTrajectoryGenerator::Generate(path);
-    fmt::print("[{}]\n", fmt::join(path.CalculateInitialGuess().x, ","));
-    fmt::print("{}\n", solution);
-    // fmt::print("{}\n", HolonomicTrajectory(solution));
-  } catch (const std::exception& e) {
-    fmt::print("{}", e.what());
-  }
+  [[maybe_unused]] SwerveSolution solution =
+      OptimalTrajectoryGenerator::Generate(path);
 }

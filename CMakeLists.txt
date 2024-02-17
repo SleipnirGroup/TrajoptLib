@@ -91,24 +91,6 @@ cmake_dependent_option(
 
 include(FetchContent)
 
-# fmt dependency
-fetchcontent_declare(
-    fmt
-    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-    GIT_TAG 10.2.1
-)
-fetchcontent_makeavailable(fmt)
-
-if(
-    ${OPTIMIZER_BACKEND} STREQUAL "casadi"
-    AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux"
-    AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
-)
-    target_compile_definitions(fmt PRIVATE _GLIBCXX_USE_CXX11_ABI=0)
-endif()
-
-target_link_libraries(TrajoptLib PUBLIC fmt::fmt)
-
 if(BUILD_TESTING)
     # Catch2 dependency
     fetchcontent_declare(
@@ -151,13 +133,15 @@ if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
     install(FILES ${CASADI_INSTALL_LIBS} DESTINATION ${CASADI_INSTALL_DEST})
 elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     message(STATUS "Using Sleipnir optimizer")
-    include(FetchSleipnir)
-    fetch_sleipnir()
+    fetchcontent_declare(
+        Sleipnir
+        GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
+        # main on 2024-02-16
+        GIT_TAG 71994a021395711cc3992603d1a226e2118a3a0a
+    )
+    fetchcontent_makeavailable(Sleipnir)
     target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_SLEIPNIR)
     target_link_libraries(TrajoptLib PRIVATE Sleipnir)
-
-    # Install Sleipnir manually because EXCLUDE_FROM_ALL was used during import
-    install(TARGETS Sleipnir)
 endif()
 
 target_include_directories(
