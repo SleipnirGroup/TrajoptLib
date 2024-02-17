@@ -32,7 +32,11 @@ void CasADiOpti::SetInitial(const casadi::MX& expression, double value) {
 void CasADiOpti::Solve() {
   GetCancellationFlag() = 0;
   const auto callback =
-      new const CasADiIterCallback("f", opti.nx(), opti.ng(), opti.np());
+      new const CasADiIterCallback("f", opti.nx(), opti.ng(), opti.np(), [=](){
+        for (auto it = callbacks.begin(); it < callbacks.end(); it++) {
+          (*it)();
+        }
+      });
   auto pluginOptions = casadi::Dict();
   pluginOptions["iteration_callback"] = *callback;
 #ifndef DEBUG_OUTPUT
@@ -46,6 +50,10 @@ void CasADiOpti::Solve() {
   // I'm assuming the dynamic lib is on the path and casadi can find it.
   opti.solver("ipopt", pluginOptions);
   solution = opti.solve();
+}
+
+void CasADiOpti::AddIntermediateCallback(std::function<void()> callback){
+  callbacks.push_back(callback);
 }
 
 double CasADiOpti::SolutionValue(const casadi::MX& expression) const {

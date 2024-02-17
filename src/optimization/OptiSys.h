@@ -27,7 +27,7 @@ concept ExprSys = requires(Expr expr, const Expr constExpr, double num) {
 template <typename Expr, typename Opti>
 concept OptiSys =
     ExprSys<Expr> && requires(Expr expr, const Expr constExpr, Opti opti,
-                              const Opti constOpti, double num) {
+                              const Opti constOpti, double num, std::function<void()> callback) {
       Opti();
       expr = opti.DecisionVariable();
       opti.Minimize(-expr);
@@ -37,5 +37,6 @@ concept OptiSys =
       opti.SubjectTo(constExpr <= constExpr);
       opti.SetInitial(expr, num);
       opti.Solve();
+      opti.AddIntermediateCallback(callback);
       num = constOpti.SolutionValue(expr);
     };

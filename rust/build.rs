@@ -9,10 +9,12 @@ fn main() -> miette::Result<()> {
 
     if cfg!(target_os = "windows") {
         cmake_config
-            .cxxflag("/EHsc")
+            
             
             .generator("Visual Studio 17 2022")
             .define("CMAKE_GENERATOR_PLATFORM", "x64")
+            .generator_toolset("host=x64")
+            .cxxflag("/EHsc")
             .cxxflag("-std=c++20");
             // .define("CMAKE_CXX_COMPILER", "x86_64-w64-mingw32-g++")
             // .define("CMAKE_C_COMPILER", "x86_64-w64-mingw32-gcc")
@@ -39,6 +41,7 @@ fn main() -> miette::Result<()> {
         .file("src/trajoptlib.cc")
         .include("include")
         .include(format!("{}/include", dst.display()))
+        .flag("/EHsc")
         .flag_if_supported("-std=c++20")
         .flag_if_supported("/std:c++20")
         .compile("trajoptlib-rust");

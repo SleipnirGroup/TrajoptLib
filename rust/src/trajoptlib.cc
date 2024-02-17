@@ -10,6 +10,7 @@
 #include <trajopt/TrajectoryGenerationException.h>
 #include <trajopt/trajectory/HolonomicTrajectorySample.h>
 #include <trajopt/trajectory/HolonomicTrajectory.h>
+#include <trajopt/solution/SwerveSolution.h>
 
 #include "trajoptlib/src/lib.rs.h"
 
@@ -253,13 +254,26 @@ HolonomicTrajectory _convert_holonomic_trajectory(const trajopt::HolonomicTrajec
   };
 }
 
+void SwervePathBuilderImpl::enable_state_feedback(rust::String uuid) {
+    path.AddIntermediateCallback(
+      [=](trajopt::SwerveSolution& solution){
+        on_iteration(
+          uuid,
+          _convert_holonomic_trajectory(
+            trajopt::HolonomicTrajectory{solution}
+          )
+        );
+      }
+    );
+}
+
 HolonomicTrajectory SwervePathBuilderImpl::generate() const {
   return _convert_holonomic_trajectory(
     trajopt::HolonomicTrajectory{trajopt::OptimalTrajectoryGenerator::Generate(path)});
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
-  return std::make_unique<SwervePathBuilderImpl>(SwervePathBuilderImpl());
+  return std::make_unique<SwervePathBuilderImpl>(SwervePathBuilderImpl());  
 }
 
 void SwervePathBuilderImpl::cancel_all() {

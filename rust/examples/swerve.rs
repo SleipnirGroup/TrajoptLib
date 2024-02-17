@@ -37,6 +37,7 @@ fn main() {
     };
 
     let mut path = SwervePathBuilder::new();
+    path.enable_state_feedback("eah".to_string());
     path.set_drivetrain(&drivetrain);
     path.set_bumpers(1.3, 1.3);
     path.pose_wpt(0, 0.0, 0.0, 0.0);

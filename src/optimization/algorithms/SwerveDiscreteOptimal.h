@@ -54,6 +54,7 @@ class SwerveDiscreteOptimal {
   const std::vector<size_t>& N;
 
   Opti opti;
+  
 
  public:
   /**

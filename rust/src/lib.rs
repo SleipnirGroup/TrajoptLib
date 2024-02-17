@@ -39,6 +39,9 @@ mod ffi {
         samples: Vec<HolonomicTrajectorySample>,
     }
 
+    extern "Rust" {
+        fn on_iteration(uuid: String, intermediate: HolonomicTrajectory);
+    }
     unsafe extern "C++" {
         include!("trajoptlib/include/trajoptlib.h");
 
@@ -155,9 +158,14 @@ mod ffi {
         );
 
         fn generate(self: &SwervePathBuilderImpl) -> Result<HolonomicTrajectory>;
+        fn enable_state_feedback(self: Pin<&mut SwervePathBuilderImpl>, uuid: String);
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
+}
+
+pub fn on_iteration(uuid: String, intermediate: HolonomicTrajectory){
+    println!("{}: {:?}", uuid, intermediate);
 }
 
 pub struct SwervePathBuilder {
@@ -363,6 +371,9 @@ impl SwervePathBuilder {
             y,
             radius,
         );
+    }
+    pub fn enable_state_feedback(&mut self, uuid: String) {
+        crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), uuid);
     }
 
     pub fn generate(&self) -> Result<HolonomicTrajectory, String> {

@@ -248,6 +248,8 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    */
   Solution CalculateInitialGuess() const;
 
+  void AddIntermediateCallback(const std::function<void(SwerveSolution&)> callback);
+
  private:
   SwervePath path;
 

@@ -265,6 +265,10 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
   return constraints;
 }
 
+void SwervePathBuilder::AddIntermediateCallback(const std::function<void(SwerveSolution&)> callback){
+  path.callbacks.push_back(callback);
+}
+
 void SwervePathBuilder::CancelAll() {
   trajopt::GetCancellationFlag() = 1;
 }

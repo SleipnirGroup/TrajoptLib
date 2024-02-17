@@ -10,6 +10,7 @@
 
 namespace trajoptlibrust {
 
+
 struct HolonomicTrajectory;
 struct InitialGuessPoint;
 struct SwerveDrivetrain;
@@ -53,8 +54,8 @@ class SwervePathBuilderImpl {
   void sgmt_polygon_obstacle(size_t from_idx, size_t to_idx,
                              rust::Vec<double> x, rust::Vec<double> y,
                              double radius);
-
   HolonomicTrajectory generate() const;
+  void enable_state_feedback(rust::String uuid);
   void cancel_all();
 
   SwervePathBuilderImpl() = default;

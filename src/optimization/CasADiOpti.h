@@ -3,6 +3,7 @@
 #pragma once
 
 #include <optional>
+#include <function>
 
 #include <casadi/casadi.hpp>
 
@@ -14,6 +15,7 @@ namespace trajopt {
 class CasADiOpti {
  private:
   casadi::Opti opti;
+  std::vector<std::function<void()>> callbacks;
   std::optional<casadi::OptiSol> solution;
 
  public:
@@ -24,6 +26,7 @@ class CasADiOpti {
   void SetInitial(const casadi::MX& expr, double value);
   void Solve();
   double SolutionValue(const casadi::MX& expr) const;
+  void AddIntermediateCallback(std::function<void()> callback);
 };
 }  // namespace trajopt
 

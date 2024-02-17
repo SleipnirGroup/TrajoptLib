@@ -49,6 +49,7 @@ struct SleipnirExpr {
 class SleipnirOpti {
  private:
   sleipnir::OptimizationProblem opti;
+  std::vector<std::function<void()>> callbacks;
 
  public:
   trajopt::SleipnirExpr DecisionVariable();
@@ -59,6 +60,7 @@ class SleipnirOpti {
   void SetInitial(trajopt::SleipnirExpr& expr, double value);
   void Solve();
   double SolutionValue(const trajopt::SleipnirExpr& expr) const;
+  void AddIntermediateCallback(std::function<void()> callback);
 };
 }  // namespace trajopt
 

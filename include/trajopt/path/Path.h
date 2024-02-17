@@ -6,6 +6,7 @@
 #include <optional>
 #include <type_traits>
 #include <vector>
+#include <functional>
 
 #include <nlohmann/json.hpp>
 
@@ -49,6 +50,8 @@ struct TRAJOPT_DLLEXPORT SwervePath {
   std::vector<SwerveWaypoint> waypoints;
   /// drivetrain of the robot
   SwerveDrivetrain drivetrain;
+
+  std::vector<std::function<void(SwerveSolution&)>> callbacks;
 };
 
 /**

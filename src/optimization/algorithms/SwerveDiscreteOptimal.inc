@@ -38,6 +38,14 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     const SwervePath& path, const std::vector<size_t>& N,
     const Solution& initialGuess)
     : path(path), N(N) {
+    opti.AddIntermediateCallback([=](){
+        auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
+                                   alpha, Fx, Fy, dt, N);
+        for (auto it = path.callbacks.begin(); it < path.callbacks.end(); it++) {
+          (*it)(soln);
+        }
+      
+    });
   size_t wptCnt = 1 + N.size();
   size_t sgmtCnt = N.size();
   size_t sampTot = GetIdx(N, wptCnt, 0);
