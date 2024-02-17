@@ -20,7 +20,7 @@ fn main() -> miette::Result<()> {
                     "-static-libgcc -static-libstdc++",
                 )
                 .define("CMAKE_EXE_LINKER_FLAGS", "-static-libgcc -static-libstdc++");
-        } else {
+        } else if optimizer_backend == "sleipnir" {
             cmake_config
                 .generator("Visual Studio 17 2022")
                 .define("CMAKE_GENERATOR_PLATFORM", "x64")
@@ -34,11 +34,19 @@ fn main() -> miette::Result<()> {
             .define("CMAKE_C_COMPILER", "gcc");
     }
 
+    if optimizer_backend == "sleipnir" {
+        cmake_config.define("BUILD_SHARED_LIBS", "OFF");
+    }
+
     let dst = cmake_config.build();
 
     println!("cargo:rustc-link-search=native={}/bin", dst.display());
     println!("cargo:rustc-link-search=native={}/lib", dst.display());
     println!("cargo:rustc-link-lib=TrajoptLib");
+    if optimizer_backend == "sleipnir" {
+        println!("cargo:rustc-link-lib=Sleipnir");
+        println!("cargo:rustc-link-lib=fmt");
+    }
 
     cxx_build::bridge("src/lib.rs") // returns a cc::Build
         .file("src/trajoptlib.cc")
