@@ -2,12 +2,14 @@
 
 #include <vector>
 
-#include <gtest/gtest.h>
+#include <catch2/catch_test_macros.hpp>
 #include <trajopt/OptimalTrajectoryGenerator.h>
 #include <trajopt/path/InitialGuessPoint.h>
 #include <trajopt/path/SwervePathBuilder.h>
 
-TEST(ObstacleTest, DISABLED_GenerateLinearInitialGuess) {
+TEST_CASE("Obstacle - Linear initial guess", "[Obstacle]") {
+  SKIP("Fails");
+
   using namespace trajopt;
 
   SwerveDrivetrain swerveDrivetrain{.mass = 45,
@@ -33,5 +35,5 @@ TEST(ObstacleTest, DISABLED_GenerateLinearInitialGuess) {
       0, 1, trajopt::Obstacle{.safetyDistance = 1.0, .points = {{1.0, 1.0}}});
 
   path.ControlIntervalCounts({10});
-  ASSERT_NO_THROW(trajopt::OptimalTrajectoryGenerator::Generate(path));
+  CHECK_NOTHROW(trajopt::OptimalTrajectoryGenerator::Generate(path));
 }
