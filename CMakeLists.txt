@@ -136,8 +136,8 @@ elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     fetchcontent_declare(
         Sleipnir
         GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        # main on 2024-02-16
-        GIT_TAG 71994a021395711cc3992603d1a226e2118a3a0a
+        # main on 2024-02-17
+        GIT_TAG 091731acf3e60252b3fbbebfef776b98d5ef8523
     )
     fetchcontent_makeavailable(Sleipnir)
     target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_SLEIPNIR)
