@@ -55,7 +55,7 @@ class SwervePathBuilderImpl {
                              rust::Vec<double> x, rust::Vec<double> y,
                              double radius);
   HolonomicTrajectory generate() const;
-  void enable_state_feedback(rust::String uuid);
+  void enable_state_feedback(rust::Fn<void(HolonomicTrajectory)> callback);
   void cancel_all();
 
   SwervePathBuilderImpl() = default;
