@@ -5,11 +5,8 @@
 #include <optional>
 #include <string>
 
-#include <nlohmann/json.hpp>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/solution/SolutionChecking.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -74,16 +71,4 @@ struct TRAJOPT_DLLEXPORT EllipticalSet2d {
   bool IsValid() const noexcept;
 };
 
-NLOHMANN_JSON_SERIALIZE_ENUM(
-    EllipticalSet2d::Direction,
-    {
-        {EllipticalSet2d::Direction::kInside, "inside"},
-        {EllipticalSet2d::Direction::kCentered, "centered"},
-        {EllipticalSet2d::Direction::kOutside, "outside"},
-    })
-
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(EllipticalSet2d, xRadius, yRadius, direction)
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::EllipticalSet2d)

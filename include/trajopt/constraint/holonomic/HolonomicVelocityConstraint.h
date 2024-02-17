@@ -4,13 +4,10 @@
 
 #include <optional>
 
-#include <nlohmann/json.hpp>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/constraint/Constraint.h"
 #include "trajopt/set/Set2d.h"
 #include "trajopt/solution/SolutionChecking.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -36,9 +33,4 @@ struct TRAJOPT_DLLEXPORT HolonomicVelocityConstraint {
       const SolutionTolerances& tolerances) const noexcept;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(HolonomicVelocityConstraint, velocityBound,
-                                   coordinateSystem)
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::HolonomicVelocityConstraint)

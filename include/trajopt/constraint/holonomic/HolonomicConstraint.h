@@ -4,14 +4,11 @@
 
 #include <variant>
 
-#include <nlohmann/json.hpp>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.h"
 #include "trajopt/solution/SolutionChecking.h"
 #include "trajopt/util/AppendVariant.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -39,22 +36,3 @@ std::optional<SolutionError> CheckState(
     const SolutionTolerances& tolerances) noexcept;
 
 }  // namespace trajopt
-
-// For the serialization functions of HolonomicConstraint, we want to use the
-// serialization functions of the various constraint types
-// (TranslationConstraint, HeadingConstraint, etc.), but the implicit
-// conversion from each of those types to HolonomicConstraint (because of
-// std::variant) requires using this style of serialization that avoids that
-// issue.
-//! @cond Doxygen_Suppress
-namespace nlohmann {
-template <>
-struct adl_serializer<trajopt::HolonomicConstraint> {
-  static void to_json(json& j, const trajopt::HolonomicConstraint& constraint);
-  static void from_json(const json& j,
-                        trajopt::HolonomicConstraint& constraint);
-};
-}  // namespace nlohmann
-//! @endcond
-
-_JSON_FMT_FORMATTER(trajopt::HolonomicConstraint)

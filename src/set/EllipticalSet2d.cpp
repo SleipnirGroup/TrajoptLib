@@ -7,6 +7,8 @@
 #include <optional>
 #include <string>
 
+#include <fmt/format.h>
+
 #include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {

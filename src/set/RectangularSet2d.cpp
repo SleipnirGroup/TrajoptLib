@@ -5,6 +5,8 @@
 #include <cmath>
 #include <optional>
 
+#include <fmt/format.h>
+
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/solution/SolutionChecking.h"
 
