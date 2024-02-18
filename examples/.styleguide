@@ -24,9 +24,7 @@ licenseUpdateExclude {
 
 includeOtherLibs {
   ^Eigen/
-  ^fmt/
   ^casadi/
   ^sleipnir/
   ^trajopt/
-  ^gtest/
 }
