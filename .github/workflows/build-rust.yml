@@ -70,23 +70,11 @@ jobs:
           version: latest
           platform: x64
 
-      - name: Select optimizer backend (non-macOS)
-        if: ${{ !startsWith(matrix.os, 'macOS') }}
-        run: |
-          sed -i 's/let optimizer_backend = "[a-z]\+"/let optimizer_backend = "${{ matrix.optimizer_backend }}"/' rust/build.rs
-          grep 'let optimizer_backend' rust/build.rs
-
-      - name: Select optimizer backend (macOS)
-        if: startsWith(matrix.os, 'macOS')
-        run: |
-          sed -i '' 's/let optimizer_backend = "[a-z]\+"/let optimizer_backend = "${{ matrix.optimizer_backend }}"/' rust/build.rs
-          grep 'let optimizer_backend' rust/build.rs
-
       - name: Build Rust
         working-directory: rust
-        run: cargo build --target ${{ matrix.rust-target }}
+        run: cargo build --target ${{ matrix.rust-target }} --features ${{ matrix.optimizer_backend }}
 
       - name: Run Rust
         if: matrix.rust-target != 'aarch64-apple-darwin' && matrix.rust-target != 'x86_64-pc-windows-gnu'
         working-directory: rust
-        run: cargo run --example swerve --target ${{ matrix.rust-target }}
+        run: cargo run --example swerve --target ${{ matrix.rust-target }} --features ${{ matrix.optimizer_backend }}

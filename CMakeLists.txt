@@ -80,15 +80,7 @@ set_property(TARGET TrajoptLib PROPERTY FOLDER "libraries")
 target_compile_definitions(TrajoptLib PRIVATE TRAJOPT_EXPORTS)
 
 include(CMakeDependentOption)
-
-cmake_dependent_option(
-    BUILD_TESTING
-    "Enable creation of tests."
-    ON
-    "PROJECT_IS_TOP_LEVEL"
-    OFF
-)
-
+include(CTest)
 include(FetchContent)
 
 if(BUILD_TESTING)
@@ -136,8 +128,8 @@ elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     fetchcontent_declare(
         Sleipnir
         GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        # main on 2024-02-17
-        GIT_TAG 091731acf3e60252b3fbbebfef776b98d5ef8523
+        # main on 2024-02-18
+        GIT_TAG 78d7673b6a8d8bc352726b95f5319416c0435069
     )
     fetchcontent_makeavailable(Sleipnir)
     target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_SLEIPNIR)

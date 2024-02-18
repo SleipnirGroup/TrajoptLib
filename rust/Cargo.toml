@@ -16,5 +16,10 @@ cmake = "0.1"
 [lib]
 name = "trajoptlib"
 
+[features]
+default = []
+sleipnir = []
+casadi = []
+
 [[example]]
 name = "swerve"
