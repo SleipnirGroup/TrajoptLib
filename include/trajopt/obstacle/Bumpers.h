@@ -2,9 +2,6 @@
 
 #pragma once
 
-#include <vector>
-
-#include "trajopt/SymbolExports.h"
 #include "trajopt/obstacle/Obstacle.h"
 #include "trajopt/obstacle/ObstaclePoint.h"
 

@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <fmt/core.h>
-
 #include "trajopt/SymbolExports.h"
 
 namespace trajopt {
@@ -51,34 +49,3 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
 };
 
 }  // namespace trajopt
-
-/**
- * Formatter for HolonomicTrajectorySample.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::HolonomicTrajectorySample> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted HolonomicTrajectorySample.
-   *
-   * @param sample HolonomicTrajectorySample instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::HolonomicTrajectorySample& sample,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(
-        ctx.out(),
-        "{{\"timestamp\": {}, \"x\": {}, \"y\": {}, \"heading\": {}, "
-        "\"velocityX\": {}, \"velocityY\": {}, \"angularVelocity\": {}}}",
-        sample.timestamp, sample.x, sample.y, sample.heading, sample.velocityX,
-        sample.velocityY, sample.angularVelocity);
-  }
-};

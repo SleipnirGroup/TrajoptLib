@@ -22,30 +22,5 @@ struct PointPointConstraint {
   /// the required distance between the point and point, must be positive
   IntervalSet1d distance;
 };
+
 }  // namespace trajopt
-
-/**
- * Formatter for PointPointConstraint.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::PointPointConstraint> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted PointPointConstraint.
-   *
-   * @param constraint PointPointConstraint instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::PointPointConstraint& constraint,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(ctx.out(), "point point constraint");
-  }
-};

@@ -2,13 +2,13 @@
 
 #include <vector>
 
-#include <gtest/gtest.h>
+#include <catch2/catch_test_macros.hpp>
+#include <trajopt/path/InitialGuessPoint.h>
+#include <trajopt/path/SwervePathBuilder.h>
 
-#include "trajopt/path/InitialGuessPoint.h"
-#include "trajopt/path/SwervePathBuilder.h"
-
-TEST(SwervePathBuilderTest, GenerateLinearInitialGuess) {
+TEST_CASE("SwervePathBuilder - Linear initial guess", "[SwervePathBuilder]") {
   using namespace trajopt;
+
   trajopt::SwervePathBuilder path;
   path.WptInitialGuessPoint(0, InitialGuessPoint{0.0, 0.0, 0.0});  // at 0
 
@@ -24,5 +24,5 @@ TEST(SwervePathBuilderTest, GenerateLinearInitialGuess) {
   std::vector<double> result = path.CalculateInitialGuess().x;
   std::vector<double> expected = {0.0, 1.0, 2.0, 1.0, 3.0, 5.0};
 
-  ASSERT_EQ(result, expected);
+  CHECK(result == expected);
 }

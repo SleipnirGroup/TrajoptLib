@@ -2,13 +2,7 @@
 
 #pragma once
 
-#include <optional>
-#include <string>
-
-#include <fmt/format.h>
-
 #include "trajopt/SymbolExports.h"
-#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 
@@ -57,67 +51,9 @@ struct TRAJOPT_DLLEXPORT EllipticalSet2d {
   bool IsR2() const noexcept;
 
   /**
-   * Returns an error if the given coordinate is outside the ellipse.
-   *
-   * @param xComp The x coordinate.
-   * @param yComp The y coordinate.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckVector(
-      double xComp, double yComp,
-      const SolutionTolerances& tolerances) const noexcept;
-
-  /**
    * Returns true if the set is valid.
    */
   bool IsValid() const noexcept;
 };
 
 }  // namespace trajopt
-
-/**
- * Formatter for EllipticalSet2d.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::EllipticalSet2d> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted EllipticalSet2d.
-   *
-   * @param ellipticalSet EllipticalSet2d instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::EllipticalSet2d& ellipticalSet,
-              fmt::format_context& ctx) const {
-    std::string shape;
-    if (ellipticalSet.IsCircular()) {
-      shape = "circle";
-    } else {
-      shape = "ellipse";
-    }
-    using enum trajopt::EllipticalSet2d::Direction;
-    std::string direction;
-    switch (ellipticalSet.direction) {
-      case kInside:
-        direction = "inside";
-        break;
-      case kCentered:
-        direction = "centered";
-        break;
-      case kOutside:
-        direction = "outside";
-        break;
-    }
-    return fmt::format_to(ctx.out(), "{}: {}, rₓ = {}, rᵧ = {}", shape,
-                          direction, ellipticalSet.xRadius,
-                          ellipticalSet.yRadius);
-  }
-};

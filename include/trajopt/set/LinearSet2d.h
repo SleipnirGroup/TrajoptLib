@@ -2,12 +2,9 @@
 
 #pragma once
 
-#include <optional>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/set/RectangularSet2d.h"
-#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 
@@ -21,47 +18,11 @@ struct TRAJOPT_DLLEXPORT LinearSet2d {
   /**
    * FIXME What does this do?
    *
-   * @param xComp The x coordinate.
-   * @param yComp The y coordinate.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckVector(
-      double xComp, double yComp,
-      const SolutionTolerances& tolerances) const noexcept;
-
-  /**
-   * FIXME What does this do?
-   *
    * @param theta FIXME What does this do?
    * @param rBound FIXME What does this do?
    */
   static RectangularSet2d RBoundToRectangular(double theta,
                                               const IntervalSet1d& rBound);
 };
+
 }  // namespace trajopt
-
-/**
- * Formatter for LinearSet2d.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::LinearSet2d> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted LinearSet2d.
-   *
-   * @param linearSet LinearSet2d instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::LinearSet2d& linearSet,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(ctx.out(), "polar line: θ = {}", linearSet.theta);
-  }
-};

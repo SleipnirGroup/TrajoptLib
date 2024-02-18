@@ -1,4 +1,4 @@
-# HelixTrajectory
+# TrajoptLib
 
 ![Build](https://github.com/SleipnirGroup/TrajoptLib/actions/workflows/build.yml/badge.svg)
 [![C++ Documentation](https://img.shields.io/badge/documentation-c%2B%2B-blue)](https://sleipnirgroup.github.io/TrajoptLib/)

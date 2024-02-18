@@ -2,9 +2,6 @@
 
 #pragma once
 
-#include <cstddef>
-#include <optional>
-#include <type_traits>
 #include <vector>
 
 #include "trajopt/SymbolExports.h"
@@ -12,9 +9,6 @@
 #include "trajopt/constraint/holonomic/HolonomicConstraint.h"
 #include "trajopt/drivetrain/DifferentialDrivetrain.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
-#include "trajopt/path/InitialGuessPoint.h"
-#include "trajopt/solution/DifferentialSolution.h"
-#include "trajopt/solution/SwerveSolution.h"
 
 namespace trajopt {
 
@@ -57,4 +51,5 @@ struct TRAJOPT_DLLEXPORT DifferentialPath {
   /// drivetrain of the robot
   DifferentialDrivetrain drivetrain;
 };
+
 }  // namespace trajopt

@@ -2,12 +2,7 @@
 
 #pragma once
 
-#include <optional>
-
-#include <fmt/format.h>
-
 #include "trajopt/SymbolExports.h"
-#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 
@@ -108,15 +103,6 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
   bool IsUpperBounded() const noexcept;
 
   /**
-   * Returns an error if the given scalar isn't in the set.
-   *
-   * @param scalar The scalar.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckScalar(
-      double scalar, const SolutionTolerances& tolerances) const noexcept;
-
-  /**
    * Check if this scalar bound is valid. A scalar bound is valid
    * if and only if the lower bound is less than or equal to the upper
    * bound.
@@ -125,34 +111,5 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    */
   bool IsValid() const noexcept;
 };
+
 }  // namespace trajopt
-
-/**
- * Formatter for IntervalSet1d.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::IntervalSet1d> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted IntervalSet1d.
-   *
-   * @param set1d IntervalSet1d instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::IntervalSet1d& set1d,
-              fmt::format_context& ctx) const {
-    if (set1d.IsExact()) {
-      return fmt::format_to(ctx.out(), "= {}", set1d.lower);
-    } else {
-      return fmt::format_to(ctx.out(), "∈ [{}, {}]", set1d.lower, set1d.upper);
-    }
-  }
-};

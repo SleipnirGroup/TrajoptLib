@@ -2,11 +2,7 @@
 
 #include "trajopt/set/IntervalSet1d.h"
 
-#include <cmath>
 #include <limits>
-#include <optional>
-
-#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 
@@ -47,16 +43,8 @@ bool IntervalSet1d::IsUpperBounded() const noexcept {
   return upper < +std::numeric_limits<double>::infinity();
 }
 
-std::optional<SolutionError> IntervalSet1d::CheckScalar(
-    double scalar, const SolutionTolerances& tolerances) const noexcept {
-  if ((IsExact() && std::abs(scalar - lower) > tolerances.errorMargin) ||
-      scalar < lower || scalar > upper) {
-    return SolutionError{fmt::format("= {}", scalar)};
-  }
-  return std::nullopt;
-}
-
 bool IntervalSet1d::IsValid() const noexcept {
   return lower <= upper;
 }
+
 }  // namespace trajopt

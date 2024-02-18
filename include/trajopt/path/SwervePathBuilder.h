@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <vector>
 
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
@@ -11,6 +12,7 @@
 #include "trajopt/path/Path.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/set/Set2d.h"
+#include "trajopt/solution/Solution.h"
 
 namespace trajopt {
 
@@ -21,6 +23,11 @@ namespace trajopt {
  */
 class TRAJOPT_DLLEXPORT SwervePathBuilder {
  public:
+  /**
+   * Cancel all currently generating SwervePathBuilders.
+   */
+  void CancelAll();
+
   /**
    * Get the SwervePath being constructed
    *
@@ -47,6 +54,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    * @param heading the heading
    */
   void PoseWpt(size_t idx, double x, double y, double heading);
+
   /**
    * Create a translation waypoint constraint on the waypoint at the
    * provided index, and add an initial guess point with the same translation.
@@ -118,6 +126,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    * @param vtheta velocity vector polar angle
    */
   void WptVelocityPolar(size_t idx, double vr, double vtheta);
+
   /**
    * Specify the required angular velocity of the robot to be zero
    * at a waypoint

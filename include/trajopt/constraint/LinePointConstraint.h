@@ -23,33 +23,8 @@ struct LinePointConstraint {
   double fieldPointX;
   /// field point y
   double fieldPointY;
-  /// the required minimum distance between the line and point, must be positive
+  /// the allowed distances between the line segment and point
   IntervalSet1d distance;
 };
+
 }  // namespace trajopt
-
-/**
- * Formatter for LinePointConstraint.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::LinePointConstraint> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted LinePointConstraint.
-   *
-   * @param constraint PointLineConstraint instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::LinePointConstraint& constraint,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(ctx.out(), "line point constraint");
-  }
-};

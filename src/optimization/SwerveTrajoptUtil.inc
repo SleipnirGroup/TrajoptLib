@@ -101,7 +101,7 @@ void ApplyDynamicsConstraints(Opti& opti, const Expr& ax, const Expr& ay,
                               const Expr& Fy_net, const Expr& tau_net,
                               double mass, double moi) {
   opti.SubjectTo(Fx_net == mass * ax);
-  opti.SubjectTo(Fy_net == mass * ax);
+  opti.SubjectTo(Fy_net == mass * ay);
   opti.SubjectTo(tau_net == moi * alpha);
 }
 
@@ -163,18 +163,17 @@ SwerveSolution ConstructSwerveSolution(
       dtPerSamp.push_back(dt_val);
     }
   }
-  return SwerveSolution{dtPerSamp,
-                        RowSolutionValue(opti, x),
-                        RowSolutionValue(opti, y),
-                        RowSolutionValue(opti, theta),
-                        RowSolutionValue(opti, vx),
-                        RowSolutionValue(opti, vy),
-                        RowSolutionValue(opti, omega),
-                        RowSolutionValue(opti, ax),
-                        RowSolutionValue(opti, ay),
-                        RowSolutionValue(opti, alpha),
-                        MatrixSolutionValue(opti, Fx),
-                        MatrixSolutionValue(opti, Fy)};
+  return SwerveSolution{
+      {{dtPerSamp, RowSolutionValue(opti, x), RowSolutionValue(opti, y),
+        RowSolutionValue(opti, theta)},
+       RowSolutionValue(opti, vx),
+       RowSolutionValue(opti, vy),
+       RowSolutionValue(opti, omega),
+       RowSolutionValue(opti, ax),
+       RowSolutionValue(opti, ay),
+       RowSolutionValue(opti, alpha)},
+      MatrixSolutionValue(opti, Fx),
+      MatrixSolutionValue(opti, Fy)};
 }
 
 }  // namespace trajopt

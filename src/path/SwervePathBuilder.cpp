@@ -2,10 +2,12 @@
 
 #include "trajopt/path/SwervePathBuilder.h"
 
+#include <cmath>
 #include <memory>
 #include <stdexcept>
 #include <vector>
 
+#include "optimization/Cancellation.h"
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/Constraint.h"
@@ -73,9 +75,13 @@ void SwervePathBuilder::WptVelocityDirection(size_t idx, double angle) {
 }
 
 void SwervePathBuilder::WptVelocityMagnitude(size_t idx, double v) {
-  WptConstraint(idx,
-                HolonomicVelocityConstraint{EllipticalSet2d::CircularSet2d(v),
-                                            CoordinateSystem::kField});
+  if (std::abs(v) < 1e-4) {
+    WptZeroVelocity(idx);
+  } else {
+    WptConstraint(idx,
+                  HolonomicVelocityConstraint{EllipticalSet2d::CircularSet2d(v),
+                                              CoordinateSystem::kField});
+  }
 }
 
 void SwervePathBuilder::WptZeroVelocity(size_t idx) {
@@ -103,10 +109,12 @@ void SwervePathBuilder::SgmtVelocityDirection(size_t fromIdx, size_t toIdx,
 
 void SwervePathBuilder::SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx,
                                               double v, bool includeWpts) {
+  Set2d set = EllipticalSet2d{v, v, EllipticalSet2d::Direction::kInside};
+  if (std::abs(v) < 1e-4) {
+    set = RectangularSet2d{0.0, 0.0};
+  }
   SgmtConstraint(fromIdx, toIdx,
-                 HolonomicVelocityConstraint{
-                     EllipticalSet2d{v, v, EllipticalSet2d::Direction::kInside},
-                     CoordinateSystem::kField},
+                 HolonomicVelocityConstraint{set, CoordinateSystem::kField},
                  includeWpts);
 }
 
@@ -133,9 +141,9 @@ void SwervePathBuilder::SgmtConstraint(size_t fromIdx, size_t toIdx,
   }
   for (size_t idx = fromIdx + 1; idx <= toIdx; idx++) {
     if (includeWpts) {
-      path.waypoints.at(fromIdx).waypointConstraints.push_back(constraint);
+      path.waypoints.at(idx).waypointConstraints.push_back(constraint);
     }
-    path.waypoints.at(fromIdx).segmentConstraints.push_back(constraint);
+    path.waypoints.at(idx).segmentConstraints.push_back(constraint);
   }
 }
 
@@ -192,8 +200,8 @@ void SwervePathBuilder::NewWpts(size_t finalIndex) {
 
 std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
     const Bumpers& bumpers, const Obstacle& obstacle) {
-  auto distConst =
-      IntervalSet1d::LessThan(bumpers.safetyDistance + obstacle.safetyDistance);
+  auto distConst = IntervalSet1d::GreaterThan(bumpers.safetyDistance +
+                                              obstacle.safetyDistance);
 
   size_t bumperCornerCount = bumpers.points.size();
   size_t obstacleCornerCount = obstacle.points.size();
@@ -230,23 +238,34 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
 
   // obstacle edge to bumper corner constraints
   for (auto& bumperCorner : bumpers.points) {
-    for (size_t obstacleCornerIndex = 0;
-         obstacleCornerIndex < obstacleCornerCount - 1; obstacleCornerIndex++) {
-      constraints.emplace_back(PointLineConstraint{
-          bumperCorner.x, bumperCorner.y,
-          obstacle.points.at(obstacleCornerIndex).x,
-          obstacle.points.at(obstacleCornerIndex).y,
-          obstacle.points.at(obstacleCornerIndex + 1).x,
-          obstacle.points.at(obstacleCornerIndex + 1).y, distConst});
-    }
-    if (obstacleCornerCount >= 3) {
-      constraints.emplace_back(PointLineConstraint{
-          bumperCorner.x, bumperCorner.y,
-          obstacle.points.at(bumperCornerCount - 1).x,
-          obstacle.points.at(bumperCornerCount - 1).y, obstacle.points.at(0).x,
+    if (obstacleCornerCount > 1) {
+      for (size_t obstacleCornerIndex = 0;
+           obstacleCornerIndex < obstacleCornerCount - 1;
+           obstacleCornerIndex++) {
+        constraints.emplace_back(PointLineConstraint{
+            bumperCorner.x, bumperCorner.y,
+            obstacle.points.at(obstacleCornerIndex).x,
+            obstacle.points.at(obstacleCornerIndex).y,
+            obstacle.points.at(obstacleCornerIndex + 1).x,
+            obstacle.points.at(obstacleCornerIndex + 1).y, distConst});
+      }
+      if (obstacleCornerCount >= 3) {
+        constraints.emplace_back(PointLineConstraint{
+            bumperCorner.x, bumperCorner.y,
+            obstacle.points.at(bumperCornerCount - 1).x,
+            obstacle.points.at(bumperCornerCount - 1).y,
+            obstacle.points.at(0).x, obstacle.points.at(0).y, distConst});
+      }
+    } else {
+      constraints.emplace_back(PointPointConstraint{
+          bumperCorner.x, bumperCorner.y, obstacle.points.at(0).x,
           obstacle.points.at(0).y, distConst});
     }
   }
   return constraints;
+}
+
+void SwervePathBuilder::CancelAll() {
+  trajopt::GetCancellationFlag() = 1;
 }
 }  // namespace trajopt

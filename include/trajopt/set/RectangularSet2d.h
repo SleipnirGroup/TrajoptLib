@@ -2,11 +2,8 @@
 
 #pragma once
 
-#include <optional>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
-#include "trajopt/solution/SolutionChecking.h"
 
 namespace trajopt {
 
@@ -34,17 +31,6 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
   static RectangularSet2d R2();
 
   /**
-   * Returns an error if the given vector isn't in the region.
-   *
-   * @param xComp The x coordinate.
-   * @param yComp The y coordinate.
-   * @param tolerances The tolerances considered to satisfy the constraint.
-   */
-  std::optional<SolutionError> CheckVector(
-      double xComp, double yComp,
-      const SolutionTolerances& tolerances) const noexcept;
-
-  /**
    * @brief Check if this planar bound is valid. A planar bound is valid when
    * the bounds on a0 and a1 are valid, and additionally for planar bounds, a0
    * is contained within the interval [0, inf] and a1 is contained within the
@@ -54,31 +40,5 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
    */
   bool IsValid() const noexcept;
 };
+
 }  // namespace trajopt
-
-/**
- * Formatter for RectangularSet2d.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::RectangularSet2d> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted RectangularSet2d.
-   *
-   * @param rectangularSet RectangularSet2d instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::RectangularSet2d& rectangularSet,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(ctx.out(), "x {}, y {}", rectangularSet.xBound,
-                          rectangularSet.yBound);
-  }
-};

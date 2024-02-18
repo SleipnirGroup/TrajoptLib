@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include <string>
 #include <vector>
-
-#include <fmt/format.h>
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/solution/HolonomicSolution.h"
@@ -37,33 +34,3 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectory {
 };
 
 }  // namespace trajopt
-
-/**
- * Formatter for HolonomicTrajectory.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::HolonomicTrajectory> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted HolonomicTrajectory.
-   *
-   * @param trajectory HolonomicTrajectory instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::HolonomicTrajectory& trajectory,
-              fmt::format_context& ctx) const {
-    std::string sampsStr = fmt::format("{}", trajectory.samples[0]);
-    for (size_t i = 1; i < trajectory.samples.size(); i++) {
-      sampsStr += fmt::format(", {}", trajectory.samples[i]);
-    }
-    return fmt::format_to(ctx.out(), "[{}]", sampsStr);
-  }
-};
