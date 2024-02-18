@@ -1,7 +1,5 @@
 // Copyright (c) TrajoptLib contributors
 
-#include <array>
-#include <numeric>
 #include <vector>
 
 #include <catch2/catch_approx.hpp>
