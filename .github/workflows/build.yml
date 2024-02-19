@@ -56,11 +56,9 @@ jobs:
 
       - name: Set up MinGW
         if: matrix.os == 'windows-2022' && matrix.optimizer_backend == 'casadi'
-        uses: egor-tensin/setup-mingw@v2
-        with:
-          platform: x64
-          version: 11.2.0
-          static: 0
+        run: |
+          choco upgrade mingw --version=11.2.0 -y --no-progress --allow-downgrade
+          echo C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin >> $env:GITHUB_PATH
 
       - name: configure
         run: cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer_backend }} -DWITH_JAVA=ON -DJAVA_INSTALL_JAR=OFF
