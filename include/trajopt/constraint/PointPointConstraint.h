@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include <nlohmann/json.hpp>
-
 #include "trajopt/set/IntervalSet1d.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -26,10 +23,4 @@ struct PointPointConstraint {
   IntervalSet1d distance;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PointPointConstraint, robotPointX,
-                                   robotPointY, fieldPointX, fieldPointY,
-                                   distance)
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::PointPointConstraint)

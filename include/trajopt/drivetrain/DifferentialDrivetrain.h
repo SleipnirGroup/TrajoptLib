@@ -34,4 +34,5 @@ struct TRAJOPT_DLLEXPORT DifferentialDrivetrain {
   /// the right driverail
   DifferentialDriverail right;
 };
+
 }  // namespace trajopt

@@ -2,13 +2,7 @@
 
 #pragma once
 
-#include <array>
-
-#include <nlohmann/json.hpp>
-
 #include "trajopt/SymbolExports.h"
-#include "trajopt/constraint/Constraint.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -41,9 +35,4 @@ struct TRAJOPT_DLLEXPORT SwerveModule {
   double wheelMaxTorque;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwerveModule, x, y, wheelRadius,
-                                   wheelMaxAngularVelocity, wheelMaxTorque)
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::SwerveModule)

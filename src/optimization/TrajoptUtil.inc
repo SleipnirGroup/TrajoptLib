@@ -281,9 +281,13 @@ Solution GenerateLinearInitialGuess(
   initialGuess.x.reserve(sampTot);
   initialGuess.y.reserve(sampTot);
   initialGuess.theta.reserve(sampTot);
+  initialGuess.dt.reserve(sampTot);
   initialGuess.x.push_back(initialGuessPoints.front().front().x);
   initialGuess.y.push_back(initialGuessPoints.front().front().y);
   initialGuess.theta.push_back(initialGuessPoints.front().front().heading);
+  for (size_t i = 0; i < sampTot; i++) {
+    initialGuess.dt.push_back((wptCnt * 5.0) / sampTot);
+  }
   for (size_t wptIdx = 1; wptIdx < wptCnt; wptIdx++) {
     size_t N_sgmt = controlIntervalCounts.at(wptIdx - 1);
     size_t guessPointCount = initialGuessPoints.at(wptIdx).size();
@@ -342,12 +346,43 @@ template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 void ApplyInitialGuess(Opti& opti, const Solution& solution,
                        std::vector<Expr>& x, std::vector<Expr>& y,
-                       std::vector<Expr>& theta) {
+                       std::vector<Expr>& theta, std::vector<Expr>& vx,
+                       std::vector<Expr>& vy, std::vector<Expr>& omega,
+                       std::vector<Expr>& ax, std::vector<Expr>& ay,
+                       std::vector<Expr>& alpha) {
   size_t sampleTotal = x.size();
   for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
     opti.SetInitial(x[sampleIndex], solution.x[sampleIndex]);
     opti.SetInitial(y[sampleIndex], solution.y[sampleIndex]);
     opti.SetInitial(theta[sampleIndex], solution.theta[sampleIndex]);
+  }
+  opti.SetInitial(vx[0], 0.0);
+  opti.SetInitial(vy[0], 0.0);
+  opti.SetInitial(omega[0], 0.0);
+  opti.SetInitial(ax[0], 0.0);
+  opti.SetInitial(ay[0], 0.0);
+  opti.SetInitial(alpha[0], 0.0);
+  for (size_t sampleIndex = 1; sampleIndex < sampleTotal; sampleIndex++) {
+    opti.SetInitial(vx[sampleIndex],
+                    (solution.x[sampleIndex] - solution.x[sampleIndex - 1]) /
+                        solution.dt[sampleIndex]);
+    opti.SetInitial(vy[sampleIndex],
+                    (solution.y[sampleIndex] - solution.y[sampleIndex - 1]) /
+                        solution.dt[sampleIndex]);
+    opti.SetInitial(omega[sampleIndex], (solution.theta[sampleIndex] -
+                                         solution.theta[sampleIndex - 1]) /
+                                            solution.dt[sampleIndex]);
+
+    opti.SetInitial(ax[sampleIndex], (opti.SolutionValue(vx[sampleIndex]) -
+                                      opti.SolutionValue(vx[sampleIndex - 1])) /
+                                         solution.dt[sampleIndex]);
+    opti.SetInitial(ay[sampleIndex], (opti.SolutionValue(vy[sampleIndex]) -
+                                      opti.SolutionValue(vy[sampleIndex - 1])) /
+                                         solution.dt[sampleIndex]);
+    opti.SetInitial(alpha[sampleIndex],
+                    (opti.SolutionValue(omega[sampleIndex]) -
+                     opti.SolutionValue(omega[sampleIndex - 1])) /
+                        solution.dt[sampleIndex]);
   }
 }
 

@@ -44,6 +44,7 @@ mod ffi {
 
         type SwervePathBuilderImpl;
 
+        fn cancel_all(self: Pin<&mut SwervePathBuilderImpl>);
         fn set_drivetrain(self: Pin<&mut SwervePathBuilderImpl>, drivetrain: &SwerveDrivetrain);
         fn set_bumpers(self: Pin<&mut SwervePathBuilderImpl>, length: f64, width: f64);
         fn set_control_interval_counts(self: Pin<&mut SwervePathBuilderImpl>, counts: Vec<usize>);
@@ -141,6 +142,15 @@ mod ffi {
             to_idx: usize,
             x: f64,
             y: f64,
+            radius: f64,
+        );
+
+        fn sgmt_polygon_obstacle(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            from_idx: usize,
+            to_idx: usize,
+            x: Vec<f64>,
+            y: Vec<f64>,
             radius: f64,
         );
 
@@ -337,11 +347,33 @@ impl SwervePathBuilder {
         );
     }
 
+    pub fn sgmt_polygon_obstacle(
+        &mut self,
+        from_idx: usize,
+        to_idx: usize,
+        x: Vec<f64>,
+        y: Vec<f64>,
+        radius: f64,
+    ) {
+        crate::ffi::SwervePathBuilderImpl::sgmt_polygon_obstacle(
+            self.path.pin_mut(),
+            from_idx,
+            to_idx,
+            x,
+            y,
+            radius,
+        );
+    }
+
     pub fn generate(&self) -> Result<HolonomicTrajectory, String> {
         match self.path.generate() {
             Ok(traj) => Ok(traj),
             Err(msg) => Err(msg.what().to_string()),
         }
+    }
+
+    pub fn cancel_all(&mut self) {
+        crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
     }
 }
 

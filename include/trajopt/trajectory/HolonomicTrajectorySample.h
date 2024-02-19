@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <fmt/core.h>
-
 #include "trajopt/SymbolExports.h"
 
 namespace trajopt {
@@ -14,25 +12,27 @@ namespace trajopt {
 class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
  public:
   /// The timestamp.
-  double timestamp;
+  double timestamp = 0.0;
 
   /// The x coordinate.
-  double x;
+  double x = 0.0;
 
   /// The y coordinate.
-  double y;
+  double y = 0.0;
 
   /// The heading.
-  double heading;
+  double heading = 0.0;
 
   /// The velocity's x component.
-  double velocityX;
+  double velocityX = 0.0;
 
   /// The velocity's y component.
-  double velocityY;
+  double velocityY = 0.0;
 
   /// The angular velocity.
-  double angularVelocity;
+  double angularVelocity = 0.0;
+
+  constexpr HolonomicTrajectorySample() = default;
 
   /**
    * Construct a HolonomicTrajectorySample.
@@ -45,40 +45,16 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
    * @param velocityY The velocity's y component.
    * @param angularVelocity The angular velocity.
    */
-  HolonomicTrajectorySample(double timestamp, double x, double y,
-                            double heading, double velocityX, double velocityY,
-                            double angularVelocity);
+  constexpr HolonomicTrajectorySample(double timestamp, double x, double y,
+                                      double heading, double velocityX,
+                                      double velocityY, double angularVelocity)
+      : timestamp{timestamp},
+        x{x},
+        y{y},
+        heading{heading},
+        velocityX{velocityX},
+        velocityY{velocityY},
+        angularVelocity{angularVelocity} {}
 };
 
 }  // namespace trajopt
-
-/**
- * Formatter for HolonomicTrajectorySample.
- */
-//! @cond Doxygen_Suppress
-template <>
-struct fmt::formatter<trajopt::HolonomicTrajectorySample> {
-  //! @endcond
-  /**
-   * Format string parser.
-   *
-   * @param ctx Format string context.
-   */
-  constexpr auto parse(fmt::format_parse_context& ctx) { return ctx.begin(); }
-
-  /**
-   * Writes out a formatted HolonomicTrajectorySample.
-   *
-   * @param sample HolonomicTrajectorySample instance.
-   * @param ctx Format string context.
-   */
-  auto format(const trajopt::HolonomicTrajectorySample& sample,
-              fmt::format_context& ctx) const {
-    return fmt::format_to(
-        ctx.out(),
-        "{{\"timestamp\": {}, \"x\": {}, \"y\": {}, \"heading\": {}, "
-        "\"velocityX\": {}, \"velocityY\": {}, \"angularVelocity\": {}}}",
-        sample.timestamp, sample.x, sample.y, sample.heading, sample.velocityX,
-        sample.velocityY, sample.angularVelocity);
-  }
-};

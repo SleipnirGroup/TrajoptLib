@@ -2,7 +2,8 @@ name: Website
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -21,6 +22,8 @@ concurrency:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
+    if: ${{ github.repository_owner == 'SleipnirGroup' }}
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -28,11 +31,11 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Create build directory
         run: mkdir build
       - name: Run Doxygen
-        uses: mattnotmitt/doxygen-action@1.9.5
+        uses: mattnotmitt/doxygen-action@edge
         with:
           doxyfile-path: 'docs/Doxyfile'
       - name: Setup Pages

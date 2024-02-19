@@ -4,13 +4,8 @@
 
 #include <vector>
 
-#include <nlohmann/json.hpp>
-
 #include "trajopt/SymbolExports.h"
 #include "trajopt/drivetrain/SwerveModule.h"
-#include "trajopt/obstacle/Obstacle.h"
-#include "trajopt/trajectory/HolonomicTrajectory.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -30,8 +25,4 @@ struct TRAJOPT_DLLEXPORT SwerveDrivetrain {
   std::vector<SwerveModule> modules;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwerveDrivetrain, mass, moi, modules)
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::SwerveDrivetrain)
