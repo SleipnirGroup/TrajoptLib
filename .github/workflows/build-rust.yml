@@ -31,7 +31,7 @@ jobs:
           - artifact-name: Rust Native - Windows x86_64 (Sleipnir)
             optimizer_backend: sleipnir
             os: windows-2022
-            rust-target: x86_64-pc-windows-gnu
+            rust-target: x86_64-pc-windows-msvc
           - artifact-name: Rust Native - macOS x86_64 (Sleipnir)
             optimizer_backend: sleipnir
             os: macOS-13
@@ -56,7 +56,8 @@ jobs:
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: x64
-          version: 12.2.0
+          version: 11.2.0
+          static: 0
 
       - name: Set up Rust
         uses: hecrj/setup-rust-action@v1
@@ -75,6 +76,5 @@ jobs:
         run: cargo build --target ${{ matrix.rust-target }} --features ${{ matrix.optimizer_backend }}
 
       - name: Run Rust
-        if: matrix.rust-target != 'aarch64-apple-darwin' && matrix.rust-target != 'x86_64-pc-windows-gnu'
         working-directory: rust
         run: cargo run --example swerve --target ${{ matrix.rust-target }} --features ${{ matrix.optimizer_backend }}
