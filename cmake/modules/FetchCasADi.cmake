@@ -26,10 +26,7 @@ macro(fetch_casadi)
         )
         set(CASADI_INSTALL_DEST "bin")
     elseif(APPLE)
-        if(
-            CMAKE_APPLE_SILICON_PROCESSOR MATCHES "arm64"
-            OR CMAKE_OSX_ARCHITECTURES MATCHES "arm64"
-        )
+        if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm64")
             message(STATUS "Building for macOS arm64")
             set(CASADI_URL
                 https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-osx_arm64-py311.zip
@@ -45,10 +42,7 @@ macro(fetch_casadi)
                 ${CASADI_LIBDIR}/libquadmath.0.dylib
                 ${CASADI_LIBDIR}/libgcc_s.1.1.dylib
             )
-        elseif(
-            CMAKE_APPLE_SILICON_PROCESSOR MATCHES "x86_64"
-            OR CMAKE_OSX_ARCHITECTURES MATCHES "x86_64"
-        )
+        elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64")
             message(STATUS "Building for macOS x86_64")
             set(CASADI_URL
                 https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-osx64-py311.zip

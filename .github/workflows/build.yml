@@ -15,15 +15,15 @@ jobs:
         include:
           - artifact-name: Native - Windows (CasADi)
             # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
-            cmake-flags: "-G \"MinGW Makefiles\" -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DBUILD_TESTING=OFF"
+            cmake-flags: "-G \"MinGW Makefiles\" -DBUILD_TESTING=OFF"
             optimizer_backend: casadi
             os: windows-2022
           - artifact-name: Native - macOS x86_64 (CasADi)
-            cmake-flags: "-DCMAKE_APPLE_SILICON_PROCESSOR=x86_64"
+            cmake-flags:
             optimizer_backend: casadi
             os: macOS-13
           - artifact-name: Native - macOS arm64 (CasADi)
-            cmake-flags: "-DCMAKE_APPLE_SILICON_PROCESSOR=arm64"
+            cmake-flags:
             optimizer_backend: casadi
             os: macOS-14
           - artifact-name: Native - Linux (CasADi)
