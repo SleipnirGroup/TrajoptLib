@@ -64,7 +64,7 @@ void ApplyKinematicsConstraints(
     const std::vector<size_t> N) {
   size_t wptCnt = N.size() + 1;
 
-  for (size_t i = 0; i < dt.size(); i++) {
+  for (size_t i = 0; i < dt.size(); ++i) {
     opti.SubjectTo(dt.at(i) >= 0);
     opti.SubjectTo(dt.at(i) <= 0.1);
   }

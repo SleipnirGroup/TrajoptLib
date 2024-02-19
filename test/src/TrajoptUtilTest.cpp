@@ -1,5 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
+#include <numeric>
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
@@ -22,11 +23,14 @@ TEST_CASE("TrajoptUtil - GetIdx()", "[TrajoptUtil]") {
 
 TEST_CASE("TrajoptUtil - ApplyDiscreteTimeObjective()", "[TrajoptUtil]") {
   TestOpti opti;
-  std::vector<double> dt = {-1, 3};
   std::vector<size_t> N = {20, 15};
+  std::vector<double> dt;
+  for (size_t i = 0; i < std::accumulate(N.begin(), N.end(), 0u) + 1; ++i) {
+    dt.emplace_back(2.0);
+  }
   trajopt::ApplyDiscreteTimeObjective(opti, dt, N);
-  CHECK(opti.GetMinimizeObjective() == 25);
-  CHECK(opti.IsViolating());
+  CHECK(opti.GetMinimizeObjective() == 70);
+  CHECK_FALSE(opti.IsViolating());
 }
 
 TEST_CASE("TrajoptUtil - ApplyIntervalSet1d()", "[TrajoptUtil]") {
