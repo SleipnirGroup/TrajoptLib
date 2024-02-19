@@ -27,4 +27,6 @@ includeOtherLibs {
   ^Eigen/
   ^casadi/
   ^sleipnir/
+  ^trajopt/
+  ^napi\.h$
 }

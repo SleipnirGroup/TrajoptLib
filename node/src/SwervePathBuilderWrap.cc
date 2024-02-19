@@ -1,39 +1,50 @@
+// Copyright (c) TrajoptLib contributors
+
 #include "SwervePathBuilderWrap.h"
 
 #include <cmath>
+#include <utility>
+#include <vector>
 
+#include <napi.h>
 #include <trajopt/OptimalTrajectoryGenerator.h>
 #include <trajopt/drivetrain/SwerveDrivetrain.h>
+#include <trajopt/path/SwervePathBuilder.h>
 #include <trajopt/solution/SwerveSolution.h>
 #include <trajopt/trajectory/HolonomicTrajectory.h>
-#include <napi.h>
-#include <trajopt/path/SwervePathBuilder.h>
 
-SwervePathBuilderWrap::SwervePathBuilderWrap(const Napi::CallbackInfo& info) : ObjectWrap(info) {
-}
+SwervePathBuilderWrap::SwervePathBuilderWrap(const Napi::CallbackInfo& info)
+    : ObjectWrap(info) {}
 
-trajopt::SwerveDrivetrain _ToSwerveDrivetrain(const Napi::Object& napiSwerveDrivetrain) {
+trajopt::SwerveDrivetrain _ToSwerveDrivetrain(
+    const Napi::Object& napiSwerveDrivetrain) {
   double mass = napiSwerveDrivetrain.Get("mass").ToNumber().DoubleValue();
   double moi = napiSwerveDrivetrain.Get("moi").ToNumber().DoubleValue();
-  Napi::Array napiSwerveModules = napiSwerveDrivetrain.Get("modules").As<Napi::Array>();
+  Napi::Array napiSwerveModules =
+      napiSwerveDrivetrain.Get("modules").As<Napi::Array>();
   std::vector<trajopt::SwerveModule> swerveModules;
   swerveModules.reserve(napiSwerveModules.Length());
   for (size_t idx = 0; idx < napiSwerveModules.Length(); ++idx) {
     Napi::Object napiSwerveModule = napiSwerveModules.Get(idx).ToObject();
     swerveModules.emplace_back(trajopt::SwerveModule{
-      napiSwerveModule.Get("x").ToNumber().DoubleValue(),
-      napiSwerveModule.Get("y").ToNumber().DoubleValue(),
-      napiSwerveModule.Get("wheelRadius").ToNumber().DoubleValue(),
-      napiSwerveModule.Get("wheelMaxAngularVelocity").ToNumber().DoubleValue(),
-      napiSwerveModule.Get("wheelMaxTorque").ToNumber().DoubleValue()});
+        napiSwerveModule.Get("x").ToNumber().DoubleValue(),
+        napiSwerveModule.Get("y").ToNumber().DoubleValue(),
+        napiSwerveModule.Get("wheelRadius").ToNumber().DoubleValue(),
+        napiSwerveModule.Get("wheelMaxAngularVelocity")
+            .ToNumber()
+            .DoubleValue(),
+        napiSwerveModule.Get("wheelMaxTorque").ToNumber().DoubleValue()});
   }
   return trajopt::SwerveDrivetrain{mass, moi, std::move(swerveModules)};
 }
 
-
-Napi::Value SwervePathBuilderWrap::SetDrivetrain(const Napi::CallbackInfo &info) {
+Napi::Value SwervePathBuilderWrap::SetDrivetrain(
+    const Napi::CallbackInfo& info) {
   if (info.Length() != 1 || !info[0].IsObject()) {
-    Napi::TypeError::New(info.Env(), "SwervePathBuilder.setDrivetrain() accepts exactly one object parameter.").ThrowAsJavaScriptException();
+    Napi::TypeError::New(info.Env(),
+                         "SwervePathBuilder.setDrivetrain() accepts exactly "
+                         "one object parameter.")
+        .ThrowAsJavaScriptException();
     return info.Env().Undefined();
   }
   auto swerveDrivetrain = _ToSwerveDrivetrain(info[0].ToObject());
@@ -42,13 +53,13 @@ Napi::Value SwervePathBuilderWrap::SetDrivetrain(const Napi::CallbackInfo &info)
   return info.Env().Undefined();
 }
 
-Napi::Value SwervePathBuilderWrap::PoseWpt(const Napi::CallbackInfo &info) {
-  if (info.Length() != 4 ||
-      !info[0].IsNumber() ||
-      !info[1].IsNumber() ||
-      !info[2].IsNumber() ||
-      !info[3].IsNumber()) {
-    Napi::TypeError::New(info.Env(), "SwervePathBuilder.poseWpt() accepts exactly four number parameters").ThrowAsJavaScriptException();
+Napi::Value SwervePathBuilderWrap::PoseWpt(const Napi::CallbackInfo& info) {
+  if (info.Length() != 4 || !info[0].IsNumber() || !info[1].IsNumber() ||
+      !info[2].IsNumber() || !info[3].IsNumber()) {
+    Napi::TypeError::New(
+        info.Env(),
+        "SwervePathBuilder.poseWpt() accepts exactly four number parameters")
+        .ThrowAsJavaScriptException();
     return info.Env().Undefined();
   }
   uint32_t idx = info[0].ToNumber().Uint32Value();
@@ -60,10 +71,13 @@ Napi::Value SwervePathBuilderWrap::PoseWpt(const Napi::CallbackInfo &info) {
   return info.Env().Undefined();
 }
 
-Napi::Value SwervePathBuilderWrap::WptZeroVelocity(const Napi::CallbackInfo &info) {
-  if (info.Length() != 1 ||
-      !info[0].IsNumber()) {
-    Napi::TypeError::New(info.Env(), "SwervePathBuilder.wptZeroVelocity() accepts exactly one number parameter").ThrowAsJavaScriptException();
+Napi::Value SwervePathBuilderWrap::WptZeroVelocity(
+    const Napi::CallbackInfo& info) {
+  if (info.Length() != 1 || !info[0].IsNumber()) {
+    Napi::TypeError::New(info.Env(),
+                         "SwervePathBuilder.wptZeroVelocity() accepts exactly "
+                         "one number parameter")
+        .ThrowAsJavaScriptException();
     return info.Env().Undefined();
   }
   uint32_t idx = info[0].ToNumber().Uint32Value();
@@ -72,10 +86,13 @@ Napi::Value SwervePathBuilderWrap::WptZeroVelocity(const Napi::CallbackInfo &inf
   return info.Env().Undefined();
 }
 
-Napi::Value SwervePathBuilderWrap::WptZeroAngularVelocity(const Napi::CallbackInfo &info) {
-  if (info.Length() != 1 ||
-      !info[0].IsNumber()) {
-    Napi::TypeError::New(info.Env(), "SwervePathBuilder.wptZeroAngularVelocity() accepts exactly one number parameter").ThrowAsJavaScriptException();
+Napi::Value SwervePathBuilderWrap::WptZeroAngularVelocity(
+    const Napi::CallbackInfo& info) {
+  if (info.Length() != 1 || !info[0].IsNumber()) {
+    Napi::TypeError::New(info.Env(),
+                         "SwervePathBuilder.wptZeroAngularVelocity() accepts "
+                         "exactly one number parameter")
+        .ThrowAsJavaScriptException();
     return info.Env().Undefined();
   }
   uint32_t idx = info[0].ToNumber().Uint32Value();
@@ -84,12 +101,16 @@ Napi::Value SwervePathBuilderWrap::WptZeroAngularVelocity(const Napi::CallbackIn
   return info.Env().Undefined();
 }
 
-Napi::Value SwervePathBuilderWrap::Generate(const Napi::CallbackInfo &info) {
+Napi::Value SwervePathBuilderWrap::Generate(const Napi::CallbackInfo& info) {
   if (info.Length() != 0) {
-    Napi::TypeError::New(info.Env(), "SwervePathBuilder.generate() accepts exactly one number parameter").ThrowAsJavaScriptException();
+    Napi::TypeError::New(
+        info.Env(),
+        "SwervePathBuilder.generate() accepts exactly one number parameter")
+        .ThrowAsJavaScriptException();
     return info.Env().Undefined();
   }
-  trajopt::SwerveSolution solution = trajopt::OptimalTrajectoryGenerator::Generate(_path);
+  trajopt::SwerveSolution solution =
+      trajopt::OptimalTrajectoryGenerator::Generate(_path);
   trajopt::HolonomicTrajectory trajectory{solution};
   auto napiSamples = Napi::Array::New(info.Env());
   size_t sampCnt = trajectory.samples.size();
@@ -101,7 +122,8 @@ Napi::Value SwervePathBuilderWrap::Generate(const Napi::CallbackInfo &info) {
     napiSample.Set("heading", trajectory.samples.at(idx).heading);
     napiSample.Set("velocityX", trajectory.samples.at(idx).velocityX);
     napiSample.Set("velocityY", trajectory.samples.at(idx).velocityY);
-    napiSample.Set("angularVelocity", trajectory.samples.at(idx).angularVelocity);
+    napiSample.Set("angularVelocity",
+                   trajectory.samples.at(idx).angularVelocity);
     napiSamples.Set(idx, napiSample);
   }
   return napiSamples;
@@ -109,13 +131,18 @@ Napi::Value SwervePathBuilderWrap::Generate(const Napi::CallbackInfo &info) {
 
 Napi::Function SwervePathBuilderWrap::GetClass(const Napi::Env env) {
   return DefineClass(
-      env,
-      "SwervePathBuilder",
+      env, "SwervePathBuilder",
       {
-          SwervePathBuilderWrap::InstanceMethod("setDrivetrain", &SwervePathBuilderWrap::SetDrivetrain),
-          SwervePathBuilderWrap::InstanceMethod("poseWpt", &SwervePathBuilderWrap::PoseWpt),
-          SwervePathBuilderWrap::InstanceMethod("wptZeroVelocity", &SwervePathBuilderWrap::WptZeroVelocity),
-          SwervePathBuilderWrap::InstanceMethod("wptZeroAngularVelocity", &SwervePathBuilderWrap::WptZeroAngularVelocity),
-          SwervePathBuilderWrap::InstanceMethod("generate", &SwervePathBuilderWrap::Generate),
+          SwervePathBuilderWrap::InstanceMethod(
+              "setDrivetrain", &SwervePathBuilderWrap::SetDrivetrain),
+          SwervePathBuilderWrap::InstanceMethod(
+              "poseWpt", &SwervePathBuilderWrap::PoseWpt),
+          SwervePathBuilderWrap::InstanceMethod(
+              "wptZeroVelocity", &SwervePathBuilderWrap::WptZeroVelocity),
+          SwervePathBuilderWrap::InstanceMethod(
+              "wptZeroAngularVelocity",
+              &SwervePathBuilderWrap::WptZeroAngularVelocity),
+          SwervePathBuilderWrap::InstanceMethod(
+              "generate", &SwervePathBuilderWrap::Generate),
       });
 }
