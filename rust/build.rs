@@ -61,7 +61,7 @@ fn main() -> miette::Result<()> {
     }
 
     cxx_build::bridge("src/lib.rs") // returns a cc::Build
-        .file("src/trajoptlib.cc")
+        .file("src/trajoptlib.cpp")
         .include("include")
         .include(format!("{}/include", dst.display()))
         .flag_if_supported("/std:c++20")
@@ -69,7 +69,7 @@ fn main() -> miette::Result<()> {
         .compile("trajoptlib-rust");
 
     println!("cargo:rerun-if-changed=include/trajoptlib.h");
-    println!("cargo:rerun-if-changed=src/trajoptlib.cc");
+    println!("cargo:rerun-if-changed=src/trajoptlib.cpp");
     println!("cargo:rerun-if-changed=src/lib.rs");
     Ok(())
 }

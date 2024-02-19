@@ -1,5 +1,8 @@
-#include "SwervePathBuilderWrap.h"
+// Copyright (c) TrajoptLib contributors
+
 #include <napi.h>
+
+#include "SwervePathBuilderWrap.h"
 
 class TrajoptLibAddon : public Napi::Addon<TrajoptLibAddon> {
  public:

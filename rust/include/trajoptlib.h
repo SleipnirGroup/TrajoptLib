@@ -3,10 +3,11 @@
 #pragma once
 
 #include <rust/cxx.h>
-#include <trajopt/path/SwervePathBuilder.h>
 
 #include <cstddef>
 #include <memory>
+
+#include <trajopt/path/SwervePathBuilder.h>
 
 namespace trajoptlibrust {
 
