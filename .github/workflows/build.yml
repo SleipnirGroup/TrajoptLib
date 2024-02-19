@@ -14,38 +14,38 @@ jobs:
       matrix:
         include:
           - artifact-name: Native - Windows (CasADi)
-            # FIXME: TrajoptLibTest.exe can't find an unspecified DLL
+            # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
             cmake-flags: "-G \"MinGW Makefiles\" -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DBUILD_TESTING=OFF"
-            optimizer: casadi
+            optimizer_backend: casadi
             os: windows-2022
           - artifact-name: Native - macOS x86_64 (CasADi)
             cmake-flags: "-DCMAKE_APPLE_SILICON_PROCESSOR=x86_64"
-            optimizer: casadi
+            optimizer_backend: casadi
             os: macOS-13
           - artifact-name: Native - macOS arm64 (CasADi)
             cmake-flags: "-DCMAKE_APPLE_SILICON_PROCESSOR=arm64"
-            optimizer: casadi
+            optimizer_backend: casadi
             os: macOS-14
           - artifact-name: Native - Linux (CasADi)
             cmake-flags:
-            optimizer: casadi
+            optimizer_backend: casadi
             os: ubuntu-latest
           - artifact-name: Native - Windows (Sleipnir)
-            # FIXME: TrajoptLibTest.exe can't find an unspecified DLL
+            # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
             cmake-flags: "-DBUILD_TESTING=OFF"
-            optimizer: sleipnir
+            optimizer_backend: sleipnir
             os: windows-2022
           - artifact-name: Native - macOS x86_64 (Sleipnir)
             cmake-flags:
-            optimizer: sleipnir
+            optimizer_backend: sleipnir
             os: macOS-13
           - artifact-name: Native - macOS arm64 (Sleipnir)
             cmake-flags:
-            optimizer: sleipnir
+            optimizer_backend: sleipnir
             os: macOS-14
           - artifact-name: Native - Linux (Sleipnir)
             cmake-flags:
-            optimizer: sleipnir
+            optimizer_backend: sleipnir
             os: ubuntu-latest
 
     name: "${{ matrix.artifact-name }}"
@@ -55,14 +55,15 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up MinGW
-        if: matrix.os == 'windows-2022' && matrix.optimizer == 'casadi'
+        if: matrix.os == 'windows-2022' && matrix.optimizer_backend == 'casadi'
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: x64
-          version: 12.2.0
+          version: 11.2.0
+          static: 0
 
       - name: configure
-        run: cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer }} -DWITH_JAVA=ON -DJAVA_INSTALL_JAR=OFF
+        run: cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer_backend }} -DWITH_JAVA=ON -DJAVA_INSTALL_JAR=OFF
 
       - name: build
         run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
