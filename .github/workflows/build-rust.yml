@@ -15,35 +15,27 @@ jobs:
           - artifact-name: Rust Native - Windows x86_64 (CasADi)
             optimizer_backend: casadi
             os: windows-2022
-            rust-target: x86_64-pc-windows-gnu
           - artifact-name: Rust Native - macOS x86_64 (CasADi)
             optimizer_backend: casadi
             os: macOS-13
-            rust-target: x86_64-apple-darwin
           - artifact-name: Rust Native - macOS arm64 (CasADi)
             optimizer_backend: casadi
             os: macOS-14
-            rust-target: aarch64-apple-darwin
           - artifact-name: Rust Native - Linux x86_64 (CasADi)
             optimizer_backend: casadi
             os: ubuntu-latest
-            rust-target: x86_64-unknown-linux-gnu
           - artifact-name: Rust Native - Windows x86_64 (Sleipnir)
             optimizer_backend: sleipnir
             os: windows-2022
-            rust-target: x86_64-pc-windows-msvc
           - artifact-name: Rust Native - macOS x86_64 (Sleipnir)
             optimizer_backend: sleipnir
             os: macOS-13
-            rust-target: x86_64-apple-darwin
           - artifact-name: Rust Native - macOS arm64 (Sleipnir)
             optimizer_backend: sleipnir
             os: macOS-14
-            rust-target: aarch64-apple-darwin
           - artifact-name: Rust Native - Linux x86_64 (Sleipnir)
             optimizer_backend: sleipnir
             os: ubuntu-latest
-            rust-target: x86_64-unknown-linux-gnu
 
     name: "${{ matrix.artifact-name }}"
     runs-on: ${{ matrix.os }}
@@ -51,21 +43,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set to Windows GNU Rust Toolchain
+        if: matrix.os == 'windows-2022' && matrix.optimizer_backend == 'casadi'
+        run: |
+          rustup install 1.69-gnu
+          rustup default 1.69-gnu
+
       - name: Set up MinGW
         if: matrix.os == 'windows-2022' && matrix.optimizer_backend == 'casadi'
         run: |
           choco upgrade mingw --version=11.2.0 -y --no-progress --allow-downgrade
           echo C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin >> $env:GITHUB_PATH
 
-      - name: Set up Rust
-        uses: hecrj/setup-rust-action@v1
-        with:
-          targets: ${{matrix.rust-target}}
-
       - name: Build Rust
         working-directory: rust
-        run: cargo build --target ${{ matrix.rust-target }} --features ${{ matrix.optimizer_backend }}
+        run: cargo build --features ${{ matrix.optimizer_backend }}
 
       - name: Run Rust
         working-directory: rust
-        run: cargo run --example swerve --target ${{ matrix.rust-target }} --features ${{ matrix.optimizer_backend }}
+        run: cargo run --example swerve --features ${{ matrix.optimizer_backend }}

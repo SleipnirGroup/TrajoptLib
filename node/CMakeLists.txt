@@ -28,7 +28,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_JS_INC})
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
 
 set(OPTIMIZER_BACKEND casadi)
-set(CMAKE_APPLE_SILICON_PROCESSOR arm64)
 add_subdirectory(
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_SOURCE_DIR}/../build
