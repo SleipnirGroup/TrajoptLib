@@ -26,7 +26,7 @@ SwerveSolution SwerveDiscreteOptimal<Expr, Opti>::Generate() {
                                    alpha, Fx, Fy, dt, N);
   } catch (const std::exception& e) {
     throw TrajectoryGenerationException{
-        std::string{"Error optimizing trajectory: {}"} + e.what()};
+        std::string{"Error optimizing trajectory: "} + e.what()};
   }
 }
 
