@@ -8,10 +8,10 @@ import org.sleipnirgroup.util.PluginLoader;
 
 public final class OptimalTrajectoryGenerator {
     private native HolonomicTrajectory generateHolonomicTrajectory(SwerveDrivetrain swerveDrivetrain,
-            HolonomicPath holonomicPath) throws InvalidPathException, TrajectoryGenerationException;
+            HolonomicPath holonomicPath) throws TrajectoryGenerationException;
 
     public static HolonomicTrajectory generate(SwerveDrivetrain swerveDrivetrain, HolonomicPath holonomicPath)
-            throws NullPointerException, InvalidPathException, PluginLoadException, TrajectoryGenerationException {
+            throws NullPointerException, PluginLoadException, TrajectoryGenerationException {
         PluginLoader.loadPlugin();
         return new OptimalTrajectoryGenerator().generateHolonomicTrajectory(
                 Objects.requireNonNull(swerveDrivetrain, "Holonomic Trajectory Generator swerve drivetrain cannot be null"),
