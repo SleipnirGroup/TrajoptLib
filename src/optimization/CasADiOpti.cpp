@@ -3,13 +3,11 @@
 #include "optimization/CasADiOpti.h"
 
 #include <casadi/casadi.hpp>
-#include <casadi/core/exception.hpp>
-#include <casadi/core/generic_matrix.hpp>
-#include <casadi/core/mx.hpp>
 
 #include "DebugOptions.h"
 #include "optimization/Cancellation.h"
 #include "optimization/CasADiIterCallback.h"
+#include "trajopt/TrajectoryGenerationException.h"
 
 namespace trajopt {
 
@@ -56,7 +54,7 @@ double CasADiOpti::SolutionValue(const casadi::MX& expression) const {
       return 0.0;
     }
   } else {
-    throw std::runtime_error("Solution not generated properly");
+    throw TrajectoryGenerationException{"Solution not generated properly"};
   }
 }
 
