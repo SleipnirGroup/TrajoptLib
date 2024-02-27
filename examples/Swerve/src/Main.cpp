@@ -5,7 +5,6 @@
 #include <numbers>
 #include <vector>
 
-#include <trajopt/IncompatibleTrajectoryException.h>
 #include <trajopt/OptimalTrajectoryGenerator.h>
 #include <trajopt/constraint/Constraint.h>
 #include <trajopt/constraint/TranslationConstraint.h>

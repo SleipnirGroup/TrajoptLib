@@ -7,7 +7,6 @@
 
 #include "jni.h"
 #include "org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator.h"
-#include "trajopt/InvalidPathException.h"
 #include "trajopt/OptimalTrajectoryGenerator.h"
 #include "trajopt/TrajectoryGenerationException.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
@@ -459,10 +458,6 @@ Java_org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator_generateHolonomicTraje
     auto solution = OptimalTrajectoryGenerator::Generate(path);
     auto trajectory = HolonomicTrajectory(solution);
     return jHolonomicTrajectoryFromHolonomicTrajectory(env, trajectory);
-  } catch (const InvalidPathException& e) {
-    jclass jInvalidPathExceptionClass =
-        env->FindClass("org/sleipnirgroup/trajopt/InvalidPathException");
-    env->ThrowNew(jInvalidPathExceptionClass, e.what());
     return nullptr;
   } catch (const TrajectoryGenerationException& e) {
     jclass jTrajectoryGenerationExceptionClass = env->FindClass(

@@ -12,7 +12,6 @@
 #define _OPTI_BACKEND SleipnirExpr, SleipnirOpti
 #endif
 #include "DebugOptions.h"
-#include "trajopt/InvalidPathException.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "optimization/algorithms/SwerveDiscreteOptimal.h"
 #include "trajopt/solution/SwerveSolution.h"
