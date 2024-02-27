@@ -4,11 +4,11 @@
 
 #include <cstddef>
 #include <memory>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
 #include <trajopt/OptimalTrajectoryGenerator.h>
-#include <trajopt/TrajectoryGenerationException.h>
 #include <trajopt/drivetrain/SwerveDrivetrain.h>
 #include <trajopt/path/SwervePathBuilder.h>
 #include <trajopt/trajectory/HolonomicTrajectory.h>
@@ -251,8 +251,13 @@ HolonomicTrajectory _convert_holonomic_trajectory(
 }
 
 HolonomicTrajectory SwervePathBuilderImpl::generate() const {
-  return _convert_holonomic_trajectory(trajopt::HolonomicTrajectory{
-      trajopt::OptimalTrajectoryGenerator::Generate(path)});
+  if (auto sol = trajopt::OptimalTrajectoryGenerator::Generate(path);
+      sol.has_value()) {
+    return _convert_holonomic_trajectory(
+        trajopt::HolonomicTrajectory{sol.value()});
+  } else {
+    throw std::runtime_error{sol.error()};
+  }
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
@@ -262,4 +267,5 @@ std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
 void SwervePathBuilderImpl::cancel_all() {
   path.CancelAll();
 }
+
 }  // namespace trajoptlibrust

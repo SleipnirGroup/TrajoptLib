@@ -4,7 +4,10 @@
 
 #include <cmath>
 #include <memory>
+#include <string>
 #include <vector>
+
+#include <trajopt/expected>
 
 #include "optimization/OptiSys.h"
 
@@ -26,7 +29,7 @@ class TestOpti {
   }
   void SetInitial(double expr, double value) {}
 
-  void Solve() {}
+  trajopt::expected<void, std::string> Solve() { return {}; }
 
   double SolutionValue(double expr) const { return expr; }
 

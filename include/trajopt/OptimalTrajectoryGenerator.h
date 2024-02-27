@@ -2,7 +2,10 @@
 
 #pragma once
 
+#include <string>
+
 #include "trajopt/SymbolExports.h"
+#include "trajopt/expected"
 #include "trajopt/path/Path.h"
 #include "trajopt/path/SwervePathBuilder.h"
 #include "trajopt/solution/SwerveSolution.h"
@@ -15,19 +18,17 @@ namespace trajopt {
  */
 class TRAJOPT_DLLEXPORT OptimalTrajectoryGenerator {
  public:
-  /**
-   * @brief Prevent instantiation
-   */
   OptimalTrajectoryGenerator() = delete;
 
   /**
-   * @brief Initializes and solves an optimization problem for a swerve
-   * drivetrain. This function may throw an exception if the optimizer is unable
-   * to find the optizer
+   * Initializes and solves an optimization problem for a swerve drivetrain.
    *
    * @param path the path
-   * @return the optimized swerve trajectory solution
+   * @return The optimized swerve trajectory solution on success, or a string
+   *   containing the failure reason.
    */
-  static SwerveSolution Generate(const SwervePathBuilder& path);
+  static expected<SwerveSolution, std::string> Generate(
+      const SwervePathBuilder& path);
 };
+
 }  // namespace trajopt

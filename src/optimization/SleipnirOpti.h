@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include <sleipnir/autodiff/Variable.hpp>
@@ -9,6 +10,7 @@
 #include <sleipnir/optimization/OptimizationProblem.hpp>
 
 #include "optimization/OptiSys.h"
+#include "trajopt/expected"
 
 namespace trajopt {
 
@@ -57,7 +59,8 @@ class SleipnirOpti {
   void SubjectTo(sleipnir::EqualityConstraints&& constraint);
   void SubjectTo(sleipnir::InequalityConstraints&& constraint);
   void SetInitial(trajopt::SleipnirExpr& expr, double value);
-  void Solve();
+  [[nodiscard]]
+  expected<void, std::string> Solve();
   double SolutionValue(const trajopt::SleipnirExpr& expr) const;
 };
 }  // namespace trajopt

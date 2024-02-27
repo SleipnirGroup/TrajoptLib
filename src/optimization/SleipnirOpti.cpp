@@ -13,7 +13,6 @@
 
 #include "DebugOptions.h"
 #include "optimization/Cancellation.h"
-#include "trajopt/TrajectoryGenerationException.h"
 
 namespace trajopt {
 
@@ -104,7 +103,8 @@ void SleipnirOpti::SetInitial(trajopt::SleipnirExpr& expr, double value) {
   expr.expr.SetValue(value);
 }
 
-void SleipnirOpti::Solve() {
+[[nodiscard]]
+expected<void, std::string> SleipnirOpti::Solve() {
   GetCancellationFlag() = 0;
   opti.Callback([](const sleipnir::SolverIterationInfo&) -> bool {
     return trajopt::GetCancellationFlag();
@@ -113,9 +113,10 @@ void SleipnirOpti::Solve() {
   auto status = opti.Solve({.diagnostics = true});
 
   if (static_cast<int>(status.exitCondition) < 0) {
-    throw TrajectoryGenerationException{
-        sleipnir::ToMessage(status.exitCondition)};
+    return unexpected{std::string{sleipnir::ToMessage(status.exitCondition)}};
   }
+
+  return {};
 }
 
 double SleipnirOpti::SolutionValue(const SleipnirExpr& expression) const {
