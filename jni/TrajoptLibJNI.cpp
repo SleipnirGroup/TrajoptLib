@@ -5,26 +5,27 @@
 #include <memory>
 #include <tuple>
 
+#include <trajopt/OptimalTrajectoryGenerator.h>
+#include <trajopt/TrajectoryGenerationException.h>
+#include <trajopt/constraint/AngularVelocityConstraint.h>
+#include <trajopt/constraint/Constraint.h>
+#include <trajopt/constraint/HeadingConstraint.h>
+#include <trajopt/constraint/holonomic/HolonomicConstraint.h>
+#include <trajopt/constraint/holonomic/HolonomicVelocityConstraint.h>
+#include <trajopt/drivetrain/SwerveDrivetrain.h>
+#include <trajopt/drivetrain/SwerveModule.h>
+#include <trajopt/obstacle/Obstacle.h>
+#include <trajopt/obstacle/ObstaclePoint.h>
+#include <trajopt/path/InitialGuessPoint.h>
+#include <trajopt/path/Path.h>
+#include <trajopt/path/SwervePathBuilder.h>
+#include <trajopt/set/EllipticalSet2d.h>
+#include <trajopt/set/IntervalSet1d.h>
+#include <trajopt/set/RectangularSet2d.h>
+#include <trajopt/trajectory/HolonomicTrajectory.h>
+
 #include "jni.h"
 #include "org_sleipnirgroup_trajopt_OptimalTrajectoryGenerator.h"
-#include "trajopt/OptimalTrajectoryGenerator.h"
-#include "trajopt/TrajectoryGenerationException.h"
-#include "trajopt/constraint/AngularVelocityConstraint.h"
-#include "trajopt/constraint/Constraint.h"
-#include "trajopt/constraint/HeadingConstraint.h"
-#include "trajopt/constraint/holonomic/HolonomicConstraint.h"
-#include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.h"
-#include "trajopt/drivetrain/SwerveDrivetrain.h"
-#include "trajopt/drivetrain/SwerveModule.h"
-#include "trajopt/obstacle/Obstacle.h"
-#include "trajopt/obstacle/ObstaclePoint.h"
-#include "trajopt/path/InitialGuessPoint.h"
-#include "trajopt/path/Path.h"
-#include "trajopt/path/SwervePathBuilder.h"
-#include "trajopt/set/EllipticalSet2d.h"
-#include "trajopt/set/IntervalSet1d.h"
-#include "trajopt/set/RectangularSet2d.h"
-#include "trajopt/trajectory/HolonomicTrajectory.h"
 
 using namespace trajopt;
 

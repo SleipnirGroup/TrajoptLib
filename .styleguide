@@ -2,6 +2,7 @@ cppHeaderFileInclude {
   \.h$
   \.hpp$
   \.inc$
+  expected$
 }
 
 cppSrcFileInclude {
@@ -9,6 +10,7 @@ cppSrcFileInclude {
 }
 
 modifiableFileExclude {
+  expected$
   jni/jni\.h$
   jni/darwin/jni_md\.h$
   jni/linux/jni_md\.h$
@@ -26,4 +28,6 @@ includeOtherLibs {
   ^Eigen/
   ^casadi/
   ^sleipnir/
+  ^trajopt/
+  ^napi\.h$
 }
