@@ -13,5 +13,4 @@ includeOtherLibs {
   ^casadi/
   ^sleipnir/
   ^trajopt/
-  ^napi\.h$
 }
