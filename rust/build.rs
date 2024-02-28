@@ -60,13 +60,20 @@ fn main() -> miette::Result<()> {
         println!("cargo:rustc-link-lib=fmt");
     }
 
-    cxx_build::bridge("src/lib.rs") // returns a cc::Build
+    let mut bridge_build = cxx_build::bridge("src/lib.rs");
+
+    bridge_build
         .file("src/trajoptlib.cpp")
         .include("include")
         .include(format!("{}/include", dst.display()))
         .flag_if_supported("/std:c++20")
-        .flag_if_supported("-std=c++20")
-        .compile("trajoptlib-rust");
+        .flag_if_supported("-std=c++20");
+
+    if cfg!(feature = "casadi") && cfg!(target_os = "linux") {
+        bridge_build.define("_GLIBCXX_USE_CXX11_ABI", "0");
+    }
+
+    bridge_build.compile("trajoptlib-rust");
 
     println!("cargo:rerun-if-changed=include/trajoptlib.h");
     println!("cargo:rerun-if-changed=src/trajoptlib.cpp");
