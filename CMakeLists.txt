@@ -99,6 +99,7 @@ set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS casadi sleipnir)
 
 if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
     message(STATUS "Using CasADi optimizer")
+
     include(FetchCasADi)
     fetch_casadi()
     target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_CASADI)
@@ -125,13 +126,20 @@ if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
     install(FILES ${CASADI_INSTALL_LIBS} DESTINATION ${CASADI_INSTALL_DEST})
 elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     message(STATUS "Using Sleipnir optimizer")
+
+    set(BUILD_TESTING_SAVE ${BUILD_TESTING})
+    set(BUILD_TESTING OFF)
+
     fetchcontent_declare(
         Sleipnir
         GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        # main on 2024-02-18
-        GIT_TAG 78d7673b6a8d8bc352726b95f5319416c0435069
+        # main on 2024-02-28
+        GIT_TAG bd3d01c7e82a9c7519963d87c55abb036017b94b
     )
     fetchcontent_makeavailable(Sleipnir)
+
+    set(BUILD_TESTING ${BUILD_TESTING_SAVE})
+
     target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_SLEIPNIR)
     target_link_libraries(TrajoptLib PRIVATE Sleipnir)
 endif()
