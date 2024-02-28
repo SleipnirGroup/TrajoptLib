@@ -2,10 +2,15 @@ cppHeaderFileInclude {
   \.h$
   \.hpp$
   \.inc$
+  expected$
 }
 
 cppSrcFileInclude {
   \.cpp$
+}
+
+modifiableFileExclude {
+  expected$
 }
 
 includeOtherLibs {

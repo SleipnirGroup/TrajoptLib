@@ -2,12 +2,14 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "optimization/HolonomicTrajoptUtil.h"
 #include "optimization/OptiSys.h"
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
+#include "trajopt/expected"
 #include "trajopt/path/Path.h"
 #include "trajopt/solution/SwerveSolution.h"
 
@@ -18,17 +20,18 @@ template <typename Expr, typename Opti>
 class SwerveDiscreteOptimal {
  public:
   /**
-   * @brief Optimizes the given path using IPOPT. Note this function call
-   * may take a long time to complete. It may also fail, and throw a
-   * CasadiException.
+   * Generates an optimal trajectory.
    *
-   * @return a holonomic trajectory
+   * This function may take a long time to complete.
+   *
+   * @return Returns a holonomic trajectory on success, or a string containing a
+   *   failure reason.
    */
-  SwerveSolution Generate();
+  expected<SwerveSolution, std::string> Generate();
 
  private:
   /**
-   * @brief the swerve drivetrain
+   * The swerve drivetrain.
    */
   const SwervePath& path;
 

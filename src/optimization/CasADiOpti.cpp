@@ -7,7 +7,6 @@
 #include "DebugOptions.h"
 #include "optimization/Cancellation.h"
 #include "optimization/CasADiIterCallback.h"
-#include "trajopt/TrajectoryGenerationException.h"
 
 namespace trajopt {
 
@@ -27,7 +26,8 @@ void CasADiOpti::SetInitial(const casadi::MX& expression, double value) {
   opti.set_initial(expression, value);
 }
 
-void CasADiOpti::Solve() {
+[[nodiscard]]
+expected<void, std::string> CasADiOpti::Solve() {
   GetCancellationFlag() = 0;
   const auto callback =
       new const CasADiIterCallback("f", opti.nx(), opti.ng(), opti.np());
@@ -43,18 +43,25 @@ void CasADiOpti::Solve() {
   // I don't try-catch this next line since it should always work.
   // I'm assuming the dynamic lib is on the path and casadi can find it.
   opti.solver("ipopt", pluginOptions);
-  solution = opti.solve();
+
+  try {
+    solution = opti.solve();
+  } catch (const std::exception& e) {
+    return unexpected{e.what()};
+  }
+
+  return {};
 }
 
 double CasADiOpti::SolutionValue(const casadi::MX& expression) const {
-  if (solution) {
-    try {
-      return static_cast<double>(solution->value(expression));
-    } catch (...) {
-      return 0.0;
-    }
-  } else {
-    throw TrajectoryGenerationException{"Solution not generated properly"};
+  if (!solution.has_value()) {
+    return 0.0;
+  }
+
+  try {
+    return static_cast<double>(solution->value(expression));
+  } catch (...) {
+    return 0.0;
   }
 }
 
