@@ -268,3 +268,29 @@ foreach(example ${EXAMPLES})
         endif()
     endif()
 endforeach()
+
+cmake_dependent_option(
+    WITH_EMBIND
+    "Build Emscripten wasm bindings"
+    ON
+    "NOT BUILD_SHARED_LIBS"
+    OFF
+)
+if(WITH_EMBIND)
+    if(NOT (${CMAKE_CXX_COMPILER} MATCHES "/em\\+\\+(-[a-zA-Z0-9.])?$"))
+        message(
+            SEND_ERROR
+            "Cannot build embind without the Emscripten compiler"
+        )
+    endif()
+    add_executable(TrajoptLibEmbind emscripten/TrajoptLibEmbind.cpp)
+    trajoptlib_compiler_flags(TrajoptLibEmbind)
+    target_link_libraries(TrajoptLibEmbind PRIVATE TrajoptLib embind)
+    set_target_properties(
+        TrajoptLibEmbind
+        PROPERTIES
+            LINK_FLAGS
+                "-s ENVIRONMENT=web -s SINGLE_FILE=1 -s MODULARIZE -s EXPORT_ES6=1 -s'EXPORT_NAME=TrajoptLib'"
+    )
+    install(TARGETS TrajoptLibEmbind)
+endif()

@@ -5,6 +5,7 @@ fn main() {
 
     cmake_config
         .profile("Release")
+        .define("WITH_EMBIND", "OFF")
         .define("BUILD_TESTING", "OFF");
 
     if cfg!(feature = "sleipnir") && cfg!(feature = "casadi") {
