@@ -48,5 +48,5 @@ fn main() {
     // path.sgmt_circle_obstacle(0, 1, 0.5, 0.1, 0.2);
     path.set_control_interval_counts(vec![40]);
     println!("setup complete");
-    println!("{:?}", path.generate());
+    println!("{:?}", path.generate(true));
 }

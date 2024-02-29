@@ -250,8 +250,9 @@ HolonomicTrajectory _convert_holonomic_trajectory(
           trajectory.samples)};
 }
 
-HolonomicTrajectory SwervePathBuilderImpl::generate() const {
-  if (auto sol = trajopt::OptimalTrajectoryGenerator::Generate(path);
+HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics) const {
+  if (auto sol =
+          trajopt::OptimalTrajectoryGenerator::Generate(path, diagnostics);
       sol.has_value()) {
     return _convert_holonomic_trajectory(
         trajopt::HolonomicTrajectory{sol.value()});

@@ -154,7 +154,8 @@ mod ffi {
             radius: f64,
         );
 
-        fn generate(self: &SwervePathBuilderImpl) -> Result<HolonomicTrajectory>;
+        fn generate(self: &SwervePathBuilderImpl, diagnostics: bool)
+            -> Result<HolonomicTrajectory>;
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
@@ -365,8 +366,8 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn generate(&self) -> Result<HolonomicTrajectory, String> {
-        match self.path.generate() {
+    pub fn generate(&self, diagnostics: bool) -> Result<HolonomicTrajectory, String> {
+        match self.path.generate(diagnostics) {
             Ok(traj) => Ok(traj),
             Err(msg) => Err(msg.what().to_string()),
         }

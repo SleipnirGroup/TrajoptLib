@@ -24,11 +24,12 @@ class TRAJOPT_DLLEXPORT OptimalTrajectoryGenerator {
    * Initializes and solves an optimization problem for a swerve drivetrain.
    *
    * @param path the path
+   * @param diagnostics Enables diagnostic prints.
    * @return The optimized swerve trajectory solution on success, or a string
    *   containing the failure reason.
    */
   static expected<SwerveSolution, std::string> Generate(
-      const SwervePathBuilder& path);
+      const SwervePathBuilder& path, bool diagnostics = false);
 };
 
 }  // namespace trajopt

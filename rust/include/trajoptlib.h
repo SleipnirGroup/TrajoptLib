@@ -58,7 +58,7 @@ class SwervePathBuilderImpl {
 
   // TODO: Return std::expected<HolonomicTrajectory, std::string> instead of
   // throwing exception, once cxx supports it
-  HolonomicTrajectory generate() const;
+  HolonomicTrajectory generate(bool diagnostics = false) const;
   void cancel_all();
 
   SwervePathBuilderImpl() = default;

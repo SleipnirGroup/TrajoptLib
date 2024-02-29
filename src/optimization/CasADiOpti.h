@@ -25,7 +25,7 @@ class CasADiOpti {
   void SubjectTo(const casadi::MX& constraint);
   void SetInitial(const casadi::MX& expr, double value);
   [[nodiscard]]
-  expected<void, std::string> Solve();
+  expected<void, std::string> Solve(bool diagnostics = false);
   double SolutionValue(const casadi::MX& expr) const;
 };
 }  // namespace trajopt
