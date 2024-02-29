@@ -26,20 +26,19 @@ void CasADiOpti::SetInitial(const casadi::MX& expression, double value) {
 }
 
 [[nodiscard]]
-expected<void, std::string> CasADiOpti::Solve() {
+expected<void, std::string> CasADiOpti::Solve(bool diagnostics) {
   GetCancellationFlag() = 0;
   const auto callback =
       new const CasADiIterCallback("f", opti.nx(), opti.ng(), opti.np());
 
-  auto pluginOptions = casadi::Dict();
-  pluginOptions["iteration_callback"] = *callback;
-  pluginOptions["ipopt.print_level"] = 0;
-  pluginOptions["ipopt.sb"] = "yes";
-  pluginOptions["print_time"] = 0;
-
   // I don't try-catch this next line since it should always work.
   // I'm assuming the dynamic lib is on the path and casadi can find it.
-  opti.solver("ipopt", pluginOptions);
+  if (diagnostics) {
+    opti.solver("ipopt", {{"iteration_callback", *callback}});
+  } else {
+    opti.solver("ipopt", {{"iteration_callback", *callback}, {"print_time", 0}},
+                {{"print_level", 0}, {"sb", "yes"}});
+  }
 
   try {
     solution = opti.solve();

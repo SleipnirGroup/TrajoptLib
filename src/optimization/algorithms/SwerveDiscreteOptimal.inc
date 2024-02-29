@@ -19,8 +19,8 @@ namespace trajopt {
 template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 expected<SwerveSolution, std::string>
-SwerveDiscreteOptimal<Expr, Opti>::Generate() {
-  if (auto sol = opti.Solve(); sol.has_value()) {
+SwerveDiscreteOptimal<Expr, Opti>::Generate(bool diagnostics) {
+  if (auto sol = opti.Solve(diagnostics); sol.has_value()) {
     return ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
                                    alpha, Fx, Fy, dt, N);
   } else {

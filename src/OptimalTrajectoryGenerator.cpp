@@ -18,10 +18,10 @@
 namespace trajopt {
 
 expected<SwerveSolution, std::string> OptimalTrajectoryGenerator::Generate(
-    const SwervePathBuilder& path) {
+    const SwervePathBuilder& path, bool diagnostics) {
   SwerveDiscreteOptimal<_OPTI_BACKEND> problem(path.GetPath(),
                                                path.GetControlIntervalCounts(),
                                                path.CalculateInitialGuess());
-  return problem.Generate();
+  return problem.Generate(diagnostics);
 }
 }  // namespace trajopt

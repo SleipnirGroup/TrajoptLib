@@ -103,13 +103,13 @@ void SleipnirOpti::SetInitial(trajopt::SleipnirExpr& expr, double value) {
 }
 
 [[nodiscard]]
-expected<void, std::string> SleipnirOpti::Solve() {
+expected<void, std::string> SleipnirOpti::Solve(bool diagnostics) {
   GetCancellationFlag() = 0;
   opti.Callback([](const sleipnir::SolverIterationInfo&) -> bool {
     return trajopt::GetCancellationFlag();
   });
 
-  auto status = opti.Solve({.diagnostics = true});
+  auto status = opti.Solve({.diagnostics = diagnostics});
 
   if (static_cast<int>(status.exitCondition) < 0) {
     return unexpected{std::string{sleipnir::ToMessage(status.exitCondition)}};

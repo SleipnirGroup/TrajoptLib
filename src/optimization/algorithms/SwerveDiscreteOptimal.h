@@ -24,10 +24,11 @@ class SwerveDiscreteOptimal {
    *
    * This function may take a long time to complete.
    *
+   * @param diagnostics Enables diagnostic prints.
    * @return Returns a holonomic trajectory on success, or a string containing a
    *   failure reason.
    */
-  expected<SwerveSolution, std::string> Generate();
+  expected<SwerveSolution, std::string> Generate(bool diagnostics = false);
 
  private:
   /**

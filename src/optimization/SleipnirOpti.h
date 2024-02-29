@@ -60,7 +60,7 @@ class SleipnirOpti {
   void SubjectTo(sleipnir::InequalityConstraints&& constraint);
   void SetInitial(trajopt::SleipnirExpr& expr, double value);
   [[nodiscard]]
-  expected<void, std::string> Solve();
+  expected<void, std::string> Solve(bool diagnostics = false);
   double SolutionValue(const trajopt::SleipnirExpr& expr) const;
 };
 }  // namespace trajopt
