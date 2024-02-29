@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "DebugOptions.h"
 #include "optimization/HolonomicTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/constraint/Constraint.h"

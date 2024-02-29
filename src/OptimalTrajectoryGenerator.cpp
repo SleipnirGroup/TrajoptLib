@@ -11,7 +11,6 @@
 #include "optimization/SleipnirOpti.h"
 #define _OPTI_BACKEND SleipnirExpr, SleipnirOpti
 #endif
-#include "DebugOptions.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "optimization/algorithms/SwerveDiscreteOptimal.h"
 #include "trajopt/solution/SwerveSolution.h"
