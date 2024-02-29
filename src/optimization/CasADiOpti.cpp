@@ -4,7 +4,6 @@
 
 #include <casadi/casadi.hpp>
 
-#include "DebugOptions.h"
 #include "optimization/Cancellation.h"
 #include "optimization/CasADiIterCallback.h"
 
@@ -31,14 +30,12 @@ expected<void, std::string> CasADiOpti::Solve() {
   GetCancellationFlag() = 0;
   const auto callback =
       new const CasADiIterCallback("f", opti.nx(), opti.ng(), opti.np());
+
   auto pluginOptions = casadi::Dict();
   pluginOptions["iteration_callback"] = *callback;
-#ifndef DEBUG_OUTPUT
-  auto pluginOptions = casadi::Dict();
   pluginOptions["ipopt.print_level"] = 0;
-  pluginOptions["print_time"] = 0;
   pluginOptions["ipopt.sb"] = "yes";
-#endif
+  pluginOptions["print_time"] = 0;
 
   // I don't try-catch this next line since it should always work.
   // I'm assuming the dynamic lib is on the path and casadi can find it.

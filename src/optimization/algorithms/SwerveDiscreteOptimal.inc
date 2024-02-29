@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "DebugOptions.h"
 #include "optimization/SwerveTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
 #include "optimization/algorithms/SwerveDiscreteOptimal.h"

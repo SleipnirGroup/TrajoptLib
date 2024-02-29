@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "DebugOptions.h"
 #include "optimization/SwerveTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"

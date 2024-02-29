@@ -11,7 +11,6 @@
 #include <sleipnir/optimization/Constraints.hpp>
 #include <sleipnir/optimization/OptimizationProblem.hpp>
 
-#include "DebugOptions.h"
 #include "optimization/Cancellation.h"
 
 namespace trajopt {
