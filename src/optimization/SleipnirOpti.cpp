@@ -111,7 +111,9 @@ expected<void, std::string> SleipnirOpti::Solve(bool diagnostics) {
 
   auto status = opti.Solve({.diagnostics = diagnostics});
 
-  if (static_cast<int>(status.exitCondition) < 0) {
+  if (static_cast<int>(status.exitCondition) < 0 ||
+      status.exitCondition ==
+          sleipnir::SolverExitCondition::kCallbackRequestedStop) {
     return unexpected{std::string{sleipnir::ToMessage(status.exitCondition)}};
   }
 
