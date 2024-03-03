@@ -6,12 +6,11 @@
 #include <string>
 #include <vector>
 
-#include "DebugOptions.h"
 #include "optimization/SwerveTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
 #include "optimization/algorithms/SwerveDiscreteOptimal.h"
-#include "trajopt/TrajectoryGenerationException.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
+#include "trajopt/expected"
 #include "trajopt/path/Path.h"
 #include "trajopt/solution/SwerveSolution.h"
 
@@ -19,14 +18,13 @@ namespace trajopt {
 
 template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
-SwerveSolution SwerveDiscreteOptimal<Expr, Opti>::Generate() {
-  try {
-    opti.Solve();
+expected<SwerveSolution, std::string>
+SwerveDiscreteOptimal<Expr, Opti>::Generate(bool diagnostics) {
+  if (auto sol = opti.Solve(diagnostics); sol.has_value()) {
     return ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
                                    alpha, Fx, Fy, dt, N);
-  } catch (const std::exception& e) {
-    throw TrajectoryGenerationException{
-        std::string{"Error optimizing trajectory: {}"} + e.what()};
+  } else {
+    return unexpected{sol.error()};
   }
 }
 

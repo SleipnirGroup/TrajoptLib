@@ -17,5 +17,4 @@ includeOtherLibs {
   ^Eigen/
   ^casadi/
   ^sleipnir/
-  ^trajopt/
 }

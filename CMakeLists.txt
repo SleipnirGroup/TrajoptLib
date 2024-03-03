@@ -99,6 +99,7 @@ set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS casadi sleipnir)
 
 if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
     message(STATUS "Using CasADi optimizer")
+
     include(FetchCasADi)
     fetch_casadi()
     target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_CASADI)
@@ -125,13 +126,20 @@ if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
     install(FILES ${CASADI_INSTALL_LIBS} DESTINATION ${CASADI_INSTALL_DEST})
 elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     message(STATUS "Using Sleipnir optimizer")
+
+    set(BUILD_TESTING_SAVE ${BUILD_TESTING})
+    set(BUILD_TESTING OFF)
+
     fetchcontent_declare(
         Sleipnir
         GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        # main on 2024-02-18
-        GIT_TAG 78d7673b6a8d8bc352726b95f5319416c0435069
+        # main on 2024-03-02
+        GIT_TAG 249c4b4d688076524f8b49361b3595ee1c7b0e3a
     )
     fetchcontent_makeavailable(Sleipnir)
+
+    set(BUILD_TESTING ${BUILD_TESTING_SAVE})
+
     target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_SLEIPNIR)
     target_link_libraries(TrajoptLib PRIVATE Sleipnir)
 endif()
@@ -258,70 +266,3 @@ foreach(example ${EXAMPLES})
         endif()
     endif()
 endforeach()
-
-# Build the Java bindings
-
-option(WITH_JAVA "Build Java bindings" OFF)
-cmake_dependent_option(
-    JAVA_INSTALL_JAR
-    "Install jar file."
-    ON
-    "WITH_JAVA"
-    ON
-)
-
-if(WITH_JAVA)
-    add_library(
-        TrajoptLib-java
-        SHARED
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/TrajoptLibJNI.cpp
-    )
-    target_link_libraries(TrajoptLib-java PRIVATE TrajoptLib)
-    target_include_directories(
-        TrajoptLib-java
-        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/jni/jni.h
-    )
-    if(
-        ${CMAKE_SYSTEM_NAME} MATCHES "MINGW"
-        OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS"
-        OR WIN32
-    )
-        target_include_directories(
-            TrajoptLib-java
-            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/jni/win32
-        )
-    elseif(APPLE)
-        target_include_directories(
-            TrajoptLib-java
-            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/jni/darwin
-        )
-    elseif(UNIX)
-        target_include_directories(
-            TrajoptLib-java
-            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/jni/linux
-        )
-    endif()
-    include(InstallJavaLibs)
-    installjavalibs()
-
-    # Build Jar containing embedded native libraries
-    if(JAVA_INSTALL_JAR)
-        if(UNIX)
-            install(
-                CODE
-                    "execute_process(COMMAND ./gradlew jar WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/java)"
-            )
-        elseif(
-            ${CMAKE_SYSTEM_NAME} MATCHES "MINGW"
-            OR ${CMAKE_SYSTEM_NAME} MATCHES "MSYS"
-            OR WIN32
-        )
-            install(
-                CODE
-                    "execute_process(COMMAND .\\gradlew.bat jar WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/java)"
-            )
-        endif()
-        file(GLOB jar_files "${CMAKE_CURRENT_SOURCE_DIR}/java/build/libs/*jar")
-        install(FILES ${jar_files} DESTINATION java)
-    endif()
-endif()

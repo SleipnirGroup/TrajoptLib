@@ -3,11 +3,13 @@
 #pragma once
 
 #include <optional>
+#include <string>
 
 #include <casadi/casadi.hpp>
 
 #include "CasADiIterCallback.h"
 #include "optimization/OptiSys.h"
+#include "trajopt/expected"
 
 namespace trajopt {
 
@@ -22,7 +24,8 @@ class CasADiOpti {
   void Maximize(const casadi::MX& objective);
   void SubjectTo(const casadi::MX& constraint);
   void SetInitial(const casadi::MX& expr, double value);
-  void Solve();
+  [[nodiscard]]
+  expected<void, std::string> Solve(bool diagnostics = false);
   double SolutionValue(const casadi::MX& expr) const;
 };
 }  // namespace trajopt

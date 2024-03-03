@@ -11,9 +11,7 @@
 #include <variant>
 #include <vector>
 
-#include "DebugOptions.h"
 #include "optimization/TrajoptUtil.h"
-#include "trajopt/TrajectoryGenerationException.h"
 #include "trajopt/constraint/LinePointConstraint.h"
 #include "trajopt/constraint/PointLineConstraint.h"
 #include "trajopt/constraint/PointPointConstraint.h"

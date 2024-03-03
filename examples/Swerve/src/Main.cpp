@@ -5,7 +5,6 @@
 #include <numbers>
 #include <vector>
 
-#include <trajopt/IncompatibleTrajectoryException.h>
 #include <trajopt/OptimalTrajectoryGenerator.h>
 #include <trajopt/constraint/Constraint.h>
 #include <trajopt/constraint/TranslationConstraint.h>
@@ -41,6 +40,6 @@ int main() {
   path.ControlIntervalCounts({4});
 
   // SOLVE
-  [[maybe_unused]] SwerveSolution solution =
-      OptimalTrajectoryGenerator::Generate(path);
+  [[maybe_unused]] auto solution =
+      OptimalTrajectoryGenerator::Generate(path, true);
 }

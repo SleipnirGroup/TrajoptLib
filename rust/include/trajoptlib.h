@@ -3,10 +3,12 @@
 #pragma once
 
 #include <rust/cxx.h>
-#include <trajopt/path/SwervePathBuilder.h>
 
 #include <cstddef>
 #include <memory>
+#include <string>
+
+#include <trajopt/path/SwervePathBuilder.h>
 
 namespace trajoptlibrust {
 
@@ -54,7 +56,9 @@ class SwervePathBuilderImpl {
                              rust::Vec<double> x, rust::Vec<double> y,
                              double radius);
 
-  HolonomicTrajectory generate() const;
+  // TODO: Return std::expected<HolonomicTrajectory, std::string> instead of
+  // throwing exception, once cxx supports it
+  HolonomicTrajectory generate(bool diagnostics = false) const;
   void cancel_all();
 
   SwervePathBuilderImpl() = default;
@@ -64,4 +68,5 @@ class SwervePathBuilderImpl {
 };
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl();
+
 }  // namespace trajoptlibrust
