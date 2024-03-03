@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <rust/cxx.h>
-
 #include <cstddef>
 #include <memory>
 #include <string>
 
-#include <trajopt/path/SwervePathBuilder.h>
+#include <rust/cxx.h>
+
+#include "trajopt/path/SwervePathBuilder.h"
 
 namespace trajoptlibrust {
 

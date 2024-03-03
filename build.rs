@@ -1,10 +1,10 @@
 use cmake::Config;
 
-fn main() -> miette::Result<()> {
-    let mut cmake_config = Config::new("..");
+fn main() {
+    let mut cmake_config = Config::new(".");
 
     cmake_config
-        .profile("RelWithDebInfo")
+        .profile("Release")
         .define("BUILD_TESTING", "OFF");
 
     if cfg!(feature = "sleipnir") && cfg!(feature = "casadi") {
@@ -50,33 +50,38 @@ fn main() -> miette::Result<()> {
         );
     }
 
-    let dst = cmake_config.build();
+    let cmake_dest = cmake_config.build();
 
-    println!("cargo:rustc-link-search=native={}/bin", dst.display());
-    println!("cargo:rustc-link-search=native={}/lib", dst.display());
+    let mut bridge_build = cxx_build::bridge("src/lib.rs");
+
+    bridge_build
+        .file("src/trajoptlibrust.cpp")
+        .include("src")
+        .include(format!("{}/include", cmake_dest.display()))
+        .std("c++20");
+
+    if cfg!(feature = "casadi") && cfg!(target_os = "linux") {
+        bridge_build.define("_GLIBCXX_USE_CXX11_ABI", "0");
+    }
+
+    bridge_build.compile("trajoptrust");
+
+    println!(
+        "cargo:rustc-link-search=native={}/bin",
+        cmake_dest.display()
+    );
+    println!(
+        "cargo:rustc-link-search=native={}/lib",
+        cmake_dest.display()
+    );
+    println!("cargo:rustc-link-lib=trajoptrust");
     println!("cargo:rustc-link-lib=TrajoptLib");
     if cfg!(feature = "sleipnir") {
         println!("cargo:rustc-link-lib=Sleipnir");
         println!("cargo:rustc-link-lib=fmt");
     }
 
-    let mut bridge_build = cxx_build::bridge("src/lib.rs");
-
-    bridge_build
-        .file("src/trajoptlib.cpp")
-        .include("include")
-        .include(format!("{}/include", dst.display()))
-        .flag_if_supported("/std:c++20")
-        .flag_if_supported("-std=c++20");
-
-    if cfg!(feature = "casadi") && cfg!(target_os = "linux") {
-        bridge_build.define("_GLIBCXX_USE_CXX11_ABI", "0");
-    }
-
-    bridge_build.compile("trajoptlib-rust");
-
-    println!("cargo:rerun-if-changed=include/trajoptlib.h");
-    println!("cargo:rerun-if-changed=src/trajoptlib.cpp");
+    println!("cargo:rerun-if-changed=src/trajoptlibrust.h");
+    println!("cargo:rerun-if-changed=src/trajoptlibrust.cpp");
     println!("cargo:rerun-if-changed=src/lib.rs");
-    Ok(())
 }

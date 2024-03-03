@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "trajoptlib/include/trajoptlib.h"
+#include "trajoptlibrust.h"
 
 #include <cstddef>
 #include <memory>
@@ -8,12 +8,11 @@
 #include <utility>
 #include <vector>
 
-#include <trajopt/OptimalTrajectoryGenerator.h>
-#include <trajopt/drivetrain/SwerveDrivetrain.h>
-#include <trajopt/path/SwervePathBuilder.h>
-#include <trajopt/trajectory/HolonomicTrajectory.h>
-#include <trajopt/trajectory/HolonomicTrajectorySample.h>
-
+#include "trajopt/OptimalTrajectoryGenerator.h"
+#include "trajopt/drivetrain/SwerveDrivetrain.h"
+#include "trajopt/path/SwervePathBuilder.h"
+#include "trajopt/trajectory/HolonomicTrajectory.h"
+#include "trajopt/trajectory/HolonomicTrajectorySample.h"
 #include "trajoptlib/src/lib.rs.h"
 
 namespace trajoptlibrust {

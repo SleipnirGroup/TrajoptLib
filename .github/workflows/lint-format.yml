@@ -82,5 +82,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run rustfmt
-        working-directory: rust
         run: cargo fmt --check

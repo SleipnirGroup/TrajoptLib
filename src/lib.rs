@@ -40,7 +40,7 @@ mod ffi {
     }
 
     unsafe extern "C++" {
-        include!("trajoptlib/include/trajoptlib.h");
+        include!("trajoptlibrust.h");
 
         type SwervePathBuilderImpl;
 

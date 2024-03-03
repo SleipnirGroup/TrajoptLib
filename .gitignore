@@ -33,4 +33,5 @@ compile_commands.json
 node_modules
 
 # Ignore rust build
-rust/target/
+Cargo.lock
+target/

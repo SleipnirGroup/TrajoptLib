@@ -57,9 +57,7 @@ jobs:
           echo C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin >> $env:GITHUB_PATH
 
       - name: Build Rust
-        working-directory: rust
         run: cargo build --features ${{ matrix.optimizer_backend }}
 
       - name: Run Rust
-        working-directory: rust
         run: cargo run --example swerve --features ${{ matrix.optimizer_backend }}

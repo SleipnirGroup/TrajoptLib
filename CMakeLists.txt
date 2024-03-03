@@ -68,6 +68,8 @@ if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
 elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     list(FILTER src EXCLUDE REGEX "CasADiOpti.cpp")
 endif()
+list(FILTER src EXCLUDE REGEX trajoptlibrust.cpp)
+
 add_library(TrajoptLib ${src})
 trajoptlib_compiler_flags(TrajoptLib)
 target_include_directories(TrajoptLib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
