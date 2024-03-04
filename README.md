@@ -89,7 +89,6 @@ The following build types can be specified via `-DCMAKE_BUILD_TYPE` during CMake
 ### Rust library
 
 ```bash
-cd rust
 cargo build --features sleipnir  # Sleipnir backend
 cargo build --features casadi  # CasADi backend
 ```
