@@ -167,12 +167,14 @@ mod ffi {
 
 pub struct SwervePathBuilder {
     path: cxx::UniquePtr<crate::ffi::SwervePathBuilderImpl>,
+    callbacks: Vec<Box<impl Fn(HolonomicTrajectory)->()>>
 }
 
 impl SwervePathBuilder {
     pub fn new() -> SwervePathBuilder {
         SwervePathBuilder {
             path: crate::ffi::new_swerve_path_builder_impl(),
+            callbacks: vec![]
         }
     }
 
@@ -369,11 +371,21 @@ impl SwervePathBuilder {
             radius,
         );
     }
-    pub fn enable_state_feedback(&mut self, callback: fn(HolonomicTrajectory)) {
-        crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), callback);
+
+    fn iterate_through_callbacks(traj: HolonomicTrajectory) {
+        for i in self.callbacks{
+            i(traj);
+        }
+    }
+    pub fn enable_state_feedback(&mut self, callback: impl Fn(HolonomicTrajectory)->()) {
+        self.callbacks.push(Box::new(callback));
+
     }
 
     pub fn generate(&self) -> Result<HolonomicTrajectory, String> {
+        if self.callbacks.len() > 0 {
+            crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), move |traj| iterate_through_callbacks);
+        }
         match self.path.generate() {
             Ok(traj) => Ok(traj),
             Err(msg) => Err(msg.what().to_string()),

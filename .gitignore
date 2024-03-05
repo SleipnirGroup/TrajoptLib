@@ -34,3 +34,5 @@ node_modules
 
 # Ignore rust build
 rust/target/
+
+pkg/
