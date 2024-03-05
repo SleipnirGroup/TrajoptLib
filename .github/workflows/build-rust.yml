@@ -16,27 +16,39 @@ jobs:
           - artifact-name: Rust Native - Windows x86_64 (CasADi)
             optimizer_backend: casadi
             os: windows-2022
+            cargo-build-flags:
           - artifact-name: Rust Native - macOS x86_64 (CasADi)
             optimizer_backend: casadi
             os: macOS-13
+            cargo-build-flags:
           - artifact-name: Rust Native - macOS arm64 (CasADi)
             optimizer_backend: casadi
             os: macOS-14
+            cargo-build-flags:
           - artifact-name: Rust Native - Linux x86_64 (CasADi)
             optimizer_backend: casadi
             os: ubuntu-latest
+            cargo-build-flags:
           - artifact-name: Rust Native - Windows x86_64 (Sleipnir)
             optimizer_backend: sleipnir
             os: windows-2022
+            cargo-build-flags:
+          - artifact-name: Rust Native - Windows aarch64 (Sleipnir)
+            optimizer_backend: sleipnir
+            os: windows-2022
+            cargo-build-flags: --target aarch64-pc-windows-msvc
           - artifact-name: Rust Native - macOS x86_64 (Sleipnir)
             optimizer_backend: sleipnir
             os: macOS-13
+            cargo-build-flags:
           - artifact-name: Rust Native - macOS arm64 (Sleipnir)
             optimizer_backend: sleipnir
             os: macOS-14
+            cargo-build-flags:
           - artifact-name: Rust Native - Linux x86_64 (Sleipnir)
             optimizer_backend: sleipnir
             os: ubuntu-latest
+            cargo-build-flags:
 
     name: "${{ matrix.artifact-name }}"
     runs-on: ${{ matrix.os }}
@@ -56,8 +68,12 @@ jobs:
           choco upgrade mingw --version=11.2.0 -y --no-progress --allow-downgrade
           echo C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin >> $env:GITHUB_PATH
 
+      - name: Set up Windows aarch64 Rust compiler
+        if: matrix.artifact-name == 'Rust Native - Windows aarch64 (Sleipnir)'
+        run: rustup target install aarch64-pc-windows-msvc
+
       - name: Build Rust
-        run: cargo build --features ${{ matrix.optimizer_backend }}
+        run: cargo build ${{ matrix.cargo-build-flags }} --features ${{ matrix.optimizer_backend }}
 
       - name: Run Rust
         run: cargo run --example swerve --features ${{ matrix.optimizer_backend }}

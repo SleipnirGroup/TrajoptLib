@@ -30,9 +30,14 @@ jobs:
             cmake-flags:
             optimizer_backend: casadi
             os: ubuntu-latest
-          - artifact-name: Native - Windows (Sleipnir)
+          - artifact-name: Native - Windows x86_64 (Sleipnir)
             # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
-            cmake-flags: "-DBUILD_TESTING=OFF"
+            cmake-flags: "-DCMAKE_GENERATOR_PLATFORM=x64 -DBUILD_TESTING=OFF"
+            optimizer_backend: sleipnir
+            os: windows-2022
+          - artifact-name: Native - Windows aarch64 (Sleipnir)
+            # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
+            cmake-flags: "-DCMAKE_GENERATOR_PLATFORM=ARM64 -DBUILD_TESTING=OFF"
             optimizer_backend: sleipnir
             os: windows-2022
           - artifact-name: Native - macOS x86_64 (Sleipnir)
