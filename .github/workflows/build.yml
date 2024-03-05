@@ -26,7 +26,7 @@ jobs:
             cmake-flags:
             optimizer_backend: casadi
             os: macOS-14
-          - artifact-name: Native - Linux (CasADi)
+          - artifact-name: Native - Linux x86_64 (CasADi)
             cmake-flags:
             optimizer_backend: casadi
             os: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
             cmake-flags:
             optimizer_backend: sleipnir
             os: macOS-14
-          - artifact-name: Native - Linux (Sleipnir)
+          - artifact-name: Native - Linux x86_64 (Sleipnir)
             cmake-flags:
             optimizer_backend: sleipnir
             os: ubuntu-latest
