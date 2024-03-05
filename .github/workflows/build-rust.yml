@@ -49,6 +49,10 @@ jobs:
             optimizer_backend: sleipnir
             os: ubuntu-latest
             cargo-build-flags:
+          - artifact-name: Rust Native - Linux aarch64 (Sleipnir)
+            optimizer_backend: sleipnir
+            os: ubuntu-latest
+            cargo-build-flags: --target aarch64-unknown-linux-gnu
 
     name: "${{ matrix.artifact-name }}"
     runs-on: ${{ matrix.os }}
@@ -72,8 +76,17 @@ jobs:
         if: matrix.artifact-name == 'Rust Native - Windows aarch64 (Sleipnir)'
         run: rustup target install aarch64-pc-windows-msvc
 
+      - name: Set up Linux aarch64 Rust compiler
+        if: matrix.artifact-name == 'Rust Native - Linux aarch64 (Sleipnir)'
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y g++-aarch64-linux-gnu
+          rustup target install aarch64-unknown-linux-gnu
+
       - name: Build Rust
         run: cargo build ${{ matrix.cargo-build-flags }} --features ${{ matrix.optimizer_backend }}
 
       - name: Run Rust
+        if: matrix.artifact-name != 'Rust Native - Windows aarch64 (Sleipnir)' &&
+            matrix.artifact-name != 'Rust Native - Linux aarch64 (Sleipnir)'
         run: cargo run --example swerve --features ${{ matrix.optimizer_backend }}

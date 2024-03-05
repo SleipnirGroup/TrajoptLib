@@ -20,10 +20,6 @@ fn main() {
             cmake_config
                 .generator("Visual Studio 17 2022")
                 .cxxflag("/EHsc");
-        } else if cfg!(target_os = "linux") {
-            cmake_config
-                .define("CMAKE_CXX_COMPILER", "g++")
-                .define("CMAKE_C_COMPILER", "gcc");
         }
     } else if cfg!(feature = "casadi") {
         cmake_config.define("OPTIMIZER_BACKEND", "casadi");
