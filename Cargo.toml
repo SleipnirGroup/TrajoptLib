@@ -12,10 +12,6 @@ serde_json = "1.0"
 cxx-build = "1.0"
 cmake = "0.1"
 
-[lib]
-name = "trajoptlib"
-crate-type = ["lib"]
-
 [features]
 default = []
 sleipnir = []
