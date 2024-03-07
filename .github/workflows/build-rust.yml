@@ -63,8 +63,8 @@ jobs:
       - name: Set to Windows GNU Rust Toolchain
         if: matrix.os == 'windows-2022' && matrix.optimizer_backend == 'casadi'
         run: |
-          rustup install 1.69-gnu
-          rustup default 1.69-gnu
+          rustup install 1.76-gnu
+          rustup default 1.76-gnu
 
       - name: Set up MinGW
         if: matrix.os == 'windows-2022' && matrix.optimizer_backend == 'casadi'
