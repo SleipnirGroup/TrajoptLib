@@ -9,7 +9,7 @@ macro(fetch_casadi)
     )
         message(STATUS "Building for Windows")
         set(CASADI_URL
-            https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-windows64-py311.zip
+            https://github.com/casadi/casadi/releases/download/3.6.5/casadi-3.6.5-windows64-py311.zip
         )
         set(CASADI_INSTALL_LIBS
             ${CASADI_LIBDIR}/libcasadi-tp-openblas.dll
@@ -29,7 +29,7 @@ macro(fetch_casadi)
         if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm64")
             message(STATUS "Building for macOS arm64")
             set(CASADI_URL
-                https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-osx_arm64-py311.zip
+                https://github.com/casadi/casadi/releases/download/3.6.5/casadi-3.6.5-osx_arm64-py311.zip
             )
             set(CASADI_INSTALL_LIBS
                 ${CASADI_LIBDIR}/libcasadi.3.7.dylib
@@ -45,7 +45,7 @@ macro(fetch_casadi)
         elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64")
             message(STATUS "Building for macOS x86_64")
             set(CASADI_URL
-                https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-osx64-py311.zip
+                https://github.com/casadi/casadi/releases/download/3.6.5/casadi-3.6.5-osx64-py311.zip
             )
             set(CASADI_INSTALL_LIBS
                 ${CASADI_LIBDIR}/libcasadi.3.7.dylib
@@ -65,7 +65,7 @@ macro(fetch_casadi)
         if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
             message(STATUS "Building for Linux aarch64")
             set(CASADI_URL
-                https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-linux-aarch64-py311.zip
+                https://github.com/casadi/casadi/releases/download/3.6.5/casadi-3.6.5-linux-aarch64-py311.zip
             )
             set(CASADI_INSTALL_LIBS
                 ${CASADI_LIBDIR}/libcasadi.so.3.7
@@ -80,7 +80,7 @@ macro(fetch_casadi)
         else()
             message(STATUS "Building for Linux x86_64")
             set(CASADI_URL
-                https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-linux64-py311.zip
+                https://github.com/casadi/casadi/releases/download/3.6.5/casadi-3.6.5-linux64-py311.zip
             )
             set(CASADI_INSTALL_LIBS
                 ${CASADI_LIBDIR}/libcasadi.so.3.7
