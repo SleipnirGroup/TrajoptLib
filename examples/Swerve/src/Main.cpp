@@ -40,6 +40,6 @@ int main() {
   path.ControlIntervalCounts({4});
 
   // SOLVE
-  [[maybe_unused]] auto solution =
-      OptimalTrajectoryGenerator::Generate(path, true);
+  [[maybe_unused]]
+  auto solution = OptimalTrajectoryGenerator::Generate(path, true);
 }
