@@ -81,5 +81,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run rustfmt
-        run: cargo fmt --check
+      - run: cargo fmt --check
+      - run: cargo clippy --features casadi -- -D warnings
+      - run: cargo clippy --features sleipnir -- -D warnings
