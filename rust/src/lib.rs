@@ -1,5 +1,12 @@
 #[cxx::bridge(namespace = "trajoptlibrust")]
 mod ffi {
+
+    
+    static mut callback : Option<fn(HolonomicTrajectory, str)->()> = None; 
+
+    pub fn set_progress_callback(cb: fn(HolonomicTrajectory, str)->()) {
+        callback = Some(cb);
+    }
     #[derive(Debug, Deserialize, Serialize)]
     struct SwerveModule {
         x: f64,
@@ -166,15 +173,13 @@ mod ffi {
 }
 
 pub struct SwervePathBuilder {
-    path: cxx::UniquePtr<crate::ffi::SwervePathBuilderImpl>,
-    callback: fn(HolonomicTrajectory)->()
+    path: cxx::UniquePtr<crate::ffi::SwervePathBuilderImpl>
 }
 
 impl SwervePathBuilder {
     pub fn new() -> SwervePathBuilder {
         SwervePathBuilder {
-            path: crate::ffi::new_swerve_path_builder_impl(),
-            callback: |traj|()
+            path: crate::ffi::new_swerve_path_builder_impl()
         }
     }
 
@@ -372,18 +377,10 @@ impl SwervePathBuilder {
         );
     }
 
-    fn iterate_through_callbacks(traj: HolonomicTrajectory) {
-        self.callback(traj);
-
-    }
-    pub fn enable_state_feedback(&mut self, callback: fn(HolonomicTrajectory)->()) {
-        self.callback = callback;
-
-    }
-
-    pub fn generate(&self) -> Result<HolonomicTrajectory, String> {
-        if self.callbacks.len() > 0 {
-            crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), move |traj| iterate_through_callbacks);
+    pub fn generate(&self, uuid: str) -> Result<HolonomicTrajectory, String> {
+        if callback.is_some() {
+            let cb = callback.unwrap();
+            crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), move |traj| cb(traj, uuid));
         }
         match self.path.generate() {
             Ok(traj) => Ok(traj),
@@ -395,6 +392,7 @@ impl SwervePathBuilder {
         crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
     }
 }
+
 
 pub use ffi::HolonomicTrajectory;
 pub use ffi::HolonomicTrajectorySample;
