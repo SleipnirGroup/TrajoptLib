@@ -167,14 +167,14 @@ mod ffi {
 
 pub struct SwervePathBuilder {
     path: cxx::UniquePtr<crate::ffi::SwervePathBuilderImpl>,
-    callbacks: Vec<Box<impl Fn(HolonomicTrajectory)->()>>
+    callback: fn(HolonomicTrajectory)->()
 }
 
 impl SwervePathBuilder {
     pub fn new() -> SwervePathBuilder {
         SwervePathBuilder {
             path: crate::ffi::new_swerve_path_builder_impl(),
-            callbacks: vec![]
+            callback: |traj|()
         }
     }
 
@@ -373,12 +373,11 @@ impl SwervePathBuilder {
     }
 
     fn iterate_through_callbacks(traj: HolonomicTrajectory) {
-        for i in self.callbacks{
-            i(traj);
-        }
+        self.callback(traj);
+
     }
-    pub fn enable_state_feedback(&mut self, callback: impl Fn(HolonomicTrajectory)->()) {
-        self.callbacks.push(Box::new(callback));
+    pub fn enable_state_feedback(&mut self, callback: fn(HolonomicTrajectory)->()) {
+        self.callback = callback;
 
     }
 
