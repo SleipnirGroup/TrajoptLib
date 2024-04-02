@@ -161,6 +161,7 @@ mod ffi {
         );
 
         fn generate(self: &SwervePathBuilderImpl, uuid: u32) -> Result<HolonomicTrajectory>;
+        fn enable_state_feedback(self: Pin<&mut SwervePathBuilderImpl>, callback: fn(HolonomicTrajectory, u32));
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
@@ -385,7 +386,7 @@ impl SwervePathBuilder {
             let cb = callback.unwrap();
             crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), move |traj, handle| cb(traj, handle));
         }
-    }   
+    }
         match self.path.generate(uuid) {
             Ok(traj) => Ok(traj),
             Err(msg) => Err(msg.what().to_string()),
