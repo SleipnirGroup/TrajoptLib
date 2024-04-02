@@ -71,6 +71,10 @@ SleipnirExpr abs(const SleipnirExpr& a) {
   return SleipnirExpr(sleipnir::abs(a.expr));
 }
 
+// SleipnirExpr fmod(const SleipnirExpr& a, double b) {
+//   return SleipnirExpr(a.expr - (a. / b) * b);
+// }
+
 sleipnir::EqualityConstraints operator==(const SleipnirExpr& a,
                                          const SleipnirExpr& b) {
   return a.expr == b.expr;
