@@ -259,7 +259,7 @@ void SwervePathBuilderImpl::enable_state_feedback(rust::Fn<void(HolonomicTraject
     path.AddIntermediateCallback(
       [=](trajopt::SwerveSolution& solution, uint32_t handle){
         callback(_convert_holonomic_trajectory(
-            trajopt::HolonomicTrajectory{solution},
+            trajopt::HolonomicTrajectory{solution}
             
           ), handle);
       }
