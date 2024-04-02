@@ -15,7 +15,7 @@ struct PointAtConstraint {
   /// field point y
   double fieldPointY;
   /// the allowed robot heading tolerance, must be positive
-  double allowedHeadingError;
+  IntervalSet1d allowedHeadingError;
 };
 
 }  // namespace trajopt
