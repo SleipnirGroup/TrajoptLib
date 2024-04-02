@@ -40,15 +40,14 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     const Solution& initialGuess, int64_t handle)
     : path(path), N(N) {
       // force the initial call
-      auto duration = std::chrono::steady_clock::now();
-      auto lastCallTimeMillis = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+      auto lastCallSeconds = std::chrono::steady_clock::now();
+
     opti.AddIntermediateCallback([=, &lastCallTimeMillis](){
-      auto duration = std::chrono::steady_clock::now();
-      auto millis = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
-      if (millis - lastCallTimeMillis < 0.067) {
+      auto seconds = std::chrono::steady_clock::now();
+      if (seconds - lastCallSeconds < 0.067) {
         return;
       }
-      lastCallTimeMillis = millis;
+      lastCallSeconds = seconds;
         auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
                                    alpha, Fx, Fy, dt, N);
         for (auto it = path.callbacks.begin(); it < path.callbacks.end(); it++) {
