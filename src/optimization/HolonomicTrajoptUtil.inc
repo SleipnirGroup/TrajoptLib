@@ -53,6 +53,7 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto pointAtConstraint = std::get<PointAtConstraint>(holonomicConstraint);
     double fieldPointX = pointAtConstraint.fieldPointX;
     double fieldPointY = pointAtConstraint.fieldPointY;
+    double allowedError = pointAtConstraint.allowedHeadingError;
     auto heading = atan2(fieldPointY - y, fieldPointX - x);
     // auto rhs = sin(heading) * (fieldPointX - x);
     // auto lhs = cos(heading) * (fieldPointY - y);
@@ -60,7 +61,7 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto angleDiff = theta - heading;
     angleDiff = atan2(sin(angleDiff), cos(angleDiff));
     // auto headingBound = IntervalSet1d(allowedError);
-    auto headingBound = IntervalSet1d(0);
+    auto headingBound = IntervalSet1d(allowedError);
     ApplyIntervalSet1dConstraint(opti, angleDiff, headingBound);
 
 
