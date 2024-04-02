@@ -380,11 +380,11 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn generate(&self, uuid: u32) -> Result<HolonomicTrajectory, String> {
+    pub fn generate(&mut self, uuid: u32) -> Result<HolonomicTrajectory, String> {
         unsafe {
         if callback.is_some() {
             let cb = callback.unwrap();
-            crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path, cb);
+            crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), cb);
         }
     }
         match self.path.generate(uuid) {
