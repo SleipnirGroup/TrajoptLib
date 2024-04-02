@@ -36,6 +36,7 @@ struct SleipnirExpr {
 
   friend SleipnirExpr sin(const SleipnirExpr& a);
   friend SleipnirExpr cos(const SleipnirExpr& a);
+  friend SleipnirExpr atan2(const SleipnirExpr& a, const SleipnirExpr& b);
 
   friend SleipnirExpr fmin(const SleipnirExpr& a, const SleipnirExpr& b);
   friend SleipnirExpr fmax(const SleipnirExpr& a, const SleipnirExpr& b);

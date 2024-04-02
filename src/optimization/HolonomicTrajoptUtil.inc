@@ -9,6 +9,7 @@
 #include "trajopt/constraint/Constraint.h"
 #include "trajopt/constraint/HeadingConstraint.h"
 #include "trajopt/constraint/LinePointConstraint.h"
+#include "trajopt/constraint/PointAtConstraint.h"
 #include "trajopt/constraint/PointLineConstraint.h"
 #include "trajopt/constraint/PointPointConstraint.h"
 #include "trajopt/constraint/TranslationConstraint.h"
@@ -47,6 +48,23 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
   } else if (std::holds_alternative<LinePointConstraint>(holonomicConstraint)) {
     ApplyConstraint(opti, x, y, theta,
                     std::get<LinePointConstraint>(holonomicConstraint));
+  } else if (std::holds_alternative<PointAtConstraint>(
+                 holonomicConstraint)) {
+    auto pointAtConstraint = std::get<PointAtConstraint>(holonomicConstraint);
+    double fieldPointX = pointAtConstraint.fieldPointX;
+    double fieldPointY = pointAtConstraint.fieldPointY;
+    auto heading = atan2(fieldPointY - y, fieldPointX - x);
+    // auto rhs = sin(heading) * (fieldPointX - x);
+    // auto lhs = cos(heading) * (fieldPointY - y);
+    // auto allowedError = pointAtConstraint.allowedHeadingError;
+    auto angleDiff = theta - heading;
+    angleDiff = atan2(sin(angleDiff), cos(angleDiff));
+    // auto headingBound = IntervalSet1d(allowedError);
+    auto headingBound = IntervalSet1d(0);
+    ApplyIntervalSet1dConstraint(opti, angleDiff, headingBound);
+
+
+
   } else if (std::holds_alternative<PointLineConstraint>(holonomicConstraint)) {
     ApplyConstraint(opti, x, y, theta,
                     std::get<PointLineConstraint>(holonomicConstraint));

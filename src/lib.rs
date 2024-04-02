@@ -101,6 +101,13 @@ mod ffi {
         fn wpt_x(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, x: f64);
         fn wpt_y(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, y: f64);
         fn wpt_heading(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, heading: f64);
+        fn wpt_point_at(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            idx: usize,
+            field_point_x: f64,
+            field_point_y: f64,
+            allowed_error: f64,
+        );
 
         fn sgmt_linear_velocity_direction(
             self: Pin<&mut SwervePathBuilderImpl>,
@@ -134,6 +141,14 @@ mod ffi {
             from_idx: usize,
             to_idx: usize,
             heading: f64,
+        );
+        fn sgmt_point_at(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            from_idx: usize,
+            to_idx: usize,
+            field_point_x: f64,
+            field_point_y: f64,
+            allowed_error: f64,
         );
 
         fn sgmt_circle_obstacle(
@@ -265,6 +280,22 @@ impl SwervePathBuilder {
         crate::ffi::SwervePathBuilderImpl::wpt_heading(self.path.pin_mut(), idx, heading);
     }
 
+    pub fn wpt_point_at(
+        &mut self,
+        idx: usize,
+        field_point_x: f64,
+        field_point_y: f64,
+        allowed_error: f64,
+    ) {
+        crate::ffi::SwervePathBuilderImpl::wpt_point_at(
+            self.path.pin_mut(),
+            idx,
+            field_point_x,
+            field_point_y,
+            allowed_error,
+        )
+    }
+
     pub fn sgmt_linear_velocity_direction(&mut self, from_idx: usize, to_idx: usize, angle: f64) {
         crate::ffi::SwervePathBuilderImpl::sgmt_linear_velocity_direction(
             self.path.pin_mut(),
@@ -328,6 +359,24 @@ impl SwervePathBuilder {
             to_idx,
             heading,
         );
+    }
+
+    pub fn sgmt_point_at(
+        &mut self,
+        from_idx: usize,
+        to_idx: usize,
+        field_point_x: f64,
+        field_point_y: f64,
+        allowed_error: f64,
+    ) {
+        crate::ffi::SwervePathBuilderImpl::sgmt_point_at(
+            self.path.pin_mut(),
+            from_idx,
+            to_idx,
+            field_point_x,
+            field_point_y,
+            allowed_error,
+        )
     }
 
     pub fn sgmt_circle_obstacle(

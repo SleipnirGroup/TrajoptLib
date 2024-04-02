@@ -51,6 +51,10 @@ SleipnirExpr cos(const SleipnirExpr& a) {
   return SleipnirExpr(sleipnir::cos(a.expr));
 }
 
+SleipnirExpr atan2(const SleipnirExpr& a, const SleipnirExpr& b) {
+  return SleipnirExpr(sleipnir::atan2(a.expr, b.expr));
+}
+
 SleipnirExpr fmax(const SleipnirExpr& a, const SleipnirExpr& b) {
   return SleipnirExpr(+0.5 * (1 + sleipnir::sign(b.expr - a.expr)) *
                           (b.expr - a.expr) +
