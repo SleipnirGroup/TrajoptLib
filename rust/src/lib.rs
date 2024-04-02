@@ -384,7 +384,7 @@ impl SwervePathBuilder {
         unsafe {
         if callback.is_some() {
             let cb = callback.unwrap();
-            crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), cb);
+            crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path, cb);
         }
     }
         match self.path.generate(uuid) {
