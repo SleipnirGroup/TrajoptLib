@@ -54,7 +54,7 @@ class SwervePathBuilderImpl {
   void sgmt_polygon_obstacle(size_t from_idx, size_t to_idx,
                              rust::Vec<double> x, rust::Vec<double> y,
                              double radius);
-  HolonomicTrajectory generate() const;
+  HolonomicTrajectory generate(uint32_t handle) const;
   void enable_state_feedback(rust::Fn<void(HolonomicTrajectory)> callback);
   void cancel_all();
 
