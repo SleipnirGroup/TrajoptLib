@@ -41,6 +41,7 @@ struct SleipnirExpr {
   friend SleipnirExpr fmin(const SleipnirExpr& a, const SleipnirExpr& b);
   friend SleipnirExpr fmax(const SleipnirExpr& a, const SleipnirExpr& b);
   friend SleipnirExpr abs(const SleipnirExpr& a);
+  friend SleipnirExpr sqrt(const SleipnirExpr& a);
 
   friend sleipnir::EqualityConstraints operator==(const SleipnirExpr& a,
                                                   const SleipnirExpr& b);
