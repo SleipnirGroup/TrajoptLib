@@ -36,7 +36,7 @@ mod ffi {
         angular_velocity: f64,
     }
 
-    #[derive(Debug, Deserialize, Serialize)]
+    #[derive(Debug, Deserialize, Serialize, Clone)]
     struct HolonomicTrajectory {
         samples: Vec<HolonomicTrajectorySample>,
     }
