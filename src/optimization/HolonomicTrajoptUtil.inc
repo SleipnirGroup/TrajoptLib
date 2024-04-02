@@ -57,9 +57,11 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     // angle from robot to target
     auto heading = atan2(fieldPointY - y, fieldPointX - x);
     auto angleDiff = theta - heading;
+    auto PI = 3.14159265358979323846;
+    auto angleComparisons = fmin(abs(angleDiff), fmin(abs(angleDiff+PI), abs(angleDiff-PI)));
     // adjust angle difference from -pi to pi
     // angleDiff = atan2(sin(angleDiff), cos(angleDiff));
-    ApplyIntervalSet1dConstraint(opti, angleDiff, headingBound);
+    ApplyIntervalSet1dConstraint(opti, angleComparisons, headingBound);
   } else if (std::holds_alternative<PointLineConstraint>(holonomicConstraint)) {
     ApplyConstraint(opti, x, y, theta,
                     std::get<PointLineConstraint>(holonomicConstraint));
