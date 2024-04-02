@@ -58,7 +58,7 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto heading = atan2(fieldPointY - y, fieldPointX - x);
     auto angleDiff = theta - heading;
     // adjust angle difference from -pi to pi
-    angleDiff = atan2(sin(angleDiff), cos(angleDiff));
+    // angleDiff = atan2(sin(angleDiff), cos(angleDiff));
     ApplyIntervalSet1dConstraint(opti, angleDiff, headingBound);
   } else if (std::holds_alternative<PointLineConstraint>(holonomicConstraint)) {
     ApplyConstraint(opti, x, y, theta,
