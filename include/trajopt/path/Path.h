@@ -51,7 +51,7 @@ struct TRAJOPT_DLLEXPORT SwervePath {
   /// drivetrain of the robot
   SwerveDrivetrain drivetrain;
 
-  std::vector<std::function<void(SwerveSolution&)>> callbacks;
+  std::vector<std::function<void(SwerveSolution&, uint32_t)>> callbacks;
 };
 
 /**
