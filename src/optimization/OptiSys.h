@@ -24,7 +24,7 @@ concept ExprSys = requires(Expr expr, const Expr constExpr, double num) {
   expr = fmin(constExpr, constExpr);  // NOLINT
   expr = fmax(constExpr, constExpr);  // NOLINT
   expr = abs(constExpr); // NOLINT
-  expr = sqrt(constExpr); // NOLINT
+  expr = hypot(constExpr, constExpr); // NOLINT
 };
 
 template <typename Expr, typename Opti>

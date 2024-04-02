@@ -68,10 +68,10 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
      */
     auto dx = fieldPointX - x;
     auto dy = fieldPointY - y;
+    auto ux = dx / hypot(dx, dy);//sqrt(dx*dx + dy*dy);
+    auto uy = dy / hypot(dx, dy);
     auto hx = cos(theta);
     auto hy = sin(theta);
-    auto ux = dx / sqrt(dx*dx + dy*dy);
-    auto uy = dy / sqrt(dx*dx + dy*dy);
     auto dot = hx * ux + hy * uy;
 
     ApplyIntervalSet1dConstraint(opti, dot, IntervalSet1d(cos(headingBound.upper), 1.0));
