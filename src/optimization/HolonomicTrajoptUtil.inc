@@ -61,7 +61,7 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto angleDiff = theta - heading;
     angleDiff = atan2(sin(angleDiff), cos(angleDiff));
     // auto headingBound = IntervalSet1d(allowedError);
-    auto headingBound = IntervalSet1d(allowedError);
+    auto headingBound = IntervalSet1d(0,allowedError);
     ApplyIntervalSet1dConstraint(opti, angleDiff, headingBound);
 
 
