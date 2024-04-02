@@ -3,7 +3,7 @@
 #pragma once
 
 #include <vector>
-
+#include <string>
 #include "optimization/HolonomicTrajoptUtil.h"
 #include "optimization/OptiSys.h"
 #include "optimization/TrajoptUtil.h"
@@ -66,7 +66,8 @@ class SwerveDiscreteOptimal {
    */
   explicit SwerveDiscreteOptimal(const SwervePath& path,
                                  const std::vector<size_t>& N,
-                                 const Solution& initialGuess);
+                                 const Solution& initialGuess,
+                                 uint32_t uuid);
 };
 }  // namespace trajopt
 

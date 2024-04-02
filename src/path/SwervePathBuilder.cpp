@@ -1,6 +1,7 @@
 // Copyright (c) TrajoptLib contributors
 
 #include "trajopt/path/SwervePathBuilder.h"
+#include <stdint.h>
 
 #include <cmath>
 #include <memory>
@@ -265,7 +266,7 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
   return constraints;
 }
 
-void SwervePathBuilder::AddIntermediateCallback(const std::function<void(SwerveSolution&)> callback){
+void SwervePathBuilder::AddIntermediateCallback(const std::function<void(SwerveSolution&, uint32_t)> callback){
   path.callbacks.push_back(callback);
 }
 

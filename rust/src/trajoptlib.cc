@@ -1,6 +1,7 @@
 #include "trajoptlib/include/trajoptlib.h"
 
 #include <cstddef>
+#include <iterator>
 #include <memory>
 #include <vector>
 
@@ -264,9 +265,9 @@ void SwervePathBuilderImpl::enable_state_feedback(rust::Fn<void(HolonomicTraject
     );
 }
 
-HolonomicTrajectory SwervePathBuilderImpl::generate() const {
+HolonomicTrajectory SwervePathBuilderImpl::generate(uint32_t handle) const {
   return _convert_holonomic_trajectory(
-    trajopt::HolonomicTrajectory{trajopt::OptimalTrajectoryGenerator::Generate(path)});
+    trajopt::HolonomicTrajectory{trajopt::OptimalTrajectoryGenerator::Generate(path, handle)});
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {

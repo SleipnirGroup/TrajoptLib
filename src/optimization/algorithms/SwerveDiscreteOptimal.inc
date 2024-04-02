@@ -36,13 +36,13 @@ template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     const SwervePath& path, const std::vector<size_t>& N,
-    const Solution& initialGuess)
+    const Solution& initialGuess, uint32_t handle)
     : path(path), N(N) {
     opti.AddIntermediateCallback([=](){
         auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
                                    alpha, Fx, Fy, dt, N);
         for (auto it = path.callbacks.begin(); it < path.callbacks.end(); it++) {
-          (*it)(soln);
+          (*it)(soln, handle);
         }
       
     });

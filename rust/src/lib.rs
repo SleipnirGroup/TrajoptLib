@@ -160,16 +160,15 @@ mod ffi {
             radius: f64,
         );
 
-        fn generate(self: &SwervePathBuilderImpl) -> Result<HolonomicTrajectory>;
-        fn enable_state_feedback(self: Pin<&mut SwervePathBuilderImpl>, callback: fn(HolonomicTrajectory));
+        fn generate(self: &SwervePathBuilderImpl, uuid: u32) -> Result<HolonomicTrajectory>;
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
 }
 
-static mut callback : Option<fn(HolonomicTrajectory, str)->()> = None; 
+static mut callback : Option<fn(HolonomicTrajectory, u32)->()> = None; 
 
-pub fn set_progress_callback(cb: fn(HolonomicTrajectory, str)->()) {
+pub fn set_progress_callback(cb: fn(HolonomicTrajectory, u32)->()) {
     unsafe {
     callback = Some(cb);
     }
@@ -380,14 +379,14 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn generate(&self, uuid: &str) -> Result<HolonomicTrajectory, String> {
+    pub fn generate(&self, uuid: u32) -> Result<HolonomicTrajectory, String> {
         unsafe {
         if callback.is_some() {
             let cb = callback.unwrap();
             crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), move |traj| cb(traj, uuid));
         }
-    }
-        match self.path.generate() {
+    }   
+        match self.path.generate(uuid) {
             Ok(traj) => Ok(traj),
             Err(msg) => Err(msg.what().to_string()),
         }
