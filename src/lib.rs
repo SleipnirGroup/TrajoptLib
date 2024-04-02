@@ -106,7 +106,7 @@ mod ffi {
             idx: usize,
             field_point_x: f64,
             field_point_y: f64,
-            allowed_error: f64,
+            heading_tolerance: f64,
         );
 
         fn sgmt_linear_velocity_direction(
@@ -148,7 +148,7 @@ mod ffi {
             to_idx: usize,
             field_point_x: f64,
             field_point_y: f64,
-            allowed_error: f64,
+            heading_tolerance: f64,
         );
 
         fn sgmt_circle_obstacle(
@@ -285,14 +285,14 @@ impl SwervePathBuilder {
         idx: usize,
         field_point_x: f64,
         field_point_y: f64,
-        allowed_error: f64,
+        heading_tolerance: f64,
     ) {
         crate::ffi::SwervePathBuilderImpl::wpt_point_at(
             self.path.pin_mut(),
             idx,
             field_point_x,
             field_point_y,
-            allowed_error,
+            heading_tolerance,
         )
     }
 
@@ -367,7 +367,7 @@ impl SwervePathBuilder {
         to_idx: usize,
         field_point_x: f64,
         field_point_y: f64,
-        allowed_error: f64,
+        heading_tolerance: f64,
     ) {
         crate::ffi::SwervePathBuilderImpl::sgmt_point_at(
             self.path.pin_mut(),
@@ -375,7 +375,7 @@ impl SwervePathBuilder {
             to_idx,
             field_point_x,
             field_point_y,
-            allowed_error,
+            heading_tolerance,
         )
     }
 
@@ -437,4 +437,3 @@ pub use ffi::HolonomicTrajectory;
 pub use ffi::HolonomicTrajectorySample;
 pub use ffi::InitialGuessPoint;
 pub use ffi::SwerveDrivetrain;
-pub use ffi::SwerveModule;

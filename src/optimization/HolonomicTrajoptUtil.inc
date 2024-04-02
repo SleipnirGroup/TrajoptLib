@@ -53,7 +53,7 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto pointAtConstraint = std::get<PointAtConstraint>(holonomicConstraint);
     double fieldPointX = pointAtConstraint.fieldPointX;
     double fieldPointY = pointAtConstraint.fieldPointY;
-    auto headingBound = pointAtConstraint.allowedHeadingError;
+    auto headingBound = pointAtConstraint.headingTolerance;
     // angle from robot to target
     auto heading = atan2(fieldPointY - y, fieldPointX - x);
     auto angleDiff = theta - heading;

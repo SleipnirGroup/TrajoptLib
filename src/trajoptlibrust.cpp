@@ -156,13 +156,13 @@ void SwervePathBuilderImpl::wpt_heading(size_t idx, double heading) {
 }
 
 void SwervePathBuilderImpl::wpt_point_at(size_t idx, double field_point_x,
-                                            double field_point_y, double allowed_heading_error) {
+                                            double field_point_y, double heading_tolerance) {
   path.WptConstraint(idx,
                      trajopt::PointAtConstraint{
                          .fieldPointX = field_point_x,
                          .fieldPointY = field_point_y,
-                         .allowedHeadingError = trajopt::IntervalSet1d(-allowed_heading_error, 
-                                                                        allowed_heading_error)});
+                         .headingTolerance = trajopt::IntervalSet1d(-heading_tolerance, 
+                                                                        heading_tolerance)});
 }
 
 void SwervePathBuilderImpl::sgmt_linear_velocity_direction(size_t from_idx,
@@ -216,14 +216,14 @@ void SwervePathBuilderImpl::sgmt_heading(size_t from_idx, size_t to_idx,
 void SwervePathBuilderImpl::sgmt_point_at(size_t from_idx, size_t to_idx,
                                              double field_point_x,
                                              double field_point_y, 
-                                             double allowed_heading_error) {
+                                             double heading_tolerance) {
   path.SgmtConstraint(
       from_idx, to_idx,
       trajopt::PointAtConstraint{
           .fieldPointX = field_point_x,
           .fieldPointY = field_point_y,
-          .allowedHeadingError = trajopt::IntervalSet1d(-allowed_heading_error, 
-                                                         allowed_heading_error)});
+          .headingTolerance = trajopt::IntervalSet1d(-heading_tolerance, 
+                                                         heading_tolerance)});
 }
 
 void SwervePathBuilderImpl::sgmt_circle_obstacle(size_t from_idx, size_t to_idx,
