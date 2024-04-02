@@ -28,6 +28,6 @@ class TRAJOPT_DLLEXPORT OptimalTrajectoryGenerator {
    * @param path the path
    * @return the optimized swerve trajectory solution
    */
-  static SwerveSolution Generate(const SwervePathBuilder& path);
+  static SwerveSolution Generate(const SwervePathBuilder& path, uint32_t handle);
 };
 }  // namespace trajopt
