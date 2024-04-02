@@ -255,7 +255,7 @@ HolonomicTrajectory _convert_holonomic_trajectory(const trajopt::HolonomicTrajec
   };
 }
 
-void SwervePathBuilderImpl::enable_state_feedback(rust::Fn<void(HolonomicTrajectory)> callback) {
+void SwervePathBuilderImpl::enable_state_feedback(rust::Fn<void(HolonomicTrajectory, uint32_t)> callback) {
     path.AddIntermediateCallback(
       [=](trajopt::SwerveSolution& solution, uint32_t handle){
         callback(_convert_holonomic_trajectory(
