@@ -25,7 +25,7 @@ mod ffi {
         heading: f64,
     }
 
-    #[derive(Debug, Deserialize, Serialize)]
+    #[derive(Debug, Deserialize, Serialize, Clone)]
     struct HolonomicTrajectorySample {
         timestamp: f64,
         x: f64,
