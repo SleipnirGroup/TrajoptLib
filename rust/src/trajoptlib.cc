@@ -266,7 +266,7 @@ void SwervePathBuilderImpl::enable_state_feedback(rust::Fn<void(HolonomicTraject
     );
 }
 
-HolonomicTrajectory SwervePathBuilderImpl::generate(uint32_t handle = 0) const {
+HolonomicTrajectory SwervePathBuilderImpl::generate(uint32_t handle) const {
   return _convert_holonomic_trajectory(
     trajopt::HolonomicTrajectory{trajopt::OptimalTrajectoryGenerator::Generate(path, handle)});
 }
