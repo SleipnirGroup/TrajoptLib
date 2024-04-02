@@ -63,7 +63,7 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto hy = sin(theta);
     auto ux = dx / sqrt(dx*dx + dy*dy);
     auto uy = dy / sqrt(dx*dx + dy*dy);
-    auto dot = hx * ux + hy + uy;
+    auto dot = hx * ux + hy * uy;
 
     ApplyIntervalSet1dConstraint(opti, dot, IntervalSet1d(cos(headingBound.upper), 1.0));
   } else if (std::holds_alternative<PointLineConstraint>(holonomicConstraint)) {
