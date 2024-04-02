@@ -36,7 +36,7 @@ template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     const SwervePath& path, const std::vector<size_t>& N,
-    const Solution& initialGuess, uint32_t handle)
+    const Solution& initialGuess, int64_t handle)
     : path(path), N(N) {
     opti.AddIntermediateCallback([=](){
         auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,

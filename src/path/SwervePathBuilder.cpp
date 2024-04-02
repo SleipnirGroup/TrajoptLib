@@ -266,7 +266,7 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
   return constraints;
 }
 
-void SwervePathBuilder::AddIntermediateCallback(const std::function<void(SwerveSolution&, uint32_t)> callback){
+void SwervePathBuilder::AddIntermediateCallback(const std::function<void(SwerveSolution&, int64_t)> callback){
   path.callbacks.push_back(callback);
 }
 

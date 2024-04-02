@@ -67,7 +67,7 @@ class SwerveDiscreteOptimal {
   explicit SwerveDiscreteOptimal(const SwervePath& path,
                                  const std::vector<size_t>& N,
                                  const Solution& initialGuess,
-                                 uint32_t handle = 0);
+                                 int64_t handle = 0);
 };
 }  // namespace trajopt
 

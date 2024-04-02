@@ -21,7 +21,7 @@
 namespace trajopt {
 
 SwerveSolution OptimalTrajectoryGenerator::Generate(
-    const SwervePathBuilder& path, uint32_t handle) {
+    const SwervePathBuilder& path, int64_t handle) {
   SwerveDiscreteOptimal<_OPTI_BACKEND> problem(path.GetPath(),
                                                path.GetControlIntervalCounts(),
                                                path.CalculateInitialGuess(),
