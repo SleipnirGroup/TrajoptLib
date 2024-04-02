@@ -40,7 +40,8 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     const Solution& initialGuess, int64_t handle)
     : path(path), N(N) {
       // force the initial call
-    float lastCallTimeMillis = 0;
+      auto duration = std::chrono::system_clock::now().time_since_epoch();
+      auto lastCallTimeMillis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
     opti.AddIntermediateCallback([=, &lastCallTimeMillis](){
       auto duration = std::chrono::system_clock::now().time_since_epoch();
       auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
