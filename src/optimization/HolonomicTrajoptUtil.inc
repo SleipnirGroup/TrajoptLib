@@ -57,6 +57,15 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     double fieldPointX = pointAtConstraint.fieldPointX;
     double fieldPointY = pointAtConstraint.fieldPointY;
     auto headingBound = pointAtConstraint.headingTolerance;
+    /**
+     * dx,dy = desired heading
+     * ux,uy = unit vector of desired heading
+     * hx,hy = heading
+     * dot = dot product of ux,uy and hx,hy
+     * 
+     * constrain dot to cos(1.0), which is colinear
+     * and cos(thetaTolerance)
+     */
     auto dx = fieldPointX - x;
     auto dy = fieldPointY - y;
     auto hx = cos(theta);
