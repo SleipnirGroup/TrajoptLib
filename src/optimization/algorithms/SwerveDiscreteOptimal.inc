@@ -3,6 +3,7 @@
 #pragma once
 
 #include <algorithm>
+#include <chrono>
 #include <string>
 #include <vector>
 
@@ -38,13 +39,20 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     const SwervePath& path, const std::vector<size_t>& N,
     const Solution& initialGuess, int64_t handle)
     : path(path), N(N) {
+      // force the initial call
+    float lastCallTimeMillis = 0;
     opti.AddIntermediateCallback([=](){
+      auto duration = now.time_since_epoch();
+      auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+      if (millis - lastCallTimeMillis < 67) {
+        return;
+      }
+      lastCallTimeMillis = millis;
         auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
                                    alpha, Fx, Fy, dt, N);
         for (auto it = path.callbacks.begin(); it < path.callbacks.end(); it++) {
           (*it)(soln, handle);
         }
-      
     });
   size_t wptCnt = 1 + N.size();
   size_t sgmtCnt = N.size();
