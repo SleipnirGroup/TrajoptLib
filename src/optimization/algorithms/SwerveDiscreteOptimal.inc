@@ -43,7 +43,7 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
       auto lastCall = std::chrono::steady_clock::now();
 
     opti.AddIntermediateCallback([=, &lastCall](){
-        using std::chrono_literals;
+        using namespace std::chrono_literals;
 
           auto now = std::chrono::steady_clock::now();
           if (now - lastCall < 67ms) {
