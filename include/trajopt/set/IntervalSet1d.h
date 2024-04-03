@@ -69,7 +69,7 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
 
   /**
    * Calculate the range of this scalar bound, which is the difference
-   * between the upper and lower bounds. An infinite sclar bound has a range
+   * between the upper and lower bounds. An infinite scalar bound has a range
    * of positive infinity.
    *
    * @return upper - lower

@@ -63,6 +63,14 @@ SleipnirExpr fmin(const SleipnirExpr& a, const SleipnirExpr& b) {
                       b.expr);
 }
 
+SleipnirExpr abs(const SleipnirExpr& a) {
+  return SleipnirExpr(sleipnir::abs(a.expr));
+}
+
+SleipnirExpr hypot(const SleipnirExpr& a, const SleipnirExpr& b) {
+  return SleipnirExpr(sleipnir::hypot(a.expr, b.expr));
+}
+
 sleipnir::EqualityConstraints operator==(const SleipnirExpr& a,
                                          const SleipnirExpr& b) {
   return a.expr == b.expr;
