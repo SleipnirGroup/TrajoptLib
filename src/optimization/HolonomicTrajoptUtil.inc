@@ -16,7 +16,6 @@
 #include "trajopt/obstacle/Obstacle.h"
 #include "trajopt/path/Path.h"
 #include "trajopt/solution/HolonomicSolution.h"
-// #include <sleipnir/autodiff/Variable.hpp>
 #include "SleipnirOpti.h"
 
 
