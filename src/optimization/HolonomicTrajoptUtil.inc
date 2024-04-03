@@ -55,7 +55,7 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto pointAtConstraint = std::get<PointAtConstraint>(holonomicConstraint);
     double fieldPointX = pointAtConstraint.fieldPointX;
     double fieldPointY = pointAtConstraint.fieldPointY;
-    auto headingBound = pointAtConstraint.headingTolerance;
+    double headingTolerance = pointAtConstraint.headingTolerance;
     /**
      * dx,dy = desired heading
      * ux,uy = unit vector of desired heading
@@ -73,7 +73,7 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto hy = sin(theta);
     auto dot = hx * ux + hy * uy;
 
-    ApplyIntervalSet1dConstraint(opti, dot, IntervalSet1d(cos(headingBound.upper), 1.0));
+    ApplyIntervalSet1dConstraint(opti, dot, IntervalSet1d(cos(headingTolerance), 1.0));
   } else if (std::holds_alternative<PointLineConstraint>(holonomicConstraint)) {
     ApplyConstraint(opti, x, y, theta,
                     std::get<PointLineConstraint>(holonomicConstraint));
