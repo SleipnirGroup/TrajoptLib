@@ -52,11 +52,11 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
         //   }
 
         //   lastCall = now;
-        // auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
-        //                            alpha, Fx, Fy, dt, N);
-        // for (auto it = path.callbacks.begin(); it < path.callbacks.end(); it++) {
-        //   (*it)(soln, handle);
-        // }
+        auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
+                                   alpha, Fx, Fy, dt, N);
+        for (auto it = path.callbacks.begin(); it < path.callbacks.end(); it++) {
+          (*it)(soln, handle);
+        }
     });
   size_t wptCnt = 1 + N.size();
   size_t sgmtCnt = N.size();
