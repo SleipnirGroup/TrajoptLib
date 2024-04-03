@@ -38,7 +38,7 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
       // force the initial call
       //auto lastCall = std::chrono::steady_clock::now();
 
-    opti.AddIntermediateCallback([this, path, N, handle](){
+    opti.AddIntermediateCallback([=, this](){
       //return;
         // using namespace std::chrono_literals;
 
