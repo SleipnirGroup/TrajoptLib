@@ -43,19 +43,20 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
       auto lastCall = std::chrono::steady_clock::now();
 
     opti.AddIntermediateCallback([=, &lastCall](){
-        using namespace std::chrono_literals;
+      return;
+        // using namespace std::chrono_literals;
 
-          auto now = std::chrono::steady_clock::now();
-          if (now - lastCall < 67ms) {
-            return;
-          }
+        //   auto now = std::chrono::steady_clock::now();
+        //   if (now - lastCall < 67ms) {
+        //     return;
+        //   }
 
-          lastCall = now;
-        auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
-                                   alpha, Fx, Fy, dt, N);
-        for (auto it = path.callbacks.begin(); it < path.callbacks.end(); it++) {
-          (*it)(soln, handle);
-        }
+        //   lastCall = now;
+        // auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
+        //                            alpha, Fx, Fy, dt, N);
+        // for (auto it = path.callbacks.begin(); it < path.callbacks.end(); it++) {
+        //   (*it)(soln, handle);
+        // }
     });
   size_t wptCnt = 1 + N.size();
   size_t sgmtCnt = N.size();
