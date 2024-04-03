@@ -58,7 +58,7 @@ class SwervePathBuilderImpl {
                              double radius);
   // TODO: Return std::expected<HolonomicTrajectory, std::string> instead of
   // throwing exception, once cxx supports it
-  HolonomicTrajectory generate(bool diagnostics = false, int64_t handle) const;
+  HolonomicTrajectory generate(bool diagnostics = false, int64_t handle = 0) const;
   void enable_state_feedback(rust::Fn<void(HolonomicTrajectory, int64_t)> callback);
   void cancel_all();
 
