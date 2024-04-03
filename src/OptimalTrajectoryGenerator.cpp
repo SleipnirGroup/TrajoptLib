@@ -12,8 +12,6 @@
 #include "optimization/SleipnirOpti.h"
 #define _OPTI_BACKEND SleipnirExpr, SleipnirOpti
 #endif
-#include "DebugOptions.h"
-#include "trajopt/InvalidPathException.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "optimization/algorithms/SwerveDiscreteOptimal.h"
 #include "trajopt/solution/SwerveSolution.h"
@@ -21,11 +19,12 @@
 namespace trajopt {
 
 SwerveSolution OptimalTrajectoryGenerator::Generate(
-    const SwervePathBuilder& path, int64_t handle) {
+    const SwervePathBuilder& path, bool diagnostics, int64_t handle) {
   SwerveDiscreteOptimal<_OPTI_BACKEND> problem(path.GetPath(),
                                                path.GetControlIntervalCounts(),
                                                path.CalculateInitialGuess(),
                                                handle);
-  return problem.Generate();
+  return problem.Generate(diagnostics);
+
 }
 }  // namespace trajopt

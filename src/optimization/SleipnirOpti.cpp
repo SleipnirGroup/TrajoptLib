@@ -7,14 +7,11 @@
 #include <memory>
 #include <vector>
 
-#include <fmt/format.h>
 #include <sleipnir/autodiff/Variable.hpp>
 #include <sleipnir/optimization/Constraints.hpp>
 #include <sleipnir/optimization/OptimizationProblem.hpp>
 
-#include "DebugOptions.h"
 #include "optimization/Cancellation.h"
-#include "trajopt/TrajectoryGenerationException.h"
 
 namespace trajopt {
 
@@ -109,7 +106,8 @@ void SleipnirOpti::AddIntermediateCallback(std::function<void()> callback) {
   callbacks.push_back(callback);
 }
 
-void SleipnirOpti::Solve() {
+[[nodiscard]]
+expected<void, std::string> SleipnirOpti::Solve(bool diagnostics) {
   GetCancellationFlag() = 0;
   opti.Callback([=](const sleipnir::SolverIterationInfo&) -> bool {
     for (auto it = callbacks.begin(); it < callbacks.end(); it++) {
@@ -118,12 +116,15 @@ void SleipnirOpti::Solve() {
     return trajopt::GetCancellationFlag();
   });
 
-  auto status = opti.Solve({.diagnostics = true});
+  auto status = opti.Solve({.diagnostics = diagnostics});
 
-  if (static_cast<int>(status.exitCondition) < 0) {
-    throw TrajectoryGenerationException{
-        sleipnir::ToMessage(status.exitCondition)};
+  if (static_cast<int>(status.exitCondition) < 0 ||
+      status.exitCondition ==
+          sleipnir::SolverExitCondition::kCallbackRequestedStop) {
+    return unexpected{std::string{sleipnir::ToMessage(status.exitCondition)}};
   }
+
+  return {};
 }
 
 double SleipnirOpti::SolutionValue(const SleipnirExpr& expression) const {

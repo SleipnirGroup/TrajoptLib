@@ -3,6 +3,7 @@
 #include "trajopt/path/SwervePathBuilder.h"
 #include <stdint.h>
 
+#include <cassert>
 #include <cmath>
 #include <memory>
 #include <stdexcept>
@@ -133,9 +134,8 @@ void SwervePathBuilder::WptConstraint(size_t idx,
 void SwervePathBuilder::SgmtConstraint(size_t fromIdx, size_t toIdx,
                                        const HolonomicConstraint& constraint,
                                        bool includeWpts) {
-  if (!(fromIdx < toIdx)) {
-    throw std::runtime_error("fromIdx >= toIdx");
-  }
+  assert(fromIdx < toIdx);
+
   NewWpts(toIdx);
   if (includeWpts) {
     path.waypoints.at(fromIdx).waypointConstraints.push_back(constraint);

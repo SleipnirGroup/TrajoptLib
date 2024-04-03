@@ -16,6 +16,6 @@ modifiableFileExclude {
 includeOtherLibs {
   ^Eigen/
   ^casadi/
+  ^rust/
   ^sleipnir/
-  ^trajopt/
 }

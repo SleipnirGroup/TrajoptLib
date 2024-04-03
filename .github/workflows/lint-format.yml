@@ -19,11 +19,11 @@ jobs:
           git checkout -b pr
           git branch -f main origin/main
       - name: Set up Python 3.8
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.8
       - name: Install wpiformat
-        run: pip3 install wpiformat
+        run: pip3 install wpiformat==2024.33
       - name: Run
         run: wpiformat
       - name: Check output
@@ -31,7 +31,7 @@ jobs:
       - name: Generate diff
         run: git diff HEAD > wpiformat-fixes.patch
         if: ${{ failure() }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: wpiformat fixes
           path: wpiformat-fixes.patch
@@ -58,7 +58,7 @@ jobs:
           git checkout -b pr
           git branch -f main origin/main
       - name: Set up Python 3.8
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.8
       - name: Install clang-tidy
@@ -81,6 +81,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run rustfmt
-        working-directory: rust
-        run: cargo fmt --check
+      - run: cargo fmt --check
+      - run: cargo clippy --features casadi -- -D warnings
+      - run: cargo clippy --features sleipnir -- -D warnings

@@ -4,10 +4,8 @@
 
 #include <vector>
 
-#include "DebugOptions.h"
 #include "optimization/HolonomicTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
-#include "trajopt/TrajectoryGenerationException.h"
 #include "trajopt/constraint/Constraint.h"
 #include "trajopt/constraint/HeadingConstraint.h"
 #include "trajopt/constraint/LinePointConstraint.h"

@@ -9,7 +9,7 @@ macro(fetch_casadi)
     )
         message(STATUS "Building for Windows")
         set(CASADI_URL
-            https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-windows64-py311.zip
+            https://github.com/casadi/casadi/releases/download/3.6.5/casadi-3.6.5-windows64-py311.zip
         )
         set(CASADI_INSTALL_LIBS
             ${CASADI_LIBDIR}/libcasadi-tp-openblas.dll
@@ -26,13 +26,10 @@ macro(fetch_casadi)
         )
         set(CASADI_INSTALL_DEST "bin")
     elseif(APPLE)
-        if(
-            CMAKE_APPLE_SILICON_PROCESSOR MATCHES "arm64"
-            OR CMAKE_OSX_ARCHITECTURES MATCHES "arm64"
-        )
+        if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm64")
             message(STATUS "Building for macOS arm64")
             set(CASADI_URL
-                https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-osx_arm64-py311.zip
+                https://github.com/casadi/casadi/releases/download/3.6.5/casadi-3.6.5-osx_arm64-py311.zip
             )
             set(CASADI_INSTALL_LIBS
                 ${CASADI_LIBDIR}/libcasadi.3.7.dylib
@@ -45,13 +42,10 @@ macro(fetch_casadi)
                 ${CASADI_LIBDIR}/libquadmath.0.dylib
                 ${CASADI_LIBDIR}/libgcc_s.1.1.dylib
             )
-        elseif(
-            CMAKE_APPLE_SILICON_PROCESSOR MATCHES "x86_64"
-            OR CMAKE_OSX_ARCHITECTURES MATCHES "x86_64"
-        )
+        elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64")
             message(STATUS "Building for macOS x86_64")
             set(CASADI_URL
-                https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-osx64-py311.zip
+                https://github.com/casadi/casadi/releases/download/3.6.5/casadi-3.6.5-osx64-py311.zip
             )
             set(CASADI_INSTALL_LIBS
                 ${CASADI_LIBDIR}/libcasadi.3.7.dylib
@@ -68,10 +62,10 @@ macro(fetch_casadi)
         endif()
         set(CASADI_INSTALL_DEST "lib")
     elseif(UNIX)
-        if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "ARM64")
-            message(STATUS "Building for Linux arm64")
+        if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
+            message(STATUS "Building for Linux aarch64")
             set(CASADI_URL
-                https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-linux-aarch64-py311.zip
+                https://github.com/casadi/casadi/releases/download/3.6.5/casadi-3.6.5-linux-aarch64-py311.zip
             )
             set(CASADI_INSTALL_LIBS
                 ${CASADI_LIBDIR}/libcasadi.so.3.7
@@ -84,9 +78,9 @@ macro(fetch_casadi)
                 ${CASADI_LIBDIR}/libcasadi-tp-openblas.so.0
             )
         else()
-            message(STATUS "Building for Linux x64")
+            message(STATUS "Building for Linux x86_64")
             set(CASADI_URL
-                https://github.com/casadi/casadi/releases/download/3.6.4/casadi-3.6.4-linux64-py311.zip
+                https://github.com/casadi/casadi/releases/download/3.6.5/casadi-3.6.5-linux64-py311.zip
             )
             set(CASADI_INSTALL_LIBS
                 ${CASADI_LIBDIR}/libcasadi.so.3.7
