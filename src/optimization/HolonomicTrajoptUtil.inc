@@ -17,7 +17,6 @@
 #include "trajopt/path/Path.h"
 #include "trajopt/solution/HolonomicSolution.h"
 
-
 namespace trajopt {
 
 template <typename Expr, typename Opti>
@@ -49,8 +48,7 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
   } else if (std::holds_alternative<LinePointConstraint>(holonomicConstraint)) {
     ApplyConstraint(opti, x, y, theta,
                     std::get<LinePointConstraint>(holonomicConstraint));
-  } else if (std::holds_alternative<PointAtConstraint>(
-                 holonomicConstraint)) {
+  } else if (std::holds_alternative<PointAtConstraint>(holonomicConstraint)) {
     auto pointAtConstraint = std::get<PointAtConstraint>(holonomicConstraint);
     double fieldPointX = pointAtConstraint.fieldPointX;
     double fieldPointY = pointAtConstraint.fieldPointY;
@@ -60,19 +58,20 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
      * ux,uy = unit vector of desired heading
      * hx,hy = heading
      * dot = dot product of ux,uy and hx,hy
-     * 
+     *
      * constrain dot to cos(1.0), which is colinear
      * and cos(thetaTolerance)
      */
     auto dx = fieldPointX - x;
     auto dy = fieldPointY - y;
-    auto ux = dx / hypot(dx, dy);//sqrt(dx*dx + dy*dy);
-    auto uy = dy / hypot(dx, dy);
-    auto hx = cos(theta);
-    auto hy = sin(theta);
+    auto ux = dx / std::hypot(dx, dy);  // std::sqrt(dx*dx + dy*dy);
+    auto uy = dy / std::hypot(dx, dy);
+    auto hx = std::cos(theta);
+    auto hy = std::sin(theta);
     auto dot = hx * ux + hy * uy;
 
-    ApplyIntervalSet1dConstraint(opti, dot, IntervalSet1d(cos(headingTolerance), 1.0));
+    ApplyIntervalSet1dConstraint(
+        opti, dot, IntervalSet1d(std::cos(headingTolerance), 1.0));
   } else if (std::holds_alternative<PointLineConstraint>(holonomicConstraint)) {
     ApplyConstraint(opti, x, y, theta,
                     std::get<PointLineConstraint>(holonomicConstraint));
