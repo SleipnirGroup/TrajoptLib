@@ -38,7 +38,7 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
       // force the initial call
       //auto lastCall = std::chrono::steady_clock::now();
 
-    opti.AddIntermediateCallback([=](){
+    opti.AddIntermediateCallback([this](){
       //return;
         // using namespace std::chrono_literals;
 
@@ -50,7 +50,7 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
         //   lastCall = now;
         auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
                                    alpha, Fx, Fy, dt, N);
-        for (auto it = path.callbacks.begin(); it < path.callbacks.end(); it++) {
+        for (auto it : path.callbacks) {
           (*it)(soln, handle);
         }
     });
