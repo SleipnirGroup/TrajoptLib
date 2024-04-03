@@ -2,7 +2,7 @@
 
 #include "trajopt/OptimalTrajectoryGenerator.h"
 #include <stdint.h>
-
+#include "trajopt/expected"
 #include "trajopt/path/SwervePathBuilder.h"
 
 #if defined(OPTIMIZER_BACKEND_CASADI)
@@ -18,7 +18,7 @@
 
 namespace trajopt {
 
-SwerveSolution OptimalTrajectoryGenerator::Generate(
+expected<SwerveSolution, std::string> OptimalTrajectoryGenerator::Generate(
     const SwervePathBuilder& path, bool diagnostics, int64_t handle) {
   SwerveDiscreteOptimal<_OPTI_BACKEND> problem(path.GetPath(),
                                                path.GetControlIntervalCounts(),

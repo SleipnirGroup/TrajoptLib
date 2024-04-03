@@ -13,6 +13,7 @@
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/set/Set2d.h"
 #include "trajopt/solution/Solution.h"
+#include "trajopt/solution/SwerveSolution.h"
 
 namespace trajopt {
 

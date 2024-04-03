@@ -10,6 +10,7 @@
 #include "trajopt/constraint/holonomic/HolonomicConstraint.h"
 #include "trajopt/drivetrain/DifferentialDrivetrain.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
+#include "trajopt/solution/SwerveSolution.h"
 
 namespace trajopt {
 
