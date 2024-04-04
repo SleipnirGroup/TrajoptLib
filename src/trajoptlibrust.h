@@ -38,7 +38,7 @@ class SwervePathBuilderImpl {
   void wpt_y(size_t idx, double y);
   void wpt_heading(size_t idx, double heading);
   void wpt_point_at(size_t idx, double field_point_x, double field_point_y,
-                    double heading_tolerance);
+                    double heading_tolerance, double heading_offset);
 
   void sgmt_linear_velocity_direction(size_t from_idx, size_t to_idx,
                                       double angle);
@@ -52,7 +52,7 @@ class SwervePathBuilderImpl {
   void sgmt_y(size_t from_idx, size_t to_idx, double y);
   void sgmt_heading(size_t from_idx, size_t to_idx, double heading);
   void sgmt_point_at(size_t from_idx, size_t to_idx, double field_point_x,
-                     double field_point_y, double heading_tolerance);
+                     double field_point_y, double heading_tolerance, double heading_offset);
 
   void sgmt_circle_obstacle(size_t from_idx, size_t to_idx, double x, double y,
                             double radius);

@@ -157,11 +157,13 @@ void SwervePathBuilderImpl::wpt_heading(size_t idx, double heading) {
 
 void SwervePathBuilderImpl::wpt_point_at(size_t idx, double field_point_x,
                                          double field_point_y,
-                                         double heading_tolerance) {
+                                         double heading_tolerance,
+                                         double heading_offset) {
   path.WptConstraint(
       idx, trajopt::PointAtConstraint{.fieldPointX = field_point_x,
                                       .fieldPointY = field_point_y,
-                                      .headingTolerance = heading_tolerance});
+                                      .headingTolerance = heading_tolerance,
+                                      .headingOffset = heading_offset});
 }
 
 void SwervePathBuilderImpl::sgmt_linear_velocity_direction(size_t from_idx,
@@ -215,12 +217,14 @@ void SwervePathBuilderImpl::sgmt_heading(size_t from_idx, size_t to_idx,
 void SwervePathBuilderImpl::sgmt_point_at(size_t from_idx, size_t to_idx,
                                           double field_point_x,
                                           double field_point_y,
-                                          double heading_tolerance) {
+                                          double heading_tolerance,
+                                          double heading_offset) {
   path.SgmtConstraint(
       from_idx, to_idx,
       trajopt::PointAtConstraint{.fieldPointX = field_point_x,
                                  .fieldPointY = field_point_y,
-                                 .headingTolerance = heading_tolerance});
+                                 .headingTolerance = heading_tolerance,
+                                 .headingOffset = heading_offset});
 }
 
 void SwervePathBuilderImpl::sgmt_circle_obstacle(size_t from_idx, size_t to_idx,
