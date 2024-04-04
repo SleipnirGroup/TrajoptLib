@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include <vector>
 #include <functional>
+#include <vector>
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/constraint/differential/DifferentialConstraint.h"

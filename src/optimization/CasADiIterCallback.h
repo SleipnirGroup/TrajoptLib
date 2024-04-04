@@ -2,9 +2,9 @@
 
 #pragma once
 
+#include <functional>
 #include <string>
 #include <vector>
-#include <function>
 
 #include <casadi/casadi.hpp>
 #include <casadi/core/nlpsol.hpp>
@@ -24,7 +24,8 @@ class CasADiIterCallback : public Callback {
  public:
   // Constructor
   CasADiIterCallback(const std::string& name, casadi_int nx, casadi_int ng,
-                     casadi_int np, std::function<void()> callback, const Dict& opts = Dict())
+                     casadi_int np, std::function<void()> callback,
+                     const Dict& opts = Dict())
       : nx(nx), ng(ng), np(np), callback(callback) {
     construct(name, opts);
   }

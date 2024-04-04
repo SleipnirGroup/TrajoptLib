@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <functional>
+
 template <typename Expr>
 concept ExprSys = requires(Expr expr, const Expr constExpr, double num) {
   Expr();
@@ -28,8 +30,9 @@ concept ExprSys = requires(Expr expr, const Expr constExpr, double num) {
 
 template <typename Expr, typename Opti>
 concept OptiSys =
-    ExprSys<Expr> && requires(Expr expr, const Expr constExpr, Opti opti,
-                              const Opti constOpti, double num, std::function<void()> callback) {
+    ExprSys<Expr> &&
+    requires(Expr expr, const Expr constExpr, Opti opti, const Opti constOpti,
+             double num, std::function<void()> callback) {
       Opti();
       expr = opti.DecisionVariable();
       opti.Minimize(-expr);

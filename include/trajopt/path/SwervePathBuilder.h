@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cstddef>
+#include <functional>
 #include <vector>
 
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
@@ -253,7 +254,8 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    */
   Solution CalculateInitialGuess() const;
 
-  void AddIntermediateCallback(const std::function<void(SwerveSolution&, int64_t)> callback);
+  void AddIntermediateCallback(
+      const std::function<void(SwerveSolution&, int64_t)> callback);
 
  private:
   SwervePath path;

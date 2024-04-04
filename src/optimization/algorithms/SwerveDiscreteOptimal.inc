@@ -35,25 +35,25 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     const SwervePath& path, const std::vector<size_t>& N,
     const Solution& initialGuess, int64_t handle)
     : path(path), N(N) {
-      // force the initial call
-    auto lastCall = std::chrono::steady_clock::now();
+  // force the initial call
+  auto lastFrameTime = std::chrono::steady_clock::now();
 
-    opti.AddIntermediateCallback([=, this, &lastCall](){
-      //return;
-        using namespace std::chrono_literals;
+  opti.AddIntermediateCallback([=, this, &lastFrameTime]() {
+    using namespace std::chrono_literals;
 
-          auto now = std::chrono::steady_clock::now();
-          if (now - lastCall < 67ms) {
-            return;
-          }
+    auto now = std::chrono::steady_clock::now();
+    // 15 FPS limit on sending updates
+    if (now - lastFrameTime < 67ms) {
+      return;
+    }
 
-          lastCall = now;
-        auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
-                                   alpha, Fx, Fy, dt, N);
-        for (auto it : path.callbacks) {
-          it(soln, handle);
-        }
-    });
+    lastFrameTime = now;
+    auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax,
+                                        ay, alpha, Fx, Fy, dt, N);
+    for (auto it : path.callbacks) {
+      it(soln, handle);
+    }
+  });
   size_t wptCnt = 1 + N.size();
   size_t sgmtCnt = N.size();
   size_t sampTot = GetIdx(N, wptCnt, 0);

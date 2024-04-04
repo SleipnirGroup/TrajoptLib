@@ -2,9 +2,10 @@
 
 #pragma once
 
+#include <functional>
 #include <optional>
-#include <function>
 #include <string>
+#include <vector>
 
 #include <casadi/casadi.hpp>
 

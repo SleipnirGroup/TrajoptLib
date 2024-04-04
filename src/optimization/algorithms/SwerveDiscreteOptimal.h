@@ -4,7 +4,7 @@
 
 #include <string>
 #include <vector>
-#include <string>
+
 #include "optimization/HolonomicTrajoptUtil.h"
 #include "optimization/OptiSys.h"
 #include "optimization/TrajoptUtil.h"
@@ -58,7 +58,6 @@ class SwerveDiscreteOptimal {
   const std::vector<size_t>& N;
 
   Opti opti;
-  
 
  public:
   /**

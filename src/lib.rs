@@ -175,7 +175,7 @@ mod ffi {
             radius: f64,
         );
 
-        fn generate(self: &SwervePathBuilderImpl, diagnostics: bool, uuid: i64) 
+        fn generate(self: &SwervePathBuilderImpl, diagnostics: bool, uuid: i64)
             -> Result<HolonomicTrajectory>;
         fn enable_state_feedback(self: Pin<&mut SwervePathBuilderImpl>, callback: fn(HolonomicTrajectory, i64));
 
@@ -183,7 +183,7 @@ mod ffi {
     }
 }
 
-static mut callback : Option<fn(HolonomicTrajectory, i64)->()> = None; 
+static mut callback : Option<fn(HolonomicTrajectory, i64)->()> = None;
 
 pub fn set_progress_callback(cb: fn(HolonomicTrajectory, i64)->()) {
     unsafe {

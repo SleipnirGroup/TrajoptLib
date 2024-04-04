@@ -28,12 +28,12 @@ void CasADiOpti::SetInitial(const casadi::MX& expression, double value) {
 [[nodiscard]]
 expected<void, std::string> CasADiOpti::Solve(bool diagnostics) {
   GetCancellationFlag() = 0;
-  const auto callback =
-    new const CasADiIterCallback("f", opti.nx(), opti.ng(), opti.np()[=](){
-      for (auto it = callbacks.begin(); it < callbacks.end(); it++) {
-        (*it)();
-      }
-    });
+  const auto callback = new const CasADiIterCallback(
+      "f", opti.nx(), opti.ng(), opti.np()[=]() {
+        for (auto it = callbacks.begin(); it < callbacks.end(); it++) {
+          (*it)();
+        }
+      });
 
   // I don't try-catch this next line since it should always work.
   // I'm assuming the dynamic lib is on the path and casadi can find it.
@@ -53,7 +53,7 @@ expected<void, std::string> CasADiOpti::Solve(bool diagnostics) {
   return {};
 }
 
-void CasADiOpti::AddIntermediateCallback(std::function<void()> callback){
+void CasADiOpti::AddIntermediateCallback(std::function<void()> callback) {
   callbacks.push_back(callback);
 }
 

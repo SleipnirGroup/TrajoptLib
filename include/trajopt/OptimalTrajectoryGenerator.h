@@ -29,7 +29,8 @@ class TRAJOPT_DLLEXPORT OptimalTrajectoryGenerator {
    *   containing the failure reason.
    */
   static expected<SwerveSolution, std::string> Generate(
-      const SwervePathBuilder& path, bool diagnostics = false, int64_t handle = 0);
+      const SwervePathBuilder& path, bool diagnostics = false,
+      int64_t handle = 0);
 };
 
 }  // namespace trajopt

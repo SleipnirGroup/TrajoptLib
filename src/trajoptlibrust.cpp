@@ -2,13 +2,15 @@
 
 #include "trajoptlibrust.h"
 
+#include <stdint.h>
+#include <trajopt/solution/SwerveSolution.h>
+
 #include <cstddef>
+#include <iterator>
 #include <memory>
 #include <stdexcept>
-#include <stdint.h>
 #include <utility>
 #include <vector>
-#include <iterator>
 
 #include "trajopt/OptimalTrajectoryGenerator.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
@@ -16,7 +18,6 @@
 #include "trajopt/trajectory/HolonomicTrajectory.h"
 #include "trajopt/trajectory/HolonomicTrajectorySample.h"
 #include "trajoptlib/src/lib.rs.h"
-#include <trajopt/solution/SwerveSolution.h>
 
 namespace trajoptlibrust {
 
@@ -272,19 +273,20 @@ HolonomicTrajectory _convert_holonomic_trajectory(
           trajectory.samples)};
 }
 
-void SwervePathBuilderImpl::enable_state_feedback(rust::Fn<void(HolonomicTrajectory, int64_t)> callback) {
-    path.AddIntermediateCallback(
-      [=](trajopt::SwerveSolution& solution, int64_t handle){
-        callback(_convert_holonomic_trajectory(
-            trajopt::HolonomicTrajectory{solution}
-          ), handle);
-      }
-    );
+void SwervePathBuilderImpl::enable_state_feedback(
+    rust::Fn<void(HolonomicTrajectory, int64_t)> callback) {
+  path.AddIntermediateCallback([=](trajopt::SwerveSolution& solution,
+                                   int64_t handle) {
+    callback(
+        _convert_holonomic_trajectory(trajopt::HolonomicTrajectory{solution}),
+        handle);
+  });
 }
 
-HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics, int64_t handle) const {
-  if (auto sol =
-          trajopt::OptimalTrajectoryGenerator::Generate(path, diagnostics, handle);
+HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
+                                                    int64_t handle) const {
+  if (auto sol = trajopt::OptimalTrajectoryGenerator::Generate(
+          path, diagnostics, handle);
       sol.has_value()) {
     return _convert_holonomic_trajectory(
         trajopt::HolonomicTrajectory{sol.value()});
