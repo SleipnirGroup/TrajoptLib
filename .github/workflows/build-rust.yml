@@ -83,10 +83,8 @@ jobs:
           sudo apt-get install -y g++-aarch64-linux-gnu
           rustup target install aarch64-unknown-linux-gnu
 
-      - name: Build Rust
-        run: cargo build ${{ matrix.cargo-build-flags }} --features ${{ matrix.optimizer_backend }}
+      - run: cargo build ${{ matrix.cargo-build-flags }} --features ${{ matrix.optimizer_backend }}
 
-      - name: Run Rust
+      - run: cargo run --example swerve --features ${{ matrix.optimizer_backend }}
         if: matrix.artifact-name != 'Rust Native - Windows aarch64 (Sleipnir)' &&
             matrix.artifact-name != 'Rust Native - Linux aarch64 (Sleipnir)'
-        run: cargo run --example swerve --features ${{ matrix.optimizer_backend }}

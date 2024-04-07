@@ -65,18 +65,11 @@ jobs:
           choco upgrade mingw --version=11.2.0 -y --no-progress --allow-downgrade
           echo C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin >> $env:GITHUB_PATH
 
-      - name: configure
-        run: cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer_backend }}
-
-      - name: build
-        run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
-
-      - name: test
+      - run: cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer_backend }}
+      - run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
+      - run: ctest -C RelWithDebInfo --output-on-failure
         working-directory: build
-        run: ctest -C RelWithDebInfo --output-on-failure
-
-      - name: install
-        run: cmake --install build --config RelWithDebInfo --prefix pkg
+      - run: cmake --install build --config RelWithDebInfo --prefix pkg
 
       - uses: actions/upload-artifact@v4
         with:
@@ -89,17 +82,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup emscripten
-        uses: numworks/setup-emscripten@latest
-
-      - name: configure
-        run: emcmake cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DOPTIMIZER_BACKEND=sleipnir
-
-      - name: build
-        run: cmake --build build --config Release --parallel $(nproc)
-
-      - name: install
-        run: cmake --install build --config Release --prefix pkg
+      - uses: numworks/setup-emscripten@latest
+      - run: emcmake cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DOPTIMIZER_BACKEND=sleipnir
+      - run: cmake --build build --config Release --parallel $(nproc)
+      - run: cmake --install build --config Release --prefix pkg
 
       - uses: actions/upload-artifact@v4
         with:
