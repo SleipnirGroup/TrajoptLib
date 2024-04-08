@@ -261,7 +261,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    * This callback will run on every iteration of the solver.
    * The callback's first parameter is the SwerveSolution based on the solver's
    * state at that iteration. The second parameter is the handle passed into
-   * Generate()
+   * Generate().
    * @param callback the callback
    */
   void AddIntermediateCallback(
