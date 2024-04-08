@@ -29,7 +29,7 @@ void CasADiOpti::SetInitial(const casadi::MX& expression, double value) {
 expected<void, std::string> CasADiOpti::Solve(bool diagnostics) {
   GetCancellationFlag() = 0;
   const auto callback = new const CasADiIterCallback(
-      "f", opti.nx(), opti.ng(), opti.np()[=]() {
+      "f", opti.nx(), opti.ng(), opti.np(), [=]() {
         for (auto it = callbacks.begin(); it < callbacks.end(); it++) {
           (*it)();
         }
