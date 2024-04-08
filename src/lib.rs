@@ -40,10 +40,6 @@ mod ffi {
         samples: Vec<HolonomicTrajectorySample>,
     }
 
-    // extern "Rust" {
-    //     type SwervePathBuilder;
-    //     fn on_iteration(self: &SwervePathBuilder, uuid: String, intermediate: HolonomicTrajectory);
-    // }
     unsafe extern "C++" {
         include!("trajoptlibrust.h");
 
