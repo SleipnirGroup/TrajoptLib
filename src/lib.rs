@@ -177,7 +177,7 @@ mod ffi {
 
         fn generate(self: &SwervePathBuilderImpl, diagnostics: bool, uuid: i64)
             -> Result<HolonomicTrajectory>;
-        fn enable_state_feedback(self: Pin<&mut SwervePathBuilderImpl>, callback: fn(HolonomicTrajectory, i64));
+        fn add_progress_callback(self: Pin<&mut SwervePathBuilderImpl>, callback: fn(HolonomicTrajectory, i64));
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
@@ -427,7 +427,7 @@ impl SwervePathBuilder {
     /// 
     /// * diagnostics: If true, prints per-iteration details of the solver to stdout.
     /// * handle: A number used to identify results from this generation in the 
-    /// `enable_state_feedback` callback. If `enable_state_feedback` has not been called, this
+    /// `add_progress_callback` callback. If `add_progress_callback` has not been called, this
     /// value has no significance.
     /// 
     /// Returns a result with either the final `trajoptlib::HolonomicTrajectory`, or a String error message
@@ -452,8 +452,8 @@ impl SwervePathBuilder {
     /// 
     /// This function can be called multiple times to add multiple callbacks. 
     /// 
-    pub fn enable_state_feedback(&mut self, callback: fn(HolonomicTrajectory, i64)){
-        crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), callback);
+    pub fn add_progress_callback(&mut self, callback: fn(HolonomicTrajectory, i64)){
+        crate::ffi::SwervePathBuilderImpl::add_progress_callback(self.path.pin_mut(), callback);
     }
 }
 

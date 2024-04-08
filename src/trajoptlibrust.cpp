@@ -282,7 +282,7 @@ HolonomicTrajectory _convert_holonomic_trajectory(
  * 
  * This function can be called multiple times to add multiple callbacks. 
 */
-void SwervePathBuilderImpl::enable_state_feedback(
+void SwervePathBuilderImpl::add_progress_callback(
     rust::Fn<void(HolonomicTrajectory, int64_t)> callback) {
   path.AddIntermediateCallback([=](trajopt::SwerveSolution& solution,
                                    int64_t handle) {

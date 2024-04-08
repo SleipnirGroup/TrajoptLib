@@ -63,7 +63,7 @@ class SwervePathBuilderImpl {
   // throwing exception, once cxx supports it
   HolonomicTrajectory generate(bool diagnostics = false,
                                int64_t handle = 0) const;
-  void enable_state_feedback(
+  void add_progress_callback(
       rust::Fn<void(HolonomicTrajectory, int64_t)> callback);
   void cancel_all();
 
