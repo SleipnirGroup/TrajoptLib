@@ -252,6 +252,15 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    */
   Solution CalculateInitialGuess() const;
 
+  /**
+   * Calculate a discrete initial guess of the x, y, and heading
+   * of the robot that goes through each waypoint.
+   * Uses the spline and trajectory generator from WPILib.
+   *
+   * @return the initial guess, as a solution
+   */
+  Solution CalculateInitialGuessSpline() const;
+
  private:
   SwervePath path;
 

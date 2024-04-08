@@ -11,6 +11,12 @@
 #include <variant>
 #include <vector>
 
+#include "frc/geometry/Pose2d.h"
+#include "frc/geometry/Translation2d.h"
+#include "frc/trajectory/TrajectoryGenerator.h"
+#include "units/length.h"
+#include "units/angle.h"
+
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/constraint/LinePointConstraint.h"
 #include "trajopt/constraint/PointLineConstraint.h"
@@ -334,6 +340,59 @@ Solution GenerateLinearInitialGuess(
           Linspace(
               initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
               initialGuessPoints.at(wptIdx).back().heading, N_lastGuessSgmt));
+    }
+  }
+  return initialGuess;
+}
+
+Solution GenerateSplineInitialGuess(
+    const std::vector<std::vector<InitialGuessPoint>>& initialGuessPoints,
+    const SwerveDrivetrain drivetrain) {
+  // size_t wptCnt = controlIntervalCounts.size() + 1;
+  // size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
+
+  Solution initialGuess{};
+  size_t totalGuessPoints = 0;
+  for (const auto& points : initialGuessPoints) {
+    totalGuessPoints += points.size();
+  }
+  std::vector<frc::Pose2d> flattenedGuessPoints;
+  flattenedGuessPoints.reserve(totalGuessPoints);
+  for (const auto& guessPoints : initialGuessPoints) {
+    for (const auto& guessPoint : guessPoints) {
+      frc::Pose2d pose = frc::Pose2d{
+        units::meter_t(guessPoint.x),
+        units::meter_t(guessPoint.y),
+        frc::Rotation2d{units::radian_t(guessPoint.heading)}
+      };
+      flattenedGuessPoints.push_back(pose);
+    }
+  }
+  auto mods = drivetrain.modules;
+  auto kinematics = frc::SwerveDriveKinematics(
+    frc::Translation2d(units::meter_t(mods[0].x), units::meter_t(mods[0].y)),
+    frc::Translation2d(units::meter_t(mods[1].x), units::meter_t(mods[1].y)),
+    frc::Translation2d(units::meter_t(mods[2].x), units::meter_t(mods[2].y)),
+    frc::Translation2d(units::meter_t(mods[3].x), units::meter_t(mods[3].y))
+  );
+  double maxVel = mods[0].wheelMaxAngularVelocity * 2 * 3.14159 * mods[0].wheelRadius;
+  frc::TrajectoryConfig config{units::meters_per_second_t(maxVel), units::meters_per_second_squared_t(maxVel)};
+  config.SetKinematics(kinematics);
+  auto trajectory = frc::TrajectoryGenerator::GenerateTrajectory(flattenedGuessPoints, config);
+  const auto& states = trajectory.States();
+  size_t sampTot = states.size();
+  initialGuess.x.reserve(sampTot);
+  initialGuess.y.reserve(sampTot);
+  initialGuess.theta.reserve(sampTot);
+  initialGuess.dt.reserve(sampTot);
+  for (size_t i = 0; i < states.size(); ++i) {
+    const auto& state = states[i];
+    initialGuess.x.push_back(state.pose.X().to<double>());
+    initialGuess.y.push_back(state.pose.Y().to<double>());
+    initialGuess.theta.push_back(state.pose.Rotation().Radians().to<double>());
+    if (i > 0) {
+      auto dt = state.t - states[i - 1].t;
+      initialGuess.dt.push_back(dt.to<double>());
     }
   }
   return initialGuess;

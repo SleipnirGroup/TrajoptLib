@@ -183,6 +183,10 @@ Solution SwervePathBuilder::CalculateInitialGuess() const {
   return GenerateLinearInitialGuess(initialGuessPoints, controlIntervalCounts);
 }
 
+Solution SwervePathBuilder::CalculateInitialGuessSpline() const {
+  return GenerateSplineInitialGuess(initialGuessPoints, path.drivetrain);
+}
+
 void SwervePathBuilder::NewWpts(size_t finalIndex) {
   int64_t targetIdx = finalIndex;
   int64_t greatestIdx = path.waypoints.size() - 1;
