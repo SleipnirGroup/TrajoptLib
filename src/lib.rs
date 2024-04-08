@@ -1,7 +1,6 @@
 #[cxx::bridge(namespace = "trajoptlibrust")]
 mod ffi {
 
-
     #[derive(Debug, Deserialize, Serialize)]
     struct SwerveModule {
         x: f64,
@@ -175,22 +174,28 @@ mod ffi {
             radius: f64,
         );
 
-        fn generate(self: &SwervePathBuilderImpl, diagnostics: bool, uuid: i64)
-            -> Result<HolonomicTrajectory>;
-        fn add_progress_callback(self: Pin<&mut SwervePathBuilderImpl>, callback: fn(HolonomicTrajectory, i64));
+        fn generate(
+            self: &SwervePathBuilderImpl,
+            diagnostics: bool,
+            uuid: i64,
+        ) -> Result<HolonomicTrajectory>;
+        fn add_progress_callback(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            callback: fn(HolonomicTrajectory, i64),
+        );
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
 }
 
 pub struct SwervePathBuilder {
-    path: cxx::UniquePtr<crate::ffi::SwervePathBuilderImpl>
+    path: cxx::UniquePtr<crate::ffi::SwervePathBuilderImpl>,
 }
 
 impl SwervePathBuilder {
     pub fn new() -> SwervePathBuilder {
         SwervePathBuilder {
-            path: crate::ffi::new_swerve_path_builder_impl()
+            path: crate::ffi::new_swerve_path_builder_impl(),
         }
     }
 
@@ -433,7 +438,11 @@ impl SwervePathBuilder {
     /// Returns a result with either the final `trajoptlib::HolonomicTrajectory`, or a String error message
     /// if generation failed.
     ///
-    pub fn generate(&mut self, diagnostics: bool, handle: i64) -> Result<HolonomicTrajectory, String> {
+    pub fn generate(
+        &mut self,
+        diagnostics: bool,
+        handle: i64,
+    ) -> Result<HolonomicTrajectory, String> {
         match self.path.generate(diagnostics, handle) {
             Ok(traj) => Ok(traj),
             Err(msg) => Err(msg.what().to_string()),
@@ -452,7 +461,7 @@ impl SwervePathBuilder {
     ///
     /// This function can be called multiple times to add multiple callbacks.
     ///
-    pub fn add_progress_callback(&mut self, callback: fn(HolonomicTrajectory, i64)){
+    pub fn add_progress_callback(&mut self, callback: fn(HolonomicTrajectory, i64)) {
         crate::ffi::SwervePathBuilderImpl::add_progress_callback(self.path.pin_mut(), callback);
     }
 }

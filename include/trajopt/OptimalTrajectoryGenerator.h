@@ -27,6 +27,7 @@ class TRAJOPT_DLLEXPORT OptimalTrajectoryGenerator {
    *
    * @param path the path
    * @param diagnostics Enables diagnostic prints.
+   * @param handle an identifier for state callbacks
    * @return The optimized swerve trajectory solution on success, or a string
    *   containing the failure reason.
    */

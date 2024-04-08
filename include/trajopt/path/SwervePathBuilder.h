@@ -256,6 +256,14 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    */
   Solution CalculateInitialGuess() const;
 
+  /**
+   * Add a callback to retrieve the state of the solver as a SwerveSolution.
+   * This callback will run on every iteration of the solver.
+   * The callback's first parameter is the SwerveSolution based on the solver's
+   * state at that iteration. The second parameter is the handle passed into
+   * Generate()
+   * @param callback the callback
+   */
   void AddIntermediateCallback(
       const std::function<void(SwerveSolution&, int64_t)> callback);
 
