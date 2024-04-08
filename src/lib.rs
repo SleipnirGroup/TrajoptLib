@@ -1,6 +1,5 @@
 #[cxx::bridge(namespace = "trajoptlibrust")]
 mod ffi {
-
     #[derive(Debug, Deserialize, Serialize)]
     struct SwerveModule {
         x: f64,
