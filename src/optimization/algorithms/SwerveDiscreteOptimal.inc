@@ -52,8 +52,8 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     lastFrameTime = now;
     auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax,
                                         ay, alpha, Fx, Fy, dt, N);
-    for (auto it : path.callbacks) {
-      it(soln, handle);
+    for (auto& callback : path.callbacks) {
+      callback(soln, handle);
     }
   });
   size_t wptCnt = 1 + N.size();
