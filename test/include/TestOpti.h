@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include <trajopt/expected>
 
@@ -36,6 +37,7 @@ class TestOpti {
   double GetMaximizeObjective() { return maximizeObjective; }
   double GetMinimizeObjective() { return minimizeObjective; }
   bool IsViolating() { return isViolating; }
+  void AddIntermediateCallback(std::function<void()> callback);
 };
 
 static_assert(OptiSys<double, TestOpti>);

@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <vector>
+#include <cstdint>
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/constraint/differential/DifferentialConstraint.h"

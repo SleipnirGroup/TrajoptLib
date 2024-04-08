@@ -3,6 +3,7 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/expected"
