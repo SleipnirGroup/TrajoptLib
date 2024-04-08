@@ -30,8 +30,8 @@ expected<void, std::string> CasADiOpti::Solve(bool diagnostics) {
   GetCancellationFlag() = 0;
   const auto callback = new const CasADiIterCallback(
       "f", opti.nx(), opti.ng(), opti.np(), [=, this]() {
-        for (auto it = callbacks.begin(); it < callbacks.end(); it++) {
-          (*it)();
+        for (auto& c : callbacks) {
+          c();
         }
       });
 
