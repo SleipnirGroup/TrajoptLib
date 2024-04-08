@@ -41,5 +41,5 @@ int main() {
 
   // SOLVE
   [[maybe_unused]] auto solution =
-      OptimalTrajectoryGenerator::Generate(path, true);
+  OptimalTrajectoryGenerator::Generate(path, true);
 }
