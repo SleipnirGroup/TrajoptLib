@@ -118,8 +118,8 @@ void SleipnirOpti::AddIntermediateCallback(std::function<void()> callback) {
 expected<void, std::string> SleipnirOpti::Solve(bool diagnostics) {
   GetCancellationFlag() = 0;
   opti.Callback([=, this](const sleipnir::SolverIterationInfo&) -> bool {
-    for (auto it = callbacks.begin(); it < callbacks.end(); it++) {
-      (*it)();
+    for (auto& callback : callbacks) {
+      callback();
     }
     return trajopt::GetCancellationFlag();
   });
