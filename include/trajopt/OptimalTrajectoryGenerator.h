@@ -2,8 +2,9 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include <string>
-#include <cstdint>
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/expected"

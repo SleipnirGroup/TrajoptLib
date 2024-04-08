@@ -2,9 +2,10 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include <functional>
 #include <vector>
-#include <cstdint>
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/constraint/differential/DifferentialConstraint.h"
@@ -44,7 +45,7 @@ struct TRAJOPT_DLLEXPORT SwervePath {
   /// drivetrain of the robot
   SwerveDrivetrain drivetrain;
 
-  /// A vector of callbacks to be called with the intermediate SwerveSolution 
+  /// A vector of callbacks to be called with the intermediate SwerveSolution
   /// and a user-specified handle at every iteration of the solver
   std::vector<std::function<void(SwerveSolution&, int64_t)>> callbacks;
 };

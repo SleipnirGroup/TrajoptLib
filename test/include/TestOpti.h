@@ -3,10 +3,10 @@
 #pragma once
 
 #include <cmath>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
-#include <functional>
 
 #include <trajopt/expected>
 

@@ -2,10 +2,11 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include <cstddef>
 #include <functional>
 #include <vector>
-#include <cstdint>
 
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "trajopt/obstacle/Bumpers.h"
