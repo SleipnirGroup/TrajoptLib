@@ -6,7 +6,6 @@
 #include <trajopt/solution/SwerveSolution.h>
 
 #include <cstddef>
-#include <iterator>
 #include <memory>
 #include <stdexcept>
 #include <utility>
