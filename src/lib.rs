@@ -422,8 +422,19 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn generate(&mut self, diagnostics: bool, uuid: i64) -> Result<HolonomicTrajectory, String> {
-        match self.path.generate(diagnostics, uuid) {
+    /// 
+    /// Generate the trajectory;
+    /// 
+    /// * diagnostics: If true, prints per-iteration details of the solver to stdout.
+    /// * handle: A number used to identify results from this generation in the 
+    /// `enable_state_feedback` callback. If `enable_state_feedback` has not been called, this
+    /// value has no significance.
+    /// 
+    /// Returns a result with either the final `trajoptlib::HolonomicTrajectory`, or a String error message
+    /// if generation failed.
+    /// 
+    pub fn generate(&mut self, diagnostics: bool, handle: i64) -> Result<HolonomicTrajectory, String> {
+        match self.path.generate(diagnostics, handle) {
             Ok(traj) => Ok(traj),
             Err(msg) => Err(msg.what().to_string()),
         }
@@ -432,6 +443,15 @@ impl SwervePathBuilder {
     pub fn cancel_all(&mut self) {
         crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
     }
+    /// 
+    /// Add a callback that will be called on each iteration of the solver.
+    /// 
+    /// * callback: a `fn` (not a closure) to be executed. The callback's
+    /// first parameter will be a `trajoptlib::HolonomicTrajectory`, and the second
+    /// parameter will be an `i64` equal to the handle passed in `generate()`
+    /// 
+    /// This function can be called multiple times to add multiple callbacks. 
+    /// 
     pub fn enable_state_feedback(&mut self, callback: fn(HolonomicTrajectory, i64)){
         crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), callback);
     }

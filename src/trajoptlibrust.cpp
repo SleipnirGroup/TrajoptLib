@@ -273,6 +273,15 @@ HolonomicTrajectory _convert_holonomic_trajectory(
           trajectory.samples)};
 }
 
+/**
+ * Add a callback that will be called on each iteration of the solver.
+ * 
+ * @param callback: a `fn` (not a closure) to be executed. The callback's
+ * first parameter will be a `trajoptlib::HolonomicTrajectory`, and the second
+ * parameter will be an `i64` equal to the handle passed in `generate()`
+ * 
+ * This function can be called multiple times to add multiple callbacks. 
+*/
 void SwervePathBuilderImpl::enable_state_feedback(
     rust::Fn<void(HolonomicTrajectory, int64_t)> callback) {
   path.AddIntermediateCallback([=](trajopt::SwerveSolution& solution,

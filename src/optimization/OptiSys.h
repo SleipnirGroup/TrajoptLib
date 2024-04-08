@@ -42,6 +42,10 @@ concept OptiSys =
       opti.SubjectTo(constExpr <= constExpr);
       opti.SetInitial(expr, num);
       opti.Solve();
+      /**
+       * Add a `void()` callback to be called by the solver on every iteration. This function
+       * can be called multiple times to add multiple callbacks.
+       */
       opti.AddIntermediateCallback(callback);
       num = constOpti.SolutionValue(expr);
     };
