@@ -4,9 +4,6 @@
 
 #include "frc/geometry/Translation2d.h"
 
-#include <wpi/json.h>
-
-#include "geometry2d.pb.h"
 #include "units/math.h"
 
 using namespace frc;
@@ -41,14 +38,4 @@ Translation2d Translation2d::Nearest(
                            [this](Translation2d a, Translation2d b) {
                              return this->Distance(a) < this->Distance(b);
                            });
-}
-
-void frc::to_json(wpi::json& json, const Translation2d& translation) {
-  json =
-      wpi::json{{"x", translation.X().value()}, {"y", translation.Y().value()}};
-}
-
-void frc::from_json(const wpi::json& json, Translation2d& translation) {
-  translation = Translation2d{units::meter_t{json.at("x").get<double>()},
-                              units::meter_t{json.at("y").get<double>()}};
 }

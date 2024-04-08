@@ -96,13 +96,3 @@ Pose2d Pose2d::Nearest(std::initializer_list<Pose2d> poses) const {
         return aDistance < bDistance;
       });
 }
-
-void frc::to_json(wpi::json& json, const Pose2d& pose) {
-  json = wpi::json{{"translation", pose.Translation()},
-                   {"rotation", pose.Rotation()}};
-}
-
-void frc::from_json(const wpi::json& json, Pose2d& pose) {
-  pose = Pose2d{json.at("translation").get<Translation2d>(),
-                json.at("rotation").get<Rotation2d>()};
-}

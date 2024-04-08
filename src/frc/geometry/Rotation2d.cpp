@@ -6,17 +6,8 @@
 
 #include <cmath>
 
-#include <wpi/json.h>
 
-#include "geometry2d.pb.h"
 #include "units/math.h"
 
 using namespace frc;
 
-void frc::to_json(wpi::json& json, const Rotation2d& rotation) {
-  json = wpi::json{{"radians", rotation.Radians().value()}};
-}
-
-void frc::from_json(const wpi::json& json, Rotation2d& rotation) {
-  rotation = Rotation2d{units::radian_t{json.at("radians").get<double>()}};
-}

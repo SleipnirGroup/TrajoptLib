@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <gcem.hpp>
+#include "frc/thirdparty/gcem/include/gcem.hpp"
 
 #include "frc/geometry/Rotation2d.h"
 #include "units/angle.h"
