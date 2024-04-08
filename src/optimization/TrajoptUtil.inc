@@ -14,6 +14,7 @@
 #include "frc/geometry/Pose2d.h"
 #include "frc/geometry/Translation2d.h"
 #include "frc/trajectory/TrajectoryGenerator.h"
+#include "frc/MathUtil.h"
 #include "units/length.h"
 #include "units/angle.h"
 
@@ -347,9 +348,10 @@ Solution GenerateLinearInitialGuess(
 
 Solution GenerateSplineInitialGuess(
     const std::vector<std::vector<InitialGuessPoint>>& initialGuessPoints,
+    const std::vector<size_t> controlIntervalCounts,
     const SwerveDrivetrain drivetrain) {
-  // size_t wptCnt = controlIntervalCounts.size() + 1;
-  // size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
+  size_t wptCnt = controlIntervalCounts.size() + 1;
+  size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
 
   Solution initialGuess{};
   size_t totalGuessPoints = 0;
@@ -378,24 +380,73 @@ Solution GenerateSplineInitialGuess(
   double maxVel = mods[0].wheelMaxAngularVelocity * 2 * 3.14159 * mods[0].wheelRadius;
   frc::TrajectoryConfig config{units::meters_per_second_t(maxVel), units::meters_per_second_squared_t(maxVel)};
   config.SetKinematics(kinematics);
-  auto trajectory = frc::TrajectoryGenerator::GenerateTrajectory(flattenedGuessPoints, config);
+  frc::Trajectory trajectory = frc::TrajectoryGenerator::GenerateTrajectory(flattenedGuessPoints, config);
   const auto& states = trajectory.States();
-  size_t sampTot = states.size();
-  initialGuess.x.reserve(sampTot);
-  initialGuess.y.reserve(sampTot);
-  initialGuess.theta.reserve(sampTot);
-  initialGuess.dt.reserve(sampTot);
-  for (size_t i = 0; i < states.size(); ++i) {
-    const auto& state = states[i];
-    initialGuess.x.push_back(state.pose.X().to<double>());
-    initialGuess.y.push_back(state.pose.Y().to<double>());
-    initialGuess.theta.push_back(state.pose.Rotation().Radians().to<double>());
-    if (i > 0) {
-      auto dt = state.t - states[i - 1].t;
-      initialGuess.dt.push_back(dt.to<double>());
+
+  size_t statesTot = states.size();
+  initialGuess.x.reserve(statesTot);
+  initialGuess.y.reserve(statesTot);
+  initialGuess.theta.reserve(statesTot);
+  initialGuess.dt.reserve(statesTot);
+
+  size_t currentSegment = 0;
+  size_t nextWaypointIndex = 1;
+  auto previousWaypointTime = units::second_t(0);
+  double tolerance = 1e-9;
+  initialGuess.dt.push_back(0);
+
+  for (size_t i = 0; i < states.size() - 1; ++i) {
+    const auto& currentState = states[i];
+
+    if (nextWaypointIndex < flattenedGuessPoints.size()) {
+      const auto& nextWaypoint = flattenedGuessPoints[nextWaypointIndex];
+      bool reachedWaypoint = frc::IsNear(nextWaypoint.X().to<double>(), currentState.pose.X().to<double>(), tolerance)
+                          && frc::IsNear(nextWaypoint.Y().to<double>(), currentState.pose.Y().to<double>(), tolerance)
+                          && frc::IsNear(nextWaypoint.Rotation().Radians().to<double>(), 
+                                        currentState.pose.Rotation().Radians().to<double>(), tolerance);
+      if (reachedWaypoint) {
+        size_t samplesForCurrentSegment = controlIntervalCounts[currentSegment];
+        auto timeSinceLastWaypoint = currentState.t - previousWaypointTime;
+        auto dt = timeSinceLastWaypoint / samplesForCurrentSegment;
+        for (size_t j = 0; j < samplesForCurrentSegment; ++j) {
+          const auto& sample = trajectory.Sample(previousWaypointTime + j * dt).pose;
+          initialGuess.x.push_back(sample.X().to<double>());
+          initialGuess.y.push_back(sample.Y().to<double>());
+          initialGuess.theta.push_back(sample.Rotation().Radians().to<double>());
+          initialGuess.dt.push_back(dt.to<double>());
+        }
+
+        ++nextWaypointIndex;
+        ++currentSegment;
+        previousWaypointTime = currentState.t;
+        if (currentSegment >= controlIntervalCounts.size()) {
+          const auto& sample = states.back().pose;
+          initialGuess.x.push_back(sample.X().to<double>());
+          initialGuess.y.push_back(sample.Y().to<double>());
+          initialGuess.theta.push_back(sample.Rotation().Radians().to<double>());
+          // initialGuess.dt.push_back(dt.to<double>());
+        }
+      }
     }
   }
+
   return initialGuess;
+
+
+
+
+  // // need to refactor this for loop so that the contents of initialGuess respects the initialGuessPoints 2d vector and controlIntervalCounts vector
+  // for (size_t i = 0; i < states.size(); ++i) {
+  //   const auto& state = states[i];
+  //   initialGuess.x.push_back(state.pose.X().to<double>());
+  //   initialGuess.y.push_back(state.pose.Y().to<double>());
+  //   initialGuess.theta.push_back(state.pose.Rotation().Radians().to<double>());
+  //   if (i > 0) {
+  //     auto dt = state.t - states[i - 1].t;
+  //     initialGuess.dt.push_back(dt.to<double>());
+  //   }
+  // }
+  // return initialGuess;
 }
 
 template <typename Expr, typename Opti>

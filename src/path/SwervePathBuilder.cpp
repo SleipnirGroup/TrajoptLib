@@ -184,7 +184,7 @@ Solution SwervePathBuilder::CalculateInitialGuess() const {
 }
 
 Solution SwervePathBuilder::CalculateInitialGuessSpline() const {
-  return GenerateSplineInitialGuess(initialGuessPoints, path.drivetrain);
+  return GenerateSplineInitialGuess(initialGuessPoints, controlIntervalCounts, path.drivetrain);
 }
 
 void SwervePathBuilder::NewWpts(size_t finalIndex) {
