@@ -21,7 +21,7 @@ expected<SwerveSolution, std::string> OptimalTrajectoryGenerator::Generate(
     const SwervePathBuilder& path, bool diagnostics) {
   SwerveDiscreteOptimal<_OPTI_BACKEND> problem(path.GetPath(),
                                                path.GetControlIntervalCounts(),
-                                               path.CalculateInitialGuess());
+                                               path.CalculateInitialGuessSpline());
   return problem.Generate(diagnostics);
 }
 }  // namespace trajopt
