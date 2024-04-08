@@ -183,13 +183,13 @@ mod ffi {
     }
 }
 
-static mut CALLBACK : Option<fn(HolonomicTrajectory, i64)->()> = None;
+// static mut CALLBACK : Option<fn(HolonomicTrajectory, i64)->()> = None;
 
-pub fn set_progress_callback(cb: fn(HolonomicTrajectory, i64)->()) {
-    unsafe {
-    CALLBACK = Some(cb);
-    }
-}
+// pub fn set_progress_callback(cb: fn(HolonomicTrajectory, i64)->()) {
+//     unsafe {
+//     CALLBACK = Some(cb);
+//     }
+// }
 
 pub struct SwervePathBuilder {
     path: cxx::UniquePtr<crate::ffi::SwervePathBuilderImpl>
@@ -431,12 +431,12 @@ impl SwervePathBuilder {
     }
 
     pub fn generate(&mut self, diagnostics: bool, uuid: i64) -> Result<HolonomicTrajectory, String> {
-        unsafe {
-        if CALLBACK.is_some() {
-            let cb = CALLBACK.unwrap();
-            crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), cb);
-        }
-    }
+    //     unsafe {
+    //     if CALLBACK.is_some() {
+    //         let cb = CALLBACK.unwrap();
+    //         crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), cb);
+    //     }
+    // }
         match self.path.generate(diagnostics, uuid) {
             Ok(traj) => Ok(traj),
             Err(msg) => Err(msg.what().to_string()),
@@ -445,6 +445,9 @@ impl SwervePathBuilder {
 
     pub fn cancel_all(&mut self) {
         crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
+    }
+    pub fn enable_state_feedback(&mut self, callback: fn(HolonomicTrajectory, i64)){
+        crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), callback);
     }
 }
 
