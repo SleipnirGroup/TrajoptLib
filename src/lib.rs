@@ -183,11 +183,11 @@ mod ffi {
     }
 }
 
-static mut callback : Option<fn(HolonomicTrajectory, i64)->()> = None;
+static mut CALLBACK : Option<fn(HolonomicTrajectory, i64)->()> = None;
 
 pub fn set_progress_callback(cb: fn(HolonomicTrajectory, i64)->()) {
     unsafe {
-    callback = Some(cb);
+    CALLBACK = Some(cb);
     }
 }
 
@@ -432,8 +432,8 @@ impl SwervePathBuilder {
 
     pub fn generate(&mut self, diagnostics: bool, uuid: i64) -> Result<HolonomicTrajectory, String> {
         unsafe {
-        if callback.is_some() {
-            let cb = callback.unwrap();
+        if CALLBACK.is_some() {
+            let cb = CALLBACK.unwrap();
             crate::ffi::SwervePathBuilderImpl::enable_state_feedback(self.path.pin_mut(), cb);
         }
     }
