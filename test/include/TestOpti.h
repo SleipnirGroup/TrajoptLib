@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cmath>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -36,6 +37,7 @@ class TestOpti {
   double GetMaximizeObjective() { return maximizeObjective; }
   double GetMinimizeObjective() { return minimizeObjective; }
   bool IsViolating() { return isViolating; }
+  void AddIntermediateCallback(std::function<void()> callback);
 };
 
 static_assert(OptiSys<double, TestOpti>);
