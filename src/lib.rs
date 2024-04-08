@@ -23,7 +23,7 @@ mod ffi {
         heading: f64,
     }
 
-    #[derive(Debug, Deserialize, Serialize)]
+    #[derive(Debug, Deserialize, Serialize, Clone)]
     struct HolonomicTrajectorySample {
         timestamp: f64,
         x: f64,
@@ -34,7 +34,7 @@ mod ffi {
         angular_velocity: f64,
     }
 
-    #[derive(Debug, Deserialize, Serialize)]
+    #[derive(Debug, Deserialize, Serialize, Clone)]
     struct HolonomicTrajectory {
         samples: Vec<HolonomicTrajectorySample>,
     }
@@ -169,8 +169,15 @@ mod ffi {
             radius: f64,
         );
 
-        fn generate(self: &SwervePathBuilderImpl, diagnostics: bool)
-            -> Result<HolonomicTrajectory>;
+        fn generate(
+            self: &SwervePathBuilderImpl,
+            diagnostics: bool,
+            uuid: i64,
+        ) -> Result<HolonomicTrajectory>;
+        fn add_progress_callback(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            callback: fn(HolonomicTrajectory, i64),
+        );
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
@@ -415,8 +422,23 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn generate(&self, diagnostics: bool) -> Result<HolonomicTrajectory, String> {
-        match self.path.generate(diagnostics) {
+    ///
+    /// Generate the trajectory;
+    ///
+    /// * diagnostics: If true, prints per-iteration details of the solver to stdout.
+    /// * handle: A number used to identify results from this generation in the
+    /// `add_progress_callback` callback. If `add_progress_callback` has not been called, this
+    /// value has no significance.
+    ///
+    /// Returns a result with either the final `trajoptlib::HolonomicTrajectory`, or a String error message
+    /// if generation failed.
+    ///
+    pub fn generate(
+        &mut self,
+        diagnostics: bool,
+        handle: i64,
+    ) -> Result<HolonomicTrajectory, String> {
+        match self.path.generate(diagnostics, handle) {
             Ok(traj) => Ok(traj),
             Err(msg) => Err(msg.what().to_string()),
         }
@@ -424,6 +446,18 @@ impl SwervePathBuilder {
 
     pub fn cancel_all(&mut self) {
         crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
+    }
+    ///
+    /// Add a callback that will be called on each iteration of the solver.
+    ///
+    /// * callback: a `fn` (not a closure) to be executed. The callback's
+    /// first parameter will be a `trajoptlib::HolonomicTrajectory`, and the second
+    /// parameter will be an `i64` equal to the handle passed in `generate()`
+    ///
+    /// This function can be called multiple times to add multiple callbacks.
+    ///
+    pub fn add_progress_callback(&mut self, callback: fn(HolonomicTrajectory, i64)) {
+        crate::ffi::SwervePathBuilderImpl::add_progress_callback(self.path.pin_mut(), callback);
     }
 }
 

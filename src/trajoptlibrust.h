@@ -59,10 +59,12 @@ class SwervePathBuilderImpl {
   void sgmt_polygon_obstacle(size_t from_idx, size_t to_idx,
                              rust::Vec<double> x, rust::Vec<double> y,
                              double radius);
-
   // TODO: Return std::expected<HolonomicTrajectory, std::string> instead of
   // throwing exception, once cxx supports it
-  HolonomicTrajectory generate(bool diagnostics = false) const;
+  HolonomicTrajectory generate(bool diagnostics = false,
+                               int64_t handle = 0) const;
+  void add_progress_callback(
+      rust::Fn<void(HolonomicTrajectory, int64_t)> callback);
   void cancel_all();
 
   SwervePathBuilderImpl() = default;

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -53,6 +54,7 @@ struct SleipnirExpr {
 class SleipnirOpti {
  private:
   sleipnir::OptimizationProblem opti;
+  std::vector<std::function<void()>> callbacks;
 
  public:
   trajopt::SleipnirExpr DecisionVariable();
@@ -64,6 +66,7 @@ class SleipnirOpti {
   [[nodiscard]]
   expected<void, std::string> Solve(bool diagnostics = false);
   double SolutionValue(const trajopt::SleipnirExpr& expr) const;
+  void AddIntermediateCallback(std::function<void()> callback);
 };
 }  // namespace trajopt
 

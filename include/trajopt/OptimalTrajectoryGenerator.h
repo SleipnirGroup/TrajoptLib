@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include <string>
 
 #include "trajopt/SymbolExports.h"
@@ -25,11 +27,13 @@ class TRAJOPT_DLLEXPORT OptimalTrajectoryGenerator {
    *
    * @param path the path
    * @param diagnostics Enables diagnostic prints.
+   * @param handle an identifier for state callbacks
    * @return The optimized swerve trajectory solution on success, or a string
    *   containing the failure reason.
    */
   static expected<SwerveSolution, std::string> Generate(
-      const SwervePathBuilder& path, bool diagnostics = false);
+      const SwervePathBuilder& path, bool diagnostics = false,
+      int64_t handle = 0);
 };
 
 }  // namespace trajopt
