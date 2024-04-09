@@ -427,17 +427,28 @@ Solution GenerateSplineInitialGuess(
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
 
-      double startTheta = sgmt.at(guessPointIdx).heading;
-      double endTheta = (guessPointIdx < sgmt.size() - 1) 
-                        ? sgmt.at(guessPointIdx).heading
-                        : initialGuessPoints.at(sgmtIdx + 1).front().heading;
+      double startTheta = frc::InputModulus(
+                                  sgmt.at(guessPointIdx).heading,
+                                  (double)-GCEM_PI, (double)GCEM_PI);
+
+      double endTheta = frc::InputModulus(
+                          (guessPointIdx < sgmt.size() - 1) 
+                          ? sgmt.at(guessPointIdx + 1).heading
+                          : initialGuessPoints.at(sgmtIdx + 1).front().heading,
+                          (double)-GCEM_PI, (double)GCEM_PI);
 
       for (size_t sampleIdx = 0; sampleIdx < samplesForSpline; ++sampleIdx) {
         double t = static_cast<double>(sampleIdx) / samplesForSpline;
         const auto point = splines.at(splineIdx).GetPoint(t);
         initialGuess.x.push_back(point.first.X().to<double>());
         initialGuess.y.push_back(point.first.Y().to<double>());
-        double interpolatedTheta = startTheta + t * (endTheta - startTheta);
+        double deltaTheta = frc::InputModulus(
+                                endTheta - startTheta,
+                                (double)-GCEM_PI, (double)GCEM_PI);
+        double interpolatedTheta = frc::InputModulus(
+                                        startTheta + t * deltaTheta,
+                                        (double)-GCEM_PI, (double)GCEM_PI);
+        initialGuess.theta.push_back(interpolatedTheta);
       }
     }
     ++splineIdx;
