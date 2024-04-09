@@ -179,6 +179,10 @@ mod ffi {
             callback: fn(HolonomicTrajectory, i64),
         );
 
+        fn calculate_initial_guess(self: &SwervePathBuilderImpl) -> Vec<f64>;
+
+        fn calculate_initial_guess_spline(self: &SwervePathBuilderImpl) -> Vec<f64>;
+
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
 }
@@ -444,9 +448,18 @@ impl SwervePathBuilder {
         }
     }
 
+    pub fn calculate_initial_guess(&self) -> Vec<f64> {
+        self.path.calculate_initial_guess()
+    }
+
+    pub fn calculate_initial_guess_spline(&self) -> Vec<f64> {
+        self.path.calculate_initial_guess_spline()
+    }
+
     pub fn cancel_all(&mut self) {
         crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
     }
+
     ///
     /// Add a callback that will be called on each iteration of the solver.
     ///

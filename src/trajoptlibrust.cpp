@@ -81,6 +81,10 @@ size_t _convert_count(const size_t& count) {
   return count;
 }
 
+double _convert_double(const double& dbl) {
+  return dbl;
+}
+
 void SwervePathBuilderImpl::set_control_interval_counts(
     const rust::Vec<size_t> counts) {
   std::vector<size_t> converted_counts =
@@ -301,6 +305,22 @@ HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
   } else {
     throw std::runtime_error{sol.error()};
   }
+}
+
+rust::Vec<double> SwervePathBuilderImpl::calculate_initial_guess() const {
+  auto sol = path.CalculateInitialGuess();
+  return _cpp_vector_to_rust_vec<double,
+                                 double,
+                                 &_convert_double>(
+          sol.x);
+}
+
+rust::Vec<double> SwervePathBuilderImpl::calculate_initial_guess_spline() const {
+  auto sol = path.CalculateInitialGuessSpline();
+  return _cpp_vector_to_rust_vec<double,
+                                 double,
+                                 &_convert_double>(
+          sol.x);
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {

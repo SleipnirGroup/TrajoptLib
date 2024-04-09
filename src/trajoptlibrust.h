@@ -66,6 +66,9 @@ class SwervePathBuilderImpl {
   void add_progress_callback(
       rust::Fn<void(HolonomicTrajectory, int64_t)> callback);
   void cancel_all();
+  
+  rust::Vec<double> calculate_initial_guess() const;
+  rust::Vec<double> calculate_initial_guess_spline() const;
 
   SwervePathBuilderImpl() = default;
 

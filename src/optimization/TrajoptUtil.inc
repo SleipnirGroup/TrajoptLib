@@ -13,7 +13,11 @@
 
 #include "frc/geometry/Pose2d.h"
 #include "frc/geometry/Translation2d.h"
+#include "frc/spline/CubicHermiteSpline.h"
+#include "frc/spline/Spline.h"
+#include "frc/spline/SplineHelper.h"
 #include "frc/trajectory/TrajectoryGenerator.h"
+#include "frc/MathExtras.h"
 #include "frc/MathUtil.h"
 #include "units/length.h"
 #include "units/angle.h"
@@ -347,6 +351,112 @@ Solution GenerateLinearInitialGuess(
 }
 
 Solution GenerateSplineInitialGuess(
+    const std::vector<std::vector<InitialGuessPoint>>& initialGuessPoints,
+    const std::vector<size_t> controlIntervalCounts,
+    const SwerveDrivetrain drivetrain) {
+  size_t totalGuessPoints = 0;
+  for (const auto& points : initialGuessPoints) {
+    totalGuessPoints += points.size();
+  }
+  std::vector<frc::Translation2d> flatTranslationPoints;
+  flatTranslationPoints.reserve(totalGuessPoints);
+  for (const auto& guessPoints : initialGuessPoints) {
+    for (const auto& guessPoint : guessPoints) {
+      frc::Translation2d translation = frc::Translation2d{
+        units::meter_t(guessPoint.x),
+        units::meter_t(guessPoint.y)};
+      flatTranslationPoints.push_back(translation);
+    }
+  }
+  const auto startSplineAngle = 
+        (flatTranslationPoints.at(1) - flatTranslationPoints.front()).Angle();
+  const auto endSpineAngle = 
+        (flatTranslationPoints.back()
+          -flatTranslationPoints.at(flatTranslationPoints.size()-2)
+        ).Angle();
+  const auto start = frc::Pose2d(
+                      flatTranslationPoints.front(),
+                      startSplineAngle);
+  const auto end = frc::Pose2d(
+                      flatTranslationPoints.back(), 
+                      endSpineAngle);
+  std::vector<frc::Translation2d> interiorPoints;
+  
+  interiorPoints.assign(
+                      flatTranslationPoints.begin() + 1,
+                      flatTranslationPoints.end() - 1);
+  const auto splineControlVectors = 
+                      frc::SplineHelper::CubicControlVectorsFromWaypoints(
+                        start, interiorPoints, end
+                      );
+  const auto splines = frc::SplineHelper::CubicSplinesFromControlVectors(
+                      splineControlVectors.front(), 
+                      interiorPoints, 
+                      splineControlVectors.back());
+
+  for (auto i = 0; i < splines.size(); i++) {
+    auto s = splines[i];
+    // auto ss = frc::SplineParameterizer::Parameterize(s);
+    // for (auto j = 0; j < ss.size(); j++) {
+    //   const auto& pose = ss.at(j).first;
+    //   printf("x: %.8f, y: %.8f\n", pose.X().to<double>(), pose.Y().to<double>());
+    // }
+  }
+  size_t wptCnt = controlIntervalCounts.size() + 1;
+  size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
+
+  Solution initialGuess{};
+  initialGuess.x.reserve(sampTot);
+  initialGuess.y.reserve(sampTot);
+  initialGuess.theta.reserve(sampTot);
+  initialGuess.dt.reserve(sampTot);
+
+  for (size_t i = 0; i < sampTot; i++) {
+    initialGuess.dt.push_back((wptCnt * 5.0) / sampTot);
+  }
+
+  size_t splineIdx = 0;
+  for (size_t sgmtIdx = 0; sgmtIdx < controlIntervalCounts.size(); ++sgmtIdx) {
+    const auto& sgmt = initialGuessPoints.at(sgmtIdx);
+    size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx);
+    size_t splinesInSgmt = sgmt.size();
+    
+    for (size_t guessPointIdx = 0; guessPointIdx < splinesInSgmt; ++guessPointIdx) {
+      size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
+      if (guessPointIdx == splinesInSgmt - 1) {
+        samplesForSpline += (samplesForSgmt % splinesInSgmt);
+      }
+
+      double startTheta = sgmt.at(guessPointIdx).heading;
+      double endTheta = (guessPointIdx < sgmt.size() - 1) 
+                        ? sgmt.at(guessPointIdx).heading
+                        : initialGuessPoints.at(sgmtIdx + 1).front().heading;
+
+      for (size_t sampleIdx = 0; sampleIdx < samplesForSpline; ++sampleIdx) {
+        double t = static_cast<double>(sampleIdx) / samplesForSpline;
+        const auto point = splines.at(splineIdx).GetPoint(t);
+        initialGuess.x.push_back(point.first.X().to<double>());
+        initialGuess.y.push_back(point.first.Y().to<double>());
+        double interpolatedTheta = startTheta + t * (endTheta - startTheta);
+      }
+    }
+    ++splineIdx;
+  }
+  if (!initialGuessPoints.empty() && !initialGuessPoints.back().empty()) {
+    const auto& lastPoint = initialGuessPoints.back().front();
+    initialGuess.x.push_back(lastPoint.x);
+    initialGuess.y.push_back(lastPoint.y);
+    initialGuess.theta.push_back(lastPoint.heading);
+    // No dt is added for the very last point, as it represents the end of the trajectory
+  }
+  for (auto i = 0; i < initialGuess.x.size(); i++) {
+    printf("dt: %.8f, x: %.8f\n", initialGuess.dt[i], initialGuess.x[i]);
+  }
+
+  return initialGuess;
+}
+
+Solution GenerateSplineInitialGuessOld(
     const std::vector<std::vector<InitialGuessPoint>>& initialGuessPoints,
     const std::vector<size_t> controlIntervalCounts,
     const SwerveDrivetrain drivetrain) {
