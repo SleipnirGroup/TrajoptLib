@@ -360,12 +360,15 @@ Solution GenerateSplineInitialGuess(
   }
   std::vector<frc::Translation2d> flatTranslationPoints;
   flatTranslationPoints.reserve(totalGuessPoints);
+  printf("* initialGuessPoints *\n");
   for (const auto& guessPoints : initialGuessPoints) {
     for (const auto& guessPoint : guessPoints) {
       frc::Translation2d translation = frc::Translation2d{
         units::meter_t(guessPoint.x),
         units::meter_t(guessPoint.y)};
       flatTranslationPoints.push_back(translation);
+      printf("x: %.8f, y: %.8f\n", guessPoint.x, guessPoint.y);
+
     }
   }
   const auto startSplineAngle = 
@@ -449,8 +452,10 @@ Solution GenerateSplineInitialGuess(
     initialGuess.theta.push_back(lastPoint.heading);
     // No dt is added for the very last point, as it represents the end of the trajectory
   }
+
+  printf("wptCnt: %d, sampTot: %d\n", wptCnt, sampTot);
   for (auto i = 0; i < initialGuess.x.size(); i++) {
-    printf("dt: %.8f, x: %.8f\n", initialGuess.dt[i], initialGuess.x[i]);
+    printf("x: %.8f, y: %.8f\n", initialGuess.x[i], initialGuess.y[i]);
   }
 
   return initialGuess;
