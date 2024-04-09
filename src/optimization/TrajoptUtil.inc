@@ -357,22 +357,19 @@ Solution GenerateSplineInitialGuess(
   }
   std::vector<frc::Translation2d> flatTranslationPoints;
   flatTranslationPoints.reserve(totalGuessPoints);
-  printf("* initialGuessPoints *\n");
   for (const auto& guessPoints : initialGuessPoints) {
     for (const auto& guessPoint : guessPoints) {
       frc::Translation2d translation = frc::Translation2d{
         units::meter_t(guessPoint.x),
         units::meter_t(guessPoint.y)};
       flatTranslationPoints.push_back(translation);
-      printf("x: %.8f, y: %.8f, r: %.8f\n", guessPoint.x, guessPoint.y, guessPoint.heading);
-
     }
   }
   const auto startSplineAngle = 
         (flatTranslationPoints.at(1) - flatTranslationPoints.front()).Angle();
   const auto endSpineAngle = 
-        (flatTranslationPoints.back()
-          -flatTranslationPoints.at(flatTranslationPoints.size()-2)
+        (flatTranslationPoints.at(flatTranslationPoints.size()-2)
+         - flatTranslationPoints.back()
         ).Angle();
   const auto start = frc::Pose2d(
                       flatTranslationPoints.front(),
@@ -394,14 +391,6 @@ Solution GenerateSplineInitialGuess(
                       interiorPoints, 
                       splineControlVectors.back());
 
-  for (auto i = 0; i < splines.size(); i++) {
-    auto s = splines[i];
-    // auto ss = frc::SplineParameterizer::Parameterize(s);
-    // for (auto j = 0; j < ss.size(); j++) {
-    //   const auto& pose = ss.at(j).first;
-    //   printf("x: %.8f, y: %.8f\n", pose.X().to<double>(), pose.Y().to<double>());
-    // }
-  }
   size_t wptCnt = controlIntervalCounts.size() + 1;
   size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
 
@@ -453,17 +442,12 @@ Solution GenerateSplineInitialGuess(
     }
     ++splineIdx;
   }
+
   if (!initialGuessPoints.empty() && !initialGuessPoints.back().empty()) {
     const auto& lastPoint = initialGuessPoints.back().front();
     initialGuess.x.push_back(lastPoint.x);
     initialGuess.y.push_back(lastPoint.y);
     initialGuess.theta.push_back(lastPoint.heading);
-    // No dt is added for the very last point, as it represents the end of the trajectory
-  }
-
-  printf("wptCnt: %d, sampTot: %d\n", (int)wptCnt, (int)sampTot);
-  for (auto i = 0; i < initialGuess.x.size(); i++) {
-    printf("x: %.8f, y: %.8f, r: %.8f\n", initialGuess.x[i], initialGuess.y[i], initialGuess.theta[i]);
   }
 
   return initialGuess;

@@ -181,11 +181,11 @@ const std::vector<size_t>& SwervePathBuilder::GetControlIntervalCounts() const {
   return controlIntervalCounts;
 }
 
-Solution SwervePathBuilder::CalculateInitialGuess() const {
+Solution SwervePathBuilder::CalculateLinearInitialGuess() const {
   return GenerateLinearInitialGuess(initialGuessPoints, controlIntervalCounts);
 }
 
-Solution SwervePathBuilder::CalculateInitialGuessSpline() const {
+Solution SwervePathBuilder::CalculateSplineInitialGuess() const {
   return GenerateSplineInitialGuess(initialGuessPoints, controlIntervalCounts);
 }
 

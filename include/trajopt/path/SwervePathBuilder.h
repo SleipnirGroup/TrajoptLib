@@ -254,7 +254,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    *
    * @return the initial guess, as a solution
    */
-  Solution CalculateInitialGuess() const;
+  Solution CalculateLinearInitialGuess() const;
 
   /**
    * Calculate a discrete initial guess of the x, y, and heading
@@ -263,7 +263,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    *
    * @return the initial guess, as a solution
    */
-  Solution CalculateInitialGuessSpline() const;
+  Solution CalculateSplineInitialGuess() const;
 
   /**
    * Add a callback to retrieve the state of the solver as a SwerveSolution.
