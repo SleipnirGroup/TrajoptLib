@@ -350,8 +350,7 @@ Solution GenerateLinearInitialGuess(
 
 Solution GenerateSplineInitialGuess(
     const std::vector<std::vector<InitialGuessPoint>>& initialGuessPoints,
-    const std::vector<size_t> controlIntervalCounts,
-    const SwerveDrivetrain drivetrain) {
+    const std::vector<size_t> controlIntervalCounts) {
   size_t totalGuessPoints = 0;
   for (const auto& points : initialGuessPoints) {
     totalGuessPoints += points.size();
