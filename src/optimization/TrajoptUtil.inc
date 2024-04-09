@@ -6,20 +6,18 @@
 #include <exception>
 #include <limits>
 #include <memory>
+#include <numbers>
 #include <numeric>
 #include <utility>
 #include <variant>
 #include <vector>
 
+#include "frc/MathUtil.h"
 #include "frc/geometry/Pose2d.h"
 #include "frc/geometry/Translation2d.h"
 #include "frc/spline/CubicHermiteSpline.h"
 #include "frc/spline/Spline.h"
 #include "frc/spline/SplineHelper.h"
-#include "frc/MathUtil.h"
-#include "units/length.h"
-#include "units/angle.h"
-
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/constraint/LinePointConstraint.h"
 #include "trajopt/constraint/PointLineConstraint.h"
@@ -33,6 +31,8 @@
 #include "trajopt/set/LinearSet2d.h"
 #include "trajopt/set/RectangularSet2d.h"
 #include "trajopt/set/Set2d.h"
+#include "units/angle.h"
+#include "units/length.h"
 
 namespace trajopt {
 
@@ -360,36 +360,29 @@ Solution GenerateSplineInitialGuess(
   for (const auto& guessPoints : initialGuessPoints) {
     for (const auto& guessPoint : guessPoints) {
       frc::Translation2d translation = frc::Translation2d{
-        units::meter_t(guessPoint.x),
-        units::meter_t(guessPoint.y)};
+          units::meter_t(guessPoint.x), units::meter_t(guessPoint.y)};
       flatTranslationPoints.push_back(translation);
     }
   }
-  const auto startSplineAngle = 
-        (flatTranslationPoints.at(1) - flatTranslationPoints.front()).Angle();
-  const auto endSpineAngle = 
-        (flatTranslationPoints.back()
-        - flatTranslationPoints.at(flatTranslationPoints.size()-2)
-        ).Angle();
-  const auto start = frc::Pose2d(
-                      flatTranslationPoints.front(),
-                      startSplineAngle);
-  const auto end = frc::Pose2d(
-                      flatTranslationPoints.back(), 
-                      endSpineAngle);
+  const auto startSplineAngle =
+      (flatTranslationPoints.at(1) - flatTranslationPoints.front()).Angle();
+  const auto endSpineAngle =
+      (flatTranslationPoints.back() -
+       flatTranslationPoints.at(flatTranslationPoints.size() - 2))
+          .Angle();
+  const auto start =
+      frc::Pose2d(flatTranslationPoints.front(), startSplineAngle);
+  const auto end = frc::Pose2d(flatTranslationPoints.back(), endSpineAngle);
   std::vector<frc::Translation2d> interiorPoints;
-  
-  interiorPoints.assign(
-                      flatTranslationPoints.begin() + 1,
-                      flatTranslationPoints.end() - 1);
-  const auto splineControlVectors = 
-                      frc::SplineHelper::CubicControlVectorsFromWaypoints(
-                        start, interiorPoints, end
-                      );
+
+  interiorPoints.assign(flatTranslationPoints.begin() + 1,
+                        flatTranslationPoints.end() - 1);
+  const auto splineControlVectors =
+      frc::SplineHelper::CubicControlVectorsFromWaypoints(start, interiorPoints,
+                                                          end);
   const auto splines = frc::SplineHelper::CubicSplinesFromControlVectors(
-                      splineControlVectors.front(), 
-                      interiorPoints, 
-                      splineControlVectors.back());
+      splineControlVectors.front(), interiorPoints,
+      splineControlVectors.back());
 
   size_t wptCnt = controlIntervalCounts.size() + 1;
   size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
@@ -409,22 +402,22 @@ Solution GenerateSplineInitialGuess(
     const auto& sgmt = initialGuessPoints.at(sgmtIdx);
     size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx);
     size_t splinesInSgmt = sgmt.size();
-    
-    for (size_t guessPointIdx = 0; guessPointIdx < splinesInSgmt; ++guessPointIdx) {
+
+    for (size_t guessPointIdx = 0; guessPointIdx < splinesInSgmt;
+         ++guessPointIdx) {
       size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
       if (guessPointIdx == splinesInSgmt - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
 
       double startTheta = frc::InputModulus(
-                                  sgmt.at(guessPointIdx).heading,
-                                  (double)-GCEM_PI, (double)GCEM_PI);
+          sgmt.at(guessPointIdx).heading, -std::numbers::pi, std::numbers::pi);
 
       double endTheta = frc::InputModulus(
-                          (guessPointIdx < sgmt.size() - 1) 
-                          ? sgmt.at(guessPointIdx + 1).heading
-                          : initialGuessPoints.at(sgmtIdx + 1).front().heading,
-                          (double)-GCEM_PI, (double)GCEM_PI);
+          (guessPointIdx < sgmt.size() - 1)
+              ? sgmt.at(guessPointIdx + 1).heading
+              : initialGuessPoints.at(sgmtIdx + 1).front().heading,
+          -std::numbers::pi, std::numbers::pi);
 
       for (size_t sampleIdx = 0; sampleIdx < samplesForSpline; ++sampleIdx) {
         double t = static_cast<double>(sampleIdx) / samplesForSpline;
@@ -432,11 +425,9 @@ Solution GenerateSplineInitialGuess(
         initialGuess.x.push_back(point.first.X().to<double>());
         initialGuess.y.push_back(point.first.Y().to<double>());
         double deltaTheta = frc::InputModulus(
-                                endTheta - startTheta,
-                                (double)-GCEM_PI, (double)GCEM_PI);
+            endTheta - startTheta, -std::numbers::pi, std::numbers::pi);
         double interpolatedTheta = frc::InputModulus(
-                                        startTheta + t * deltaTheta,
-                                        (double)-GCEM_PI, (double)GCEM_PI);
+            startTheta + t * deltaTheta, -std::numbers::pi, std::numbers::pi);
         initialGuess.theta.push_back(interpolatedTheta);
       }
     }
