@@ -453,7 +453,7 @@ Solution GenerateSplineInitialGuess(
     // No dt is added for the very last point, as it represents the end of the trajectory
   }
 
-  printf("wptCnt: %d, sampTot: %d\n", wptCnt, sampTot);
+  printf("wptCnt: %d, sampTot: %d\n", (int)wptCnt, (int)sampTot);
   for (auto i = 0; i < initialGuess.x.size(); i++) {
     printf("x: %.8f, y: %.8f\n", initialGuess.x[i], initialGuess.y[i]);
   }
