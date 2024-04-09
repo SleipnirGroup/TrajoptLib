@@ -368,8 +368,8 @@ Solution GenerateSplineInitialGuess(
   const auto startSplineAngle = 
         (flatTranslationPoints.at(1) - flatTranslationPoints.front()).Angle();
   const auto endSpineAngle = 
-        (flatTranslationPoints.at(flatTranslationPoints.size()-2)
-         - flatTranslationPoints.back()
+        (flatTranslationPoints.back()
+        - flatTranslationPoints.at(flatTranslationPoints.size()-2)
         ).Angle();
   const auto start = frc::Pose2d(
                       flatTranslationPoints.front(),
