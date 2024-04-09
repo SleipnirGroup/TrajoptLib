@@ -16,8 +16,6 @@
 #include "frc/spline/CubicHermiteSpline.h"
 #include "frc/spline/Spline.h"
 #include "frc/spline/SplineHelper.h"
-#include "frc/trajectory/TrajectoryGenerator.h"
-#include "frc/MathExtras.h"
 #include "frc/MathUtil.h"
 #include "units/length.h"
 #include "units/angle.h"
@@ -458,120 +456,6 @@ Solution GenerateSplineInitialGuess(
     printf("x: %.8f, y: %.8f\n", initialGuess.x[i], initialGuess.y[i]);
   }
 
-  return initialGuess;
-}
-
-Solution GenerateSplineInitialGuessOld(
-    const std::vector<std::vector<InitialGuessPoint>>& initialGuessPoints,
-    const std::vector<size_t> controlIntervalCounts,
-    const SwerveDrivetrain drivetrain) {
-  size_t wptCnt = controlIntervalCounts.size() + 1;
-  size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
-
-  Solution initialGuess{};
-  size_t totalGuessPoints = 0;
-  for (const auto& points : initialGuessPoints) {
-    totalGuessPoints += points.size();
-  }
-  std::vector<frc::Pose2d> flattenedGuessPoints;
-  flattenedGuessPoints.reserve(totalGuessPoints);
-  for (const auto& guessPoints : initialGuessPoints) {
-    for (const auto& guessPoint : guessPoints) {
-      frc::Pose2d pose = frc::Pose2d{
-        units::meter_t(guessPoint.x),
-        units::meter_t(guessPoint.y),
-        frc::Rotation2d{units::radian_t(guessPoint.heading)}
-      };
-      flattenedGuessPoints.push_back(pose);
-    }
-  }
-  auto mods = drivetrain.modules;
-  auto kinematics = frc::SwerveDriveKinematics(
-    frc::Translation2d(units::meter_t(mods[0].x), units::meter_t(mods[0].y)),
-    frc::Translation2d(units::meter_t(mods[1].x), units::meter_t(mods[1].y)),
-    frc::Translation2d(units::meter_t(mods[2].x), units::meter_t(mods[2].y)),
-    frc::Translation2d(units::meter_t(mods[3].x), units::meter_t(mods[3].y))
-  );
-  double maxVel = mods[0].wheelMaxAngularVelocity * 2 * 3.14159 * mods[0].wheelRadius;
-  frc::TrajectoryConfig config{units::meters_per_second_t(maxVel), units::meters_per_second_squared_t(maxVel)};
-  config.SetKinematics(kinematics);
-  frc::Trajectory trajectory = frc::TrajectoryGenerator::GenerateTrajectory(flattenedGuessPoints, config);
-  const auto& states = trajectory.States();
-  // for (auto i = 0; i < states.size(); i++) {
-  //   auto s = states[i];
-  //   printf("t: %.8f, x: %.8f\n", s.t.to<double>(), s.pose.X().to<double>());
-  // }
-
-  initialGuess.x.reserve(sampTot);
-  initialGuess.y.reserve(sampTot);
-  initialGuess.theta.reserve(sampTot);
-  initialGuess.dt.reserve(sampTot);
-
-  const units::second_t interval = units::second_t(0.0001);
-  units::second_t previousWaypointTime = units::second_t(0);
-  size_t nextWptIdx = 1;
-  size_t nextGuessPointIndex = 1;
-  double tolerance = 2e-4;
-  // initialGuess.dt.push_back(0);
-
-  // initialGuess.x.push_back(initialGuessPoints.front().front().x);
-  // initialGuess.y.push_back(initialGuessPoints.front().front().y);
-  // initialGuess.theta.push_back(initialGuessPoints.front().front().heading);
-
-
-  for (units::second_t t = 0_s; t < trajectory.TotalTime(); t+=interval) {
-    const auto& currentState = trajectory.Sample(t);
-    // printf("current state - t: %.6f, x: %.6f\n", currentState.t.to<double>(), currentState.pose.X().to<double>());
-    const auto& nextWaypoint = initialGuessPoints.at(nextWptIdx).front();
-    // printf("next waypoint -              x: %.6f\n", nextWaypoint.x);
-
-    bool reachedWaypoint = frc::IsNear(nextWaypoint.x, currentState.pose.X().to<double>(), tolerance)
-                        && frc::IsNear(nextWaypoint.y, currentState.pose.Y().to<double>(), tolerance)
-                        && frc::IsNear(nextWaypoint.heading, 
-                                      currentState.pose.Rotation().Radians().to<double>(), tolerance);
-    if (reachedWaypoint) {
-      size_t samplesForCurrentSegment = controlIntervalCounts[nextWptIdx-1];
-      auto timeSinceLastWaypoint = currentState.t - previousWaypointTime;
-      auto dt = timeSinceLastWaypoint / samplesForCurrentSegment;
-      for (size_t j = 0; j < samplesForCurrentSegment; ++j) {
-        const auto& sample = trajectory.Sample(previousWaypointTime + j * dt).pose;
-        initialGuess.x.push_back(sample.X().to<double>());
-        initialGuess.y.push_back(sample.Y().to<double>());
-        initialGuess.theta.push_back(sample.Rotation().Radians().to<double>());
-        initialGuess.dt.push_back(5*dt.to<double>());
-      }
-
-      ++nextWptIdx;
-      ++nextGuessPointIndex;
-      
-      if (nextWptIdx - 1 == controlIntervalCounts.size()) {
-        break;
-      }
-      previousWaypointTime = currentState.t;
-
-    }
-  }
-  
-  const auto& currentState = trajectory.States().back();
-  size_t samplesForCurrentSegment = controlIntervalCounts[nextWptIdx-2];
-  auto timeSinceLastWaypoint = currentState.t - previousWaypointTime;
-  auto dt = timeSinceLastWaypoint / samplesForCurrentSegment;
-  // for (size_t j = 0; j < samplesForCurrentSegment; ++j) {
-  //   const auto& sample = trajectory.Sample(previousWaypointTime + j * dt).pose;
-  //   initialGuess.x.push_back(sample.X().to<double>());
-  //   initialGuess.y.push_back(sample.Y().to<double>());
-  //   initialGuess.theta.push_back(sample.Rotation().Radians().to<double>());
-  //   initialGuess.dt.push_back(dt.to<double>());
-  // }
-  initialGuess.x.push_back(currentState.pose.X().to<double>());
-  initialGuess.y.push_back(currentState.pose.Y().to<double>());
-  initialGuess.theta.push_back(currentState.pose.Rotation().Radians().to<double>());
-  initialGuess.dt.push_back(5*timeSinceLastWaypoint.to<double>());
-
-
-  for (auto i = 0; i < initialGuess.x.size(); i++) {
-    printf("dt: %.8f, x: %.8f\n", initialGuess.dt[i], initialGuess.x[i]);
-  }
   return initialGuess;
 }
 
