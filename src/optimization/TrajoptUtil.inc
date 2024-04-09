@@ -364,7 +364,7 @@ Solution GenerateSplineInitialGuess(
         units::meter_t(guessPoint.x),
         units::meter_t(guessPoint.y)};
       flatTranslationPoints.push_back(translation);
-      printf("x: %.8f, y: %.8f\n", guessPoint.x, guessPoint.y);
+      printf("x: %.8f, y: %.8f, r: %.8f\n", guessPoint.x, guessPoint.y, guessPoint.heading);
 
     }
   }
@@ -452,7 +452,7 @@ Solution GenerateSplineInitialGuess(
 
   printf("wptCnt: %d, sampTot: %d\n", (int)wptCnt, (int)sampTot);
   for (auto i = 0; i < initialGuess.x.size(); i++) {
-    printf("x: %.8f, y: %.8f\n", initialGuess.x[i], initialGuess.y[i]);
+    printf("x: %.8f, y: %.8f, r: %.8f\n", initialGuess.x[i], initialGuess.y[i], initialGuess.theta[i]);
   }
 
   return initialGuess;
