@@ -307,16 +307,16 @@ HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
   }
 }
 
-rust::Vec<double> SwervePathBuilderImpl::calculate_initial_guess() const {
-  auto sol = path.CalculateInitialGuess();
+rust::Vec<double> SwervePathBuilderImpl::calculate_linear_initial_guess() const {
+  auto sol = path.CalculateLinearInitialGuess();
   return _cpp_vector_to_rust_vec<double,
                                  double,
                                  &_convert_double>(
           sol.x);
 }
 
-rust::Vec<double> SwervePathBuilderImpl::calculate_initial_guess_spline() const {
-  auto sol = path.CalculateInitialGuessSpline();
+rust::Vec<double> SwervePathBuilderImpl::calculate_spline_initial_guess() const {
+  auto sol = path.CalculateSplineInitialGuess();
   return _cpp_vector_to_rust_vec<double,
                                  double,
                                  &_convert_double>(
