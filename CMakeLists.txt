@@ -15,6 +15,9 @@ set(CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
 )
 
+# Allow overriding options in parent projects
+cmake_policy(SET CMP0077 NEW)
+
 project(TrajoptLib LANGUAGES CXX)
 
 # Use, i.e. don't skip the full RPATH for the build tree
@@ -145,6 +148,27 @@ elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_SLEIPNIR)
     target_link_libraries(TrajoptLib PRIVATE Sleipnir)
 endif()
+
+# wpimath dependency
+set(WITH_CSCORE OFF CACHE INTERNAL "With CSCore")
+set(WITH_GUI OFF CACHE INTERNAL "With GUI")
+set(WITH_JAVA OFF CACHE INTERNAL "With Java")
+set(WITH_NTCORE OFF CACHE INTERNAL "With NTCore")
+set(WITH_SIMULATION_MODULES OFF CACHE INTERNAL "With Simulation Modules")
+set(WITH_TESTS OFF CACHE INTERNAL "With Tests")
+set(WITH_WPIMATH ON CACHE INTERNAL "With WPIMath")
+set(WITH_WPILIB OFF CACHE INTERNAL "With WPILib")
+fetchcontent_declare(
+    wpilib
+    GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
+    GIT_TAG v2024.3.2
+    PATCH_COMMAND
+        git apply
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/allwpilib-add-cmake-exports.patch
+    UPDATE_DISCONNECTED 1
+)
+fetchcontent_makeavailable(wpilib)
+target_link_libraries(TrajoptLib PRIVATE Eigen3::Eigen wpimath)
 
 target_include_directories(
     TrajoptLib
