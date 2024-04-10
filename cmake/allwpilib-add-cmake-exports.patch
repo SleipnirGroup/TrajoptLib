@@ -1,0 +1,314 @@
+diff --git a/apriltag/CMakeLists.txt b/apriltag/CMakeLists.txt
+index 9ec2a698b..7c0e0000e 100644
+--- a/apriltag/CMakeLists.txt
++++ b/apriltag/CMakeLists.txt
+@@ -77,6 +77,7 @@ if(WITH_JAVA)
+     add_dependencies(apriltagjni apriltag_jar)
+ 
+     install(TARGETS apriltagjni EXPORT apriltagjni)
++    export(TARGETS apriltagjni FILE apriltagjni.cmake NAMESPACE apriltagjni::)
+ endif()
+ 
+ if(WITH_JAVA_SOURCE)
+@@ -137,6 +138,7 @@ target_include_directories(
+ )
+ 
+ install(TARGETS apriltag EXPORT apriltag)
++export(TARGETS apriltag FILE apriltag.cmake NAMESPACE apriltag::)
+ install(DIRECTORY src/main/native/include/ DESTINATION "${include_dest}/apriltag")
+ 
+ configure_file(apriltag-config.cmake.in ${WPILIB_BINARY_DIR}/apriltag-config.cmake)
+diff --git a/cameraserver/CMakeLists.txt b/cameraserver/CMakeLists.txt
+index 629004923..41d132793 100644
+--- a/cameraserver/CMakeLists.txt
++++ b/cameraserver/CMakeLists.txt
+@@ -73,6 +73,7 @@ target_link_libraries(cameraserver PUBLIC ntcore cscore wpiutil ${OpenCV_LIBS})
+ set_property(TARGET cameraserver PROPERTY FOLDER "libraries")
+ 
+ install(TARGETS cameraserver EXPORT cameraserver)
++export(TARGETS cameraserver FILE cameraserver.cmake NAMESPACE cameraserver::)
+ install(DIRECTORY src/main/native/include/ DESTINATION "${include_dest}/cameraserver")
+ 
+ configure_file(cameraserver-config.cmake.in ${WPILIB_BINARY_DIR}/cameraserver-config.cmake)
+diff --git a/cscore/CMakeLists.txt b/cscore/CMakeLists.txt
+index 7891486f3..94338ea44 100644
+--- a/cscore/CMakeLists.txt
++++ b/cscore/CMakeLists.txt
+@@ -48,6 +48,7 @@ target_link_libraries(cscore PUBLIC wpinet wpiutil ${OpenCV_LIBS})
+ set_property(TARGET cscore PROPERTY FOLDER "libraries")
+ 
+ install(TARGETS cscore EXPORT cscore)
++export(TARGETS cscore FILE cscore.cmake NAMESPACE cscore::)
+ install(DIRECTORY src/main/native/include/ DESTINATION "${include_dest}/cscore")
+ 
+ configure_file(cscore-config.cmake.in ${WPILIB_BINARY_DIR}/cscore-config.cmake)
+@@ -163,6 +164,7 @@ if(WITH_JAVA)
+     add_dependencies(cscorejni cscore_jar)
+ 
+     install(TARGETS cscorejni EXPORT cscorejni)
++    export(TARGETS cscorejni FILE cscorejni.cmake NAMESPACE cscorejni::)
+ endif()
+ 
+ if(WITH_JAVA_SOURCE)
+diff --git a/fieldImages/CMakeLists.txt b/fieldImages/CMakeLists.txt
+index 45fe49c4c..9f634ec32 100644
+--- a/fieldImages/CMakeLists.txt
++++ b/fieldImages/CMakeLists.txt
+@@ -50,3 +50,6 @@ target_include_directories(
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/main/native/include>
+         $<INSTALL_INTERFACE:${include_dest}/fields>
+ )
++
++install(TARGETS fieldImages EXPORT fieldimages)
++export(TARGETS fieldImages FILE fieldimages.cmake NAMESPACE fieldimages::)
+diff --git a/glass/CMakeLists.txt b/glass/CMakeLists.txt
+index 36f94f5f1..1786361b9 100644
+--- a/glass/CMakeLists.txt
++++ b/glass/CMakeLists.txt
+@@ -26,6 +26,7 @@ target_include_directories(
+ )
+ 
+ install(TARGETS libglass EXPORT libglass)
++export(TARGETS libglass FILE libglass.cmake NAMESPACE libglass::)
+ install(DIRECTORY src/lib/native/include/ DESTINATION "${include_dest}/glass")
+ 
+ #
+@@ -50,6 +51,7 @@ target_include_directories(
+ )
+ 
+ install(TARGETS libglassnt EXPORT libglassnt)
++export(TARGETS libglassnt FILE libglassnt.cmake NAMESPACE libglassnt::)
+ install(DIRECTORY src/libnt/native/include/ DESTINATION "${include_dest}/glass")
+ 
+ #
+diff --git a/hal/CMakeLists.txt b/hal/CMakeLists.txt
+index 3333e9b4e..bfa54f37f 100644
+--- a/hal/CMakeLists.txt
++++ b/hal/CMakeLists.txt
+@@ -45,6 +45,7 @@ target_link_libraries(hal PUBLIC wpiutil)
+ set_property(TARGET hal PROPERTY FOLDER "libraries")
+ 
+ install(TARGETS hal EXPORT hal)
++export(TARGETS hal FILE hal.cmake NAMESPACE hal::)
+ install(DIRECTORY src/main/native/include/ DESTINATION "${include_dest}/hal")
+ install(DIRECTORY src/generated/main/native/include/ DESTINATION "${include_dest}/hal")
+ 
+@@ -94,6 +95,7 @@ if(WITH_JAVA)
+     add_dependencies(haljni hal_jar)
+ 
+     install(TARGETS haljni EXPORT haljni)
++    export(TARGETS haljni FILE haljni.cmake NAMESPACE haljni::)
+ endif()
+ 
+ if(WITH_JAVA_SOURCE)
+diff --git a/imgui/CMakeLists.txt b/imgui/CMakeLists.txt
+index f267a2c38..b4810e9ce 100644
+--- a/imgui/CMakeLists.txt
++++ b/imgui/CMakeLists.txt
+@@ -45,6 +45,7 @@ if(NOT glfw3_POPULATED)
+     add_subdirectory(${glfw3_SOURCE_DIR} ${glfw3_BINARY_DIR} EXCLUDE_FROM_ALL)
+     set_property(TARGET glfw PROPERTY POSITION_INDEPENDENT_CODE ON)
+     set(BUILD_SHARED_LIBS ${SAVE_BUILD_SHARED_LIBS})
++    export(TARGETS glfw FILE glfw.cmake NAMESPACE glfw::)
+ endif()
+ 
+ # Don't use gl3w CMakeLists.txt due to https://github.com/skaslev/gl3w/issues/66
+@@ -106,3 +107,6 @@ target_include_directories(
+ 
+ set_property(TARGET imgui PROPERTY POSITION_INDEPENDENT_CODE ON)
+ target_compile_features(imgui PUBLIC cxx_std_20)
++
++install(TARGETS imgui EXPORT imgui)
++export(TARGETS imgui FILE imgui.cmake NAMESPACE imgui::)
+diff --git a/ntcore/CMakeLists.txt b/ntcore/CMakeLists.txt
+index 2b9d32622..5270eda40 100644
+--- a/ntcore/CMakeLists.txt
++++ b/ntcore/CMakeLists.txt
+@@ -29,6 +29,7 @@ target_link_libraries(ntcore PUBLIC wpinet wpiutil)
+ set_property(TARGET ntcore PROPERTY FOLDER "libraries")
+ 
+ install(TARGETS ntcore EXPORT ntcore)
++export(TARGETS ntcore FILE ntcore.cmake NAMESPACE ntcore::)
+ install(DIRECTORY src/main/native/include/ DESTINATION "${include_dest}/ntcore")
+ install(DIRECTORY src/generated/main/native/include/ DESTINATION "${include_dest}/ntcore")
+ 
+@@ -77,6 +78,7 @@ if(WITH_JAVA)
+     add_dependencies(ntcorejni ntcore_jar)
+ 
+     install(TARGETS ntcorejni EXPORT ntcorejni)
++    export(TARGETS ntcorejni FILE ntcorejni.cmake NAMESPACE ntcorejni::)
+ endif()
+ 
+ if(WITH_JAVA_SOURCE)
+diff --git a/romiVendordep/CMakeLists.txt b/romiVendordep/CMakeLists.txt
+index 67cb5405b..4cc6a075e 100644
+--- a/romiVendordep/CMakeLists.txt
++++ b/romiVendordep/CMakeLists.txt
+@@ -67,6 +67,7 @@ target_include_directories(
+ )
+ 
+ install(TARGETS romiVendordep EXPORT romivendordep DESTINATION "${main_lib_dest}")
++export(TARGETS romiVendordep FILE romivendordep.cmake NAMESPACE romivendordep::)
+ install(DIRECTORY src/main/native/include/ DESTINATION "${include_dest}/romiVendordep")
+ 
+ configure_file(romivendordep-config.cmake.in ${WPILIB_BINARY_DIR}/romivendordep-config.cmake)
+diff --git a/simulation/halsim_ds_socket/CMakeLists.txt b/simulation/halsim_ds_socket/CMakeLists.txt
+index 4eb23bb70..c549bd319 100644
+--- a/simulation/halsim_ds_socket/CMakeLists.txt
++++ b/simulation/halsim_ds_socket/CMakeLists.txt
+@@ -14,3 +14,4 @@ target_include_directories(halsim_ds_socket PRIVATE src/main/native/include)
+ set_property(TARGET halsim_ds_socket PROPERTY FOLDER "libraries")
+ 
+ install(TARGETS halsim_ds_socket EXPORT halsim_ds_socket)
++export(TARGETS halsim_ds_socket FILE halsim_ds_socket.cmake NAMESPACE halsim_ds_socket::)
+diff --git a/simulation/halsim_gui/CMakeLists.txt b/simulation/halsim_gui/CMakeLists.txt
+index 957a9c223..81d57d200 100644
+--- a/simulation/halsim_gui/CMakeLists.txt
++++ b/simulation/halsim_gui/CMakeLists.txt
+@@ -17,3 +17,4 @@ target_include_directories(halsim_gui PRIVATE src/main/native/include)
+ set_property(TARGET halsim_gui PROPERTY FOLDER "libraries")
+ 
+ install(TARGETS halsim_gui EXPORT halsim_gui)
++export(TARGETS halsim_gui FILE halsim_gui.cmake NAMESPACE halsim_gui::)
+diff --git a/simulation/halsim_ws_client/CMakeLists.txt b/simulation/halsim_ws_client/CMakeLists.txt
+index 18a2a120d..90de8110e 100644
+--- a/simulation/halsim_ws_client/CMakeLists.txt
++++ b/simulation/halsim_ws_client/CMakeLists.txt
+@@ -14,3 +14,4 @@ target_include_directories(halsim_ws_client PRIVATE src/main/native/include)
+ set_property(TARGET halsim_ws_client PROPERTY FOLDER "libraries")
+ 
+ install(TARGETS halsim_ws_client EXPORT halsim_ws_client)
++export(TARGETS halsim_ws_client FILE halsim_ws_client.cmake NAMESPACE halsim_ws_client::)
+diff --git a/simulation/halsim_ws_core/CMakeLists.txt b/simulation/halsim_ws_core/CMakeLists.txt
+index f7e240fd2..9d0b29996 100644
+--- a/simulation/halsim_ws_core/CMakeLists.txt
++++ b/simulation/halsim_ws_core/CMakeLists.txt
+@@ -14,3 +14,4 @@ target_include_directories(halsim_ws_core PUBLIC src/main/native/include)
+ set_property(TARGET halsim_ws_core PROPERTY FOLDER "libraries")
+ 
+ install(TARGETS halsim_ws_core EXPORT halsim_ws_core)
++export(TARGETS halsim_ws_core FILE halsim_ws_core.cmake NAMESPACE halsim_ws_core::)
+diff --git a/simulation/halsim_ws_server/CMakeLists.txt b/simulation/halsim_ws_server/CMakeLists.txt
+index 370d2f83f..8c275599d 100644
+--- a/simulation/halsim_ws_server/CMakeLists.txt
++++ b/simulation/halsim_ws_server/CMakeLists.txt
+@@ -14,3 +14,4 @@ target_include_directories(halsim_ws_server PRIVATE src/main/native/include)
+ set_property(TARGET halsim_ws_server PROPERTY FOLDER "libraries")
+ 
+ install(TARGETS halsim_ws_server EXPORT halsim_ws_server)
++export(TARGETS halsim_ws_server FILE halsim_ws_server.cmake NAMESPACE halsim_ws_server::)
+diff --git a/simulation/halsim_xrp/CMakeLists.txt b/simulation/halsim_xrp/CMakeLists.txt
+index cc8387444..f961f3b94 100644
+--- a/simulation/halsim_xrp/CMakeLists.txt
++++ b/simulation/halsim_xrp/CMakeLists.txt
+@@ -14,3 +14,4 @@ target_include_directories(halsim_xrp PRIVATE src/main/native/include)
+ set_property(TARGET halsim_xrp PROPERTY FOLDER "libraries")
+ 
+ install(TARGETS halsim_xrp EXPORT halsim_xrp DESTINATION "${main_lib_dest}")
++export(TARGETS halsim_xrp FILE halsim_xrp.cmake NAMESPACE halsim_xrp::)
+diff --git a/wpigui/CMakeLists.txt b/wpigui/CMakeLists.txt
+index beae7baee..221977728 100644
+--- a/wpigui/CMakeLists.txt
++++ b/wpigui/CMakeLists.txt
+@@ -46,4 +46,5 @@ wpilib_target_warnings(wpiguidev)
+ target_link_libraries(wpiguidev wpigui)
+ 
+ install(TARGETS wpigui EXPORT wpigui)
++export(TARGETS wpigui FILE wpigui.cmake NAMESPACE wpigui::)
+ install(DIRECTORY src/main/native/include/ DESTINATION "${include_dest}/wpigui")
+diff --git a/wpilibNewCommands/CMakeLists.txt b/wpilibNewCommands/CMakeLists.txt
+index 4b42aa56b..e878e35ab 100644
+--- a/wpilibNewCommands/CMakeLists.txt
++++ b/wpilibNewCommands/CMakeLists.txt
+@@ -72,6 +72,7 @@ target_include_directories(
+ )
+ 
+ install(TARGETS wpilibNewCommands EXPORT wpilibnewcommands)
++export(TARGETS wpilibNewCommands FILE wpilibnewcommands.cmake NAMESPACE wpilibnewcommands::)
+ install(DIRECTORY src/main/native/include/ DESTINATION "${include_dest}/wpilibNewCommands")
+ 
+ configure_file(
+diff --git a/wpilibc/CMakeLists.txt b/wpilibc/CMakeLists.txt
+index 3757d5f9b..17e7c991a 100644
+--- a/wpilibc/CMakeLists.txt
++++ b/wpilibc/CMakeLists.txt
+@@ -35,6 +35,7 @@ target_link_libraries(wpilibc PUBLIC hal ntcore wpimath wpiutil)
+ set_property(TARGET wpilibc PROPERTY FOLDER "libraries")
+ 
+ install(TARGETS wpilibc EXPORT wpilibc)
++export(TARGETS wpilibc FILE wpilibc.cmake NAMESPACE wpilibc::)
+ install(DIRECTORY src/main/native/include/ DESTINATION "${include_dest}/wpilibc")
+ 
+ configure_file(wpilibc-config.cmake.in ${WPILIB_BINARY_DIR}/wpilibc-config.cmake)
+diff --git a/wpimath/CMakeLists.txt b/wpimath/CMakeLists.txt
+index a22ffc0b8..3c9c7dcc9 100644
+--- a/wpimath/CMakeLists.txt
++++ b/wpimath/CMakeLists.txt
+@@ -96,6 +96,7 @@ if(WITH_JAVA)
+     add_dependencies(wpimathjni wpimath_jar)
+ 
+     install(TARGETS wpimathjni EXPORT wpimathjni)
++    export(TARGETS wpimathjni FILE wpimathjni.cmake NAMESPACE wpimathjni::)
+ endif()
+ 
+ if(WITH_JAVA_SOURCE)
+@@ -200,6 +201,7 @@ target_include_directories(
+ )
+ 
+ install(TARGETS wpimath EXPORT wpimath)
++export(TARGETS wpimath FILE wpimath.cmake NAMESPACE wpimath::)
+ 
+ configure_file(wpimath-config.cmake.in ${WPILIB_BINARY_DIR}/wpimath-config.cmake)
+ install(FILES ${WPILIB_BINARY_DIR}/wpimath-config.cmake DESTINATION share/wpimath)
+diff --git a/wpinet/CMakeLists.txt b/wpinet/CMakeLists.txt
+index b2c7e04bb..6cd5051ff 100644
+--- a/wpinet/CMakeLists.txt
++++ b/wpinet/CMakeLists.txt
+@@ -39,6 +39,7 @@ if(WITH_JAVA)
+     add_dependencies(wpinetjni wpinet_jar)
+ 
+     install(TARGETS wpinetjni EXPORT wpinetjni)
++    export(TARGETS wpinetjni FILE wpinetjni.cmake NAMESPACE wpinetjni::)
+ endif()
+ 
+ if(WITH_JAVA_SOURCE)
+@@ -196,6 +197,7 @@ target_include_directories(
+ )
+ 
+ install(TARGETS wpinet EXPORT wpinet)
++export(TARGETS wpinet FILE wpinet.cmake NAMESPACE wpinet::)
+ 
+ configure_file(wpinet-config.cmake.in ${WPILIB_BINARY_DIR}/wpinet-config.cmake)
+ install(FILES ${WPILIB_BINARY_DIR}/wpinet-config.cmake DESTINATION share/wpinet)
+diff --git a/wpiutil/CMakeLists.txt b/wpiutil/CMakeLists.txt
+index 4caa3521b..b4482ff04 100644
+--- a/wpiutil/CMakeLists.txt
++++ b/wpiutil/CMakeLists.txt
+@@ -83,6 +83,7 @@ if(WITH_JAVA)
+     add_dependencies(wpiutiljni wpiutil_jar)
+ 
+     install(TARGETS wpiutiljni EXPORT wpiutiljni)
++    export(TARGETS wpiutiljni FILE wpiutiljni.cmake NAMESPACE wpiutiljni::)
+ endif()
+ 
+ if(WITH_JAVA_SOURCE)
+@@ -258,6 +259,7 @@ target_include_directories(
+ )
+ 
+ install(TARGETS wpiutil EXPORT wpiutil)
++export(TARGETS wpiutil FILE wpiutil.cmake NAMESPACE wpiutil::)
+ 
+ configure_file(wpiutil-config.cmake.in ${WPILIB_BINARY_DIR}/wpiutil-config.cmake)
+ install(FILES ${WPILIB_BINARY_DIR}/wpiutil-config.cmake DESTINATION share/wpiutil)
+diff --git a/xrpVendordep/CMakeLists.txt b/xrpVendordep/CMakeLists.txt
+index 52cd2e46a..650160f3e 100644
+--- a/xrpVendordep/CMakeLists.txt
++++ b/xrpVendordep/CMakeLists.txt
+@@ -67,6 +67,7 @@ target_include_directories(
+ )
+ 
+ install(TARGETS xrpVendordep EXPORT xrpvendordep DESTINATION "${main_lib_dest}")
++export(TARGETS xrpVendordep FILE xrpvendordep.cmake NAMESPACE xrpvendordep::)
+ install(DIRECTORY src/main/native/include/ DESTINATION "${include_dest}/xrpVendordep")
+ 
+ configure_file(xrpvendordep-config.cmake.in ${WPILIB_BINARY_DIR}/xrpvendordep-config.cmake)
