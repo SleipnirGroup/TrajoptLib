@@ -75,6 +75,7 @@ fn main() {
         println!("cargo:rustc-link-lib=Sleipnir");
         println!("cargo:rustc-link-lib=fmt");
     }
+    println!("cargo:rustc-link-lib=wpimath");
 
     println!("cargo:rerun-if-changed=src/trajoptlibrust.h");
     println!("cargo:rerun-if-changed=src/trajoptlibrust.cpp");
