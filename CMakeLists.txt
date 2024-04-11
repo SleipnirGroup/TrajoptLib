@@ -161,10 +161,10 @@ set(WITH_WPILIB OFF CACHE INTERNAL "With WPILib")
 fetchcontent_declare(
     wpilib
     GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
-    GIT_TAG v2024.3.2
+    GIT_TAG 74f648689ecd411f7529ca3f8ac9e7eec25758bc
     PATCH_COMMAND
-        git apply
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/allwpilib-add-cmake-exports.patch
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/allwpilib-remove-protobuf-support.sh
+        ${CMAKE_CURRENT_SOURCE_DIR}
     UPDATE_DISCONNECTED 1
 )
 fetchcontent_makeavailable(wpilib)
