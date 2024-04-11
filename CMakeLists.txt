@@ -181,7 +181,7 @@ fetchcontent_declare(
     UPDATE_DISCONNECTED 1
 )
 fetchcontent_makeavailable(wpilib)
-target_link_libraries(TrajoptLib PRIVATE Eigen3::Eigen wpimath)
+target_link_libraries(TrajoptLib PUBLIC wpimath Eigen3::Eigen)
 
 target_include_directories(
     TrajoptLib
