@@ -468,3 +468,15 @@ index 6187662c0..2057ba81e 100644
  }  // namespace wpi::log
  
  extern "C" {
+diff --git a/wpiutil/wpiutil-config.cmake.in b/wpiutil/wpiutil-config.cmake.in
+index 3926ecb91..7cad0f945 100644
+--- a/wpiutil/wpiutil-config.cmake.in
++++ b/wpiutil/wpiutil-config.cmake.in
+@@ -2,7 +2,6 @@ include(CMakeFindDependencyMacro)
+ @FILENAME_DEP_REPLACE@
+ set(THREADS_PREFER_PTHREAD_FLAG ON)
+ find_dependency(Threads)
+-find_dependency(Protobuf)
+ @FMTLIB_SYSTEM_REPLACE@
+ 
+ if(@USE_SYSTEM_FMTLIB@)
