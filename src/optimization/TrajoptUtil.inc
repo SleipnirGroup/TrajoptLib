@@ -422,8 +422,8 @@ Solution GenerateSplineInitialGuess(
       for (size_t sampleIdx = 0; sampleIdx < samplesForSpline; ++sampleIdx) {
         double t = static_cast<double>(sampleIdx) / samplesForSpline;
         const auto point = splines.at(splineIdx).GetPoint(t);
-        initialGuess.x.push_back(point.first.X().to<double>());
-        initialGuess.y.push_back(point.first.Y().to<double>());
+        initialGuess.x.push_back(point.first.X().value());
+        initialGuess.y.push_back(point.first.Y().value());
         double deltaTheta = frc::InputModulus(
             endTheta - startTheta, -std::numbers::pi, std::numbers::pi);
         double interpolatedTheta = frc::InputModulus(
