@@ -17,5 +17,6 @@ subprocess.run(
         "git",
         "apply",
         os.path.join(sys.argv[1], "cmake/allwpilib-remove-protobuf-support.patch"),
-    ]
+    ],
+    check=True,
 )
