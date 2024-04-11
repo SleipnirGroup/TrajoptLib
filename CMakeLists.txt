@@ -176,7 +176,8 @@ fetchcontent_declare(
     wpilib
     GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
     GIT_TAG 74f648689ecd411f7529ca3f8ac9e7eec25758bc
-    PATCH_COMMAND ${PYTHON_EXECUTABLE}
+    PATCH_COMMAND
+        ${PYTHON_EXECUTABLE}
         ${CMAKE_CURRENT_SOURCE_DIR}/cmake/allwpilib-remove-protobuf-support.py
         ${CMAKE_CURRENT_SOURCE_DIR}
     UPDATE_DISCONNECTED 1
