@@ -129,6 +129,19 @@ if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
 
     # Install CasADi libraries since FetchContent isn't setting that up properly
     install(FILES ${CASADI_INSTALL_LIBS} DESTINATION ${CASADI_INSTALL_DEST})
+
+    # Eigen dependency
+    fetchcontent_declare(
+        Eigen3
+        GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+        # master on 2024-04-02
+        GIT_TAG 86aee3d9c5b0ea73f7854901c1ce216135f1228b
+        PATCH_COMMAND
+            git apply
+            ${CMAKE_CURRENT_SOURCE_DIR}/cmake/eigen-disable-fortran-support.patch
+        UPDATE_DISCONNECTED 1
+    )
+    fetchcontent_makeavailable(Eigen3)
 elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     message(STATUS "Using Sleipnir optimizer")
 
