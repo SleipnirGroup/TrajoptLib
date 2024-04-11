@@ -11,6 +11,11 @@ shutil.rmtree("wpimath/src/main/native/cpp/kinematics/proto")
 shutil.rmtree("wpimath/src/main/native/cpp/system/plant/proto")
 shutil.rmtree("wpimath/src/main/native/cpp/trajectory/proto")
 shutil.rmtree("wpiutil/src/main/native/cpp/protobuf")
+shutil.rmtree("wpimath/src/main/native/include/frc/controller/proto")
+shutil.rmtree("wpimath/src/main/native/include/frc/geometry/proto")
+shutil.rmtree("wpimath/src/main/native/include/frc/kinematics/proto")
+shutil.rmtree("wpimath/src/main/native/include/frc/system/plant/proto")
+shutil.rmtree("wpimath/src/main/native/include/frc/trajectory/proto")
 shutil.rmtree("wpiutil/src/main/native/thirdparty/protobuf")
 subprocess.run(
     [
