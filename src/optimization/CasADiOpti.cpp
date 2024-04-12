@@ -40,8 +40,9 @@ expected<void, std::string> CasADiOpti::Solve(bool diagnostics) {
   if (diagnostics) {
     opti.solver("ipopt", {{"iteration_callback", *callback}});
   } else {
+    // tolerance of 1e-4 is 0.1 mm
     opti.solver("ipopt", {{"iteration_callback", *callback}, {"print_time", 0}},
-                {{"print_level", 0}, {"sb", "yes"}});
+                {{"tol", 1e-4}, {"print_level", 0}, {"sb", "yes"}});
   }
 
   try {
