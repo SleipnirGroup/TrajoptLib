@@ -68,8 +68,8 @@ class SwervePathBuilderImpl {
   void cancel_all();
 
   // these only return the x coordinates after calculating
-  rust::Vec<double> calculate_linear_initial_guess() const;
-  rust::Vec<double> calculate_spline_initial_guess() const;
+  HolonomicTrajectory calculate_linear_initial_guess() const;
+  HolonomicTrajectory calculate_spline_initial_guess() const;
 
   SwervePathBuilderImpl() = default;
 

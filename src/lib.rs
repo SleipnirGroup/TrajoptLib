@@ -179,9 +179,9 @@ mod ffi {
             callback: fn(HolonomicTrajectory, i64),
         );
 
-        fn calculate_linear_initial_guess(self: &SwervePathBuilderImpl) -> Vec<f64>;
+        fn calculate_linear_initial_guess(self: &SwervePathBuilderImpl) -> HolonomicTrajectory;
 
-        fn calculate_spline_initial_guess(self: &SwervePathBuilderImpl) -> Vec<f64>;
+        fn calculate_spline_initial_guess(self: &SwervePathBuilderImpl) -> HolonomicTrajectory;
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
@@ -448,11 +448,11 @@ impl SwervePathBuilder {
         }
     }
 
-    pub fn calculate_linear_initial_guess(&self) -> Vec<f64> {
+    pub fn calculate_linear_initial_guess(&self) -> HolonomicTrajectory {
         self.path.calculate_linear_initial_guess()
     }
 
-    pub fn calculate_spline_initial_guess(&self) -> Vec<f64> {
+    pub fn calculate_spline_initial_guess(&self) -> HolonomicTrajectory {
         self.path.calculate_spline_initial_guess()
     }
 

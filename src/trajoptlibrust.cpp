@@ -66,6 +66,13 @@ trajopt::SwerveDrivetrain _convert_swerve_drivetrain(
                                   &_convert_swerve_module>(drivetrain.modules)};
 }
 
+InitialGuessPoint _convert_initial_guess_point_to_rust(
+    const trajopt::InitialGuessPoint& initialGuessPoint) {
+  return InitialGuessPoint{.x = initialGuessPoint.x,
+                           .y = initialGuessPoint.y,
+                           .heading = initialGuessPoint.heading};
+}
+
 trajopt::InitialGuessPoint _convert_initial_guess_point(
     const InitialGuessPoint& initialGuessPoint) {
   return trajopt::InitialGuessPoint{.x = initialGuessPoint.x,
@@ -307,16 +314,30 @@ HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
   }
 }
 
-rust::Vec<double> SwervePathBuilderImpl::calculate_linear_initial_guess()
-    const {
-  auto sol = path.CalculateLinearInitialGuess();
-  return _cpp_vector_to_rust_vec<double, double, &_convert_double>(sol.x);
+HolonomicTrajectory _convert_sol_to_holonomic_trajectory(const trajopt::Solution& sol) {
+  rust::Vec<HolonomicTrajectorySample> samples;
+  samples.reserve(sol.x.size());
+  for (size_t i = 0; i < sol.x.size(); ++i) {
+    HolonomicTrajectorySample p = HolonomicTrajectorySample{
+      .x = sol.x.at(i),
+      .y = sol.y.at(i),
+      .heading = sol.theta.at(i),
+    };
+    samples.emplace_back(p);
+  }
+  return HolonomicTrajectory{
+    .samples = samples,
+  };
 }
 
-rust::Vec<double> SwervePathBuilderImpl::calculate_spline_initial_guess()
+HolonomicTrajectory SwervePathBuilderImpl::calculate_linear_initial_guess()
     const {
-  auto sol = path.CalculateSplineInitialGuess();
-  return _cpp_vector_to_rust_vec<double, double, &_convert_double>(sol.x);
+  return _convert_sol_to_holonomic_trajectory(path.CalculateLinearInitialGuess());
+}
+
+HolonomicTrajectory SwervePathBuilderImpl::calculate_spline_initial_guess()
+    const {
+  return _convert_sol_to_holonomic_trajectory(path.CalculateSplineInitialGuess());
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
