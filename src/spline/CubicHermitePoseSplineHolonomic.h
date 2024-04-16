@@ -80,7 +80,7 @@ public:
         (dx * ddy - ddx * dy) / ((dx * dx + dy * dy) * std::hypot(dx, dy));
 
     return {
-        {FromVector(combined.template block<2, 1>(0, 0)), getHeading(t)},
+        {FromVector(combined.template block<2, 1>(0, 0)), getHeading(t)}, // getHeading here for holonomic
         units::curvature_t{curvature}};
   }
 
