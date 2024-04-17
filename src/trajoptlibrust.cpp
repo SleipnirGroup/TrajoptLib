@@ -314,30 +314,33 @@ HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
   }
 }
 
-HolonomicTrajectory _convert_sol_to_holonomic_trajectory(const trajopt::Solution& sol) {
+HolonomicTrajectory _convert_sol_to_holonomic_trajectory(
+    const trajopt::Solution& sol) {
   rust::Vec<HolonomicTrajectorySample> samples;
   samples.reserve(sol.x.size());
   for (size_t i = 0; i < sol.x.size(); ++i) {
     HolonomicTrajectorySample p = HolonomicTrajectorySample{
-      .x = sol.x.at(i),
-      .y = sol.y.at(i),
-      .heading = sol.theta.at(i),
+        .x = sol.x.at(i),
+        .y = sol.y.at(i),
+        .heading = sol.theta.at(i),
     };
     samples.emplace_back(p);
   }
   return HolonomicTrajectory{
-    .samples = samples,
+      .samples = samples,
   };
 }
 
 HolonomicTrajectory SwervePathBuilderImpl::calculate_linear_initial_guess()
     const {
-  return _convert_sol_to_holonomic_trajectory(path.CalculateLinearInitialGuess());
+  return _convert_sol_to_holonomic_trajectory(
+      path.CalculateLinearInitialGuess());
 }
 
 HolonomicTrajectory SwervePathBuilderImpl::calculate_spline_initial_guess()
     const {
-  return _convert_sol_to_holonomic_trajectory(path.CalculateSplineInitialGuess());
+  return _convert_sol_to_holonomic_trajectory(
+      path.CalculateSplineInitialGuess());
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
