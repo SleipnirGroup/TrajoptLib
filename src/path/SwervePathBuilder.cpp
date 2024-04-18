@@ -10,6 +10,9 @@
 #include <stdexcept>
 #include <vector>
 
+#include <frc/trajectory/TrajectoryGenerator.h>
+#include <frc/trajectory/TrajectoryParameterizer.h>
+
 #include "optimization/Cancellation.h"
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
@@ -28,6 +31,8 @@
 #include "trajopt/set/LinearSet2d.h"
 #include "trajopt/set/RectangularSet2d.h"
 #include "trajopt/solution/Solution.h"
+
+#include "spline/CubicHermitePoseSplineHolonomic.h"
 
 namespace trajopt {
 
@@ -195,34 +200,62 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() {
     totalGuessPoints += points.size();
   }
   std::vector<frc::Translation2d> flatTranslationPoints;
+  std::vector<frc::Rotation2d> flatHeadings;
   flatTranslationPoints.reserve(totalGuessPoints);
+  flatHeadings.reserve(totalGuessPoints);
   for (const auto& guessPoints : initialGuessPoints) {
     for (const auto& guessPoint : guessPoints) {
       frc::Translation2d translation = frc::Translation2d{
           units::meter_t(guessPoint.x), units::meter_t(guessPoint.y)};
       flatTranslationPoints.push_back(translation);
+      flatHeadings.emplace_back(units::radian_t(guessPoint.heading));
     }
   }
   const auto startSplineAngle =
-      (flatTranslationPoints.at(1) - flatTranslationPoints.front()).Angle();
+      (flatTranslationPoints.at(1) - flatTranslationPoints.front())
+        .Angle();
   const auto endSpineAngle =
       (flatTranslationPoints.back() -
        flatTranslationPoints.at(flatTranslationPoints.size() - 2))
-          .Angle();
+        .Angle();
   const auto start =
       frc::Pose2d(flatTranslationPoints.front(), startSplineAngle);
   const auto end = frc::Pose2d(flatTranslationPoints.back(), endSpineAngle);
-  std::vector<frc::Translation2d> interiorPoints;
 
+  std::vector<frc::Translation2d> interiorPoints;
   interiorPoints.assign(flatTranslationPoints.begin() + 1,
                         flatTranslationPoints.end() - 1);
+
   const auto splineControlVectors =
       frc::SplineHelper::CubicControlVectorsFromWaypoints(start, interiorPoints,
                                                           end);
-  const auto splines = frc::SplineHelper::CubicSplinesFromControlVectors(
+  const auto splines_temp = frc::SplineHelper::CubicSplinesFromControlVectors(
       splineControlVectors.front(), interiorPoints,
       splineControlVectors.back());
+  
+  std::vector<trajopt::CubicHermitePoseSplineHolonomic> splines;
+  splines.reserve(splines_temp.size());
+  for (size_t i = 1; i < splines_temp.size(); ++i) {
+    splines.emplace_back(splines_temp.at(i-1), flatHeadings.at(i-1), flatHeadings.at(i));
+  }
 
+  // spline points from splines
+  const auto points = frc::TrajectoryGenerator::SplinePointsFromSplines(splines);
+  const auto maxWheelVelocity = units::meters_per_second_t(
+                                path.drivetrain.modules.front().wheelMaxAngularVelocity
+                                * path.drivetrain.modules.front().wheelRadius);
+  frc::TrajectoryConfig config{maxWheelVelocity, maxWheelVelocity};
+  // time parameterize
+  const auto traj = 
+      frc::TrajectoryParameterizer::TrajectoryParameterizer::TimeParameterizeTrajectory(
+      points, config.Constraints(), config.StartVelocity(),
+      config.EndVelocity(), config.MaxVelocity(), config.MaxAcceleration(),
+      config.IsReversed());
+
+  // control interval sample traj
+
+
+  // code below is from previous method
   size_t wptCnt = controlIntervalCounts.size() + 1;
   size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
 

@@ -22,9 +22,18 @@ public:
                     wpi::array<double, 2> yFinalControlVector,
                     frc::Rotation2d r0, frc::Rotation2d r1)
         : frc::CubicHermiteSpline(xInitialControlVector, xFinalControlVector,
-                             yInitialControlVector, yFinalControlVector), 
-                             r0(r0), 
-                             theta(0.0, (-r0).RotateBy(r1).Radians().value(), 0, 0) {}
+                              yInitialControlVector, yFinalControlVector), 
+                              r0(r0), 
+                              theta(0.0, (-r0).RotateBy(r1).Radians().value(), 0, 0) {}
+
+    CubicHermitePoseSplineHolonomic(frc::CubicHermiteSpline spline,
+                    frc::Rotation2d r0, frc::Rotation2d r1)
+        : frc::CubicHermiteSpline(spline.GetInitialControlVector().x,
+                              spline.GetFinalControlVector().x,
+                              spline.GetInitialControlVector().y,
+                              spline.GetFinalControlVector().y), 
+                              r0(r0), 
+                              theta(0.0, (-r0).RotateBy(r1).Radians().value(), 0, 0) {}
 
     ~CubicHermitePoseSplineHolonomic() noexcept {} // there is an error without noexcept
 
@@ -43,45 +52,8 @@ public:
    * @return The pose and curvature at that point.
    */
   PoseWithCurvature GetPoint(double t) const {
-    const int Degree = 3;
-
-    frc::Vectord<Degree + 1> polynomialBases;
-
-    // Populate the polynomial bases
-    for (int i = 0; i <= Degree; i++) {
-      polynomialBases(i) = std::pow(t, Degree - i);
-    }
-
-    // This simply multiplies by the coefficients. We need to divide out t some
-    // n number of times where n is the derivative we want to take.
-    frc::Vectord<6> combined = Coefficients() * polynomialBases;
-
-    double dx, dy, ddx, ddy;
-
-    // If t = 0, all other terms in the equation cancel out to zero. We can use
-    // the last x^0 term in the equation.
-    if (t == 0.0) {
-      dx = Coefficients()(2, Degree - 1);
-      dy = Coefficients()(3, Degree - 1);
-      ddx = Coefficients()(4, Degree - 2);
-      ddy = Coefficients()(5, Degree - 2);
-    } else {
-      // Divide out t for first derivative.
-      dx = combined(2) / t;
-      dy = combined(3) / t;
-
-      // Divide out t for second derivative.
-      ddx = combined(4) / t / t;
-      ddy = combined(5) / t / t;
-    }
-
-    // Find the curvature.
-    const auto curvature =
-        (dx * ddy - ddx * dy) / ((dx * dx + dy * dy) * std::hypot(dx, dy));
-
-    return {
-        {FromVector(combined.template block<2, 1>(0, 0)), getHeading(t)}, // getHeading here for holonomic
-        units::curvature_t{curvature}};
+    const auto base = frc::CubicHermiteSpline::GetPoint(t);
+    return {{base.first.Translation(), getHeading(t)}, base.second};
   }
 
  private:

@@ -3,7 +3,7 @@
 
 namespace trajopt {
     
-class CubicHermiteSpline1d : public Spline1d {
+class TRAJOPT_DLLEXPORT CubicHermiteSpline1d : public Spline1d {
 public:
     // Coefficients of the cubic polynomial
     const double a, b, c, d;

@@ -1,6 +1,6 @@
 namespace trajopt {
 
-class Spline1d {
+class TRAJOPT_DLLEXPORT Spline1d {
 public:
     virtual ~Spline1d() {}
 
