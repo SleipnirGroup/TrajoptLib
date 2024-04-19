@@ -240,7 +240,26 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() {
   }
 
   // spline points from splines
-  const auto points = frc::TrajectoryGenerator::SplinePointsFromSplines(splines);
+  // const auto points = frc::TrajectoryGenerator::SplinePointsFromSplines(splines);
+  std::vector<frc::TrajectoryGenerator::PoseWithCurvature> splinePoints;
+  std::vector<size_t> pointsPerSpline;
+  pointsPerSpline.reserve(splines.size());
+
+  // Add the first point to the vector.
+  splinePoints.push_back(splines.front().GetPoint(0.0));
+
+  // Iterate through the vector and parameterize each spline, adding the
+  // parameterized points to the final vector.
+  for (auto&& spline : splines) {
+    auto points = frc::SplineParameterizer::Parameterize(spline);
+    // Append the array of poses to the vector. We are removing the first
+    // point because it's a duplicate of the last point from the previous
+    // spline.
+    splinePoints.insert(std::end(splinePoints), std::begin(points) + 1,
+                        std::end(points));
+    pointsPerSpline.push_back(points.size());
+  }
+
   const auto maxWheelVelocity = units::meters_per_second_t(
                                 path.drivetrain.modules.front().wheelMaxAngularVelocity
                                 * path.drivetrain.modules.front().wheelRadius);
@@ -248,12 +267,12 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() {
   // time parameterize
   const auto traj = 
       frc::TrajectoryParameterizer::TrajectoryParameterizer::TimeParameterizeTrajectory(
-      points, config.Constraints(), config.StartVelocity(),
+      splinePoints, config.Constraints(), config.StartVelocity(),
       config.EndVelocity(), config.MaxVelocity(), config.MaxAcceleration(),
       config.IsReversed());
 
   // control interval sample traj
-
+  const auto states = traj.States();
 
   // code below is from previous method
   size_t wptCnt = controlIntervalCounts.size() + 1;
@@ -274,10 +293,10 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() {
     const auto& sgmt = initialGuessPoints.at(sgmtIdx);
     size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx);
     size_t splinesInSgmt = sgmt.size();
+    size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
 
     for (size_t guessPointIdx = 0; guessPointIdx < splinesInSgmt;
          ++guessPointIdx) {
-      size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
       if (guessPointIdx == splinesInSgmt - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
@@ -293,6 +312,8 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() {
 
       for (size_t sampleIdx = 0; sampleIdx < samplesForSpline; ++sampleIdx) {
         double t = static_cast<double>(sampleIdx) / samplesForSpline;
+        // size_t i = sgmtIdx 
+        // resample the trajectory here
         const auto point = splines.at(splineIdx).GetPoint(t);
         initialGuess.x.push_back(point.first.X().value());
         initialGuess.y.push_back(point.first.Y().value());
