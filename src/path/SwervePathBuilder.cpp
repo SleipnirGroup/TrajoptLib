@@ -33,6 +33,7 @@
 #include "trajopt/solution/Solution.h"
 
 #include "spline/CubicHermitePoseSplineHolonomic.h"
+#include "spline/SplineParameterizer.h"
 
 namespace trajopt {
 
@@ -252,7 +253,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   // Iterate through the vector and parameterize each spline, adding the
   // parameterized points to the final vector.
   for (auto&& spline : splines) {
-    auto points = frc::SplineParameterizer::Parameterize(spline);
+    auto points = SplineParameterizer::Parameterize(spline);
     // Append the array of poses to the vector. We are removing the first
     // point because it's a duplicate of the last point from the previous
     // spline.
