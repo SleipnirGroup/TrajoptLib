@@ -212,11 +212,11 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     }
   }
   const auto startSplineAngle =
-      (flatTranslationPoints.at(1) - flatTranslationPoints.front())
+      (*(flatTranslationPoints.begin()+1) - flatTranslationPoints.front())
         .Angle();
   const auto endSpineAngle =
       (flatTranslationPoints.back() -
-       flatTranslationPoints.at(flatTranslationPoints.size() - 2))
+       *(flatTranslationPoints.end()-2))
         .Angle();
   const auto start =
       frc::Pose2d(flatTranslationPoints.front(), startSplineAngle);
