@@ -6,9 +6,9 @@
 
 #include "frc/spline/CubicHermiteSpline.h" 
 #include "frc/MathUtil.h"
+#include "frc/EigenCore.h"
 
 #include "spline/CubicHermiteSpline1d.h"
-#include <EigenCore.h>
 
 namespace trajopt {
 /**

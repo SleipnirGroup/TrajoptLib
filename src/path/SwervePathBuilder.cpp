@@ -194,7 +194,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuess() const {
   return GenerateSplineInitialGuess(initialGuessPoints, controlIntervalCounts, path);
 }
 
-Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() {
+Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   size_t totalGuessPoints = 0;
   for (const auto& points : initialGuessPoints) {
     totalGuessPoints += points.size();
@@ -263,7 +263,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() {
   const auto maxWheelVelocity = units::meters_per_second_t(
                                 path.drivetrain.modules.front().wheelMaxAngularVelocity
                                 * path.drivetrain.modules.front().wheelRadius);
-  frc::TrajectoryConfig config{maxWheelVelocity, maxWheelVelocity};
+  frc::TrajectoryConfig config{maxWheelVelocity, units::meters_per_second_squared_t(maxWheelVelocity.value())};
   // time parameterize
   const auto traj = 
       frc::TrajectoryParameterizer::TrajectoryParameterizer::TimeParameterizeTrajectory(
@@ -284,47 +284,37 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() {
   initialGuess.theta.reserve(sampTot);
   initialGuess.dt.reserve(sampTot);
 
-  for (size_t i = 0; i < sampTot; i++) {
-    initialGuess.dt.push_back((wptCnt * 5.0) / sampTot);
-  }
-
-  size_t splineIdx = 0;
+  auto prevState = states.front();
+  size_t prevStateIdx = 0;
+  // between init guess points
   for (size_t sgmtIdx = 0; sgmtIdx < controlIntervalCounts.size(); ++sgmtIdx) {
-    const auto& sgmt = initialGuessPoints.at(sgmtIdx);
+    const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
     size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx);
-    size_t splinesInSgmt = sgmt.size();
+    size_t splinesInSgmt = guessPointsForSgmt.size();
     size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
-
-    for (size_t guessPointIdx = 0; guessPointIdx < splinesInSgmt;
-         ++guessPointIdx) {
-      if (guessPointIdx == splinesInSgmt - 1) {
+    
+    for (size_t splineSgmtIdx = 0; splineSgmtIdx < splinesInSgmt;
+         ++splineSgmtIdx) {
+      if (splineSgmtIdx == splinesInSgmt - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
-
-      double startTheta = frc::InputModulus(
-          sgmt.at(guessPointIdx).heading, -std::numbers::pi, std::numbers::pi);
-
-      double endTheta = frc::InputModulus(
-          (guessPointIdx < sgmt.size() - 1)
-              ? sgmt.at(guessPointIdx + 1).heading
-              : initialGuessPoints.at(sgmtIdx + 1).front().heading,
-          -std::numbers::pi, std::numbers::pi);
+      
+      size_t currentStateIdx = prevStateIdx + pointsPerSpline[splineSgmtIdx];
+      const auto subSgmtDt = states.at(currentStateIdx).t - states.at(prevStateIdx).t;
 
       for (size_t sampleIdx = 0; sampleIdx < samplesForSpline; ++sampleIdx) {
-        double t = static_cast<double>(sampleIdx) / samplesForSpline;
-        // size_t i = sgmtIdx 
-        // resample the trajectory here
-        const auto point = splines.at(splineIdx).GetPoint(t);
-        initialGuess.x.push_back(point.first.X().value());
-        initialGuess.y.push_back(point.first.Y().value());
-        double deltaTheta = frc::InputModulus(
-            endTheta - startTheta, -std::numbers::pi, std::numbers::pi);
-        double interpolatedTheta = frc::InputModulus(
-            startTheta + t * deltaTheta, -std::numbers::pi, std::numbers::pi);
-        initialGuess.theta.push_back(interpolatedTheta);
+        const auto dt = subSgmtDt / static_cast<double>(samplesForSpline);
+        auto t = states.at(prevStateIdx).t + sampleIdx * dt;
+
+        const auto point = traj.Sample(t);
+        initialGuess.x.push_back(point.pose.X().value());
+        initialGuess.y.push_back(point.pose.Y().value());
+        double wrappedTheta = frc::InputModulus(
+            point.pose.Rotation().Radians().value(), -std::numbers::pi, std::numbers::pi);
+        initialGuess.theta.push_back(wrappedTheta);
+        initialGuess.dt.push_back(dt.value());
       }
     }
-    ++splineIdx;
   }
 
   if (!initialGuessPoints.empty() && !initialGuessPoints.back().empty()) {
@@ -332,6 +322,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() {
     initialGuess.x.push_back(lastPoint.x);
     initialGuess.y.push_back(lastPoint.y);
     initialGuess.theta.push_back(lastPoint.heading);
+    initialGuess.dt.push_back(0.0);
   }
 
   return initialGuess;
