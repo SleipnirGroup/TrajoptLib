@@ -316,14 +316,17 @@ HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
 
 HolonomicTrajectory _convert_sol_to_holonomic_trajectory(const trajopt::Solution& sol) {
   rust::Vec<HolonomicTrajectorySample> samples;
+  double total_time = 0;
   samples.reserve(sol.x.size());
   for (size_t i = 0; i < sol.x.size(); ++i) {
     HolonomicTrajectorySample p = HolonomicTrajectorySample{
+      .timestamp = total_time,
       .x = sol.x.at(i),
       .y = sol.y.at(i),
       .heading = sol.theta.at(i),
     };
     samples.emplace_back(p);
+    total_time += sol.dt.at(i);
   }
   return HolonomicTrajectory{
     .samples = samples,
