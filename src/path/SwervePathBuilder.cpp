@@ -235,7 +235,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   
   std::vector<trajopt::CubicHermitePoseSplineHolonomic> splines;
   splines.reserve(splines_temp.size());
-  for (size_t i = 1; i < splines_temp.size(); ++i) {
+  for (size_t i = 1; i <= splines_temp.size(); ++i) {
     splines.emplace_back(splines_temp.at(i-1), flatHeadings.at(i-1), flatHeadings.at(i));
   }
 
@@ -314,6 +314,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       }
       printf("prevStateIdx: %zd\n", prevStateIdx);
       // printf("")
+      size_t currentStateIdx = prevStateIdx + pointsPerSpline[sgmtIdx + splineSgmtIdx] - 1;
       printf("currStateIdx: %zd\n", currentStateIdx);
       const auto subSgmtDt = states.at(currentStateIdx).t - states.at(prevStateIdx).t;
 
