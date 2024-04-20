@@ -242,6 +242,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   // spline points from splines
   // const auto points = frc::TrajectoryGenerator::SplinePointsFromSplines(splines);
   std::vector<frc::TrajectoryGenerator::PoseWithCurvature> splinePoints;
+  splinePoints.reserve(128);
   std::vector<size_t> pointsPerSpline;
   pointsPerSpline.reserve(splines.size());
 
@@ -287,6 +288,19 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   auto prevState = states.front();
   size_t prevStateIdx = 0;
   // between init guess points
+  printf("pointsPerSpline: [");
+  for (auto points : pointsPerSpline) {
+    printf("%zd, ", points);
+  }
+  printf("]\n");
+
+  printf("traj heading: %zd [", states.size());
+  for (auto point : states) {
+    printf("%.2f, ", point.pose.Rotation().Radians().value());
+  }
+  printf("]\n");
+  fflush(stdout);
+  
   for (size_t sgmtIdx = 0; sgmtIdx < controlIntervalCounts.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
     size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx);
@@ -298,8 +312,9 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       if (splineSgmtIdx == splinesInSgmt - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
-      
-      size_t currentStateIdx = prevStateIdx + pointsPerSpline[splineSgmtIdx];
+      printf("prevStateIdx: %zd\n", prevStateIdx);
+      // printf("")
+      printf("currStateIdx: %zd\n", currentStateIdx);
       const auto subSgmtDt = states.at(currentStateIdx).t - states.at(prevStateIdx).t;
 
       for (size_t sampleIdx = 0; sampleIdx < samplesForSpline; ++sampleIdx) {
@@ -314,8 +329,10 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
         initialGuess.theta.push_back(wrappedTheta);
         initialGuess.dt.push_back(dt.value());
       }
+      prevStateIdx = currentStateIdx;
     }
   }
+
 
   if (!initialGuessPoints.empty() && !initialGuessPoints.back().empty()) {
     const auto& lastPoint = initialGuessPoints.back().front();
