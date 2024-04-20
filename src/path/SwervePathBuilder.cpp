@@ -260,6 +260,11 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
                         std::end(points));
     pointsPerSpline.push_back(points.size());
   }
+  printf("spline heading: %zd [", splinePoints.size());
+  for (size_t t = 0; t < splinePoints.size(); ++t) {
+    printf("%.2f, ", splinePoints.at(t).first.Rotation().Radians().value());
+  }
+  printf("]\n");
 
   const auto maxWheelVelocity = units::meters_per_second_t(
                                 path.drivetrain.modules.front().wheelMaxAngularVelocity
