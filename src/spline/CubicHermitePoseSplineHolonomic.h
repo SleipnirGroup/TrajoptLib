@@ -14,7 +14,7 @@ namespace trajopt {
 /**
  * Represents a cubic pose spline, which is a specific implementation of a cubic hermite spline.
  */
-class CubicHermitePoseSplineHolonomic : public frc::CubicHermiteSpline {
+class TRAJOPT_DLLEXPORT CubicHermitePoseSplineHolonomic : public frc::CubicHermiteSpline {
 public:
     CubicHermitePoseSplineHolonomic(wpi::array<double, 2> xInitialControlVector,
                     wpi::array<double, 2> xFinalControlVector,
