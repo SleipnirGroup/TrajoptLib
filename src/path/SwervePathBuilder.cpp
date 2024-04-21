@@ -2,6 +2,8 @@
 
 #include "trajopt/path/SwervePathBuilder.h"
 
+#include <frc/trajectory/TrajectoryGenerator.h>
+#include <frc/trajectory/TrajectoryParameterizer.h>
 #include <stdint.h>
 
 #include <cassert>
@@ -10,11 +12,10 @@
 #include <stdexcept>
 #include <vector>
 
-#include <frc/trajectory/TrajectoryGenerator.h>
-#include <frc/trajectory/TrajectoryParameterizer.h>
-
 #include "optimization/Cancellation.h"
 #include "optimization/TrajoptUtil.h"
+#include "spline/CubicHermitePoseSplineHolonomic.h"
+#include "spline/SplineParameterizer.h"
 #include "trajopt/constraint/AngularVelocityConstraint.h"
 #include "trajopt/constraint/Constraint.h"
 #include "trajopt/constraint/HeadingConstraint.h"
@@ -31,9 +32,6 @@
 #include "trajopt/set/LinearSet2d.h"
 #include "trajopt/set/RectangularSet2d.h"
 #include "trajopt/solution/Solution.h"
-
-#include "spline/CubicHermitePoseSplineHolonomic.h"
-#include "spline/SplineParameterizer.h"
 
 namespace trajopt {
 
@@ -214,12 +212,11 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     }
   }
   const auto startSplineAngle =
-      (*(flatTranslationPoints.begin()+1) - flatTranslationPoints.front())
-        .Angle();
+      (*(flatTranslationPoints.begin() + 1) - flatTranslationPoints.front())
+          .Angle();
   const auto endSplineAngle =
-      (flatTranslationPoints.back() - 
-      *(flatTranslationPoints.end()-2))
-        .Angle();
+      (flatTranslationPoints.back() - *(flatTranslationPoints.end() - 2))
+          .Angle();
   const auto start =
       frc::Pose2d(flatTranslationPoints.front(), startSplineAngle);
 
@@ -234,15 +231,17 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   const auto splines_temp = frc::SplineHelper::CubicSplinesFromControlVectors(
       splineControlVectors.front(), interiorPoints,
       splineControlVectors.back());
-  
+
   std::vector<trajopt::CubicHermitePoseSplineHolonomic> splines;
   splines.reserve(splines_temp.size());
   for (size_t i = 1; i <= splines_temp.size(); ++i) {
-    splines.emplace_back(splines_temp.at(i-1), flatHeadings.at(i-1), flatHeadings.at(i));
+    splines.emplace_back(splines_temp.at(i - 1), flatHeadings.at(i - 1),
+                         flatHeadings.at(i));
   }
 
   // spline points from splines
-  // const auto points = frc::TrajectoryGenerator::SplinePointsFromSplines(splines);
+  // const auto points =
+  // frc::TrajectoryGenerator::SplinePointsFromSplines(splines);
   std::vector<frc::TrajectoryGenerator::PoseWithCurvature> splinePoints;
   splinePoints.reserve(128);
   std::vector<size_t> pointsPerSpline;
@@ -256,7 +255,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   for (auto&& spline : splines) {
     auto points = SplineParameterizer::Parameterize(spline);
     // Append the array of poses to the vector.
-    // Remove the first point because it's a duplicate 
+    // Remove the first point because it's a duplicate
     // of the last point from the previous spline.
     splinePoints.insert(std::end(splinePoints), std::begin(points) + 1,
                         std::end(points));
@@ -264,15 +263,17 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   }
 
   const auto maxWheelVelocity = units::meters_per_second_t(
-                                path.drivetrain.modules.front().wheelMaxAngularVelocity
-                                * path.drivetrain.modules.front().wheelRadius);
-  frc::TrajectoryConfig config{maxWheelVelocity, units::meters_per_second_squared_t(maxWheelVelocity.value())};
+      path.drivetrain.modules.front().wheelMaxAngularVelocity *
+      path.drivetrain.modules.front().wheelRadius);
+  frc::TrajectoryConfig config{
+      maxWheelVelocity,
+      units::meters_per_second_squared_t(maxWheelVelocity.value())};
   // time parameterize
-  const auto traj = 
-      frc::TrajectoryParameterizer::TrajectoryParameterizer::TimeParameterizeTrajectory(
-      splinePoints, config.Constraints(), config.StartVelocity(),
-      config.EndVelocity(), config.MaxVelocity(), config.MaxAcceleration(),
-      config.IsReversed());
+  const auto traj = frc::TrajectoryParameterizer::TrajectoryParameterizer::
+      TimeParameterizeTrajectory(splinePoints, config.Constraints(),
+                                 config.StartVelocity(), config.EndVelocity(),
+                                 config.MaxVelocity(), config.MaxAcceleration(),
+                                 config.IsReversed());
 
   // control interval sample traj
   const auto states = traj.States();
@@ -297,21 +298,23 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   for (size_t i = 0; i < sampTot; ++i) {
     initialGuess.dt.push_back(traj.TotalTime().value() / sampTot);
   }
-  
+
   for (size_t sgmtIdx = 1; sgmtIdx <= controlIntervalCounts.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
     size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
     size_t splinesInSgmt = guessPointsForSgmt.size();
     size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
-    
+
     for (size_t splineSgmtIdx = 0; splineSgmtIdx < splinesInSgmt;
          ++splineSgmtIdx) {
       if (splineSgmtIdx == splinesInSgmt - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
 
-      size_t currentStateIdx = prevStateIdx + pointsPerSpline.at(sgmtIdx - 1 + splineSgmtIdx) - 1;
-      const auto subSgmtDt = states.at(currentStateIdx).t - states.at(prevStateIdx).t;
+      size_t currentStateIdx =
+          prevStateIdx + pointsPerSpline.at(sgmtIdx - 1 + splineSgmtIdx) - 1;
+      const auto subSgmtDt =
+          states.at(currentStateIdx).t - states.at(prevStateIdx).t;
       const auto dt = subSgmtDt / static_cast<double>(samplesForSpline);
 
       for (size_t sampleIdx = 1; sampleIdx <= samplesForSpline; ++sampleIdx) {
@@ -319,8 +322,9 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
         const auto point = traj.Sample(t);
         initialGuess.x.push_back(point.pose.X().value());
         initialGuess.y.push_back(point.pose.Y().value());
-        double wrappedTheta = frc::InputModulus(
-            point.pose.Rotation().Radians().value(), -std::numbers::pi, std::numbers::pi);
+        double wrappedTheta =
+            frc::InputModulus(point.pose.Rotation().Radians().value(),
+                              -std::numbers::pi, std::numbers::pi);
         initialGuess.theta.push_back(wrappedTheta);
         // initialGuess.dt.push_back(dt.value());
         // TODO figure out dt per waypoint

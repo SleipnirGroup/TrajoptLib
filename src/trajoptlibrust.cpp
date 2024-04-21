@@ -321,10 +321,10 @@ HolonomicTrajectory _convert_sol_to_holonomic_trajectory(
   samples.reserve(sol.x.size());
   for (size_t i = 0; i < sol.x.size(); ++i) {
     HolonomicTrajectorySample p = HolonomicTrajectorySample{
-      .timestamp = total_time,
-      .x = sol.x.at(i),
-      .y = sol.y.at(i),
-      .heading = sol.theta.at(i),
+        .timestamp = total_time,
+        .x = sol.x.at(i),
+        .y = sol.y.at(i),
+        .heading = sol.theta.at(i),
     };
     samples.emplace_back(p);
     total_time += sol.dt.at(i);
@@ -342,7 +342,8 @@ HolonomicTrajectory SwervePathBuilderImpl::calculate_linear_initial_guess()
 
 HolonomicTrajectory SwervePathBuilderImpl::calculate_spline_initial_guess()
     const {
-  return _convert_sol_to_holonomic_trajectory(path.CalculateSplineInitialGuessWithKinematics());
+  return _convert_sol_to_holonomic_trajectory(
+      path.CalculateSplineInitialGuessWithKinematics());
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {

@@ -1,6 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// Copyright (c) TrajoptLib contributors
 
 /*
  * MIT License
@@ -33,16 +31,14 @@
 #include <utility>
 #include <vector>
 
-#include "trajopt/SymbolExports.h"
-
 #include "frc/spline/Spline.h"
 #include "frc/spline/SplineParameterizer.h"
+#include "spline/CubicHermitePoseSplineHolonomic.h"
+#include "trajopt/SymbolExports.h"
 #include "units/angle.h"
 #include "units/curvature.h"
 #include "units/length.h"
 #include "units/math.h"
-
-#include "spline/CubicHermitePoseSplineHolonomic.h"
 
 namespace trajopt {
 
@@ -71,9 +67,9 @@ class TRAJOPT_DLLEXPORT SplineParameterizer {
    * @return A vector of poses and curvatures that represents various points on
    * the spline.
    */
-  static std::vector<frc::SplineParameterizer::PoseWithCurvature> Parameterize(const CubicHermitePoseSplineHolonomic& spline,
-                                                     double t0 = 0.0,
-                                                     double t1 = 1.0) {
+  static std::vector<frc::SplineParameterizer::PoseWithCurvature> Parameterize(
+      const CubicHermitePoseSplineHolonomic& spline, double t0 = 0.0,
+      double t1 = 1.0) {
     std::vector<frc::SplineParameterizer::PoseWithCurvature> splinePoints;
 
     // The parameterization does not add the initial point. Let's add that.
@@ -107,7 +103,7 @@ class TRAJOPT_DLLEXPORT SplineParameterizer {
       }
 
       if (iterations++ >= kMaxIterations) {
-        printf("spline parameterization iterations: %d\n", iterations);
+        std::printf("spline parameterization iterations: %d\n", iterations);
         throw MalformedSplineException(
             "Could not parameterize a malformed spline. "
             "This means that you probably had two or more adjacent "
@@ -115,7 +111,7 @@ class TRAJOPT_DLLEXPORT SplineParameterizer {
             "in opposing directions.");
       }
     }
-    printf("spline parameterization iterations: %d\n", iterations);
+    std::printf("spline parameterization iterations: %d\n", iterations);
 
     return splinePoints;
   }
@@ -143,4 +139,4 @@ class TRAJOPT_DLLEXPORT SplineParameterizer {
   friend class CubicHermiteSplineTest;
   friend class QuinticHermiteSplineTest;
 };
-}  // namespace frc
+}  // namespace trajopt
