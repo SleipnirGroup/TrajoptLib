@@ -215,14 +215,14 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   const auto startSplineAngle =
       (*(flatTranslationPoints.begin()+1) - flatTranslationPoints.front())
         .Angle();
-  const auto endSpineAngle =
-      (flatTranslationPoints.back() -
-       *(flatTranslationPoints.end()-2))
+  const auto endSplineAngle =
+      (*(flatTranslationPoints.end()-2) - 
+      flatTranslationPoints.back())
         .Angle();
   const auto start =
       frc::Pose2d(flatTranslationPoints.front(), startSplineAngle);
-  const auto end = frc::Pose2d(flatTranslationPoints.back(), endSpineAngle);
 
+  const auto end = frc::Pose2d(flatTranslationPoints.back(), endSplineAngle);
   std::vector<frc::Translation2d> interiorPoints;
   interiorPoints.assign(flatTranslationPoints.begin() + 1,
                         flatTranslationPoints.end() - 1);
@@ -254,6 +254,8 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   // parameterized points to the final vector.
   for (auto&& spline : splines) {
     auto points = SplineParameterizer::Parameterize(spline);
+    printf("parameterize spline...\n");
+
     // Append the array of poses to the vector. We are removing the first
     // point because it's a duplicate of the last point from the previous
     // spline.
@@ -333,9 +335,9 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       size_t currentStateIdx = prevStateIdx + pointsPerSpline[sgmtIdx + splineSgmtIdx] - 1;
       // printf("currStateIdx: %zd\n", currentStateIdx);
       const auto subSgmtDt = states.at(currentStateIdx).t - states.at(prevStateIdx).t;
-
+      const auto dt = subSgmtDt / static_cast<double>(samplesForSpline);
       for (size_t sampleIdx = 0; sampleIdx < samplesForSpline; ++sampleIdx) {
-        const auto dt = subSgmtDt / static_cast<double>(samplesForSpline);
+        
         auto t = states.at(prevStateIdx).t + sampleIdx * dt;
 
         const auto point = traj.Sample(t);
