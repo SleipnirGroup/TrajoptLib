@@ -310,24 +310,31 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     size_t splinesInSgmt = guessPointsForSgmt.size();
     size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
 
-    size_t currentStateIdx =
+    size_t endSgmtStateIdx =
         prevStateIdx + pointsPerSpline.at(sgmtIdx - 1 + splinesInSgmt - 1) - 1;
     const auto wholeSgmtDt =
-        states.at(currentStateIdx).t - states.at(prevStateIdx).t;
+        states.at(endSgmtStateIdx).t - states.at(prevStateIdx).t;
     const auto dt = wholeSgmtDt / static_cast<double>(samplesForSgmt);
-    std::printf("dt from (wpt%zd, wpt%zd]\n", sgmtIdx - 1, sgmtIdx - 1 + splinesInSgmt - 1);
+    std::printf("dt from (wpt%zd, wpt%zd]: %.5f\n", 
+                  sgmtIdx - 1, sgmtIdx - 1 + splinesInSgmt - 1, dt.value());
     for (size_t splineSgmtIdx = 0; splineSgmtIdx < splinesInSgmt;
          ++splineSgmtIdx) {
       if (splineSgmtIdx == splinesInSgmt - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
-
+      std::printf("currentState...");
+      size_t currentStateIdx =
+        prevStateIdx + pointsPerSpline.at(sgmtIdx - 1 + splineSgmtIdx) - 1;
+      std::printf("pointsInSpline...");
+      const auto pointsInSpline = pointsPerSpline.at(sgmtIdx - 1 + splineSgmtIdx);
+      std::printf("splineDt...");
       const auto splineDt =
-            states.at(prevStateIdx + 
-                      pointsPerSpline.at(sgmtIdx - 1 + splineSgmtIdx) - 1).t
+            states.at(currentStateIdx).t
             - states.at(prevStateIdx).t;
+      std::printf("sampleDt...");
       const auto sampleDt = splineDt / static_cast<double>(samplesForSpline);
       for (size_t sampleIdx = 1; sampleIdx <= samplesForSpline; ++sampleIdx) {
+        std::printf("states t...");
         auto t = states.at(prevStateIdx).t + sampleIdx * dt;
         const auto point = traj.Sample(t);
         initialGuess.x.push_back(point.pose.X().value());
@@ -339,6 +346,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
         initialGuess.dt.push_back(dt.value());
         // TODO figure out dt per waypoint
       }
+      std::printf("\n");
       prevStateIdx = currentStateIdx;
     }
   }
