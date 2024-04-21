@@ -288,9 +288,6 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
 
   auto prevState = states.front();
   size_t prevStateIdx = 0;
-  for (size_t i = 0; i < sampTot; ++i) {
-    initialGuess.dt.push_back(traj.TotalTime().value() / sampTot);
-  }
 
   const auto& firstPoint = initialGuessPoints.front().front();
   initialGuess.x.push_back(firstPoint.x);
@@ -321,11 +318,12 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
         double wrappedTheta = frc::InputModulus(
             point.pose.Rotation().Radians().value(), -std::numbers::pi, std::numbers::pi);
         initialGuess.theta.push_back(wrappedTheta);
-        // initialGuess.dt.push_back(dt.value());
+        initialGuess.dt.push_back(dt.value());
       }
       prevStateIdx = currentStateIdx;
     }
   }
+  initialGuess.dt.push_back(0.0);
 
   return initialGuess;
 }
