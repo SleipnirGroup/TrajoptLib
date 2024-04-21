@@ -298,24 +298,24 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   for (size_t i = 0; i < sampTot; ++i) {
     initialGuess.dt.push_back(traj.TotalTime().value() / sampTot);
   }
-
+  printf("dt [");
   for (size_t sgmtIdx = 1; sgmtIdx <= controlIntervalCounts.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
     size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
     size_t splinesInSgmt = guessPointsForSgmt.size();
     size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
+    
+    size_t currentStateIdx =
+          prevStateIdx + pointsPerSpline.at(sgmtIdx - 1 + splinesInSgmt - 1) - 1;
+    const auto wholeSgmtDt =
+          states.at(currentStateIdx).t - states.at(prevStateIdx).t;
+    const auto dt = wholeSgmtDt / static_cast<double>(samplesForSpline);
 
     for (size_t splineSgmtIdx = 0; splineSgmtIdx < splinesInSgmt;
          ++splineSgmtIdx) {
       if (splineSgmtIdx == splinesInSgmt - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
-
-      size_t currentStateIdx =
-          prevStateIdx + pointsPerSpline.at(sgmtIdx - 1 + splineSgmtIdx) - 1;
-      const auto subSgmtDt =
-          states.at(currentStateIdx).t - states.at(prevStateIdx).t;
-      const auto dt = subSgmtDt / static_cast<double>(samplesForSpline);
 
       for (size_t sampleIdx = 1; sampleIdx <= samplesForSpline; ++sampleIdx) {
         auto t = states.at(prevStateIdx).t + sampleIdx * dt;
