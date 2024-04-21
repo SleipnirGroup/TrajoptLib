@@ -1,4 +1,4 @@
-use trajoptlib::{SwerveDrivetrain, SwerveModule, SwervePathBuilder};
+use trajoptlib::{InitialGuessPoint, SwerveDrivetrain, SwerveModule, SwervePathBuilder};
 
 fn main() {
     let drivetrain = SwerveDrivetrain {
@@ -41,13 +41,15 @@ fn main() {
     path.set_drivetrain(&drivetrain);
     path.set_bumpers(1.3, 1.3);
     path.pose_wpt(0, 0.0, 0.0, 0.0);
-    path.pose_wpt(1, 1.0, 0.0, 0.);
+    path.sgmt_initial_guess_points(0, vec![InitialGuessPoint{3., 0., 0.}]);
+    path.pose_wpt(1, 5., 1, 0.);
+    let end_idx = 1;
     path.wpt_linear_velocity_polar(0, 0.0, 0.0);
-    path.wpt_linear_velocity_polar(1, 0.0, 0.0);
+    path.wpt_linear_velocity_polar(end_idx, 0.0, 0.0);
     path.wpt_angular_velocity(0, 0.0);
-    path.wpt_angular_velocity(1, 0.0);
+    path.wpt_angular_velocity(end_idx, 0.0);
     // path.sgmt_circle_obstacle(0, 1, 0.5, 0.1, 0.2);
-    path.set_control_interval_counts(vec![3]);
+    path.set_control_interval_counts(vec![5]);
     println!("setup complete");
     // println!("linear: {:#?}", path.calculate_linear_initial_guess());
     // println!("spline: {:#?}", path.calculate_spline_initial_guess());

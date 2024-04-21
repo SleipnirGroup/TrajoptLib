@@ -268,6 +268,11 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   frc::TrajectoryConfig config{
       maxWheelVelocity,
       units::meters_per_second_squared_t(maxWheelVelocity.value())};
+  config.SetStartVelocity(units::meters_per_second_t(0));
+  config.SetEndVelocity(units::meters_per_second_t(0));
+  // config.SetKinematics(
+  //   frc::SwerveDriveKinematicsConstraint{1}
+  // );
   // time parameterize
   const auto traj = frc::TrajectoryParameterizer::TrajectoryParameterizer::
       TimeParameterizeTrajectory(splinePoints, config.Constraints(),
@@ -295,9 +300,10 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   initialGuess.x.push_back(firstPoint.x);
   initialGuess.y.push_back(firstPoint.y);
   initialGuess.theta.push_back(firstPoint.heading);
-  for (size_t i = 0; i < sampTot; ++i) {
-    initialGuess.dt.push_back(traj.TotalTime().value() / sampTot);
-  }
+  initialGuess.dt.push_back(0.0);
+  // for (size_t i = 0; i < sampTot; ++i) {
+  //   initialGuess.dt.push_back(traj.TotalTime().value() / sampTot);
+  // }
   for (size_t sgmtIdx = 1; sgmtIdx <= controlIntervalCounts.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
     size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
@@ -308,14 +314,19 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
         prevStateIdx + pointsPerSpline.at(sgmtIdx - 1 + splinesInSgmt - 1) - 1;
     const auto wholeSgmtDt =
         states.at(currentStateIdx).t - states.at(prevStateIdx).t;
-    const auto dt = wholeSgmtDt / static_cast<double>(samplesForSpline);
-
+    const auto dt = wholeSgmtDt / static_cast<double>(samplesForSgmt);
+    std::printf("dt from (wpt%zd, wpt%zd]\n", sgmtIdx - 1, sgmtIdx - 1 + splinesInSgmt - 1);
     for (size_t splineSgmtIdx = 0; splineSgmtIdx < splinesInSgmt;
          ++splineSgmtIdx) {
       if (splineSgmtIdx == splinesInSgmt - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
 
+      const auto splineDt =
+            states.at(prevStateIdx + 
+                      pointsPerSpline.at(sgmtIdx - 1 + splineSgmtIdx) - 1).t
+            - states.at(prevStateIdx).t;
+      const auto sampleDt = splineDt / static_cast<double>(samplesForSpline);
       for (size_t sampleIdx = 1; sampleIdx <= samplesForSpline; ++sampleIdx) {
         auto t = states.at(prevStateIdx).t + sampleIdx * dt;
         const auto point = traj.Sample(t);
@@ -325,7 +336,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
             frc::InputModulus(point.pose.Rotation().Radians().value(),
                               -std::numbers::pi, std::numbers::pi);
         initialGuess.theta.push_back(wrappedTheta);
-        // initialGuess.dt.push_back(dt.value());
+        initialGuess.dt.push_back(dt.value());
         // TODO figure out dt per waypoint
       }
       prevStateIdx = currentStateIdx;
