@@ -107,6 +107,7 @@ class TRAJOPT_DLLEXPORT SplineParameterizer {
       }
 
       if (iterations++ >= kMaxIterations) {
+        printf("spline parameterization iterations: %d\n", iterations);
         throw MalformedSplineException(
             "Could not parameterize a malformed spline. "
             "This means that you probably had two or more adjacent "
@@ -114,6 +115,7 @@ class TRAJOPT_DLLEXPORT SplineParameterizer {
             "in opposing directions.");
       }
     }
+    printf("spline parameterization iterations: %d\n", iterations);
 
     return splinePoints;
   }
@@ -136,7 +138,7 @@ class TRAJOPT_DLLEXPORT SplineParameterizer {
    * paths don't usually go over 300 iterations, so hitting this maximum should
    * definitely indicate something has gone wrong.
    */
-  static constexpr int kMaxIterations = 5000;
+  static constexpr int kMaxIterations = 10000;
 
   friend class CubicHermiteSplineTest;
   friend class QuinticHermiteSplineTest;
