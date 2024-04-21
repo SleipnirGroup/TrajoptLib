@@ -293,6 +293,9 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   initialGuess.x.push_back(firstPoint.x);
   initialGuess.y.push_back(firstPoint.y);
   initialGuess.theta.push_back(firstPoint.heading);
+  for (size_t i = 0; i < sampTot; ++i) {
+    initialGuess.dt.push_back(traj.TotalTime().value() / sampTot);
+  }
   
   for (size_t sgmtIdx = 1; sgmtIdx <= controlIntervalCounts.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
@@ -318,12 +321,13 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
         double wrappedTheta = frc::InputModulus(
             point.pose.Rotation().Radians().value(), -std::numbers::pi, std::numbers::pi);
         initialGuess.theta.push_back(wrappedTheta);
-        initialGuess.dt.push_back(dt.value());
+        // initialGuess.dt.push_back(dt.value());
+        // TODO figure out dt per waypoint
       }
       prevStateIdx = currentStateIdx;
     }
   }
-  initialGuess.dt.push_back(0.0);
+  // initialGuess.dt.push_back(0.0);
 
   return initialGuess;
 }
