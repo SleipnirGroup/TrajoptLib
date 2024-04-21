@@ -262,24 +262,9 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     pointsPerSpline.push_back(points.size());
   }
 
-  /**
-   * TODO 
-   * Find out of bounds vector error below this comment
-   * 
-   */
-  // printf("spline heading: %zd [", splinePoints.size());
-  // for (size_t t = 0; t < splinePoints.size(); ++t) {
-  //   printf("%.2f, ", splinePoints.at(t).first.Rotation().Radians().value());
-  // }
-  // printf("]\n");
-
   const auto maxWheelVelocity = units::meters_per_second_t(
                                 path.drivetrain.modules.front().wheelMaxAngularVelocity
                                 * path.drivetrain.modules.front().wheelRadius);
-  printf("angVel * radius = max wheel velocity: %.3f * %.3f = %.3f\n", 
-          path.drivetrain.modules.front().wheelMaxAngularVelocity, 
-          path.drivetrain.modules.front().wheelRadius,
-          maxWheelVelocity.value());
   frc::TrajectoryConfig config{maxWheelVelocity, units::meters_per_second_squared_t(maxWheelVelocity.value())};
   // time parameterize
   const auto traj = 
@@ -303,29 +288,6 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
 
   auto prevState = states.front();
   size_t prevStateIdx = 0;
-  // between init guess points
-  // printf("pointsPerSpline: [");
-  // for (auto points : pointsPerSpline) {
-  //   printf("%zd, ", points);
-  // }
-  // printf("]\n");
-
-  // printf("traj heading: %zd [", states.size());
-  // for (auto point : states) {
-  //   printf("%.2f, ", point.pose.Rotation().Radians().value());
-  // }
-  // printf("]\n");
-  printf("initGssPnt x: %zd [", initialGuessPoints.size());
-  for (auto points : initialGuessPoints) {
-    printf("[");
-    for (auto point : points) {
-      printf("%.2f, ", point.x);
-    }
-    printf("]");
-  }
-  printf("]\n");
-  fflush(stdout);
-
   for (size_t i = 0; i < sampTot; ++i) {
     initialGuess.dt.push_back(traj.TotalTime().value() / sampTot);
   }
@@ -334,10 +296,8 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   initialGuess.x.push_back(firstPoint.x);
   initialGuess.y.push_back(firstPoint.y);
   initialGuess.theta.push_back(firstPoint.heading);
-  // initialGuess.dt.push_back(0.0);
   
   for (size_t sgmtIdx = 1; sgmtIdx <= controlIntervalCounts.size(); ++sgmtIdx) {
-    printf("sgmt(%zd): %zd - ", controlIntervalCounts.size(), sgmtIdx);
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
     size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
     size_t splinesInSgmt = guessPointsForSgmt.size();
@@ -348,18 +308,13 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       if (splineSgmtIdx == splinesInSgmt - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
-      // printf("prevStateIdx: %zd\n", prevStateIdx);
-      // printf("")
-      printf("spline(%zd): %zd\n- sample(%zd): ", splinesInSgmt, splineSgmtIdx, samplesForSpline);
+
       size_t currentStateIdx = prevStateIdx + pointsPerSpline.at(sgmtIdx - 1 + splineSgmtIdx) - 1;
-      // printf("currStateIdx: %zd\n", currentStateIdx);
       const auto subSgmtDt = states.at(currentStateIdx).t - states.at(prevStateIdx).t;
       const auto dt = subSgmtDt / static_cast<double>(samplesForSpline);
 
       for (size_t sampleIdx = 1; sampleIdx <= samplesForSpline; ++sampleIdx) {
-        printf("%zd, ", sampleIdx);
         auto t = states.at(prevStateIdx).t + sampleIdx * dt;
-
         const auto point = traj.Sample(t);
         initialGuess.x.push_back(point.pose.X().value());
         initialGuess.y.push_back(point.pose.Y().value());
@@ -369,7 +324,6 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
         // initialGuess.dt.push_back(dt.value());
       }
       prevStateIdx = currentStateIdx;
-      printf("\n");
     }
   }
 
