@@ -14,15 +14,15 @@ namespace trajopt {
  */
 struct TRAJOPT_DLLEXPORT SwerveModule {
   /**
-   * @brief x-coordinate of swerve module relative to robot coordinate system
+   * @brief x-coordinate (meters) of swerve module relative to robot coordinate system
    */
   double x;
   /**
-   * @brief y-coordinate of swerve module relative to robot coordinate system
+   * @brief y-coordinate (meters) of swerve module relative to robot coordinate system
    */
   double y;
   /**
-   * @brief radius of wheel
+   * @brief radius of wheel (meters)
    */
   double wheelRadius;
   /**
@@ -30,7 +30,7 @@ struct TRAJOPT_DLLEXPORT SwerveModule {
    */
   double wheelMaxAngularVelocity;
   /**
-   * @brief maximum torque applied to wheel
+   * @brief maximum torque (N*m) applied to wheel
    */
   double wheelMaxTorque;
 };
