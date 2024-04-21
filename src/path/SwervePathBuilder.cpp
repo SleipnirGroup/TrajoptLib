@@ -216,8 +216,8 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       (*(flatTranslationPoints.begin()+1) - flatTranslationPoints.front())
         .Angle();
   const auto endSplineAngle =
-      (*(flatTranslationPoints.end()-2) - 
-      flatTranslationPoints.back())
+      (flatTranslationPoints.back() - 
+      *(flatTranslationPoints.end()-2))
         .Angle();
   const auto start =
       frc::Pose2d(flatTranslationPoints.front(), startSplineAngle);
@@ -254,11 +254,9 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   // parameterized points to the final vector.
   for (auto&& spline : splines) {
     auto points = SplineParameterizer::Parameterize(spline);
-    printf("parameterize spline...\n");
-
-    // Append the array of poses to the vector. We are removing the first
-    // point because it's a duplicate of the last point from the previous
-    // spline.
+    // Append the array of poses to the vector.
+    // Remove the first point because it's a duplicate 
+    // of the last point from the previous spline.
     splinePoints.insert(std::end(splinePoints), std::begin(points) + 1,
                         std::end(points));
     pointsPerSpline.push_back(points.size());
