@@ -314,7 +314,8 @@ HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
   }
 }
 
-HolonomicTrajectory _convert_sol_to_holonomic_trajectory(const trajopt::Solution& sol) {
+HolonomicTrajectory _convert_sol_to_holonomic_trajectory(
+    const trajopt::Solution& sol) {
   rust::Vec<HolonomicTrajectorySample> samples;
   double total_time = 0;
   samples.reserve(sol.x.size());
@@ -329,13 +330,14 @@ HolonomicTrajectory _convert_sol_to_holonomic_trajectory(const trajopt::Solution
     total_time += sol.dt.at(i);
   }
   return HolonomicTrajectory{
-    .samples = samples,
+      .samples = samples,
   };
 }
 
 HolonomicTrajectory SwervePathBuilderImpl::calculate_linear_initial_guess()
     const {
-  return _convert_sol_to_holonomic_trajectory(path.CalculateLinearInitialGuess());
+  return _convert_sol_to_holonomic_trajectory(
+      path.CalculateLinearInitialGuess());
 }
 
 HolonomicTrajectory SwervePathBuilderImpl::calculate_spline_initial_guess()
