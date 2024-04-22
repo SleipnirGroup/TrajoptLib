@@ -295,6 +295,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
 
   auto prevState = states.front();
   size_t prevStateIdx = 0;
+  size_t pointsPerSplineIdx = 0;
 
   const auto& firstPoint = initialGuessPoints.front().front();
   initialGuess.x.push_back(firstPoint.x);
@@ -304,30 +305,33 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   // for (size_t i = 0; i < sampTot; ++i) {
   //   initialGuess.dt.push_back(traj.TotalTime().value() / sampTot);
   // }
-  for (size_t sgmtIdx = 1; sgmtIdx <= controlIntervalCounts.size(); ++sgmtIdx) {
+  for (size_t sgmtIdx = 1; sgmtIdx < initialGuessPoints.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
     size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
     size_t splinesInSgmt = guessPointsForSgmt.size();
     size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
+    printf("guessPointsForSgmt: %zd\n", guessPointsForSgmt.size());
 
     size_t totalPointsInSgmt = 0;
     for (size_t i = 0; i < splinesInSgmt; ++i) {
-      totalPointsInSgmt += pointsPerSpline.at(sgmtIdx - 1 + i) - 1;
+      totalPointsInSgmt += pointsPerSpline.at(pointsPerSplineIdx) - 1;
+      ++pointsPerSplineIdx;
     }
     size_t endSgmtStateIdx = prevStateIdx + totalPointsInSgmt;
     const auto wholeSgmtDt =
         states.at(endSgmtStateIdx).t - states.at(prevStateIdx).t;
     const auto dt = wholeSgmtDt / static_cast<double>(samplesForSgmt);
-    std::printf("dt from (wpt%zd, wpt%zd]: %.5f\n", sgmtIdx - 1,
-                sgmtIdx - 1 + splinesInSgmt - 1, dt.value());
-    for (size_t splineSgmtIdx = 0; splineSgmtIdx < splinesInSgmt;
-         ++splineSgmtIdx) {
-      if (splineSgmtIdx == splinesInSgmt - 1) {
+    std::printf("dt for sgmt%zd with %zd splines: %.5f\n", sgmtIdx,
+                splinesInSgmt, dt.value());
+
+    for (size_t splineSgmtIdx = pointsPerSplineIdx - splinesInSgmt; 
+         splineSgmtIdx < pointsPerSplineIdx; ++splineSgmtIdx) {
+      if (splineSgmtIdx == pointsPerSplineIdx - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
       std::printf("pointsInSpline...");
       const auto pointsInSpline =
-          pointsPerSpline.at(sgmtIdx - 1 + splineSgmtIdx);
+          pointsPerSpline.at(splineSgmtIdx);
       std::printf("currentState...");
       size_t currentStateIdx = prevStateIdx + pointsInSpline - 1;
       std::printf("splineDt...");
