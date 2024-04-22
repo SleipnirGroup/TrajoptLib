@@ -41,7 +41,7 @@ fn main() {
     path.set_drivetrain(&drivetrain);
     path.set_bumpers(1.3, 1.3);
     path.pose_wpt(0, 0.0, 0.0, 0.0);
-    path.sgmt_initial_guess_points(0, 
+    path.sgmt_initial_guess_points(0,
         &vec![InitialGuessPoint{
             x: 3., y: 0., heading: 0.}]);
     path.pose_wpt(1, 5., 1., 0.);
