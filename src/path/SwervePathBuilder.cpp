@@ -310,7 +310,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
     size_t splinesInSgmt = guessPointsForSgmt.size();
     size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
-    printf("guessPointsForSgmt: %zd\n", guessPointsForSgmt.size());
+    std::printf("guessPointsForSgmt: %zd\n", guessPointsForSgmt.size());
 
     size_t totalPointsInSgmt = 0;
     for (size_t i = 0; i < splinesInSgmt; ++i) {
@@ -324,14 +324,13 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     std::printf("dt for sgmt%zd with %zd splines: %.5f\n", sgmtIdx,
                 splinesInSgmt, dt.value());
 
-    for (size_t splineSgmtIdx = pointsPerSplineIdx - splinesInSgmt; 
+    for (size_t splineSgmtIdx = pointsPerSplineIdx - splinesInSgmt;
          splineSgmtIdx < pointsPerSplineIdx; ++splineSgmtIdx) {
       if (splineSgmtIdx == pointsPerSplineIdx - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
       std::printf("pointsInSpline...");
-      const auto pointsInSpline =
-          pointsPerSpline.at(splineSgmtIdx);
+      const auto pointsInSpline = pointsPerSpline.at(splineSgmtIdx);
       std::printf("currentState...");
       size_t currentStateIdx = prevStateIdx + pointsInSpline - 1;
       std::printf("splineDt...");
@@ -345,10 +344,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
         const auto point = traj.Sample(t);
         initialGuess.x.push_back(point.pose.X().value());
         initialGuess.y.push_back(point.pose.Y().value());
-        double wrappedTheta =
-            frc::InputModulus(point.pose.Rotation().Radians().value(),
-                              -std::numbers::pi, std::numbers::pi);
-        initialGuess.theta.push_back(wrappedTheta);
+        initialGuess.theta.push_back(point.pose.Rotation().Radians().value());
         initialGuess.dt.push_back(dt.value());
         // TODO figure out dt per waypoint
       }
@@ -356,7 +352,16 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       prevStateIdx = currentStateIdx;
     }
   }
-  // initialGuess.dt.push_back(0.0);
+  std::printf("headings [");
+  for (size_t i = 0; i < flatHeadings.size(); ++i) {
+    std::printf("%.2f, ", flatHeadings.at(i).Radians().value());
+  }
+  std::printf("]\n");
+  std::printf("headings [");
+  for (size_t i = 0; i < initialGuess.theta.size(); ++i) {
+    std::printf("%.2f, ", initialGuess.theta.at(i));
+  }
+  std::printf("]\n");
 
   return initialGuess;
 }
