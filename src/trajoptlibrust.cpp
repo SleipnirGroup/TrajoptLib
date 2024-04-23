@@ -138,7 +138,12 @@ void SwervePathBuilderImpl::wpt_linear_velocity_polar(size_t idx,
 void SwervePathBuilderImpl::wpt_angular_velocity(size_t idx,
                                                  double angular_velocity) {
   // this probably ought to be added to SwervePathBuilder in the C++ API
-  path.WptConstraint(idx, trajopt::AngularVelocityConstraint{angular_velocity});
+  path.WptAngularVelocity(idx, angular_velocity);
+}
+
+void SwervePathBuilderImpl::wpt_angular_velocity_max_magnitude(
+    size_t idx, double angular_velocity) {
+  path.WptAngularVelocityMaxMagnitude(idx, angular_velocity);
 }
 
 void SwervePathBuilderImpl::wpt_x(size_t idx, double x) {
@@ -192,8 +197,12 @@ void SwervePathBuilderImpl::sgmt_linear_velocity_polar(size_t from_idx,
 void SwervePathBuilderImpl::sgmt_angular_velocity(size_t from_idx,
                                                   size_t to_idx,
                                                   double angular_velocity) {
-  path.SgmtConstraint(from_idx, to_idx,
-                      trajopt::AngularVelocityConstraint{angular_velocity});
+  path.SgmtAngularVelocity(from_idx, to_idx, angular_velocity);
+}
+
+void SwervePathBuilderImpl::sgmt_angular_velocity_max_magnitude(
+    size_t from_idx, size_t to_idx, double angular_velocity) {
+  path.SgmtAngularVelocityMaxMagnitude(from_idx, to_idx, angular_velocity);
 }
 
 void SwervePathBuilderImpl::sgmt_x(size_t from_idx, size_t to_idx, double x) {
