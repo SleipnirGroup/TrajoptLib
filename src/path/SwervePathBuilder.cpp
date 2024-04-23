@@ -352,6 +352,29 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       prevStateIdx = currentStateIdx;
     }
   }
+
+  // fix headings
+  std::printf("fix headings:\n");
+  int fullRots = 0;
+  double prevHeading = initialGuess.theta.front();
+  for (size_t i = 0; i < initialGuess.theta.size(); ++i) {
+    const auto prevHeadingMod =
+        frc::AngleModulus(units::radian_t(prevHeading)).value();
+    const auto heading = initialGuess.theta.at(i);
+    const auto headingMod = frc::AngleModulus(units::radian_t(heading)).value();
+    if (prevHeadingMod < 0 && headingMod > prevHeadingMod + std::numbers::pi) {
+      fullRots--;
+    } else if (prevHeadingMod > 0 &&
+               heading < prevHeadingMod - std::numbers::pi) {
+      fullRots++;
+    }
+    initialGuess.theta.at(i) = fullRots * 2.0 * std::numbers::pi + headingMod;
+    prevHeading = initialGuess.theta.at(i);
+    std::printf(
+        "rots: %d, prevMod: %.2f, prevHead: %.2f, headMod: %.2f, head: %.2f\n",
+        fullRots, prevHeadingMod, prevHeading, headingMod, heading);
+  }
+
   std::printf("headings [");
   for (size_t i = 0; i < flatHeadings.size(); ++i) {
     std::printf("%.2f, ", flatHeadings.at(i).Radians().value());
