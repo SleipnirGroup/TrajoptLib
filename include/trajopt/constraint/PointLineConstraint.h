@@ -23,7 +23,8 @@ struct PointLineConstraint {
   double fieldLineEndX;
   /// field line end y (meters)
   double fieldLineEndY;
-  /// the required minimum distance (meters) between the point and line, must be positive
+  /// the required minimum distance (meters) between the point and line, must be
+  /// positive
   IntervalSet1d distance;
 };
 

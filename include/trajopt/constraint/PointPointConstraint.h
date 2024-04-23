@@ -19,7 +19,8 @@ struct PointPointConstraint {
   double fieldPointX;
   /// field point y (meters)
   double fieldPointY;
-  /// the required distance (meters) between the point and point, must be positive
+  /// the required distance (meters) between the point and point, must be
+  /// positive
   IntervalSet1d distance;
 };
 
