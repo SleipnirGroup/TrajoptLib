@@ -66,13 +66,6 @@ trajopt::SwerveDrivetrain _convert_swerve_drivetrain(
                                   &_convert_swerve_module>(drivetrain.modules)};
 }
 
-InitialGuessPoint _convert_initial_guess_point_to_rust(
-    const trajopt::InitialGuessPoint& initialGuessPoint) {
-  return InitialGuessPoint{.x = initialGuessPoint.x,
-                           .y = initialGuessPoint.y,
-                           .heading = initialGuessPoint.heading};
-}
-
 trajopt::InitialGuessPoint _convert_initial_guess_point(
     const InitialGuessPoint& initialGuessPoint) {
   return trajopt::InitialGuessPoint{.x = initialGuessPoint.x,
@@ -86,10 +79,6 @@ void SwervePathBuilderImpl::set_drivetrain(const SwerveDrivetrain& drivetrain) {
 
 size_t _convert_count(const size_t& count) {
   return count;
-}
-
-double _convert_double(const double& dbl) {
-  return dbl;
 }
 
 void SwervePathBuilderImpl::set_control_interval_counts(

@@ -272,7 +272,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       units::meters_per_second_squared_t(maxWheelVelocity.value())};
   config.SetStartVelocity(units::meters_per_second_t(0));
   config.SetEndVelocity(units::meters_per_second_t(0));
-  
+
   wpi::array<frc::Translation2d, 4> moduleTranslations{wpi::empty_array};
   for (size_t i = 0; i < path.drivetrain.modules.size(); ++i) {
     const auto mod = path.drivetrain.modules.at(0);
@@ -314,7 +314,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   initialGuess.y.push_back(firstPoint.y);
   initialGuess.theta.push_back(firstPoint.heading);
   initialGuess.dt.push_back(0.0);
-  
+
   for (size_t sgmtIdx = 1; sgmtIdx < initialGuessPoints.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
     size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
