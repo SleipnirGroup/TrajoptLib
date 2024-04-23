@@ -240,10 +240,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   }
 
   // spline points from splines
-  // const auto points =
-  // frc::TrajectoryGenerator::SplinePointsFromSplines(splines);
   std::vector<frc::TrajectoryGenerator::PoseWithCurvature> splinePoints;
-  splinePoints.reserve(128);
   std::vector<size_t> pointsPerSpline;
   pointsPerSpline.reserve(splines.size());
 
@@ -270,9 +267,6 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       units::meters_per_second_squared_t(maxWheelVelocity.value())};
   config.SetStartVelocity(units::meters_per_second_t(0));
   config.SetEndVelocity(units::meters_per_second_t(0));
-  // config.SetKinematics(
-  //   frc::SwerveDriveKinematicsConstraint{1}
-  // );
   // time parameterize
   const auto traj = frc::TrajectoryParameterizer::TrajectoryParameterizer::
       TimeParameterizeTrajectory(splinePoints, config.Constraints(),
