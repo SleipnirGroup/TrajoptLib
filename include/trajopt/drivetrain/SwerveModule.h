@@ -26,7 +26,7 @@ struct TRAJOPT_DLLEXPORT SwerveModule {
    */
   double wheelRadius;
   /**
-   * @brief maximum angular velocity of wheel
+   * @brief maximum angular velocity of wheel (rad/s)
    */
   double wheelMaxAngularVelocity;
   /**
