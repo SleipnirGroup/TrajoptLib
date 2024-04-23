@@ -43,15 +43,15 @@ fn main() {
     path.pose_wpt(0, 0.0, 0.0, 0.0);
     path.sgmt_initial_guess_points(0,
         &vec![InitialGuessPoint{
-            x: 3., y: 0., heading: 0.}]);
-    path.pose_wpt(1, 5., 1., 0.);
+            x: 1., y: 0., heading: 0.}]);
+    path.pose_wpt(1, 2., 1., 0.);
     let end_idx = 1;
     path.wpt_linear_velocity_polar(0, 0.0, 0.0);
     path.wpt_linear_velocity_polar(end_idx, 0.0, 0.0);
     path.wpt_angular_velocity(0, 0.0);
     path.wpt_angular_velocity(end_idx, 0.0);
     // path.sgmt_circle_obstacle(0, 1, 0.5, 0.1, 0.2);
-    path.set_control_interval_counts(vec![15]);
+    path.set_control_interval_counts(vec![7]);
     println!("setup complete");
     // println!("linear: {:#?}", path.calculate_linear_initial_guess());
     // println!("spline: {:#?}", path.calculate_spline_initial_guess());
