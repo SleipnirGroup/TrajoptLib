@@ -189,6 +189,7 @@ if(
     AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
 )
     target_compile_options(wpiutil PRIVATE -gz=none -Wno-unknown-pragmas)
+    target_compile_options(wpimath PRIVATE -gz=none)
 endif()
 target_link_libraries(TrajoptLib PUBLIC wpimath Eigen3::Eigen)
 
