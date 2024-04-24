@@ -185,7 +185,7 @@ fetchcontent_declare(
 fetchcontent_makeavailable(wpilib)
 if(
     ${OPTIMIZER_BACKEND} STREQUAL "casadi"
-    AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux"
+    AND ${CMAKE_SYSTEM_NAME} STREQUAL "Windows"
     AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
 )
     target_compile_options(wpiutil PRIVATE -Wno-unknown-pragmas)
