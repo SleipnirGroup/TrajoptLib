@@ -183,6 +183,13 @@ fetchcontent_declare(
     UPDATE_DISCONNECTED 1
 )
 fetchcontent_makeavailable(wpilib)
+if(
+    ${OPTIMIZER_BACKEND} STREQUAL "casadi"
+    AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux"
+    AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
+)
+    target_compile_options(wpiutil PRIVATE -Wno-unknown-pragmas)
+endif()
 target_link_libraries(TrajoptLib PUBLIC wpimath Eigen3::Eigen)
 
 target_include_directories(

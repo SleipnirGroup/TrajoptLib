@@ -14,7 +14,6 @@ macro(trajoptlib_compiler_flags target)
                 ${target}
                 PRIVATE _GLIBCXX_USE_CXX11_ABI=0
             )
-            target_compile_options(${target} PRIVATE -Wno-unknown-pragmas)
         endif()
     else()
         # Suppress the following warnings:
