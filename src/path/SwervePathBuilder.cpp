@@ -305,7 +305,6 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   initialGuess.theta.reserve(sampTot);
   initialGuess.dt.reserve(sampTot);
 
-  auto prevState = states.front();
   size_t prevStateIdx = 0;
   size_t pointsPerSplineIdx = 0;
 
@@ -340,9 +339,6 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       }
       const auto pointsInSpline = pointsPerSpline.at(splineSgmtIdx);
       size_t currentStateIdx = prevStateIdx + pointsInSpline - 1;
-      const auto splineDt =
-          states.at(currentStateIdx).t - states.at(prevStateIdx).t;
-      const auto sampleDt = splineDt / static_cast<double>(samplesForSpline);
 
       for (size_t sampleIdx = 1; sampleIdx <= samplesForSpline; ++sampleIdx) {
         auto t = states.at(prevStateIdx).t + sampleIdx * dt;
