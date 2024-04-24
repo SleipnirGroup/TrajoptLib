@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "spline/Spline1d.h"
+#include "trajopt/SymbolExports.h"
 
 namespace trajopt {
 

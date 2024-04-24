@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "trajopt/SymbolExports.h"
+
 namespace trajopt {
 
 class TRAJOPT_DLLEXPORT Spline1d {

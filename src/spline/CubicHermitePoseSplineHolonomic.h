@@ -2,12 +2,9 @@
 
 #pragma once
 
-#include <vector>
-
-#include "frc/EigenCore.h"
-#include "frc/MathUtil.h"
 #include "frc/spline/CubicHermiteSpline.h"
 #include "spline/CubicHermiteSpline1d.h"
+#include "trajopt/SymbolExports.h"
 
 namespace trajopt {
 /**
@@ -36,8 +33,7 @@ class TRAJOPT_DLLEXPORT CubicHermitePoseSplineHolonomic
         r0(r0),
         theta(0.0, (-r0).RotateBy(r1).Radians().value(), 0, 0) {}
 
-  ~CubicHermitePoseSplineHolonomic() noexcept {
-  }  // there is an error without noexcept
+  ~CubicHermitePoseSplineHolonomic() override = default;
 
   frc::Rotation2d getHeading(double t) const {
     return r0.RotateBy(frc::Rotation2d(units::radian_t(theta.getPosition(t))));
