@@ -193,7 +193,10 @@ if(
     # Remove -gz=zlib option
     get_target_property(WPIUTIL_COMPILE_OPTIONS wpiutil COMPILE_OPTIONS)
     list(REMOVE_ITEM WPIUTIL_COMPILE_OPTIONS -gz=zlib)
-    set_target_properties(wpiutil PROPERTIES COMPILE_OPTIONS "${WPIUTIL_COMPILE_OPTIONS}")
+    set_target_properties(
+        wpiutil
+        PROPERTIES COMPILE_OPTIONS "${WPIUTIL_COMPILE_OPTIONS}"
+    )
 endif()
 target_link_libraries(TrajoptLib PUBLIC wpimath Eigen3::Eigen)
 
