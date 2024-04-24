@@ -281,10 +281,10 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   }
   // Link error with kinematics.
   // something to do with wpi::Now() and DefaultMathShared::GetTimestamp()
-  // frc::SwerveDriveKinematics kinematics{
-  //     moduleTranslations.at(0), moduleTranslations.at(1),
-  //     moduleTranslations.at(2), moduleTranslations.at(3)};
-  // config.SetKinematics(kinematics);
+  frc::SwerveDriveKinematics kinematics{
+      moduleTranslations.at(0), moduleTranslations.at(1),
+      moduleTranslations.at(2), moduleTranslations.at(3)};
+  config.SetKinematics(kinematics);
 
   // time parameterize
   const auto traj = frc::TrajectoryParameterizer::TrajectoryParameterizer::
