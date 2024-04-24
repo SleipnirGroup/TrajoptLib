@@ -188,7 +188,7 @@ if(
     AND ${CMAKE_SYSTEM_NAME} STREQUAL "Windows"
     AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
 )
-    target_compile_options(wpiutil PRIVATE -gz=none -Wno-unknown-pragmas)
+    target_compile_options(wpiutil PRIVATE -Wno-unknown-pragmas)
 
     # Remove -gz=zlib option
     get_target_property(WPIUTIL_COMPILE_OPTIONS wpiutil COMPILE_OPTIONS)
