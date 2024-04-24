@@ -370,7 +370,12 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn sgmt_angular_velocity_max_magnitude(&mut self, from_idx: usize, to_idx: usize, angular_velocity: f64) {
+    pub fn sgmt_angular_velocity_max_magnitude(
+        &mut self, 
+        from_idx: usize, 
+        to_idx: usize, 
+        angular_velocity: f64
+    ) {
         crate::ffi::SwervePathBuilderImpl::sgmt_angular_velocity_max_magnitude(
             self.path.pin_mut(),
             from_idx,
