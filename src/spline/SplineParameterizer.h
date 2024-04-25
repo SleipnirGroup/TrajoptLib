@@ -138,7 +138,7 @@ class TRAJOPT_DLLEXPORT SplineParameterizer {
    * paths don't usually go over 300 iterations, so hitting this maximum should
    * definitely indicate something has gone wrong.
    */
-  static constexpr int kMaxIterations = 10000;
+  static constexpr int kMaxIterations = 15000;
 
   friend class CubicHermiteSplineTest;
   friend class QuinticHermiteSplineTest;

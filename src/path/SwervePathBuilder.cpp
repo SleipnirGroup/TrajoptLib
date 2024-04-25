@@ -403,10 +403,10 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   double totalTime = 0.0;
   std::printf("init solution: [\n");
   for (size_t i = 0; i < initialGuess.x.size(); ++i) {
+    totalTime += initialGuess.dt.at(i);
     std::printf("[timestamp: %.3f, x: %.3f, y: %.3f, theta: %.3f]\n", totalTime,
                 initialGuess.x.at(i), initialGuess.y.at(i),
                 initialGuess.theta.at(i));
-    totalTime += initialGuess.dt.at(i);
   }
   std::printf("]\n");
 
