@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <utility>
+
 #include "frc/spline/CubicHermiteSpline.h"
 #include "spline/CubicHermiteSpline1d.h"
 #include "trajopt/SymbolExports.h"

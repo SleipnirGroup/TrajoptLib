@@ -340,9 +340,10 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       }
 
       for (size_t sampleIdx = 1; sampleIdx <= samplesForSpline; ++sampleIdx) {
-        auto t =
-            states.at(prevStateIdx).t +
-            (static_cast<double>(splineSgmtIdx) * prevSamplesForSpline + sampleIdx) * dt;
+        auto t = states.at(prevStateIdx).t +
+                 (static_cast<double>(splineSgmtIdx) * prevSamplesForSpline +
+                  sampleIdx) *
+                     dt;
         const auto point = traj.Sample(t);
         initialGuess.x.push_back(point.pose.X().value());
         initialGuess.y.push_back(point.pose.Y().value());
