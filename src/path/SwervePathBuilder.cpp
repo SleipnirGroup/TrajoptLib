@@ -342,10 +342,13 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   initialGuess.theta.push_back(firstPoint.heading);
   initialGuess.dt.push_back(0.0);
 
+  std::vector<size_t> controlIntervalCountsNew;
+  controlIntervalCountsNew.reserve(controlIntervalCounts.size());
   for (size_t sgmtIdx = 1; sgmtIdx < initialGuessPoints.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
-    // const size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
+    const size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
     const size_t splinesInSgmt = guessPointsForSgmt.size();
+    size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
 
     size_t totalPointsInSgmt = 0;
     for (size_t i = 0; i < splinesInSgmt; ++i) {
@@ -355,10 +358,16 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     const size_t endSgmtStateIdx = prevStateIdx + totalPointsInSgmt;
     const auto wholeSgmtDt =
         states.at(endSgmtStateIdx).t - states.at(prevStateIdx).t;
+    
+    // new
     const auto desiredDt = 0.1;
-    const size_t samplesForSgmt = ceil(wholeSgmtDt.value() / desiredDt);
-    const auto dt = wholeSgmtDt / samplesForSgmt;
-    size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
+    const size_t samplesForSgmtNew = ceil(wholeSgmtDt.value() / desiredDt);
+    controlIntervalCountsNew.push_back(samplesForSgmtNew);
+    const auto dtNew = wholeSgmtDt / samplesForSgmtNew;
+    // size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
+    // end
+
+    const auto dt = wholeSgmtDt / static_cast<double>(samplesForSgmt);
     std::printf("dt for sgmt%zd with %zd samples over %zd splines: %.5f\n", sgmtIdx,
                 samplesForSgmt, splinesInSgmt, dt.value());
 
@@ -401,6 +410,17 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     initialGuess.theta.at(i) = fullRots * 2.0 * std::numbers::pi + headingMod;
     prevHeading = initialGuess.theta.at(i);
   }
+
+  std::printf("control intervals og     [");
+  for (auto c : controlIntervalCounts) {
+    std::printf("%zd, ", c);
+  }
+  std::printf("]\n");
+  std::printf("control intervals spline [");
+  for (auto c : controlIntervalCountsNew) {
+    std::printf("%zd, ", c);
+  }
+  std::printf("]\n");
 
   double totalTime = 0.0;
   std::printf("init solution: [\n");
