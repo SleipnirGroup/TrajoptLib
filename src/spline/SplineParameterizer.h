@@ -93,9 +93,13 @@ class TRAJOPT_DLLEXPORT SplineParameterizer {
 
       const auto twist = start.first.Log(end.first);
 
+      const auto dcourse =
+          spline.getCourse(current.t1) - spline.getCourse(current.t0);
+
       if (units::math::abs(twist.dy) > kMaxDy ||
           units::math::abs(twist.dx) > kMaxDx ||
-          units::math::abs(twist.dtheta) > kMaxDtheta) {
+          units::math::abs(twist.dtheta) > kMaxDtheta ||
+          units::math::abs(dcourse.Radians()) > kMaxDtheta) {
         stack.emplace(StackContents{(current.t0 + current.t1) / 2, current.t1});
         stack.emplace(StackContents{current.t0, (current.t0 + current.t1) / 2});
       } else {

@@ -279,12 +279,12 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     moduleTranslations.at(0) =
         frc::Translation2d{units::meter_t(mod.x), units::meter_t(mod.y)};
   }
-  // Link error with kinematics.
-  // something to do with wpi::Now() and DefaultMathShared::GetTimestamp()
+
   frc::SwerveDriveKinematics kinematics{
       moduleTranslations.at(0), moduleTranslations.at(1),
       moduleTranslations.at(2), moduleTranslations.at(3)};
-  config.SetKinematics(kinematics);
+  config.AddConstraint(
+      frc::SwerveDriveKinematicsConstraint{kinematics, maxWheelVelocity});
 
   // time parameterize
   const auto traj = frc::TrajectoryParameterizer::TrajectoryParameterizer::
@@ -316,8 +316,8 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
 
   for (size_t sgmtIdx = 1; sgmtIdx < initialGuessPoints.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
-    size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
-    size_t splinesInSgmt = guessPointsForSgmt.size();
+    const size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
+    const size_t splinesInSgmt = guessPointsForSgmt.size();
     size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
 
     size_t totalPointsInSgmt = 0;
@@ -325,31 +325,32 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
       totalPointsInSgmt += pointsPerSpline.at(pointsPerSplineIdx) - 1;
       ++pointsPerSplineIdx;
     }
-    size_t endSgmtStateIdx = prevStateIdx + totalPointsInSgmt;
+    const size_t endSgmtStateIdx = prevStateIdx + totalPointsInSgmt;
     const auto wholeSgmtDt =
         states.at(endSgmtStateIdx).t - states.at(prevStateIdx).t;
     const auto dt = wholeSgmtDt / static_cast<double>(samplesForSgmt);
     std::printf("dt for sgmt%zd with %zd splines: %.5f\n", sgmtIdx,
                 splinesInSgmt, dt.value());
 
-    for (size_t splineSgmtIdx = pointsPerSplineIdx - splinesInSgmt;
-         splineSgmtIdx < pointsPerSplineIdx; ++splineSgmtIdx) {
-      if (splineSgmtIdx == pointsPerSplineIdx - 1) {
+    for (size_t splineSgmtIdx = 0; splineSgmtIdx < splinesInSgmt;
+         ++splineSgmtIdx) {
+      double prevSamplesForSpline = static_cast<double>(samplesForSpline);
+      if (splineSgmtIdx == splinesInSgmt - 1) {
         samplesForSpline += (samplesForSgmt % splinesInSgmt);
       }
-      const auto pointsInSpline = pointsPerSpline.at(splineSgmtIdx);
-      size_t currentStateIdx = prevStateIdx + pointsInSpline - 1;
 
       for (size_t sampleIdx = 1; sampleIdx <= samplesForSpline; ++sampleIdx) {
-        auto t = states.at(prevStateIdx).t + sampleIdx * dt;
+        auto t =
+            states.at(prevStateIdx).t +
+            (static_cast<double>(splineSgmtIdx) * prevSamplesForSpline + sampleIdx) * dt;
         const auto point = traj.Sample(t);
         initialGuess.x.push_back(point.pose.X().value());
         initialGuess.y.push_back(point.pose.Y().value());
         initialGuess.theta.push_back(point.pose.Rotation().Radians().value());
         initialGuess.dt.push_back(dt.value());
       }
-      prevStateIdx = currentStateIdx;
     }
+    prevStateIdx = endSgmtStateIdx;
   }
 
   // fix headings
@@ -370,9 +371,13 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     prevHeading = initialGuess.theta.at(i);
   }
 
-  std::printf("headings [");
-  for (size_t i = 0; i < initialGuess.theta.size(); ++i) {
-    std::printf("%.2f, ", initialGuess.theta.at(i));
+  double totalTime = 0.0;
+  std::printf("init solution: [\n");
+  for (size_t i = 0; i < initialGuess.x.size(); ++i) {
+    std::printf("[timestamp: %.3f, x: %.3f, y: %.3f, theta: %.3f]\n", totalTime,
+                initialGuess.x.at(i), initialGuess.y.at(i),
+                initialGuess.theta.at(i));
+    totalTime += initialGuess.dt.at(i);
   }
   std::printf("]\n");
 
