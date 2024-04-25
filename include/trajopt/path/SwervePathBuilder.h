@@ -132,6 +132,22 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void WptVelocityPolar(size_t idx, double vr, double vtheta);
 
   /**
+   * Specify the required angular velocity of the robot at a waypoint
+   *
+   * @param idx index of the waypoint
+   * @param angular_velocity the angular velocity
+   */
+  void WptAngularVelocity(size_t idx, double angular_velocity);
+
+  /**
+   * Specify the required angular velocity of the robot at a waypoint
+   *
+   * @param idx index of the waypoint
+   * @param angular_velocity the maximum angular velocity magnitude
+   */
+  void WptAngularVelocityMaxMagnitude(size_t idx, double angular_velocity);
+
+  /**
    * Specify the required angular velocity of the robot to be zero
    * at a waypoint
    *
@@ -166,6 +182,35 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    */
   void SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx, double v,
                              bool includeWpts = true);
+
+  /**
+   * Specify the required angular velocity of the robot for the continuum
+   * of robot state between two waypoints.
+   *
+   * @param fromIdx index of the waypoint at the beginning of the continuum
+   * @param toIdx index of the waypoint at the end of the continuum
+   * @param angular_velocity the angular velocity
+   * @param includeWpts if using a discrete algorithm, false does not apply the
+   * constraint at the instantaneous state at waypoints at indices fromIdx and
+   * toIdx
+   */
+  void SgmtAngularVelocity(size_t fromIdx, size_t toIdx,
+                           double angular_velocity, bool includeWpts = true);
+
+  /**
+   * Specify the required angular velocity magnitude of the robot for the
+   * continuum of robot state between two waypoints.
+   *
+   * @param fromIdx index of the waypoint at the beginning of the continuum
+   * @param toIdx index of the waypoint at the end of the continuum
+   * @param angular_velocity the maximum angular velocity magnitudeks
+   * @param includeWpts if using a discrete algorithm, false does not apply the
+   * constraint at the instantaneous state at waypoints at indices fromIdx and
+   * toIdx
+   */
+  void SgmtAngularVelocityMaxMagnitude(size_t fromIdx, size_t toIdx,
+                                       double angular_velocity,
+                                       bool includeWpts = true);
 
   /**
    * Specify the required angular velocity of the robot to be zero
