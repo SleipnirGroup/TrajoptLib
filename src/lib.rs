@@ -98,6 +98,11 @@ mod ffi {
             idx: usize,
             angular_velocity: f64,
         );
+        fn wpt_angular_velocity_max_magnitude(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            idx: usize,
+            angular_velocity: f64,
+        );
         fn wpt_x(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, x: f64);
         fn wpt_y(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, y: f64);
         fn wpt_heading(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, heading: f64);
@@ -129,6 +134,12 @@ mod ffi {
             angle: f64,
         );
         fn sgmt_angular_velocity(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            from_idx: usize,
+            to_idx: usize,
+            angular_velocity: f64,
+        );
+        fn sgmt_angular_velocity_max_magnitude(
             self: Pin<&mut SwervePathBuilderImpl>,
             from_idx: usize,
             to_idx: usize,
@@ -275,6 +286,14 @@ impl SwervePathBuilder {
         );
     }
 
+    pub fn wpt_angular_velocity_max_magnitude(&mut self, idx: usize, angular_velocity: f64) {
+        crate::ffi::SwervePathBuilderImpl::wpt_angular_velocity_max_magnitude(
+            self.path.pin_mut(),
+            idx,
+            angular_velocity,
+        );
+    }
+
     pub fn wpt_x(&mut self, idx: usize, x: f64) {
         crate::ffi::SwervePathBuilderImpl::wpt_x(self.path.pin_mut(), idx, x);
     }
@@ -344,6 +363,20 @@ impl SwervePathBuilder {
 
     pub fn sgmt_angular_velocity(&mut self, from_idx: usize, to_idx: usize, angular_velocity: f64) {
         crate::ffi::SwervePathBuilderImpl::sgmt_angular_velocity(
+            self.path.pin_mut(),
+            from_idx,
+            to_idx,
+            angular_velocity,
+        );
+    }
+
+    pub fn sgmt_angular_velocity_max_magnitude(
+        &mut self,
+        from_idx: usize,
+        to_idx: usize,
+        angular_velocity: f64,
+    ) {
+        crate::ffi::SwervePathBuilderImpl::sgmt_angular_velocity_max_magnitude(
             self.path.pin_mut(),
             from_idx,
             to_idx,
