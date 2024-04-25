@@ -324,14 +324,14 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   // control interval sample traj
   const auto states = traj.States();
 
-  size_t wptCnt = controlIntervalCounts.size() + 1;
-  size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
+  // size_t wptCnt = controlIntervalCounts.size() + 1;
+  // size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
 
   Solution initialGuess{};
-  initialGuess.x.reserve(sampTot);
-  initialGuess.y.reserve(sampTot);
-  initialGuess.theta.reserve(sampTot);
-  initialGuess.dt.reserve(sampTot);
+  // initialGuess.x.reserve(sampTot);
+  // initialGuess.y.reserve(sampTot);
+  // initialGuess.theta.reserve(sampTot);
+  // initialGuess.dt.reserve(sampTot);
 
   size_t prevStateIdx = 0;
   size_t pointsPerSplineIdx = 0;
@@ -344,9 +344,8 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
 
   for (size_t sgmtIdx = 1; sgmtIdx < initialGuessPoints.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
-    const size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
+    // const size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
     const size_t splinesInSgmt = guessPointsForSgmt.size();
-    size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
 
     size_t totalPointsInSgmt = 0;
     for (size_t i = 0; i < splinesInSgmt; ++i) {
@@ -356,9 +355,12 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     const size_t endSgmtStateIdx = prevStateIdx + totalPointsInSgmt;
     const auto wholeSgmtDt =
         states.at(endSgmtStateIdx).t - states.at(prevStateIdx).t;
-    const auto dt = wholeSgmtDt / static_cast<double>(samplesForSgmt);
-    std::printf("dt for sgmt%zd with %zd splines: %.5f\n", sgmtIdx,
-                splinesInSgmt, dt.value());
+    const auto desiredDt = 0.1;
+    const size_t samplesForSgmt = ceil(wholeSgmtDt.value() / desiredDt);
+    const auto dt = wholeSgmtDt / samplesForSgmt;
+    size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
+    std::printf("dt for sgmt%zd with %zd samples over %zd splines: %.5f\n", sgmtIdx,
+                samplesForSgmt, splinesInSgmt, dt.value());
 
     for (size_t splineSgmtIdx = 0; splineSgmtIdx < splinesInSgmt;
          ++splineSgmtIdx) {
