@@ -314,33 +314,44 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   config.AddConstraint(
       frc::SwerveDriveKinematicsConstraint{kinematics, maxWheelVelocity});
 
-  std::vector<frc::Trajectory::State> sgmtStates;
+  Solution initialGuessNew{};
+  const auto& firstPointNew = initialGuessPoints.front().front();
+  initialGuessNew.x.push_back(firstPointNew.x);
+  initialGuessNew.y.push_back(firstPointNew.y);
+  initialGuessNew.theta.push_back(firstPointNew.heading);
+  initialGuessNew.dt.push_back(0.0);
+  std::vector<size_t> controlIntervalCountsNew;
+  controlIntervalCountsNew.reserve(controlIntervalCounts.size());
   size_t splineStartIdx = 0;
   size_t splinePointsStartIdx = 0;
   for (size_t sgmtIdx = 1; sgmtIdx < path.waypoints.size(); ++sgmtIdx) {
     auto sgmtVel = maxWheelVelocity;
-    for (auto& c : path.waypoints.at(sgmtIdx - 1).segmentConstraints) {
+    for (auto& c : path.waypoints.at(sgmtIdx).segmentConstraints) {
       // assuming HolonomicVelocityConstraint with CircularSet2d
+      std::printf("wpt %zd, constraint\n", sgmtIdx);
       if (std::holds_alternative<HolonomicVelocityConstraint>(c)) {
         const auto& velocityHolonomicConstraint =
             std::get<HolonomicVelocityConstraint>(c);
+        std::printf("holds holo vel con\n");
         auto set2d = velocityHolonomicConstraint.velocityBound;
         if (std::holds_alternative<EllipticalSet2d>(set2d)) {
-          auto vel = units::meter_t(
+          auto vel = units::meters_per_second_t(
               std::abs(std::get<EllipticalSet2d>(set2d).xRadius));
-          if (sgmtVel < vel) {
+          std::printf("vel %.2f\n", vel.value());
+          if (vel < sgmtVel) {
             sgmtVel = vel;
           }
         }
       }
     }
+
     frc::TrajectoryConfig sgmtConfig{sgmtVel, sgmtVel / units::second_t{1.0}};
-    // waypoint constraints as start and end velocities
-    // TODO
     sgmtConfig.SetStartVelocity(0_mps);
     sgmtConfig.SetEndVelocity(0_mps);
     sgmtConfig.AddConstraint(
         frc::SwerveDriveKinematicsConstraint{kinematics, maxWheelVelocity});
+    
+    // specify parameterized spline points to use for trajectory
     auto endSplineIdx = splineStartIdx;
     auto endPointIdx = splinePointsStartIdx;
     for (size_t i = 0; i < initialGuessPoints.at(sgmtIdx).size(); ++i) {
@@ -352,15 +363,25 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
                    splinePoints.begin() + endPointIdx};
     const auto sgmtTraj = frc::TrajectoryParameterizer::
         TrajectoryParameterizer::TimeParameterizeTrajectory(
-            sgmtPoints, config.Constraints(), config.StartVelocity(),
-            config.EndVelocity(), config.MaxVelocity(),
-            config.MaxAcceleration(), config.IsReversed());
-    if (sgmtIdx == 1) {
-      sgmtStates.insert(sgmtStates.end(), sgmtTraj.States().begin(),
-                        sgmtTraj.States().end());
-    } else {
-      sgmtStates.insert(sgmtStates.end(), sgmtTraj.States().begin() + 1,
-                        sgmtTraj.States().end());
+            sgmtPoints, sgmtConfig.Constraints(), sgmtConfig.StartVelocity(),
+            sgmtConfig.EndVelocity(), sgmtConfig.MaxVelocity(),
+            sgmtConfig.MaxAcceleration(), sgmtConfig.IsReversed());
+
+    const auto wholeSgmtDt = sgmtTraj.TotalTime();
+    const auto desiredDt = 0.1;
+    const size_t samplesForSgmtNew = std::ceil(wholeSgmtDt.value() / desiredDt);
+    controlIntervalCountsNew.push_back(samplesForSgmtNew);
+    const auto dtNew = wholeSgmtDt / samplesForSgmtNew;
+    std::printf("dtNew for sgmt%zd with %zd samples: %.5f\n",
+                sgmtIdx, samplesForSgmtNew, dtNew.value());
+    
+    for (size_t sampleIdx = 1; sampleIdx <= samplesForSgmtNew; ++sampleIdx) {
+      auto t = static_cast<double>(sampleIdx) * dtNew;
+      const auto point = sgmtTraj.Sample(t);
+      initialGuessNew.x.push_back(point.pose.X().value());
+      initialGuessNew.y.push_back(point.pose.Y().value());
+      initialGuessNew.theta.push_back(point.pose.Rotation().Radians().value());
+      initialGuessNew.dt.push_back(dtNew.value());
     }
   }
   // time parameterize
@@ -391,8 +412,6 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   initialGuess.theta.push_back(firstPoint.heading);
   initialGuess.dt.push_back(0.0);
 
-  std::vector<size_t> controlIntervalCountsNew;
-  controlIntervalCountsNew.reserve(controlIntervalCounts.size());
   for (size_t sgmtIdx = 1; sgmtIdx < initialGuessPoints.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
     const size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
@@ -407,18 +426,10 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     const size_t endSgmtStateIdx = prevStateIdx + totalPointsInSgmt;
     const auto wholeSgmtDt =
         states.at(endSgmtStateIdx).t - states.at(prevStateIdx).t;
-    
-    // new
-    const auto desiredDt = 0.1;
-    const size_t samplesForSgmtNew = ceil(wholeSgmtDt.value() / desiredDt);
-    controlIntervalCountsNew.push_back(samplesForSgmtNew);
-    const auto dtNew = wholeSgmtDt / samplesForSgmtNew;
-    // size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
-    // end
 
     const auto dt = wholeSgmtDt / static_cast<double>(samplesForSgmt);
-    std::printf("dt for sgmt%zd with %zd samples over %zd splines: %.5f\n", sgmtIdx,
-                samplesForSgmt, splinesInSgmt, dt.value());
+    std::printf("dt for sgmt%zd with %zd samples over %zd splines: %.5f\n",
+                sgmtIdx, samplesForSgmt, splinesInSgmt, dt.value());
 
     for (size_t splineSgmtIdx = 0; splineSgmtIdx < splinesInSgmt;
          ++splineSgmtIdx) {
@@ -471,15 +482,15 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   }
   std::printf("]\n");
 
-  double totalTime = 0.0;
-  std::printf("init solution: [\n");
-  for (size_t i = 0; i < initialGuess.x.size(); ++i) {
-    totalTime += initialGuess.dt.at(i);
-    std::printf("[timestamp: %.3f, x: %.3f, y: %.3f, theta: %.3f]\n", totalTime,
-                initialGuess.x.at(i), initialGuess.y.at(i),
-                initialGuess.theta.at(i));
-  }
-  std::printf("]\n");
+  // double totalTime = 0.0;
+  // std::printf("init solution: [\n");
+  // for (size_t i = 0; i < initialGuess.x.size(); ++i) {
+  //   totalTime += initialGuess.dt.at(i);
+  //   std::printf("[timestamp: %.3f, x: %.3f, y: %.3f, theta: %.3f]\n", totalTime,
+  //               initialGuess.x.at(i), initialGuess.y.at(i),
+  //               initialGuess.theta.at(i));
+  // }
+  // std::printf("]\n");
 
   return initialGuess;
 }
