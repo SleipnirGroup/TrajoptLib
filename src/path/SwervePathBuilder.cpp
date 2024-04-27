@@ -350,7 +350,7 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     sgmtConfig.SetEndVelocity(0_mps);
     sgmtConfig.AddConstraint(
         frc::SwerveDriveKinematicsConstraint{kinematics, maxWheelVelocity});
-    
+
     // specify parameterized spline points to use for trajectory
     auto endSplineIdx = splineStartIdx;
     auto endPointIdx = splinePointsStartIdx;
@@ -372,9 +372,9 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     const size_t samplesForSgmtNew = std::ceil(wholeSgmtDt.value() / desiredDt);
     controlIntervalCountsNew.push_back(samplesForSgmtNew);
     const auto dtNew = wholeSgmtDt / samplesForSgmtNew;
-    std::printf("dtNew for sgmt%zd with %zd samples: %.5f\n",
-                sgmtIdx, samplesForSgmtNew, dtNew.value());
-    
+    std::printf("dtNew for sgmt%zd with %zd samples: %.5f\n", sgmtIdx,
+                samplesForSgmtNew, dtNew.value());
+
     for (size_t sampleIdx = 1; sampleIdx <= samplesForSgmtNew; ++sampleIdx) {
       auto t = static_cast<double>(sampleIdx) * dtNew;
       const auto point = sgmtTraj.Sample(t);
@@ -486,7 +486,8 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   // std::printf("init solution: [\n");
   // for (size_t i = 0; i < initialGuess.x.size(); ++i) {
   //   totalTime += initialGuess.dt.at(i);
-  //   std::printf("[timestamp: %.3f, x: %.3f, y: %.3f, theta: %.3f]\n", totalTime,
+  //   std::printf("[timestamp: %.3f, x: %.3f, y: %.3f, theta: %.3f]\n",
+  //   totalTime,
   //               initialGuess.x.at(i), initialGuess.y.at(i),
   //               initialGuess.theta.at(i));
   // }
