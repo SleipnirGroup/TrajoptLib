@@ -373,14 +373,14 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   // control interval sample traj
   const auto states = traj.States();
 
-  size_t wptCnt = controlIntervalCounts.size() + 1;
-  size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
+  // size_t wptCnt = controlIntervalCounts.size() + 1;
+  // size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
 
   Solution initialGuess{};
-  initialGuess.x.reserve(sampTot);
-  initialGuess.y.reserve(sampTot);
-  initialGuess.theta.reserve(sampTot);
-  initialGuess.dt.reserve(sampTot);
+  // initialGuess.x.reserve(sampTot);
+  // initialGuess.y.reserve(sampTot);
+  // initialGuess.theta.reserve(sampTot);
+  // initialGuess.dt.reserve(sampTot);
 
   size_t prevStateIdx = 0;
   size_t pointsPerSplineIdx = 0;
@@ -391,6 +391,8 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   initialGuess.theta.push_back(firstPoint.heading);
   initialGuess.dt.push_back(0.0);
 
+  std::vector<size_t> controlIntervalCountsNew;
+  controlIntervalCountsNew.reserve(controlIntervalCounts.size());
   for (size_t sgmtIdx = 1; sgmtIdx < initialGuessPoints.size(); ++sgmtIdx) {
     const auto& guessPointsForSgmt = initialGuessPoints.at(sgmtIdx);
     const size_t samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
@@ -405,9 +407,18 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     const size_t endSgmtStateIdx = prevStateIdx + totalPointsInSgmt;
     const auto wholeSgmtDt =
         states.at(endSgmtStateIdx).t - states.at(prevStateIdx).t;
+    
+    // new
+    const auto desiredDt = 0.1;
+    const size_t samplesForSgmtNew = ceil(wholeSgmtDt.value() / desiredDt);
+    controlIntervalCountsNew.push_back(samplesForSgmtNew);
+    const auto dtNew = wholeSgmtDt / samplesForSgmtNew;
+    // size_t samplesForSpline = samplesForSgmt / splinesInSgmt;
+    // end
+
     const auto dt = wholeSgmtDt / static_cast<double>(samplesForSgmt);
-    std::printf("dt for sgmt%zd with %zd splines: %.5f\n", sgmtIdx,
-                splinesInSgmt, dt.value());
+    std::printf("dt for sgmt%zd with %zd samples over %zd splines: %.5f\n", sgmtIdx,
+                samplesForSgmt, splinesInSgmt, dt.value());
 
     for (size_t splineSgmtIdx = 0; splineSgmtIdx < splinesInSgmt;
          ++splineSgmtIdx) {
@@ -449,13 +460,24 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
     prevHeading = initialGuess.theta.at(i);
   }
 
+  std::printf("control intervals og     [");
+  for (auto c : controlIntervalCounts) {
+    std::printf("%zd, ", c);
+  }
+  std::printf("]\n");
+  std::printf("control intervals spline [");
+  for (auto c : controlIntervalCountsNew) {
+    std::printf("%zd, ", c);
+  }
+  std::printf("]\n");
+
   double totalTime = 0.0;
   std::printf("init solution: [\n");
   for (size_t i = 0; i < initialGuess.x.size(); ++i) {
+    totalTime += initialGuess.dt.at(i);
     std::printf("[timestamp: %.3f, x: %.3f, y: %.3f, theta: %.3f]\n", totalTime,
                 initialGuess.x.at(i), initialGuess.y.at(i),
                 initialGuess.theta.at(i));
-    totalTime += initialGuess.dt.at(i);
   }
   std::printf("]\n");
 
