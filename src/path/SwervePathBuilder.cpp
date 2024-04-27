@@ -314,6 +314,55 @@ Solution SwervePathBuilder::CalculateSplineInitialGuessWithKinematics() const {
   config.AddConstraint(
       frc::SwerveDriveKinematicsConstraint{kinematics, maxWheelVelocity});
 
+  std::vector<frc::Trajectory::State> sgmtStates;
+  size_t splineStartIdx = 0;
+  size_t splinePointsStartIdx = 0;
+  for (size_t sgmtIdx = 1; sgmtIdx < path.waypoints.size(); ++sgmtIdx) {
+    auto sgmtVel = maxWheelVelocity;
+    for (auto& c : path.waypoints.at(sgmtIdx - 1).segmentConstraints) {
+      // assuming HolonomicVelocityConstraint with CircularSet2d
+      if (std::holds_alternative<HolonomicVelocityConstraint>(c)) {
+        const auto& velocityHolonomicConstraint =
+            std::get<HolonomicVelocityConstraint>(c);
+        auto set2d = velocityHolonomicConstraint.velocityBound;
+        if (std::holds_alternative<EllipticalSet2d>(set2d)) {
+          auto vel = units::meter_t(
+              std::abs(std::get<EllipticalSet2d>(set2d).xRadius));
+          if (sgmtVel < vel) {
+            sgmtVel = vel;
+          }
+        }
+      }
+    }
+    frc::TrajectoryConfig sgmtConfig{sgmtVel, sgmtVel / units::second_t{1.0}};
+    // waypoint constraints as start and end velocities
+    // TODO
+    sgmtConfig.SetStartVelocity(0_mps);
+    sgmtConfig.SetEndVelocity(0_mps);
+    sgmtConfig.AddConstraint(
+        frc::SwerveDriveKinematicsConstraint{kinematics, maxWheelVelocity});
+    auto endSplineIdx = splineStartIdx;
+    auto endPointIdx = splinePointsStartIdx;
+    for (size_t i = 0; i < initialGuessPoints.at(sgmtIdx).size(); ++i) {
+      endPointIdx += pointsPerSpline.at(endSplineIdx) - 1;
+      ++endSplineIdx;
+    }
+    const std::vector<frc::TrajectoryParameterizer::PoseWithCurvature>
+        sgmtPoints{splinePoints.begin() + splinePointsStartIdx,
+                   splinePoints.begin() + endPointIdx};
+    const auto sgmtTraj = frc::TrajectoryParameterizer::
+        TrajectoryParameterizer::TimeParameterizeTrajectory(
+            sgmtPoints, config.Constraints(), config.StartVelocity(),
+            config.EndVelocity(), config.MaxVelocity(),
+            config.MaxAcceleration(), config.IsReversed());
+    if (sgmtIdx == 1) {
+      sgmtStates.insert(sgmtStates.end(), sgmtTraj.States().begin(),
+                        sgmtTraj.States().end());
+    } else {
+      sgmtStates.insert(sgmtStates.end(), sgmtTraj.States().begin() + 1,
+                        sgmtTraj.States().end());
+    }
+  }
   // time parameterize
   const auto traj = frc::TrajectoryParameterizer::TrajectoryParameterizer::
       TimeParameterizeTrajectory(splinePoints, config.Constraints(),
