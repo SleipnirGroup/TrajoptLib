@@ -321,6 +321,16 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   Solution CalculateSplineInitialGuessWithKinematics() const;
 
   /**
+   * Calculate a discrete initial guess of the x, y, and heading
+   * of the robot that goes through each waypoint.
+   * Uses the trajectory generator and kinematics from WPILib
+   * with minor modifications to support swerve rotation.
+   *
+   * @return the initial guess, as a solution
+   */
+  Solution CalculateSplineInitialGuessWithKinematicsAndConstraints() const;
+
+  /**
    * Add a callback to retrieve the state of the solver as a SwerveSolution.
    * This callback will run on every iteration of the solver.
    * The callback's first parameter is the SwerveSolution based on the solver's
