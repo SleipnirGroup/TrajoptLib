@@ -65,9 +65,7 @@ cmake -B build -S . -DOPTIMIZER_BACKEND=casadi
 cmake --build build
 
 # Test
-cd build
-ctest
-cd ..
+ctest --test-dir build --output-on-failure
 
 # Install
 cmake --install build --prefix pkgdir
