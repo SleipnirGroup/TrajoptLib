@@ -341,7 +341,7 @@ HolonomicTrajectory SwervePathBuilderImpl::calculate_linear_initial_guess()
 HolonomicTrajectory SwervePathBuilderImpl::calculate_spline_initial_guess()
     const {
   return _convert_sol_to_holonomic_trajectory(
-      path.CalculateSplineInitialGuessWithKinematics());
+      path.CalculateSplineInitialGuessWithKinematicsAndConstraints());
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
