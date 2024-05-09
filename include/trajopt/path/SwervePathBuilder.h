@@ -8,7 +8,6 @@
 #include <functional>
 #include <vector>
 
-// #include <frc/trajectory/TrajectoryGenerator.h>
 #include "frc/trajectory/Trajectory.h"
 
 #include "trajopt/drivetrain/SwerveDrivetrain.h"

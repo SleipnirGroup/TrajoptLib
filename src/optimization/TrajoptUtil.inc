@@ -6,18 +6,11 @@
 #include <exception>
 #include <limits>
 #include <memory>
-#include <numbers>
 #include <numeric>
 #include <utility>
 #include <variant>
 #include <vector>
 
-#include "frc/MathUtil.h"
-#include "frc/geometry/Pose2d.h"
-#include "frc/geometry/Translation2d.h"
-#include "frc/spline/CubicHermiteSpline.h"
-#include "frc/spline/Spline.h"
-#include "frc/spline/SplineHelper.h"
 #include "optimization/TrajoptUtil.h"
 #include "trajopt/constraint/LinePointConstraint.h"
 #include "trajopt/constraint/PointLineConstraint.h"
@@ -31,8 +24,6 @@
 #include "trajopt/set/LinearSet2d.h"
 #include "trajopt/set/RectangularSet2d.h"
 #include "trajopt/set/Set2d.h"
-#include "units/angle.h"
-#include "units/length.h"
 
 namespace trajopt {
 
