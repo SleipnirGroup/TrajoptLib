@@ -47,7 +47,6 @@ mod ffi {
         fn cancel_all(self: Pin<&mut SwervePathBuilderImpl>);
         fn set_drivetrain(self: Pin<&mut SwervePathBuilderImpl>, drivetrain: &SwerveDrivetrain);
         fn set_bumpers(self: Pin<&mut SwervePathBuilderImpl>, length: f64, width: f64);
-        fn set_control_interval_counts(self: Pin<&mut SwervePathBuilderImpl>, counts: Vec<usize>);
 
         fn pose_wpt(
             self: Pin<&mut SwervePathBuilderImpl>,
@@ -194,6 +193,8 @@ mod ffi {
 
         fn calculate_spline_initial_guess(self: &SwervePathBuilderImpl) -> HolonomicTrajectory;
 
+        fn calculate_control_interval_counts(self: &SwervePathBuilderImpl) -> Vec<usize>;
+
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
 }
@@ -215,10 +216,6 @@ impl SwervePathBuilder {
 
     pub fn set_bumpers(&mut self, length: f64, width: f64) {
         crate::ffi::SwervePathBuilderImpl::set_bumpers(self.path.pin_mut(), length, width);
-    }
-
-    pub fn set_control_interval_counts(&mut self, counts: Vec<usize>) {
-        crate::ffi::SwervePathBuilderImpl::set_control_interval_counts(self.path.pin_mut(), counts);
     }
 
     pub fn pose_wpt(&mut self, idx: usize, x: f64, y: f64, heading: f64) {
@@ -487,6 +484,10 @@ impl SwervePathBuilder {
 
     pub fn calculate_spline_initial_guess(&self) -> HolonomicTrajectory {
         self.path.calculate_spline_initial_guess()
+    }
+
+    pub fn calculate_control_interval_counts(&self) -> Vec<usize> {
+        self.path.calculate_control_interval_counts()
     }
 
     pub fn cancel_all(&mut self) {

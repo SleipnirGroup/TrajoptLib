@@ -77,17 +77,6 @@ void SwervePathBuilderImpl::set_drivetrain(const SwerveDrivetrain& drivetrain) {
   path.SetDrivetrain(_convert_swerve_drivetrain(drivetrain));
 }
 
-size_t _convert_count(const size_t& count) {
-  return count;
-}
-
-void SwervePathBuilderImpl::set_control_interval_counts(
-    const rust::Vec<size_t> counts) {
-  std::vector<size_t> converted_counts =
-      _rust_vec_to_cpp_vector<size_t, size_t, &_convert_count>(counts);
-  path.ControlIntervalCounts(std::move(converted_counts));
-}
-
 void SwervePathBuilderImpl::set_bumpers(double length, double width) {
   path.AddBumpers(trajopt::Bumpers{.safetyDistance = 0.01,
                                    .points = {{+length / 2, +width / 2},
@@ -342,6 +331,16 @@ HolonomicTrajectory SwervePathBuilderImpl::calculate_spline_initial_guess()
     const {
   return _convert_sol_to_holonomic_trajectory(
       path.CalculateSplineInitialGuessWithKinematicsAndConstraints());
+}
+
+rust::usize _convert_count(const size_t& count) {
+  return count;
+}
+
+rust::Vec<rust::usize>
+SwervePathBuilderImpl::calculate_countrol_interval_counts() const {
+  return _cpp_vector_to_rust_vec<size_t, rust::usize, &_convert_count>(
+      path.CalculateControlIntervalCounts());
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {

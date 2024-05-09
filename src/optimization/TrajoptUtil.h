@@ -96,10 +96,6 @@ inline Solution GenerateLinearInitialGuess(
     const std::vector<std::vector<InitialGuessPoint>>& initialGuessPoints,
     const std::vector<size_t> controlIntervalCounts);
 
-inline Solution GenerateSplineInitialGuess(
-    const std::vector<std::vector<InitialGuessPoint>>& initialGuessPoints,
-    const std::vector<size_t> controlIntervalCounts, const SwervePath path);
-
 template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 void ApplyInitialGuess(Opti& opti, const Solution& solution,
