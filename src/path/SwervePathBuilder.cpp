@@ -4,6 +4,7 @@
 
 #include <frc/geometry/Translation2d.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
+#include <frc/MathUtil.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
 #include <frc/trajectory/TrajectoryParameterizer.h>
 #include <frc/trajectory/Trajectory.h>
