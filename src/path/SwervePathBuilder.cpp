@@ -2,13 +2,12 @@
 
 #include "trajopt/path/SwervePathBuilder.h"
 
+#include <frc/MathUtil.h>
 #include <frc/geometry/Translation2d.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
-#include <frc/MathUtil.h>
+#include <frc/trajectory/Trajectory.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
 #include <frc/trajectory/TrajectoryParameterizer.h>
-#include <frc/trajectory/Trajectory.h>
-
 #include <stdint.h>
 #include <wpi/array.h>
 
@@ -348,8 +347,9 @@ SwervePathBuilder::CalculateSplineInitialGuessWithKinematicsAndConstraints()
   const auto trajs = CalculateWaypointStates();
   // const std::vector<std::vector<frc::Trajectory::State>> trajs{
   //   std::vector<frc::Trajectory::State>{
-  //     frc::Trajectory::State{0_s, 0_mps, 0_mps_sq, 
-  //       frc::Pose2d{0_m, 0_m, frc::Rotation2d{0_rad}}, units::curvature_t{0.0}}
+  //     frc::Trajectory::State{0_s, 0_mps, 0_mps_sq,
+  //       frc::Pose2d{0_m, 0_m, frc::Rotation2d{0_rad}},
+  //       units::curvature_t{0.0}}
   //   }
   // };
 

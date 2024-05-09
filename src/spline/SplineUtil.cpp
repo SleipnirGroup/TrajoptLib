@@ -1,21 +1,20 @@
 // Copyright (c) TrajoptLib contributors
 
+#include "spline/SplineUtil.h"
+
 #include <vector>
 
 #include "frc/geometry/Rotation2d.h"
 #include "frc/geometry/Translation2d.h"
 #include "frc/spline/SplineHelper.h"
-
 #include "spline/CubicHermitePoseSplineHolonomic.h"
-#include "spline/SplineUtil.h"
 #include "trajopt/path/InitialGuessPoint.h"
 
 namespace trajopt {
 
 std::vector<CubicHermitePoseSplineHolonomic>
 CubicPoseControlVectorsFromWaypoints(
-    const std::vector<std::vector<InitialGuessPoint>>
-        initialGuessPoints) {
+    const std::vector<std::vector<InitialGuessPoint>> initialGuessPoints) {
   size_t totalGuessPoints = 0;
   for (const auto& points : initialGuessPoints) {
     totalGuessPoints += points.size();
