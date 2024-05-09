@@ -2,11 +2,12 @@
 
 #include "spline/SplineUtil.h"
 
+#include <frc/geometry/Rotation2d.h>
+#include <frc/geometry/Translation2d.h>
+#include <frc/spline/SplineHelper.h>
+
 #include <vector>
 
-#include "frc/geometry/Rotation2d.h"
-#include "frc/geometry/Translation2d.h"
-#include "frc/spline/SplineHelper.h"
 #include "spline/CubicHermitePoseSplineHolonomic.h"
 #include "trajopt/path/InitialGuessPoint.h"
 

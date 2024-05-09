@@ -2,13 +2,13 @@
 
 #pragma once
 
+#include <frc/trajectory/Trajectory.h>
 #include <stdint.h>
 
 #include <cstddef>
 #include <functional>
 #include <vector>
 
-#include "frc/trajectory/Trajectory.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "trajopt/obstacle/Bumpers.h"
 #include "trajopt/obstacle/Obstacle.h"
