@@ -7,8 +7,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-cpp:
-    timeout-minutes: 15
+  build:
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -67,27 +67,10 @@ jobs:
 
       - run: cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer_backend }}
       - run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
-      - run: ctest -C RelWithDebInfo --output-on-failure
-        working-directory: build
+      - run: ctest --test-dir build -C RelWithDebInfo --output-on-failure
       - run: cmake --install build --config RelWithDebInfo --prefix pkg
 
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: pkg
-
-  build-wasm:
-    name: "Wasm"
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: numworks/setup-emscripten@latest
-      - run: emcmake cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DOPTIMIZER_BACKEND=sleipnir
-      - run: cmake --build build --config Release --parallel $(nproc)
-      - run: cmake --install build --config Release --prefix pkg
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Wasm
           path: pkg
