@@ -257,8 +257,6 @@ SwervePathBuilder::CalculateWaypointStates() const {
   waypoint_states.reserve(path.waypoints.size());
   std::vector<size_t> controlIntervalCountsSpline;
   controlIntervalCountsSpline.reserve(controlIntervalCounts.size());
-  size_t splineStartIdx = 0;
-  size_t splinePointsStartIdx = 0;
   for (size_t sgmtIdx = 1; sgmtIdx < path.waypoints.size(); ++sgmtIdx) {
     auto sgmtVel = maxWheelVelocity;
     auto dtheta = frc::AngleModulus(units::radian_t(
@@ -354,12 +352,12 @@ SwervePathBuilder::CalculateSplineInitialGuessWithKinematicsAndConstraints()
   // };
 
   Solution initialGuess{};
-  for (const auto traj : trajs) {
+  for (const auto& traj : trajs) {
     auto dt = 0.1_s;
     if (traj.size() > 1) {
       dt = traj.at(1).t - traj.front().t;
     }
-    for (const auto point : traj) {
+    for (const auto& point : traj) {
       initialGuess.x.push_back(point.pose.X().value());
       initialGuess.y.push_back(point.pose.Y().value());
       initialGuess.theta.push_back(point.pose.Rotation().Radians().value());
