@@ -4,14 +4,14 @@
 
 #include <vector>
 
-#include "CubicHermitePoseSplineHolonomic.h"
+#include "spline/CubicHermitePoseSplineHolonomic.h"
 #include "trajopt/path/InitialGuessPoint.h"
 
 namespace trajopt {
 
-std::vector<trajopt::CubicHermitePoseSplineHolonomic>
-CubicControlVectorsFromWaypoints(
-    const std::vector<std::vector<trajopt::InitialGuessPoint>>
+std::vector<CubicHermitePoseSplineHolonomic>
+CubicPoseControlVectorsFromWaypoints(
+    const std::vector<std::vector<InitialGuessPoint>>
         initialGuessPoints);
 
 }  // namespace trajopt
