@@ -8,6 +8,9 @@
 #include <functional>
 #include <vector>
 
+// #include <frc/trajectory/TrajectoryGenerator.h>
+#include "frc/trajectory/Trajectory.h"
+
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "trajopt/obstacle/Bumpers.h"
 #include "trajopt/obstacle/Obstacle.h"
@@ -302,23 +305,20 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   Solution CalculateLinearInitialGuess() const;
 
   /**
-   * Calculate a discrete initial guess of the x, y, and heading
-   * of the robot that goes through each waypoint.
-   * Uses the spline generator from WPILib.
+   * Calculate control intervals
    *
-   * @return the initial guess, as a solution
+   * @return control intervals for each waypoint
    */
-  Solution CalculateSplineInitialGuess() const;
+  std::vector<size_t> CalculateControlIntervalCounts() const;
 
   /**
-   * Calculate a discrete initial guess of the x, y, and heading
-   * of the robot that goes through each waypoint.
-   * Uses the trajectory generator and kinematics from WPILib
-   * with minor modifications to support swerve rotation.
+   * Calculate states separated by waypoints to be used
+   * in the spline initial guess.
    *
-   * @return the initial guess, as a solution
+   * @return control intervals for each waypoint
    */
-  Solution CalculateSplineInitialGuessWithKinematics() const;
+  std::vector<std::vector<frc::Trajectory::State>> CalculateWaypointStates()
+      const;
 
   /**
    * Calculate a discrete initial guess of the x, y, and heading
