@@ -6,13 +6,9 @@
 
 This library is used to generate time-optimal trajectories for FRC robots.
 
-## Trajectory Optimization
-
 Trajectory optimization works by mathematically formulating the problem of travelling along a given path with the minimum possible time. The physical constraints of motor power capacity are applied along with waypoint constraints, which force the robot to begin and end a segment of the trajectory with a certain state. A mathematical solver must vary the position of the robot at each discrete timestamp to minimize total time.
 
 ## Features
-
-### Trajopt
 
 * Currently only supports swerve drives with arbitray module configurations
 * Position and velocity constraints at each waypoint
@@ -20,12 +16,9 @@ Trajectory optimization works by mathematically formulating the problem of trave
 * Custom physical constraints of robot
 * Custom bumper shape
 
-### API
+## Build
 
-* Java and C++ API with almost complete parity
-* CasADi dependencies bundled with Jar
-
-## Dependencies
+### Dependencies
 
 * C++20 compiler
   * On Windows, install [Visual Studio Community 2022](https://visualstudio.microsoft.com/vs/community/) and select the C++ programming language during installation
@@ -42,19 +35,15 @@ Trajectory optimization works by mathematically formulating the problem of trave
 
 Library dependencies which aren't installed locally will be automatically downloaded and built by CMake.
 
-## Build instructions
+### C++ library
 
 On Windows, open a [Developer PowerShell](https://learn.microsoft.com/en-us/visualstudio/ide/reference/command-prompt-powershell?view=vs-2022). On Linux or macOS, open a Bash shell.
 
-Clone the repository.
 ```bash
+# Clone the repository
 git clone git@github.com:SleipnirGroup/TrajoptLib
 cd TrajoptLib
-```
 
-### C++ library
-
-```bash
 # Configure with Sleipnir backend; automatically downloads library dependencies
 cmake -B build -S . -DOPTIMIZER_BACKEND=sleipnir
 
@@ -86,7 +75,13 @@ The following build types can be specified via `-DCMAKE_BUILD_TYPE` during CMake
 
 ### Rust library
 
+On Windows, open a [Developer PowerShell](https://learn.microsoft.com/en-us/visualstudio/ide/reference/command-prompt-powershell?view=vs-2022). On Linux or macOS, open a Bash shell.
+
 ```bash
+# Clone the repository
+git clone git@github.com:SleipnirGroup/TrajoptLib
+cd TrajoptLib
+
 cargo build --features sleipnir  # Sleipnir backend
 cargo build --features casadi  # CasADi backend
 ```
