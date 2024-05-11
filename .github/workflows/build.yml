@@ -29,7 +29,7 @@ jobs:
           - artifact-name: Native - Linux x86_64 (CasADi)
             cmake-flags:
             optimizer_backend: casadi
-            os: ubuntu-latest
+            os: ubuntu-22.04
           - artifact-name: Native - Windows x86_64 (Sleipnir)
             # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
             cmake-flags: "-DCMAKE_GENERATOR_PLATFORM=x64 -DBUILD_TESTING=OFF"
@@ -51,7 +51,7 @@ jobs:
           - artifact-name: Native - Linux x86_64 (Sleipnir)
             cmake-flags:
             optimizer_backend: sleipnir
-            os: ubuntu-latest
+            os: ubuntu-22.04
 
     name: "${{ matrix.artifact-name }}"
     runs-on: ${{ matrix.os }}
