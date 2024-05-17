@@ -310,6 +310,14 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   std::vector<size_t> CalculateControlIntervalCounts() const;
 
   /**
+   * Calculate trajectories between waypoints
+   * using WPILib splines and trajectories.
+   *
+   * @return control intervals for each waypoint
+   */
+  std::vector<frc::Trajectory> GenerateWaypointSplineTrajectory() const;
+
+  /**
    * Calculate states separated by waypoints to be used
    * in the spline initial guess.
    *
