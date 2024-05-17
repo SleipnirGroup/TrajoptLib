@@ -41,40 +41,42 @@ fn main() {
     path.set_drivetrain(&drivetrain);
     path.set_bumpers(1.3, 1.3);
     path.pose_wpt(0, 0.0, 0.0, 0.0);
-    path.sgmt_initial_guess_points(
-        0,
-        &vec![
-            InitialGuessPoint {
-                x: 1.,
-                y: 0.5,
-                heading: -0.5,
-            },
-            InitialGuessPoint {
-                x: 2.,
-                y: -0.5,
-                heading: -0.5,
-            },
-        ],
-    );
-    path.pose_wpt(1, 3., 0.5, -0.5);
-    path.sgmt_initial_guess_points(
-        1,
-        &vec![InitialGuessPoint {
-            x: 4.,
-            y: 0.5,
-            heading: -0.5,
-        }],
-    );
-    let end_idx = 2;
-    path.pose_wpt(end_idx, 5., -1., 0.);
+    // path.sgmt_initial_guess_points(
+    //     0,
+    //     &vec![
+    //         InitialGuessPoint {
+    //             x: 1.,
+    //             y: 0.5,
+    //             heading: -0.5,
+    //         },
+    //         InitialGuessPoint {
+    //             x: 2.,
+    //             y: -0.5,
+    //             heading: -0.5,
+    //         },
+    //     ],
+    // );
+    // path.pose_wpt(1, 3., 0.5, -0.5);
+    // path.sgmt_initial_guess_points(
+    //     1,
+    //     &vec![InitialGuessPoint {
+    //         x: 4.,
+    //         y: 0.5,
+    //         heading: -0.5,
+    //     }],
+    // );
+    let end_idx = 1;
+    path.pose_wpt(end_idx, 5., -1., 0.15);
     path.wpt_linear_velocity_polar(0, 0.0, 0.0);
     path.wpt_linear_velocity_polar(end_idx, 0.0, 0.0);
     path.wpt_angular_velocity(0, 0.0);
     path.wpt_angular_velocity(end_idx, 0.0);
     // path.sgmt_circle_obstacle(0, 1, 0.5, 0.1, 0.2);
-    path.set_control_interval_counts(vec![20, 10]);
+    let counts = path.calculate_control_interval_counts();
+
+    path.set_control_interval_counts(counts);
     println!("setup complete");
-    path.calculate_spline_initial_guess();
+    // path.calculate_control_interval_counts();
     // println!("linear: {:#?}", path.calculate_linear_initial_guess());
     // println!("spline: {:#?}", path.calculate_spline_initial_guess());
     // println!("{:#?}", path.generate(true, 0));

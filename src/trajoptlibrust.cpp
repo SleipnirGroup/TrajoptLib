@@ -85,6 +85,17 @@ void SwervePathBuilderImpl::set_bumpers(double length, double width) {
                                               {+length / 2, -width / 2}}});
 }
 
+size_t _rust_usize_to_cpp_size(const rust::usize& count) {
+  return count;
+}
+
+void SwervePathBuilderImpl::set_control_interval_counts(
+    const rust::Vec<size_t> counts) {
+  std::vector<size_t> converted_counts =
+      _rust_vec_to_cpp_vector<size_t, size_t, &_rust_usize_to_cpp_size>(counts);
+  path.ControlIntervalCounts(std::move(converted_counts));
+}
+
 void SwervePathBuilderImpl::pose_wpt(size_t idx, double x, double y,
                                      double heading) {
   path.PoseWpt(idx, x, y, heading);
@@ -333,13 +344,13 @@ HolonomicTrajectory SwervePathBuilderImpl::calculate_spline_initial_guess()
       path.CalculateSplineInitialGuessWithKinematicsAndConstraints());
 }
 
-rust::usize _convert_count(const size_t& count) {
+rust::usize _cpp_size_to_rust_usize(const size_t& count) {
   return count;
 }
 
 rust::Vec<rust::usize>
 SwervePathBuilderImpl::calculate_control_interval_counts() const {
-  return _cpp_vector_to_rust_vec<size_t, rust::usize, &_convert_count>(
+  return _cpp_vector_to_rust_vec<size_t, rust::usize, &_cpp_size_to_rust_usize>(
       path.CalculateControlIntervalCounts());
 }
 
