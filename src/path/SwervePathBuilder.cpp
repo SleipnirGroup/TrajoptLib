@@ -255,6 +255,9 @@ SwervePathBuilder::CalculateWaypointStates() const {
 
   std::vector<std::vector<frc::Trajectory::State>> waypoint_states;
   waypoint_states.reserve(path.waypoints.size());
+  for (size_t i = 0; i < path.waypoints.size(); ++i) {
+    waypoint_states.push_back(std::vector<frc::Trajectory::State>());
+  }
   std::vector<size_t> controlIntervalCountsSpline;
   controlIntervalCountsSpline.reserve(controlIntervalCounts.size());
   for (size_t sgmtIdx = 1; sgmtIdx < path.waypoints.size(); ++sgmtIdx) {
@@ -332,8 +335,8 @@ std::vector<size_t> SwervePathBuilder::CalculateControlIntervalCounts() const {
   const auto trajs = CalculateWaypointStates();
   std::vector<size_t> counts;
   counts.reserve(path.waypoints.size());
-  for (const auto traj : {trajs.begin() + 1, trajs.end()}) {
-    counts.push_back(traj->size());
+  for (size_t i = 1; i < trajs.size(); ++i) {
+    counts.push_back(trajs.at(i).size());
   }
   counts.push_back(1);
   return counts;
