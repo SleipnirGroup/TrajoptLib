@@ -338,7 +338,7 @@ rust::usize _convert_count(const size_t& count) {
 }
 
 rust::Vec<rust::usize>
-SwervePathBuilderImpl::calculate_countrol_interval_counts() const {
+SwervePathBuilderImpl::calculate_control_interval_counts() const {
   return _cpp_vector_to_rust_vec<size_t, rust::usize, &_convert_count>(
       path.CalculateControlIntervalCounts());
 }
