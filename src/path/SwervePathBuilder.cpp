@@ -236,12 +236,8 @@ SwervePathBuilder::GenerateWaypointSplineTrajectory() const {
   // Iterate through the vector and parameterize each spline
   for (auto&& spline : splines) {
     auto points = SplineParameterizer::Parameterize(spline);
-        std::printf("aaa\n");
-
     splinePoints.push_back(points);
   }
-    std::printf("aaa\n");
-
 
   const auto maxWheelVelocity = units::meters_per_second_t(
       path.drivetrain.modules.front().wheelMaxAngularVelocity *
@@ -259,14 +255,11 @@ SwervePathBuilder::GenerateWaypointSplineTrajectory() const {
 
   std::vector<frc::Trajectory> trajs;
   trajs.reserve(path.waypoints.size());
-  std::printf("a\n");
   size_t splineIdx = 0;
   for (size_t sgmtIdx = 1; sgmtIdx < initialGuessPoints.size(); ++sgmtIdx) {
     auto sgmtVel = maxWheelVelocity;
     const auto& sgmtGuessPoints = initialGuessPoints.at(sgmtIdx);
-    std::printf("b\n");
     for (size_t guessIdx = 0; guessIdx < sgmtGuessPoints.size(); ++guessIdx) {
-      std::printf("c\n");
       InitialGuessPoint start;
       InitialGuessPoint end = sgmtGuessPoints.at(guessIdx);
       if (guessIdx == 0) {
@@ -274,43 +267,42 @@ SwervePathBuilder::GenerateWaypointSplineTrajectory() const {
       } else {
         start = sgmtGuessPoints.at(guessIdx - 1);
       }
-std::printf("d\n");
-      auto dtheta = frc::AngleModulus(
-          units::radian_t(std::abs(start.heading - end.heading)));
+      auto dtheta = std::abs(frc::AngleModulus(
+          units::radian_t(std::abs(start.heading - end.heading))).value());
       frc::Translation2d sgmtStart{units::meter_t(start.x),
                                    units::meter_t(start.y)};
       frc::Translation2d sgmtEnd{units::meter_t(end.x), units::meter_t(end.y)};
 
       for (auto& c : path.waypoints.at(sgmtIdx).segmentConstraints) {
-        std::printf("e\n");
         // assuming HolonomicVelocityConstraint with CircularSet2d
         if (std::holds_alternative<HolonomicVelocityConstraint>(c)) {
-          std::printf("f\n");
           const auto& velocityHolonomicConstraint =
               std::get<HolonomicVelocityConstraint>(c);
           auto set2d = velocityHolonomicConstraint.velocityBound;
           if (std::holds_alternative<EllipticalSet2d>(set2d)) {
             auto vel = units::meters_per_second_t(
                 std::abs(std::get<EllipticalSet2d>(set2d).xRadius));
+            std::printf("max lin vel: %.2f - ", vel.value());
             if (vel < sgmtVel) {
               sgmtVel = vel;
             }
           }
         } else if (std::holds_alternative<AngularVelocityConstraint>(c)) {
-          std::printf("max ang vel constraint enter\n");
           const auto& angVelConstraint = std::get<AngularVelocityConstraint>(c);
           auto maxAngVel =
               std::abs(angVelConstraint.angularVelocityBound.upper);
-          std::printf("max ang vel: %.2f", maxAngVel);
+          std::printf("max ang vel: %.2f - ", maxAngVel);
           // TODO add how the 1.5 is determined
-          auto time = 1.5 * dtheta.value() / maxAngVel;
+          auto time = 1.5 * dtheta / maxAngVel;
           // estimating velocity for a straight line path
           // TODO use the spine path distance
-          sgmtVel = sgmtStart.Distance(sgmtEnd) / units::second_t(time);
-          std::printf("sgmtVel: %.2f", sgmtVel);
+          auto vel = sgmtStart.Distance(sgmtEnd) / units::second_t(time);
+          if (vel < sgmtVel) {
+            sgmtVel = vel;
+          }
         }
       }
-
+      std::printf("sgmtVel: %.2f\n", sgmtVel.value());
       frc::TrajectoryConfig sgmtConfig{sgmtVel, sgmtVel / units::second_t{1.0}};
       // uses each non-init guess waypoint as a stop point for first guess
       sgmtConfig.SetStartVelocity(0_mps);
