@@ -7,8 +7,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-rust:
-    timeout-minutes: 15
+  build:
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -27,7 +27,7 @@ jobs:
             cargo-build-flags:
           - artifact-name: Rust Native - Linux x86_64 (CasADi)
             optimizer_backend: casadi
-            os: ubuntu-latest
+            os: ubuntu-24.04
             cargo-build-flags:
           - artifact-name: Rust Native - Windows x86_64 (Sleipnir)
             optimizer_backend: sleipnir
@@ -47,11 +47,11 @@ jobs:
             cargo-build-flags:
           - artifact-name: Rust Native - Linux x86_64 (Sleipnir)
             optimizer_backend: sleipnir
-            os: ubuntu-latest
+            os: ubuntu-24.04
             cargo-build-flags:
           - artifact-name: Rust Native - Linux aarch64 (Sleipnir)
             optimizer_backend: sleipnir
-            os: ubuntu-latest
+            os: ubuntu-24.04
             cargo-build-flags: --target aarch64-unknown-linux-gnu
 
     name: "${{ matrix.artifact-name }}"
