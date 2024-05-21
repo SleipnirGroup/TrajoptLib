@@ -74,7 +74,7 @@ fn main() {
     // path.sgmt_circle_obstacle(0, 1, 0.5, 0.1, 0.2);
     let counts = path.calculate_control_interval_counts();
     println!("counts; {:#?}", &counts);
-    path.set_control_interval_counts(vec![3,3,2]);
+    path.set_control_interval_counts(vec![3, 3, 2]);
 
     println!("setup complete");
     // path.calculate_control_interval_counts();

@@ -315,7 +315,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    *
    * @return control intervals for each waypoint
    */
-  std::vector<frc::Trajectory> GenerateWaypointSplineTrajectory() const;
+  std::vector<frc::Trajectory> GenerateWaypointSplineTrajectories() const;
 
   /**
    * Calculate states separated by waypoints to be used
@@ -323,8 +323,17 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    *
    * @return control intervals for each waypoint
    */
-  std::vector<std::vector<frc::Trajectory::State>> CalculateWaypointStates()
-      const;
+  std::vector<std::vector<frc::Trajectory::State>>
+  CalculateWaypointStatesWithDt(const double desiredDt) const;
+
+  /**
+   * Calculate states separated by waypoints to be used
+   * in the spline initial guess.
+   *
+   * @return control intervals for each waypoint
+   */
+  std::vector<std::vector<frc::Trajectory::State>>
+  CalculateWaypointStatesWithControlIntervals() const;
 
   /**
    * Calculate a discrete initial guess of the x, y, and heading

@@ -225,7 +225,7 @@ Solution SwervePathBuilder::CalculateLinearInitialGuess() const {
 
 // TODO make control interval fn that is the first part of the below function
 std::vector<frc::Trajectory>
-SwervePathBuilder::GenerateWaypointSplineTrajectory() const {
+SwervePathBuilder::GenerateWaypointSplineTrajectories() const {
   std::vector<trajopt::CubicHermitePoseSplineHolonomic> splines =
       CubicPoseControlVectorsFromWaypoints(initialGuessPoints);
 
@@ -267,8 +267,10 @@ SwervePathBuilder::GenerateWaypointSplineTrajectory() const {
       } else {
         start = sgmtGuessPoints.at(guessIdx - 1);
       }
-      auto dtheta = std::abs(frc::AngleModulus(
-          units::radian_t(std::abs(start.heading - end.heading))).value());
+      auto dtheta =
+          std::abs(frc::AngleModulus(
+                       units::radian_t(std::abs(start.heading - end.heading)))
+                       .value());
       frc::Translation2d sgmtStart{units::meter_t(start.x),
                                    units::meter_t(start.y)};
       frc::Translation2d sgmtEnd{units::meter_t(end.x), units::meter_t(end.y)};
@@ -326,8 +328,8 @@ SwervePathBuilder::GenerateWaypointSplineTrajectory() const {
 }
 
 std::vector<std::vector<frc::Trajectory::State>>
-SwervePathBuilder::CalculateWaypointStates() const {
-  const auto trajs = GenerateWaypointSplineTrajectory();
+SwervePathBuilder::CalculateWaypointStatesWithDt(const double desiredDt) const {
+  const auto trajs = GenerateWaypointSplineTrajectories();
 
   size_t guessPoints = 0;
   for (const auto& guesses : initialGuessPoints) {
@@ -344,7 +346,6 @@ SwervePathBuilder::CalculateWaypointStates() const {
     const auto sgmtTraj = trajs.at(sgmtIdx - 1);
 
     const auto wholeSgmtDt = sgmtTraj.TotalTime();
-    const auto desiredDt = 0.1;
     const size_t samplesForSgmtNew = std::ceil(wholeSgmtDt.value() / desiredDt);
     const auto dt = wholeSgmtDt / samplesForSgmtNew;
     std::printf("dt for sgmt%zd with %zd samples: %.5f\n", sgmtIdx,
@@ -366,12 +367,57 @@ SwervePathBuilder::CalculateWaypointStates() const {
   return waypoint_states;
 }
 
+std::vector<std::vector<frc::Trajectory::State>>
+SwervePathBuilder::CalculateWaypointStatesWithControlIntervals() const {
+  const auto trajs = GenerateWaypointSplineTrajectories();
+
+  size_t guessPoints = 0;
+  for (const auto& guesses : initialGuessPoints) {
+    guessPoints += guesses.size();
+  }
+  std::vector<std::vector<frc::Trajectory::State>> waypoint_states;
+  waypoint_states.reserve(guessPoints);
+  for (size_t i = 0; i < guessPoints; ++i) {
+    waypoint_states.push_back(std::vector<frc::Trajectory::State>());
+  }
+
+  size_t trajIdx = 0;
+  std::printf("sgmt1\n");
+  waypoint_states.at(0).push_back(trajs.at(trajIdx).States().front());
+  std::printf("ctrlCount: [");
+  for (auto count : controlIntervalCounts) {
+    std::printf("%zd,", count);
+  }
+  std::printf("]\n");
+  for (size_t sgmtIdx = 1; sgmtIdx < initialGuessPoints.size(); ++sgmtIdx) {
+    auto guessPointsSize = initialGuessPoints.at(sgmtIdx).size();
+    auto samplesForSgmt = controlIntervalCounts.at(sgmtIdx - 1);
+    size_t samples = samplesForSgmt / guessPointsSize;
+    for (size_t guessIdx = 0; guessIdx < guessPointsSize; ++guessIdx) {
+      if (guessIdx == (guessPointsSize - 1)) {
+        samples += (samplesForSgmt % guessPointsSize);
+      }
+      for (size_t sampleIdx = 0; sampleIdx < samples; ++sampleIdx) {
+        auto t = trajs.at(trajIdx).TotalTime() *
+                 static_cast<double>(sampleIdx) / samples;
+        const auto state = trajs.at(trajIdx).Sample(t);
+        waypoint_states.at(trajIdx + 1).push_back(state);
+        std::printf("%zd,", sampleIdx);
+      }
+      std::printf(" size: %zd\n", waypoint_states.at(trajIdx + 1).size());
+      ++trajIdx;
+    }
+  }
+  return waypoint_states;
+}
+
 std::vector<size_t> SwervePathBuilder::CalculateControlIntervalCounts() const {
-  const auto trajs = CalculateWaypointStates();
+  const auto desiredDt = 0.1;
+  const auto trajectoriesSamples = CalculateWaypointStatesWithDt(desiredDt);
   std::vector<size_t> counts;
   counts.reserve(path.waypoints.size());
-  for (size_t i = 1; i < trajs.size(); ++i) {
-    counts.push_back(trajs.at(i).size());
+  for (size_t i = 1; i < trajectoriesSamples.size(); ++i) {
+    counts.push_back(trajectoriesSamples.at(i).size());
   }
   counts.push_back(1);
   return counts;
@@ -380,10 +426,11 @@ std::vector<size_t> SwervePathBuilder::CalculateControlIntervalCounts() const {
 Solution
 SwervePathBuilder::CalculateSplineInitialGuessWithKinematicsAndConstraints()
     const {
-  const auto trajs = CalculateWaypointStates();
+  const auto trajectoriesSamples =
+      CalculateWaypointStatesWithControlIntervals();
 
   Solution initialGuess{};
-  for (const auto& traj : trajs) {
+  for (const auto& traj : trajectoriesSamples) {
     auto dt = 0.1_s;
     if (traj.size() > 1) {
       dt = traj.at(1).t - traj.front().t;
@@ -413,17 +460,6 @@ SwervePathBuilder::CalculateSplineInitialGuessWithKinematicsAndConstraints()
     initialGuess.theta.at(i) = fullRots * 2.0 * std::numbers::pi + headingMod;
     prevHeading = initialGuess.theta.at(i);
   }
-
-  // double totalTime = 0.0;
-  // std::printf("init solution: [\n");
-  // for (size_t i = 0; i < initialGuess.x.size(); ++i) {
-  //   totalTime += initialGuess.dt.at(i);
-  //   std::printf("[timestamp: %.3f, x: %.3f, y: %.3f, theta: %.3f]\n",
-  //   totalTime,
-  //               initialGuess.x.at(i), initialGuess.y.at(i),
-  //               initialGuess.theta.at(i));
-  // }
-  // std::printf("]\n");
 
   return initialGuess;
 }
