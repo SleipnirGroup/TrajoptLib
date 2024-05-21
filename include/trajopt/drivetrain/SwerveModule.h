@@ -32,7 +32,7 @@ struct TRAJOPT_DLLEXPORT SwerveModule {
    */
   double wheelMaxAngularVelocity;
   /**
-   * @brief maximum torque (N*m) applied to wheel
+   * @brief maximum torque (N−m) applied to wheel
    */
   double wheelMaxTorque;
 };
