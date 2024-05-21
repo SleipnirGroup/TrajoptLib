@@ -7,7 +7,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-cpp:
+  build:
     timeout-minutes: 10
     strategy:
       fail-fast: false
@@ -29,7 +29,7 @@ jobs:
           - artifact-name: Native - Linux x86_64 (CasADi)
             cmake-flags:
             optimizer_backend: casadi
-            os: ubuntu-latest
+            os: ubuntu-24.04
           - artifact-name: Native - Windows x86_64 (Sleipnir)
             # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
             cmake-flags: "-DCMAKE_GENERATOR_PLATFORM=x64 -DBUILD_TESTING=OFF"
@@ -51,7 +51,7 @@ jobs:
           - artifact-name: Native - Linux x86_64 (Sleipnir)
             cmake-flags:
             optimizer_backend: sleipnir
-            os: ubuntu-latest
+            os: ubuntu-24.04
 
     name: "${{ matrix.artifact-name }}"
     runs-on: ${{ matrix.os }}
@@ -67,27 +67,10 @@ jobs:
 
       - run: cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer_backend }}
       - run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
-      - run: ctest -C RelWithDebInfo --output-on-failure
-        working-directory: build
+      - run: ctest --test-dir build -C RelWithDebInfo --output-on-failure
       - run: cmake --install build --config RelWithDebInfo --prefix pkg
 
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
-          path: pkg
-
-  build-wasm:
-    name: "Wasm"
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: numworks/setup-emscripten@latest
-      - run: emcmake cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DOPTIMIZER_BACKEND=sleipnir
-      - run: cmake --build build --config Release --parallel $(nproc)
-      - run: cmake --install build --config Release --prefix pkg
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Wasm
           path: pkg
