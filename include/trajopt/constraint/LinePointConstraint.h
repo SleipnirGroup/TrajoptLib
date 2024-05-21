@@ -11,19 +11,19 @@ namespace trajopt {
  * robot's frame and a point on the field.
  */
 struct LinePointConstraint {
-  /// robot line start x
+  /// robot line start x (meters)
   double robotLineStartX;
-  /// robot line start y
+  /// robot line start y (meters)
   double robotLineStartY;
-  /// robot line end x
+  /// robot line end x (meters)
   double robotLineEndX;
-  /// robot line end y
+  /// robot line end y (meters)
   double robotLineEndY;
-  /// field point x
+  /// field point x (meters)
   double fieldPointX;
-  /// field point y
+  /// field point y (meters)
   double fieldPointY;
-  /// the allowed distances between the line segment and point
+  /// the allowed distances (meters) between the line segment and point
   IntervalSet1d distance;
 };
 
