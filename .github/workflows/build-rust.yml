@@ -16,42 +16,47 @@ jobs:
           - artifact-name: Rust Native - Windows x86_64 (CasADi)
             optimizer_backend: casadi
             os: windows-2022
+            cmake-env:
             cargo-build-flags:
           - artifact-name: Rust Native - macOS x86_64 (CasADi)
             optimizer_backend: casadi
-            os: macOS-13
+            os: macOS-14
+            cmake-env: CMAKE_OSX_ARCHITECTURES="x86_64"
             cargo-build-flags:
           - artifact-name: Rust Native - macOS arm64 (CasADi)
             optimizer_backend: casadi
             os: macOS-14
+            cmake-env: CMAKE_OSX_ARCHITECTURES="arm64"
             cargo-build-flags:
           - artifact-name: Rust Native - Linux x86_64 (CasADi)
             optimizer_backend: casadi
             os: ubuntu-24.04
+            cmake-env:
             cargo-build-flags:
           - artifact-name: Rust Native - Windows x86_64 (Sleipnir)
             optimizer_backend: sleipnir
             os: windows-2022
+            cmake-env:
             cargo-build-flags:
           - artifact-name: Rust Native - Windows aarch64 (Sleipnir)
             optimizer_backend: sleipnir
             os: windows-2022
+            cmake-env:
             cargo-build-flags: --target aarch64-pc-windows-msvc
-          - artifact-name: Rust Native - macOS x86_64 (Sleipnir)
-            optimizer_backend: sleipnir
-            os: macOS-13
-            cargo-build-flags:
-          - artifact-name: Rust Native - macOS arm64 (Sleipnir)
+          - artifact-name: Rust Native - macOS universal (Sleipnir)
             optimizer_backend: sleipnir
             os: macOS-14
+            cmake_env:
             cargo-build-flags:
           - artifact-name: Rust Native - Linux x86_64 (Sleipnir)
             optimizer_backend: sleipnir
             os: ubuntu-24.04
+            cmake-env:
             cargo-build-flags:
           - artifact-name: Rust Native - Linux aarch64 (Sleipnir)
             optimizer_backend: sleipnir
             os: ubuntu-24.04
+            cmake-env:
             cargo-build-flags: --target aarch64-unknown-linux-gnu
 
     name: "${{ matrix.artifact-name }}"
@@ -80,10 +85,21 @@ jobs:
         if: matrix.artifact-name == 'Rust Native - Linux aarch64 (Sleipnir)'
         run: |
           sudo apt-get update -q
-          sudo apt-get install -y g++-aarch64-linux-gnu
+          sudo apt-get install -y g++-14-aarch64-linux-gnu
+          sudo update-alternatives --install /usr/bin/aarch64-linux-gnu-gcc aarch64-linux-gnu-gcc /usr/bin/aarch64-linux-gnu-gcc-14 200
+          sudo update-alternatives --install /usr/bin/aarch64-linux-gnu-g++ aarch64-linux-gnu-g++ /usr/bin/aarch64-linux-gnu-g++-14 200
           rustup target install aarch64-unknown-linux-gnu
 
-      - run: cargo build ${{ matrix.cargo-build-flags }} --features ${{ matrix.optimizer_backend }}
+      - name: Make GCC 14 the default toolchain (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 200
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 200
+
+      - run: sudo xcode-select -switch /Applications/Xcode_15.3.app
+        if: startsWith(matrix.os, 'macOS')
+
+      - run: ${{matrix.cmake-env }} cargo build ${{ matrix.cargo-build-flags }} --features ${{ matrix.optimizer_backend }}
 
       - run: cargo run --example swerve --features ${{ matrix.optimizer_backend }}
         if: matrix.artifact-name != 'Rust Native - Windows aarch64 (Sleipnir)' &&
