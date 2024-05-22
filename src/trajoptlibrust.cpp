@@ -263,10 +263,11 @@ void SwervePathBuilderImpl::sgmt_polygon_obstacle(size_t from_idx,
 HolonomicTrajectorySample _convert_holonomic_trajectory_sample(
     const trajopt::HolonomicTrajectorySample& sample) {
 
-  rust::Vec<double> fx, fy;
-
   // copy data into rust vecs
+  rust::Vec<double> fx;
   std::copy(sample.moduleForcesX.begin(), sample.moduleForcesX.end(), std::back_inserter(fx));
+
+  rust::Vec<double> fy;
   std::copy(sample.moduleForcesY.begin(), sample.moduleForcesY.end(), std::back_inserter(fy));
 
   return HolonomicTrajectorySample{
@@ -277,8 +278,8 @@ HolonomicTrajectorySample _convert_holonomic_trajectory_sample(
       .velocity_x = sample.velocityX,
       .velocity_y = sample.velocityY,
       .angular_velocity = sample.angularVelocity,
-      .module_forces_x = fx,
-      .module_forces_y = fy,
+      .module_forces_x = std::move(fx),
+      .module_forces_y = std::move(fy),
   };
 }
 
