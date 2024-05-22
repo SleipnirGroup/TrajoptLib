@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <utility>
 #include <vector>
+#include <algorithm>
 
 #include "trajopt/OptimalTrajectoryGenerator.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
@@ -261,6 +262,13 @@ void SwervePathBuilderImpl::sgmt_polygon_obstacle(size_t from_idx,
 
 HolonomicTrajectorySample _convert_holonomic_trajectory_sample(
     const trajopt::HolonomicTrajectorySample& sample) {
+
+  rust::Vec<double> fx, fy;
+
+  // copy data into rust vecs
+  std::copy(sample.moduleForcesX.begin(), sample.moduleForcesX.end(), std::back_inserter(fx));
+  std::copy(sample.moduleForcesY.begin(), sample.moduleForcesY.end(), std::back_inserter(fy));
+
   return HolonomicTrajectorySample{
       .timestamp = sample.timestamp,
       .x = sample.x,
@@ -269,8 +277,8 @@ HolonomicTrajectorySample _convert_holonomic_trajectory_sample(
       .velocity_x = sample.velocityX,
       .velocity_y = sample.velocityY,
       .angular_velocity = sample.angularVelocity,
-      .module_forces_x = sample.moduleForcesX,
-      .module_forces_y = sample.moduleForcesY,
+      .module_forces_x = fx,
+      .module_forces_y = fy,
   };
 }
 

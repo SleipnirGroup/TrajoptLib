@@ -4,7 +4,7 @@
 
 #include "trajopt/SymbolExports.h"
 
-#include <array>
+#include <vector>
 
 namespace trajopt {
 
@@ -35,10 +35,10 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
   double angularVelocity = 0.0;
 
   /// The force on each module in the X direction.
-  std::array<double, 4> moduleForcesX{};
+  std::vector<double> moduleForcesX{};
 
   /// The force on each module in the Y direction.
-  std::array<double, 4> moduleForcesY{};
+  std::vector<double> moduleForcesY{};
 
   constexpr HolonomicTrajectorySample() = default;
 
@@ -67,7 +67,7 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
 
   constexpr HolonomicTrajectorySample(double timestamp, double x, double y,
                                       double heading, double velocityX,
-                                      double velocityY, double angularVelocity, std::array<double, 4> moduleForcesX, std::array<double, 4> moduleForcesY)
+                                      double velocityY, double angularVelocity, std::vector<double> moduleForcesX, std::vector<double> moduleForcesY)
       : timestamp{timestamp},
         x{x},
         y{y},
