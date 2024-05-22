@@ -32,6 +32,8 @@ mod ffi {
         velocity_x: f64,
         velocity_y: f64,
         angular_velocity: f64,
+        module_forces_x: [f64; 4],
+        module_forces_y: [f64; 4]
     }
 
     #[derive(Debug, Deserialize, Serialize, Clone)]

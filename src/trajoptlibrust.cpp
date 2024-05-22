@@ -269,6 +269,8 @@ HolonomicTrajectorySample _convert_holonomic_trajectory_sample(
       .velocity_x = sample.velocityX,
       .velocity_y = sample.velocityY,
       .angular_velocity = sample.angularVelocity,
+      .module_forces_x = sample.moduleForcesX,
+      .module_forces_y = sample.moduleForcesY,
   };
 }
 

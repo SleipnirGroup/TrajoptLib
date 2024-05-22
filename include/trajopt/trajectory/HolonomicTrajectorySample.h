@@ -4,6 +4,8 @@
 
 #include "trajopt/SymbolExports.h"
 
+#include <array>
+
 namespace trajopt {
 
 /**
@@ -32,6 +34,9 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
   /// The angular velocity.
   double angularVelocity = 0.0;
 
+  std::array<double, 4> moduleForcesX{};
+  std::array<double, 4> moduleForcesY{};
+
   constexpr HolonomicTrajectorySample() = default;
 
   /**
@@ -54,7 +59,22 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
         heading{heading},
         velocityX{velocityX},
         velocityY{velocityY},
-        angularVelocity{angularVelocity} {}
+        angularVelocity{angularVelocity}
+  {}
+
+  constexpr HolonomicTrajectorySample(double timestamp, double x, double y,
+                                      double heading, double velocityX,
+                                      double velocityY, double angularVelocity, std::array<double, 4> moduleForcesX, std::array<double, 4> moduleForcesY)
+      : timestamp{timestamp},
+        x{x},
+        y{y},
+        heading{heading},
+        velocityX{velocityX},
+        velocityY{velocityY},
+        angularVelocity{angularVelocity},
+  moduleForcesX(moduleForcesX), moduleForcesY(moduleForcesY)
+  {}
+
 };
 
 }  // namespace trajopt
