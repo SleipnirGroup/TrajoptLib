@@ -67,7 +67,7 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
 
   constexpr HolonomicTrajectorySample(double timestamp, double x, double y,
                                       double heading, double velocityX,
-                                      double velocityY, double angularVelocity, std::vector<double> moduleForcesX, std::vector<double> moduleForcesY)
+                                      double velocityY, double angularVelocity, const std::vector<double>& moduleForcesX, const std::vector<double>& moduleForcesY)
       : timestamp{timestamp},
         x{x},
         y{y},
