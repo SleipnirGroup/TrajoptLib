@@ -56,6 +56,7 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectory {
         ts += solution.dt[samp - 1];
       }
       // small enough that we don't care about performance?
+      // TODO: this is a potential overflow
       std::copy(solution.moduleFX[samp].begin(), solution.moduleFX[samp].end(), fx.begin());
       std::copy(solution.moduleFY[samp].begin(), solution.moduleFY[samp].end(), fy.begin());
       samples.emplace_back(ts, solution.x[samp], solution.y[samp],
