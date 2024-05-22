@@ -60,7 +60,8 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectory {
       }
       samples.emplace_back(ts, solution.x[samp], solution.y[samp],
                            solution.theta[samp], solution.vx[samp],
-                           solution.vy[samp], solution.omega[samp], solution.moduleFX[samp], solution.moduleFY[samp]);
+                           solution.vy[samp], solution.omega[samp],
+                           solution.moduleFX[samp], solution.moduleFY[samp]);
     }
   }
 };

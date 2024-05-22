@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "trajopt/SymbolExports.h"
-
 #include <vector>
+
+#include "trajopt/SymbolExports.h"
 
 namespace trajopt {
 
@@ -62,12 +62,13 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
         heading{heading},
         velocityX{velocityX},
         velocityY{velocityY},
-        angularVelocity{angularVelocity}
-  {}
+        angularVelocity{angularVelocity} {}
 
   constexpr HolonomicTrajectorySample(double timestamp, double x, double y,
                                       double heading, double velocityX,
-                                      double velocityY, double angularVelocity, const std::vector<double>& moduleForcesX, const std::vector<double>& moduleForcesY)
+                                      double velocityY, double angularVelocity,
+                                      const std::vector<double>& moduleForcesX,
+                                      const std::vector<double>& moduleForcesY)
       : timestamp{timestamp},
         x{x},
         y{y},
@@ -75,9 +76,8 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
         velocityX{velocityX},
         velocityY{velocityY},
         angularVelocity{angularVelocity},
-  moduleForcesX(moduleForcesX), moduleForcesY(moduleForcesY)
-  {}
-
+        moduleForcesX(moduleForcesX),
+        moduleForcesY(moduleForcesY) {}
 };
 
 }  // namespace trajopt
