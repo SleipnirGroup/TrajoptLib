@@ -78,10 +78,10 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
    * @param moduleForcesY Forces acting on the modules in the Y direction.
    */
   HolonomicTrajectorySample(double timestamp, double x, double y,
-                                      double heading, double velocityX,
-                                      double velocityY, double angularVelocity,
-                                      const std::vector<double>& moduleForcesX,
-                                      const std::vector<double>& moduleForcesY)
+                            double heading, double velocityX, double velocityY,
+                            double angularVelocity,
+                            const std::vector<double>& moduleForcesX,
+                            const std::vector<double>& moduleForcesY)
       : timestamp{timestamp},
         x{x},
         y{y},
