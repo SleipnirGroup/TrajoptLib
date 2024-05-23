@@ -220,9 +220,13 @@ if(BUILD_TESTING)
             ${CMAKE_CURRENT_SOURCE_DIR}/test/include
             ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/units/include
     )
-    target_link_libraries(TrajoptLibTest PRIVATE TrajoptLib Catch2::Catch2)
+    target_link_libraries(
+        TrajoptLibTest
+        PRIVATE TrajoptLib Catch2::Catch2WithMain
+    )
     if(NOT CMAKE_TOOLCHAIN_FILE)
-        catch_discover_tests(TrajoptLibTest)
+        # https://github.com/catchorg/Catch2/issues/2873
+        catch_discover_tests(TrajoptLibTest PROPERTIES SKIP_RETURN_CODE 4)
     endif()
 endif()
 
@@ -264,7 +268,8 @@ foreach(example ${EXAMPLES})
             PRIVATE TrajoptLib Catch2::Catch2WithMain
         )
         if(NOT CMAKE_TOOLCHAIN_FILE)
-            catch_discover_tests(${example}Test)
+            # https://github.com/catchorg/Catch2/issues/2873
+            catch_discover_tests(${example}Test PROPERTIES SKIP_RETURN_CODE 4)
         endif()
     endif()
 endforeach()
