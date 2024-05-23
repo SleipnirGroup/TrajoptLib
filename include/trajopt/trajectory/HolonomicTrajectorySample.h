@@ -35,12 +35,12 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
   double angularVelocity = 0.0;
 
   /// The force on each module in the X direction.
-  std::vector<double> moduleForcesX{};
+  std::vector<double> moduleForcesX;
 
   /// The force on each module in the Y direction.
-  std::vector<double> moduleForcesY{};
+  std::vector<double> moduleForcesY;
 
-  constexpr HolonomicTrajectorySample() = default;
+  HolonomicTrajectorySample() = default;
 
   /**
    * Construct a HolonomicTrajectorySample.
