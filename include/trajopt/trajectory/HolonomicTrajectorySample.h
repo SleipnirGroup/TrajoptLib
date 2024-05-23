@@ -65,7 +65,7 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
         angularVelocity{angularVelocity} {}
 
   /**
-   * Construct a HolonomicTrajectorySample.
+   * Construct a HolonomicTrajectorySample with module forces.
    *
    * @param timestamp The timestamp.
    * @param x The x coordinate.
