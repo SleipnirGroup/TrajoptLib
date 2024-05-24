@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include <utility>
+#include <vector>
+
 #include "trajopt/SymbolExports.h"
 
 namespace trajopt {
@@ -32,7 +35,13 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
   /// The angular velocity.
   double angularVelocity = 0.0;
 
-  constexpr HolonomicTrajectorySample() = default;
+  /// The force on each module in the X direction.
+  std::vector<double> moduleForcesX;
+
+  /// The force on each module in the Y direction.
+  std::vector<double> moduleForcesY;
+
+  HolonomicTrajectorySample() = default;
 
   /**
    * Construct a HolonomicTrajectorySample.
@@ -45,9 +54,9 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
    * @param velocityY The velocity's y component.
    * @param angularVelocity The angular velocity.
    */
-  constexpr HolonomicTrajectorySample(double timestamp, double x, double y,
-                                      double heading, double velocityX,
-                                      double velocityY, double angularVelocity)
+  HolonomicTrajectorySample(double timestamp, double x, double y,
+                            double heading, double velocityX, double velocityY,
+                            double angularVelocity)
       : timestamp{timestamp},
         x{x},
         y{y},
@@ -55,6 +64,34 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
         velocityX{velocityX},
         velocityY{velocityY},
         angularVelocity{angularVelocity} {}
+
+  /**
+   * Construct a HolonomicTrajectorySample with module forces.
+   *
+   * @param timestamp The timestamp.
+   * @param x The x coordinate.
+   * @param y The y coordinate.
+   * @param heading The heading.
+   * @param velocityX The velocity's x component.
+   * @param velocityY The velocity's y component.
+   * @param angularVelocity The angular velocity.
+   * @param moduleForcesX Forces acting on the modules in the X direction.
+   * @param moduleForcesY Forces acting on the modules in the Y direction.
+   */
+  HolonomicTrajectorySample(double timestamp, double x, double y,
+                            double heading, double velocityX, double velocityY,
+                            double angularVelocity,
+                            std::vector<double> moduleForcesX,
+                            std::vector<double> moduleForcesY)
+      : timestamp{timestamp},
+        x{x},
+        y{y},
+        heading{heading},
+        velocityX{velocityX},
+        velocityY{velocityY},
+        angularVelocity{angularVelocity},
+        moduleForcesX{std::move(moduleForcesX)},
+        moduleForcesY{std::move(moduleForcesY)} {}
 };
 
 }  // namespace trajopt
