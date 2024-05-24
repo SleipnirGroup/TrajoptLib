@@ -90,7 +90,7 @@ if(BUILD_TESTING)
     fetchcontent_declare(
         Catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG v3.5.2
+        GIT_TAG v3.6.0
         CMAKE_ARGS
     )
     fetchcontent_makeavailable(Catch2)
@@ -135,8 +135,8 @@ elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     fetchcontent_declare(
         Sleipnir
         GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        # main on 2024-05-19
-        GIT_TAG 0be37e4543df3788960f501461462ba92547ed0f
+        # main on 2024-05-22
+        GIT_TAG 67df86b569b44f33e4926db215a28e0c23078e39
     )
     fetchcontent_makeavailable(Sleipnir)
 
@@ -220,9 +220,13 @@ if(BUILD_TESTING)
             ${CMAKE_CURRENT_SOURCE_DIR}/test/include
             ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/units/include
     )
-    target_link_libraries(TrajoptLibTest PRIVATE TrajoptLib Catch2::Catch2)
+    target_link_libraries(
+        TrajoptLibTest
+        PRIVATE TrajoptLib Catch2::Catch2WithMain
+    )
     if(NOT CMAKE_TOOLCHAIN_FILE)
-        catch_discover_tests(TrajoptLibTest)
+        # https://github.com/catchorg/Catch2/issues/2873
+        catch_discover_tests(TrajoptLibTest PROPERTIES SKIP_RETURN_CODE 4)
     endif()
 endif()
 
@@ -264,7 +268,8 @@ foreach(example ${EXAMPLES})
             PRIVATE TrajoptLib Catch2::Catch2WithMain
         )
         if(NOT CMAKE_TOOLCHAIN_FILE)
-            catch_discover_tests(${example}Test)
+            # https://github.com/catchorg/Catch2/issues/2873
+            catch_discover_tests(${example}Test PROPERTIES SKIP_RETURN_CODE 4)
         endif()
     endif()
 endforeach()
