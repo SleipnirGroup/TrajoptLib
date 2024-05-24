@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <utility>
 #include <vector>
 
 #include "trajopt/SymbolExports.h"
@@ -40,7 +41,7 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
   /// The force on each module in the Y direction.
   std::vector<double> moduleForcesY;
 
-  HolonomicTrajectorySample() = default;
+  constexpr HolonomicTrajectorySample() = default;
 
   /**
    * Construct a HolonomicTrajectorySample.
@@ -77,11 +78,11 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
    * @param moduleForcesX Forces acting on the modules in the X direction.
    * @param moduleForcesY Forces acting on the modules in the Y direction.
    */
-  HolonomicTrajectorySample(double timestamp, double x, double y,
-                            double heading, double velocityX, double velocityY,
-                            double angularVelocity,
-                            const std::vector<double>& moduleForcesX,
-                            const std::vector<double>& moduleForcesY)
+  constexpr HolonomicTrajectorySample(double timestamp, double x, double y,
+                                      double heading, double velocityX,
+                                      double velocityY, double angularVelocity,
+                                      std::vector<double> moduleForcesX,
+                                      std::vector<double> moduleForcesY)
       : timestamp{timestamp},
         x{x},
         y{y},
@@ -89,8 +90,8 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectorySample {
         velocityX{velocityX},
         velocityY{velocityY},
         angularVelocity{angularVelocity},
-        moduleForcesX(moduleForcesX),
-        moduleForcesY(moduleForcesY) {}
+        moduleForcesX{std::move(moduleForcesX)},
+        moduleForcesY{std::move(moduleForcesY)} {}
 };
 
 }  // namespace trajopt
