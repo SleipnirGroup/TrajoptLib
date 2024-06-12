@@ -60,7 +60,7 @@ option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
 
-include(TrajoptLibCompilerFlags)
+include(CompilerFlags)
 
 file(GLOB_RECURSE src src/*.cpp)
 if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
@@ -71,7 +71,7 @@ endif()
 list(FILTER src EXCLUDE REGEX trajoptlibrust.cpp)
 
 add_library(TrajoptLib ${src})
-trajoptlib_compiler_flags(TrajoptLib)
+compiler_flags(TrajoptLib)
 target_include_directories(TrajoptLib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
@@ -212,7 +212,7 @@ endif()
 if(BUILD_TESTING)
     file(GLOB_RECURSE TrajoptLib_test_src test/src/*.cpp)
     add_executable(TrajoptLibTest ${TrajoptLib_test_src})
-    trajoptlib_compiler_flags(TrajoptLibTest)
+    compiler_flags(TrajoptLibTest)
     target_include_directories(
         TrajoptLibTest
         PRIVATE
@@ -231,13 +231,13 @@ if(BUILD_TESTING)
 endif()
 
 # Build examples and example tests
-include(TrajoptLibSubdirList)
-trajoptlib_subdir_list(EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/examples)
+include(SubdirList)
+subdir_list(EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/examples)
 foreach(example ${EXAMPLES})
     # Build example
     file(GLOB_RECURSE sources examples/${example}/src/*.cpp)
     add_executable(${example} ${sources})
-    trajoptlib_compiler_flags(${example})
+    compiler_flags(${example})
     target_include_directories(
         ${example}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/include
@@ -257,7 +257,7 @@ foreach(example ${EXAMPLES})
                 ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/src
                 ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/test
         )
-        trajoptlib_compiler_flags(${example}Test)
+        compiler_flags(${example}Test)
         target_compile_definitions(${example}Test PUBLIC RUNNING_TESTS)
         target_include_directories(
             ${example}Test
