@@ -53,6 +53,7 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     double fieldPointX = pointAtConstraint.fieldPointX;
     double fieldPointY = pointAtConstraint.fieldPointY;
     double headingTolerance = pointAtConstraint.headingTolerance;
+    double headingOffset = pointAtConstraint.headingOffset;
     /**
      * dx,dy = desired heading
      * ux,uy = unit vector of desired heading
@@ -64,10 +65,10 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
      */
     auto dx = fieldPointX - x;
     auto dy = fieldPointY - y;
-    auto ux = dx / hypot(dx, dy);  // NOLINT
-    auto uy = dy / hypot(dx, dy);  // NOLINT
-    auto hx = cos(theta);          // NOLINT
-    auto hy = sin(theta);          // NOLINT
+    auto ux = dx / hypot(dx, dy);          // NOLINT
+    auto uy = dy / hypot(dx, dy);          // NOLINT
+    auto hx = cos(theta - headingOffset);  // NOLINT
+    auto hy = sin(theta - headingOffset);  // NOLINT
     auto dot = hx * ux + hy * uy;
 
     ApplyIntervalSet1dConstraint(
