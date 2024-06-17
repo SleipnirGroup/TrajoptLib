@@ -163,7 +163,7 @@ mod ffi {
             field_point_x: f64,
             field_point_y: f64,
             heading_tolerance: f64,
-            offset: f64,
+            heading_offset: f64,
         );
 
         fn sgmt_circle_obstacle(
