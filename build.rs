@@ -73,6 +73,7 @@ fn main() {
     println!("cargo:rustc-link-lib=TrajoptLib");
     if cfg!(feature = "sleipnir") {
         println!("cargo:rustc-link-lib=Sleipnir");
+        println!("cargo:rustc-link-lib=fmt");
     }
 
     println!("cargo:rerun-if-changed=src/trajoptlibrust.h");

@@ -11,6 +11,7 @@ cppSrcFileInclude {
 
 modifiableFileExclude {
   expected$
+  \.patch$
 }
 
 includeOtherLibs {
