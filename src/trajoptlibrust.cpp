@@ -2,6 +2,10 @@
 
 #include "trajoptlibrust.h"
 
+#include <stdint.h>
+#include <trajopt/solution/SwerveSolution.h>
+
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <stdexcept>
@@ -135,7 +139,12 @@ void SwervePathBuilderImpl::wpt_linear_velocity_polar(size_t idx,
 void SwervePathBuilderImpl::wpt_angular_velocity(size_t idx,
                                                  double angular_velocity) {
   // this probably ought to be added to SwervePathBuilder in the C++ API
-  path.WptConstraint(idx, trajopt::AngularVelocityConstraint{angular_velocity});
+  path.WptAngularVelocity(idx, angular_velocity);
+}
+
+void SwervePathBuilderImpl::wpt_angular_velocity_max_magnitude(
+    size_t idx, double angular_velocity) {
+  path.WptAngularVelocityMaxMagnitude(idx, angular_velocity);
 }
 
 void SwervePathBuilderImpl::wpt_x(size_t idx, double x) {
@@ -191,8 +200,12 @@ void SwervePathBuilderImpl::sgmt_linear_velocity_polar(size_t from_idx,
 void SwervePathBuilderImpl::sgmt_angular_velocity(size_t from_idx,
                                                   size_t to_idx,
                                                   double angular_velocity) {
-  path.SgmtConstraint(from_idx, to_idx,
-                      trajopt::AngularVelocityConstraint{angular_velocity});
+  path.SgmtAngularVelocity(from_idx, to_idx, angular_velocity);
+}
+
+void SwervePathBuilderImpl::sgmt_angular_velocity_max_magnitude(
+    size_t from_idx, size_t to_idx, double angular_velocity) {
+  path.SgmtAngularVelocityMaxMagnitude(from_idx, to_idx, angular_velocity);
 }
 
 void SwervePathBuilderImpl::sgmt_x(size_t from_idx, size_t to_idx, double x) {
@@ -253,6 +266,15 @@ void SwervePathBuilderImpl::sgmt_polygon_obstacle(size_t from_idx,
 
 HolonomicTrajectorySample _convert_holonomic_trajectory_sample(
     const trajopt::HolonomicTrajectorySample& sample) {
+  // copy data into rust vecs
+  rust::Vec<double> fx;
+  std::copy(sample.moduleForcesX.begin(), sample.moduleForcesX.end(),
+            std::back_inserter(fx));
+
+  rust::Vec<double> fy;
+  std::copy(sample.moduleForcesY.begin(), sample.moduleForcesY.end(),
+            std::back_inserter(fy));
+
   return HolonomicTrajectorySample{
       .timestamp = sample.timestamp,
       .x = sample.x,
@@ -261,6 +283,8 @@ HolonomicTrajectorySample _convert_holonomic_trajectory_sample(
       .velocity_x = sample.velocityX,
       .velocity_y = sample.velocityY,
       .angular_velocity = sample.angularVelocity,
+      .module_forces_x = std::move(fx),
+      .module_forces_y = std::move(fy),
   };
 }
 
@@ -273,9 +297,29 @@ HolonomicTrajectory _convert_holonomic_trajectory(
           trajectory.samples)};
 }
 
-HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics) const {
-  if (auto sol =
-          trajopt::OptimalTrajectoryGenerator::Generate(path, diagnostics);
+/**
+ * Add a callback that will be called on each iteration of the solver.
+ *
+ * @param callback: a `fn` (not a closure) to be executed. The callback's
+ * first parameter will be a `trajoptlib::HolonomicTrajectory`, and the second
+ * parameter will be an `i64` equal to the handle passed in `generate()`
+ *
+ * This function can be called multiple times to add multiple callbacks.
+ */
+void SwervePathBuilderImpl::add_progress_callback(
+    rust::Fn<void(HolonomicTrajectory, int64_t)> callback) {
+  path.AddIntermediateCallback([=](trajopt::SwerveSolution& solution,
+                                   int64_t handle) {
+    callback(
+        _convert_holonomic_trajectory(trajopt::HolonomicTrajectory{solution}),
+        handle);
+  });
+}
+
+HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
+                                                    int64_t handle) const {
+  if (auto sol = trajopt::OptimalTrajectoryGenerator::Generate(
+          path, diagnostics, handle);
       sol.has_value()) {
     return _convert_holonomic_trajectory(
         trajopt::HolonomicTrajectory{sol.value()});

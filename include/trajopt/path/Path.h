@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include <stdint.h>
+
+#include <functional>
 #include <vector>
 
 #include "trajopt/SymbolExports.h"
@@ -9,6 +12,7 @@
 #include "trajopt/constraint/holonomic/HolonomicConstraint.h"
 #include "trajopt/drivetrain/DifferentialDrivetrain.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
+#include "trajopt/solution/SwerveSolution.h"
 
 namespace trajopt {
 
@@ -40,6 +44,10 @@ struct TRAJOPT_DLLEXPORT SwervePath {
   std::vector<SwerveWaypoint> waypoints;
   /// drivetrain of the robot
   SwerveDrivetrain drivetrain;
+
+  /// A vector of callbacks to be called with the intermediate SwerveSolution
+  /// and a user-specified handle at every iteration of the solver
+  std::vector<std::function<void(SwerveSolution&, int64_t)>> callbacks;
 };
 
 /**

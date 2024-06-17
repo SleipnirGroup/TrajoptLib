@@ -11,7 +11,7 @@ namespace trajopt {
  * Heading constraint.
  */
 struct TRAJOPT_DLLEXPORT HeadingConstraint {
-  /// The heading bound.
+  /// The heading bound (radians)
   IntervalSet1d headingBound;
 };
 

@@ -23,7 +23,7 @@ mod ffi {
         heading: f64,
     }
 
-    #[derive(Debug, Deserialize, Serialize)]
+    #[derive(Debug, Deserialize, Serialize, Clone)]
     struct HolonomicTrajectorySample {
         timestamp: f64,
         x: f64,
@@ -32,9 +32,11 @@ mod ffi {
         velocity_x: f64,
         velocity_y: f64,
         angular_velocity: f64,
+        module_forces_x: Vec<f64>,
+        module_forces_y: Vec<f64>,
     }
 
-    #[derive(Debug, Deserialize, Serialize)]
+    #[derive(Debug, Deserialize, Serialize, Clone)]
     struct HolonomicTrajectory {
         samples: Vec<HolonomicTrajectorySample>,
     }
@@ -98,6 +100,11 @@ mod ffi {
             idx: usize,
             angular_velocity: f64,
         );
+        fn wpt_angular_velocity_max_magnitude(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            idx: usize,
+            angular_velocity: f64,
+        );
         fn wpt_x(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, x: f64);
         fn wpt_y(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, y: f64);
         fn wpt_heading(self: Pin<&mut SwervePathBuilderImpl>, idx: usize, heading: f64);
@@ -130,6 +137,12 @@ mod ffi {
             angle: f64,
         );
         fn sgmt_angular_velocity(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            from_idx: usize,
+            to_idx: usize,
+            angular_velocity: f64,
+        );
+        fn sgmt_angular_velocity_max_magnitude(
             self: Pin<&mut SwervePathBuilderImpl>,
             from_idx: usize,
             to_idx: usize,
@@ -171,8 +184,15 @@ mod ffi {
             radius: f64,
         );
 
-        fn generate(self: &SwervePathBuilderImpl, diagnostics: bool)
-            -> Result<HolonomicTrajectory>;
+        fn generate(
+            self: &SwervePathBuilderImpl,
+            diagnostics: bool,
+            uuid: i64,
+        ) -> Result<HolonomicTrajectory>;
+        fn add_progress_callback(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            callback: fn(HolonomicTrajectory, i64),
+        );
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
@@ -270,6 +290,14 @@ impl SwervePathBuilder {
         );
     }
 
+    pub fn wpt_angular_velocity_max_magnitude(&mut self, idx: usize, angular_velocity: f64) {
+        crate::ffi::SwervePathBuilderImpl::wpt_angular_velocity_max_magnitude(
+            self.path.pin_mut(),
+            idx,
+            angular_velocity,
+        );
+    }
+
     pub fn wpt_x(&mut self, idx: usize, x: f64) {
         crate::ffi::SwervePathBuilderImpl::wpt_x(self.path.pin_mut(), idx, x);
     }
@@ -341,6 +369,20 @@ impl SwervePathBuilder {
 
     pub fn sgmt_angular_velocity(&mut self, from_idx: usize, to_idx: usize, angular_velocity: f64) {
         crate::ffi::SwervePathBuilderImpl::sgmt_angular_velocity(
+            self.path.pin_mut(),
+            from_idx,
+            to_idx,
+            angular_velocity,
+        );
+    }
+
+    pub fn sgmt_angular_velocity_max_magnitude(
+        &mut self,
+        from_idx: usize,
+        to_idx: usize,
+        angular_velocity: f64,
+    ) {
+        crate::ffi::SwervePathBuilderImpl::sgmt_angular_velocity_max_magnitude(
             self.path.pin_mut(),
             from_idx,
             to_idx,
@@ -421,8 +463,23 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn generate(&self, diagnostics: bool) -> Result<HolonomicTrajectory, String> {
-        match self.path.generate(diagnostics) {
+    ///
+    /// Generate the trajectory;
+    ///
+    /// * diagnostics: If true, prints per-iteration details of the solver to stdout.
+    /// * handle: A number used to identify results from this generation in the
+    /// `add_progress_callback` callback. If `add_progress_callback` has not been called, this
+    /// value has no significance.
+    ///
+    /// Returns a result with either the final `trajoptlib::HolonomicTrajectory`, or a String error message
+    /// if generation failed.
+    ///
+    pub fn generate(
+        &mut self,
+        diagnostics: bool,
+        handle: i64,
+    ) -> Result<HolonomicTrajectory, String> {
+        match self.path.generate(diagnostics, handle) {
             Ok(traj) => Ok(traj),
             Err(msg) => Err(msg.what().to_string()),
         }
@@ -430,6 +487,18 @@ impl SwervePathBuilder {
 
     pub fn cancel_all(&mut self) {
         crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
+    }
+    ///
+    /// Add a callback that will be called on each iteration of the solver.
+    ///
+    /// * callback: a `fn` (not a closure) to be executed. The callback's
+    /// first parameter will be a `trajoptlib::HolonomicTrajectory`, and the second
+    /// parameter will be an `i64` equal to the handle passed in `generate()`
+    ///
+    /// This function can be called multiple times to add multiple callbacks.
+    ///
+    pub fn add_progress_callback(&mut self, callback: fn(HolonomicTrajectory, i64)) {
+        crate::ffi::SwervePathBuilderImpl::add_progress_callback(self.path.pin_mut(), callback);
     }
 }
 

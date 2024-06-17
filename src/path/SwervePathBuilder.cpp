@@ -2,6 +2,8 @@
 
 #include "trajopt/path/SwervePathBuilder.h"
 
+#include <stdint.h>
+
 #include <cassert>
 #include <cmath>
 #include <memory>
@@ -96,6 +98,17 @@ void SwervePathBuilder::WptVelocityPolar(size_t idx, double vr, double vtheta) {
                          CoordinateSystem::kField});
 }
 
+void SwervePathBuilder::WptAngularVelocity(size_t idx,
+                                           double angular_velocity) {
+  WptConstraint(idx, AngularVelocityConstraint{angular_velocity});
+}
+
+void SwervePathBuilder::WptAngularVelocityMaxMagnitude(
+    size_t idx, double angular_velocity) {
+  WptConstraint(idx, AngularVelocityConstraint{
+                         IntervalSet1d{-angular_velocity, angular_velocity}});
+}
+
 void SwervePathBuilder::WptZeroAngularVelocity(size_t idx) {
   WptConstraint(idx, AngularVelocityConstraint{0.0});
 }
@@ -116,6 +129,23 @@ void SwervePathBuilder::SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx,
   }
   SgmtConstraint(fromIdx, toIdx,
                  HolonomicVelocityConstraint{set, CoordinateSystem::kField},
+                 includeWpts);
+}
+
+void SwervePathBuilder::SgmtAngularVelocity(size_t fromIdx, size_t toIdx,
+                                            double angular_velocity,
+                                            bool includeWpts) {
+  SgmtConstraint(fromIdx, toIdx, AngularVelocityConstraint{angular_velocity},
+                 includeWpts);
+}
+
+void SwervePathBuilder::SgmtAngularVelocityMaxMagnitude(size_t fromIdx,
+                                                        size_t toIdx,
+                                                        double angular_velocity,
+                                                        bool includeWpts) {
+  SgmtConstraint(fromIdx, toIdx,
+                 AngularVelocityConstraint{
+                     IntervalSet1d{-angular_velocity, angular_velocity}},
                  includeWpts);
 }
 
@@ -263,6 +293,11 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
     }
   }
   return constraints;
+}
+
+void SwervePathBuilder::AddIntermediateCallback(
+    const std::function<void(SwerveSolution&, int64_t)> callback) {
+  path.callbacks.push_back(callback);
 }
 
 void SwervePathBuilder::CancelAll() {

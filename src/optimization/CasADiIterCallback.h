@@ -2,7 +2,9 @@
 
 #pragma once
 
+#include <functional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <casadi/casadi.hpp>
@@ -18,12 +20,14 @@ class CasADiIterCallback : public Callback {
   casadi_int nx;
   casadi_int ng;
   casadi_int np;
+  std::function<void()> callback;
 
  public:
   // Constructor
   CasADiIterCallback(const std::string& name, casadi_int nx, casadi_int ng,
-                     casadi_int np, const Dict& opts = Dict())
-      : nx(nx), ng(ng), np(np) {
+                     casadi_int np, std::function<void()> callback,
+                     const Dict& opts = Dict())
+      : nx(nx), ng(ng), np(np), callback(std::move(callback)) {
     construct(name, opts);
   }
 
@@ -54,6 +58,7 @@ class CasADiIterCallback : public Callback {
 
   // Evaluate numerically
   std::vector<DM> eval(const std::vector<DM>& arg) const override {
+    callback();
     int flag = trajopt::GetCancellationFlag();
     return {static_cast<double>(flag)};
   }

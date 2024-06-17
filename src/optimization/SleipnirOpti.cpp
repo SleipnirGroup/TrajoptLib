@@ -110,14 +110,22 @@ void SleipnirOpti::SetInitial(trajopt::SleipnirExpr& expr, double value) {
   expr.expr.SetValue(value);
 }
 
+void SleipnirOpti::AddIntermediateCallback(std::function<void()> callback) {
+  callbacks.push_back(callback);
+}
+
 [[nodiscard]]
 expected<void, std::string> SleipnirOpti::Solve(bool diagnostics) {
   GetCancellationFlag() = 0;
-  opti.Callback([](const sleipnir::SolverIterationInfo&) -> bool {
+  opti.Callback([=, this](const sleipnir::SolverIterationInfo&) -> bool {
+    for (auto& callback : callbacks) {
+      callback();
+    }
     return trajopt::GetCancellationFlag();
   });
 
-  auto status = opti.Solve({.diagnostics = diagnostics});
+  // tolerance of 1e-4 is 0.1 mm
+  auto status = opti.Solve({.tolerance = 1e-4, .diagnostics = diagnostics});
 
   if (static_cast<int>(status.exitCondition) < 0 ||
       status.exitCondition ==

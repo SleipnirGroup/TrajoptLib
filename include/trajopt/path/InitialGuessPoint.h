@@ -11,13 +11,13 @@ namespace trajopt {
  * trajectory.
  */
 struct TRAJOPT_DLLEXPORT InitialGuessPoint {
-  /// The initial guess of the x-coordinate of the robot.
+  /// The initial guess of the x-coordinate (meters) of the robot.
   double x;
 
-  /// The initial guess of the y-coordinate of the robot.
+  /// The initial guess of the y-coordinate (meters) of the robot.
   double y;
 
-  /// The initial guess of the heading of the robot.
+  /// The initial guess of the heading (radians) of the robot.
   double heading;
 };
 

@@ -34,6 +34,7 @@ class SwervePathBuilderImpl {
   void wpt_linear_velocity_max_magnitude(size_t idx, double magnitude);
   void wpt_linear_velocity_polar(size_t idx, double magnitude, double angle);
   void wpt_angular_velocity(size_t idx, double angular_velocity);
+  void wpt_angular_velocity_max_magnitude(size_t idx, double angular_velocity);
   void wpt_x(size_t idx, double x);
   void wpt_y(size_t idx, double y);
   void wpt_heading(size_t idx, double heading);
@@ -48,6 +49,8 @@ class SwervePathBuilderImpl {
                                   double magnitude, double angle);
   void sgmt_angular_velocity(size_t from_idx, size_t to_idx,
                              double angular_velocity);
+  void sgmt_angular_velocity_max_magnitude(size_t from_idx, size_t to_idx,
+                                           double angular_velocity);
   void sgmt_x(size_t from_idx, size_t to_idx, double x);
   void sgmt_y(size_t from_idx, size_t to_idx, double y);
   void sgmt_heading(size_t from_idx, size_t to_idx, double heading);
@@ -59,10 +62,12 @@ class SwervePathBuilderImpl {
   void sgmt_polygon_obstacle(size_t from_idx, size_t to_idx,
                              rust::Vec<double> x, rust::Vec<double> y,
                              double radius);
-
   // TODO: Return std::expected<HolonomicTrajectory, std::string> instead of
   // throwing exception, once cxx supports it
-  HolonomicTrajectory generate(bool diagnostics = false) const;
+  HolonomicTrajectory generate(bool diagnostics = false,
+                               int64_t handle = 0) const;
+  void add_progress_callback(
+      rust::Fn<void(HolonomicTrajectory, int64_t)> callback);
   void cancel_all();
 
   SwervePathBuilderImpl() = default;
