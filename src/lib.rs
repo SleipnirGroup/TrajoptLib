@@ -423,7 +423,7 @@ impl SwervePathBuilder {
             field_point_x,
             field_point_y,
             heading_tolerance,
-            heading_offset
+            heading_offset,
         )
     }
 
