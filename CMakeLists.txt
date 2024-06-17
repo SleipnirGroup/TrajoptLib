@@ -135,8 +135,8 @@ elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     fetchcontent_declare(
         Sleipnir
         GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        # main on 2024-05-22
-        GIT_TAG 67df86b569b44f33e4926db215a28e0c23078e39
+        # main on 2024-06-17
+        GIT_TAG ef4b47348b0f14861499337a1958b97294a2b67d
     )
     fetchcontent_makeavailable(Sleipnir)
 
