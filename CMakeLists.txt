@@ -138,8 +138,8 @@ elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     fetchcontent_declare(
         Sleipnir
         GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        # main on 2024-06-17
-        GIT_TAG ef4b47348b0f14861499337a1958b97294a2b67d
+        # main on 2024-06-18
+        GIT_TAG affeafcd797ad1312b18172dbaed0a69cca6546e
         PATCH_COMMAND
             git apply
             ${CMAKE_CURRENT_SOURCE_DIR}/cmake/0001-Downgrade-to-C-20.patch
