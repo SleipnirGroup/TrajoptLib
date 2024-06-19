@@ -1,7 +1,6 @@
 cppHeaderFileInclude {
   \.h$
   \.hpp$
-  \.inc$
   expected$
 }
 
