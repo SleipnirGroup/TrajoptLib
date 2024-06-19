@@ -1,1 +1,0 @@
-// Copyright (c) TrajoptLib contributors

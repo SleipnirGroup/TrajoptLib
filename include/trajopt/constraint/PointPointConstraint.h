@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 
 namespace trajopt {
@@ -10,7 +11,7 @@ namespace trajopt {
  * Specifies the required distance between a point on the robot's frame
  * and a point on the field.
  */
-struct PointPointConstraint {
+struct TRAJOPT_DLLEXPORT PointPointConstraint {
   /// robot point x (meters)
   double robotPointX;
   /// robot point y (meters)

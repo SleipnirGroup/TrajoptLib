@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 
 namespace trajopt {
@@ -10,7 +11,7 @@ namespace trajopt {
  * Specifies the required minimum distance between a line segment on the
  * robot's frame and a point on the field.
  */
-struct LinePointConstraint {
+struct TRAJOPT_DLLEXPORT LinePointConstraint {
   /// robot line start x (meters)
   double robotLineStartX;
   /// robot line start y (meters)
