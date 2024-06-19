@@ -39,7 +39,7 @@ struct TRAJOPT_DLLEXPORT EllipticalSet2d {
    * @param radius The radius.
    * @param direction The direction.
    */
-  static EllipticalSet2d CircularSet2d(
+  static constexpr EllipticalSet2d CircularSet2d(
       double radius, Direction direction = Direction::kInside) {
     return EllipticalSet2d{radius, radius, direction};
   }
@@ -47,12 +47,12 @@ struct TRAJOPT_DLLEXPORT EllipticalSet2d {
   /**
    * Returns true if the ellipse is a circle.
    */
-  bool IsCircular() const noexcept { return xRadius == yRadius; }
+  constexpr bool IsCircular() const noexcept { return xRadius == yRadius; }
 
   /**
    * Returns true if the set spans R².
    */
-  bool IsR2() const noexcept {
+  constexpr bool IsR2() const noexcept {
     return xRadius >= std::numeric_limits<double>::infinity() &&
            yRadius >= std::numeric_limits<double>::infinity();
   }
@@ -60,7 +60,9 @@ struct TRAJOPT_DLLEXPORT EllipticalSet2d {
   /**
    * Returns true if the set is valid.
    */
-  bool IsValid() const noexcept { return xRadius > 0.0 && yRadius > 0.0; }
+  constexpr bool IsValid() const noexcept {
+    return xRadius > 0.0 && yRadius > 0.0;
+  }
 };
 
 }  // namespace trajopt

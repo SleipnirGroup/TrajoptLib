@@ -19,7 +19,7 @@ struct TRAJOPT_DLLEXPORT ConeSet2d {
   /**
    * Returns true if the set is valid.
    */
-  bool IsValid() const noexcept {
+  constexpr bool IsValid() const noexcept {
     return thetaBound.Range() > 0.0 && thetaBound.Range() <= std::numbers::pi;
   }
 };

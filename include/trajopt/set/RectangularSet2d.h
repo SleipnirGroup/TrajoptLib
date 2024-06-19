@@ -32,7 +32,7 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
   /**
    * Construct a RectangularSet2d spanning R².
    */
-  static RectangularSet2d R2() {
+  static constexpr RectangularSet2d R2() {
     return RectangularSet2d{IntervalSet1d::R1(), IntervalSet1d::R1()};
   }
 
@@ -44,7 +44,9 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
    *
    * @return true if and only if this planar bound is valid
    */
-  bool IsValid() const noexcept { return xBound.IsValid() && yBound.IsValid(); }
+  constexpr bool IsValid() const noexcept {
+    return xBound.IsValid() && yBound.IsValid();
+  }
 };
 
 }  // namespace trajopt
