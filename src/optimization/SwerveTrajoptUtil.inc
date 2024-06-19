@@ -59,7 +59,7 @@ void ApplyKinematicsConstraints(
     const std::vector<Expr>& vy, const std::vector<Expr>& omega,
     const std::vector<Expr>& ax, const std::vector<Expr>& ay,
     const std::vector<Expr>& alpha, const std::vector<Expr>& dt,
-    const std::vector<size_t> N) {
+    const std::vector<size_t>& N) {
   size_t wptCnt = N.size() + 1;
 
   for (size_t wptIdx = 1; wptIdx < wptCnt; ++wptIdx) {
