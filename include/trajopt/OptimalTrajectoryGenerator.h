@@ -8,7 +8,6 @@
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/expected"
-#include "trajopt/path/Path.h"
 #include "trajopt/path/SwervePathBuilder.h"
 #include "trajopt/solution/SwerveSolution.h"
 
