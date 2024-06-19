@@ -35,21 +35,22 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     const SwervePath& path, const std::vector<size_t>& N,
     const Solution& initialGuess, int64_t handle)
     : path(path), N(N) {
-  opti.AddIntermediateCallback([=, this] {
-    using namespace std::chrono_literals;
-    static auto lastFrameTime = std::chrono::steady_clock::now();
-    auto now = std::chrono::steady_clock::now();
+  opti.AddIntermediateCallback([this, handle = handle] {
     constexpr int fps = 60;
     constexpr std::chrono::duration<double> timePerFrame{1.0 / fps};
+
     // FPS limit on sending updates
+    static auto lastFrameTime = std::chrono::steady_clock::now();
+    auto now = std::chrono::steady_clock::now();
     if (now - lastFrameTime < timePerFrame) {
       return;
     }
 
     lastFrameTime = now;
+
     auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax,
-                                        ay, alpha, Fx, Fy, dt, N);
-    for (auto& callback : path.callbacks) {
+                                        ay, alpha, Fx, Fy, dt, this->N);
+    for (auto& callback : this->path.callbacks) {
       callback(soln, handle);
     }
   });
