@@ -38,7 +38,7 @@ jobs:
             optimizer_backend: casadi
             os: ubuntu-24.04
 
-    name: "${{ matrix.sanitizer-name }} with {{ matrix.optimizer_backend }}"
+    name: "${{ matrix.sanitizer-name }} with ${{ matrix.optimizer_backend }}"
     runs-on: ${{ matrix.os }}
 
     steps:
