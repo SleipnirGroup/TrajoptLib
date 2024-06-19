@@ -35,12 +35,10 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     const SwervePath& path, const std::vector<size_t>& N,
     const Solution& initialGuess, int64_t handle)
     : path(path), N(N) {
-  // force the initial call
-  auto lastFrameTime = std::chrono::steady_clock::now();
 
-  opti.AddIntermediateCallback([=, this, &lastFrameTime]() {
+  opti.AddIntermediateCallback([=, this]() {
     using namespace std::chrono_literals;
-
+    static auto lastFrameTime = std::chrono::steady_clock::now();
     auto now = std::chrono::steady_clock::now();
     constexpr int fps = 60;
     constexpr std::chrono::duration<double> timePerFrame{1.0 / fps};
