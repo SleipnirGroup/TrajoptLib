@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - sanitizer-name: asan with sleipnir
+          - sanitizer-name: asan
             cmake-args: "-DCMAKE_BUILD_TYPE=Asan"
             optimizer_backend: sleipnir
             os: ubuntu-24.04
@@ -21,19 +21,19 @@ jobs:
             cmake-args: "-DCMAKE_BUILD_TYPE=Tsan"
             optimizer_backend: sleipnir
             os: ubuntu-24.04
-          - sanitizer-name: ubsan with sleipnir
+          - sanitizer-name: ubsan
             cmake-args: "-DCMAKE_BUILD_TYPE=Ubsan"
             optimizer_backend: sleipnir
             os: ubuntu-24.04
-          - sanitizer-name: asan with casadi
+          - sanitizer-name: asan
             cmake-args: "-DCMAKE_BUILD_TYPE=Asan"
             optimizer_backend: casadi
             os: ubuntu-24.04
-          - sanitizer-name: tsan with casadi
+          - sanitizer-name: tsan
             cmake-args: "-DCMAKE_BUILD_TYPE=Tsan"
             optimizer_backend: casadi
             os: ubuntu-24.04
-          - sanitizer-name: ubsan with casadi
+          - sanitizer-name: ubsan
             cmake-args: "-DCMAKE_BUILD_TYPE=Ubsan"
             optimizer_backend: casadi
             os: ubuntu-24.04
