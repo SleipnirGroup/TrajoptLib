@@ -25,21 +25,23 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    * @param lower The lower bound.
    * @param upper The upper bound.
    */
-  IntervalSet1d(double lower, double upper) : lower(lower), upper(upper) {}
+  constexpr IntervalSet1d(double lower, double upper)
+      : lower(lower), upper(upper) {}
 
   /**
    * Construct a Scalar Bound that represents the interval [value, value].
    *
    * @param value the value to bound the number between.
    */
-  IntervalSet1d(double value) : lower(value), upper(value) {}  // NOLINT
+  constexpr IntervalSet1d(double value)
+      : lower(value), upper(value) {}  // NOLINT
 
-  IntervalSet1d() = default;
+  constexpr IntervalSet1d() = default;
 
   /**
    * Returns an IntervalSet1d spanning R¹.
    */
-  static IntervalSet1d R1() {
+  static constexpr IntervalSet1d R1() {
     return IntervalSet1d(-std::numeric_limits<double>::infinity(),
                          +std::numeric_limits<double>::infinity());
   }
@@ -51,7 +53,7 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    * @param max the maximum value
    * @return [-∞, max]
    */
-  static IntervalSet1d LessThan(double max) {
+  static constexpr IntervalSet1d LessThan(double max) {
     return IntervalSet1d(-std::numeric_limits<double>::infinity(), max);
   }
 
@@ -62,7 +64,7 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    * @param min the minimum value
    * @return [min, ∞]
    */
-  static IntervalSet1d GreaterThan(double min) {
+  static constexpr IntervalSet1d GreaterThan(double min) {
     return IntervalSet1d(min, +std::numeric_limits<double>::infinity());
   }
 
@@ -75,7 +77,7 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    * @param other the other scalar bound
    * @return lower == other.lower && upper == other.upper
    */
-  bool operator==(const IntervalSet1d& other) const = default;
+  constexpr bool operator==(const IntervalSet1d& other) const = default;
 
   /**
    * Calculate the range of this scalar bound, which is the difference
@@ -84,7 +86,7 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    *
    * @return upper - lower
    */
-  double Range() const noexcept { return upper - lower; }
+  constexpr double Range() const noexcept { return upper - lower; }
 
   /**
    * Check if this scalar bound only contains one point. This only
@@ -92,7 +94,7 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    *
    * @return lower == upper
    */
-  bool IsExact() const noexcept { return lower == upper; }
+  constexpr bool IsExact() const noexcept { return lower == upper; }
 
   /**
    * Check if this scalar bound only contains 0. This occurs when
@@ -100,19 +102,21 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    *
    * @return lower == 0.0 && upper == 0.0
    */
-  bool IsZero() const noexcept { return lower == 0.0 && upper == 0.0; }
+  constexpr bool IsZero() const noexcept {
+    return lower == 0.0 && upper == 0.0;
+  }
 
   /**
    * Returns true if this IntervalSet1d has a lower bound.
    */
-  bool IsLowerBounded() const noexcept {
+  constexpr bool IsLowerBounded() const noexcept {
     return lower > -std::numeric_limits<double>::infinity();
   }
 
   /**
    * Returns true if this IntervalSet1d has an upper bound.
    */
-  bool IsUpperBounded() const noexcept {
+  constexpr bool IsUpperBounded() const noexcept {
     return upper < +std::numeric_limits<double>::infinity();
   }
 
@@ -123,7 +127,7 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
    *
    * @return lower <= upper
    */
-  bool IsValid() const noexcept { return lower <= upper; }
+  constexpr bool IsValid() const noexcept { return lower <= upper; }
 };
 
 }  // namespace trajopt
