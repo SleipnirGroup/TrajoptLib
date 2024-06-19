@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "trajopt/set/IntervalSet1d.h"
+#include "trajopt/SymbolExports.h"
 
 namespace trajopt {
 
 /**
  * Specifies a point on the field at which the robot should point.
  */
-struct PointAtConstraint {
+struct TRAJOPT_DLLEXPORT PointAtConstraint {
   /// field point x (meters)
   double fieldPointX;
   /// field point y (meters)

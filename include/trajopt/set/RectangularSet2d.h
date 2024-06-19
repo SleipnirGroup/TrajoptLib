@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <cmath>
+
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 
@@ -23,12 +25,16 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
    * @param r The distance.
    * @param theta The heading.
    */
-  static RectangularSet2d PolarExactSet2d(double r, double theta);
+  static RectangularSet2d PolarExactSet2d(double r, double theta) {
+    return RectangularSet2d{r * std::cos(theta), r * std::sin(theta)};
+  }
 
   /**
    * Construct a RectangularSet2d spanning R².
    */
-  static RectangularSet2d R2();
+  static RectangularSet2d R2() {
+    return RectangularSet2d{IntervalSet1d::R1(), IntervalSet1d::R1()};
+  }
 
   /**
    * @brief Check if this planar bound is valid. A planar bound is valid when
@@ -38,7 +44,7 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
    *
    * @return true if and only if this planar bound is valid
    */
-  bool IsValid() const noexcept;
+  bool IsValid() const noexcept { return xBound.IsValid() && yBound.IsValid(); }
 };
 
 }  // namespace trajopt

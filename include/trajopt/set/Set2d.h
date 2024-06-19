@@ -4,7 +4,6 @@
 
 #include <variant>
 
-#include "trajopt/SymbolExports.h"
 #include "trajopt/set/ConeSet2d.h"
 #include "trajopt/set/EllipticalSet2d.h"
 #include "trajopt/set/LinearSet2d.h"
