@@ -33,7 +33,7 @@ void ApplyKinematicsConstraints(
     const std::vector<Expr>& vy, const std::vector<Expr>& omega,
     const std::vector<Expr>& ax, const std::vector<Expr>& ay,
     const std::vector<Expr>& alpha, const std::vector<Expr>& dt,
-    const std::vector<size_t> N);
+    const std::vector<size_t>& N);
 
 /**
  * Applies the drivetrain-specific constraints to the optimizer. These
