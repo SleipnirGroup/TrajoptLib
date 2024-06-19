@@ -1,0 +1,48 @@
+name: Sanitizers
+
+on: [pull_request, push]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sanitizer-name: asan
+            cmake-args: "-DCMAKE_BUILD_TYPE=Asan"
+            optimizer_backend: sleipnir
+          - sanitizer-name: tsan
+            cmake-args: "-DCMAKE_BUILD_TYPE=Tsan"
+            optimizer_backend: sleipnir
+          - sanitizer-name: ubsan
+            cmake-args: "-DCMAKE_BUILD_TYPE=Ubsan"
+            optimizer_backend: sleipnir
+          - sanitizer-name: asan
+            cmake-args: "-DCMAKE_BUILD_TYPE=Asan"
+            optimizer_backend: casadi
+          - sanitizer-name: tsan
+            cmake-args: "-DCMAKE_BUILD_TYPE=Tsan"
+            optimizer_backend: casadi
+          - sanitizer-name: ubsan
+            cmake-args: "-DCMAKE_BUILD_TYPE=Ubsan"
+            optimizer_backend: casadi
+
+    name: "${{ matrix.sanitizer-name }} with ${{ matrix.optimizer_backend }}"
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make GCC 14 the default toolchain (Linux)
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 200
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 200
+
+      - run: cmake -B build -S . -DBUILD_EXAMPLES=ON ${{ matrix.cmake-args }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer_backend }}
+      - run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
+      - run: ctest --test-dir build -C RelWithDebInfo --output-on-failure
