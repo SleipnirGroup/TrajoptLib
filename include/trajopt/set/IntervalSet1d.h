@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <limits>
 
 #include "trajopt/SymbolExports.h"
@@ -20,21 +21,23 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
   double upper;
 
   /**
-   * Construct a Scalar Bound between a lower and upper bound.
+   * Construct a scalar bound between a lower and upper bound.
    *
-   * @param lower The lower bound.
-   * @param upper The upper bound.
+   * @param lower The lower bound. Must be less than or equal to upper bound.
+   * @param upper The upper bound. Must be greater than or equal to lower bound.
    */
   constexpr IntervalSet1d(double lower, double upper)
-      : lower(lower), upper(upper) {}
+      : lower(lower), upper(upper) {
+    assert(lower <= upper);
+  }
 
   /**
-   * Construct a Scalar Bound that represents the interval [value, value].
+   * Construct a scalar bound that represents the interval [value, value].
    *
    * @param value the value to bound the number between.
    */
-  constexpr IntervalSet1d(double value)
-      : lower(value), upper(value) {}  // NOLINT
+  constexpr IntervalSet1d(double value)  // NOLINT
+      : IntervalSet1d{value, value} {}
 
   constexpr IntervalSet1d() = default;
 
@@ -97,16 +100,6 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
   constexpr bool IsExact() const noexcept { return lower == upper; }
 
   /**
-   * Check if this scalar bound only contains 0. This occurs when
-   * this scalar bound equals 0.0.
-   *
-   * @return lower == 0.0 && upper == 0.0
-   */
-  constexpr bool IsZero() const noexcept {
-    return lower == 0.0 && upper == 0.0;
-  }
-
-  /**
    * Returns true if this IntervalSet1d has a lower bound.
    */
   constexpr bool IsLowerBounded() const noexcept {
@@ -119,15 +112,6 @@ struct TRAJOPT_DLLEXPORT IntervalSet1d {
   constexpr bool IsUpperBounded() const noexcept {
     return upper < +std::numeric_limits<double>::infinity();
   }
-
-  /**
-   * Check if this scalar bound is valid. A scalar bound is valid
-   * if and only if the lower bound is less than or equal to the upper
-   * bound.
-   *
-   * @return lower <= upper
-   */
-  constexpr bool IsValid() const noexcept { return lower <= upper; }
 };
 
 }  // namespace trajopt

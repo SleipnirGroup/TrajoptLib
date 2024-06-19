@@ -22,7 +22,7 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
   /**
    * Construct a RectangularSet2d from polar coordinates.
    *
-   * @param r The distance.
+   * @param r The distance. Must be greater than zero.
    * @param theta The heading.
    */
   static RectangularSet2d PolarExactSet2d(double r, double theta) {
@@ -34,18 +34,6 @@ struct TRAJOPT_DLLEXPORT RectangularSet2d {
    */
   static constexpr RectangularSet2d R2() {
     return RectangularSet2d{IntervalSet1d::R1(), IntervalSet1d::R1()};
-  }
-
-  /**
-   * @brief Check if this planar bound is valid. A planar bound is valid when
-   * the bounds on a0 and a1 are valid, and additionally for planar bounds, a0
-   * is contained within the interval [0, inf] and a1 is contained within the
-   * interval [-pi, pi].
-   *
-   * @return true if and only if this planar bound is valid
-   */
-  constexpr bool IsValid() const noexcept {
-    return xBound.IsValid() && yBound.IsValid();
   }
 };
 
