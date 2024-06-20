@@ -30,7 +30,6 @@ Trajectory optimization works by mathematically formulating the problem of trave
   * On macOS, install via `brew install cmake`
 * [Rust](https://www.rust-lang.org/) compiler
 * [Sleipnir](https://github.com/SleipnirGroup/Sleipnir) (optional backend)
-* [CasADi](https://github.com/casadi/casadi) (optional backend)
 * [Catch2](https://github.com/catchorg/Catch2) (tests only)
 
 Library dependencies which aren't installed locally will be automatically downloaded and built by CMake.
@@ -46,9 +45,6 @@ cd TrajoptLib
 
 # Configure with Sleipnir backend; automatically downloads library dependencies
 cmake -B build -S . -DOPTIMIZER_BACKEND=sleipnir
-
-# Configure with CasADi backend; automatically downloads library dependencies
-cmake -B build -S . -DOPTIMIZER_BACKEND=casadi
 
 # Build
 cmake --build build
@@ -83,5 +79,4 @@ git clone git@github.com:SleipnirGroup/TrajoptLib
 cd TrajoptLib
 
 cargo build --features sleipnir  # Sleipnir backend
-cargo build --features casadi  # CasADi backend
 ```

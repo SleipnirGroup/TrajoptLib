@@ -67,11 +67,6 @@ option(BUILD_EXAMPLES "Build examples" OFF)
 include(CompilerFlags)
 
 file(GLOB_RECURSE src src/*.cpp)
-if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
-    list(FILTER src EXCLUDE REGEX "SleipnirOpti.cpp")
-elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
-    list(FILTER src EXCLUDE REGEX "CasADiOpti.cpp")
-endif()
 list(FILTER src EXCLUDE REGEX trajoptlibrust.cpp)
 
 add_library(TrajoptLib ${src})
@@ -102,34 +97,7 @@ endif()
 set(OPTIMIZER_BACKEND "casadi" CACHE STRING "Optimizer backend")
 set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS casadi sleipnir)
 
-if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
-    message(STATUS "Using CasADi optimizer")
-
-    include(FetchCasADi)
-    fetch_casadi()
-    target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_CASADI)
-    target_include_directories(TrajoptLib SYSTEM PRIVATE ${CASADI_INCLUDEDIR})
-    target_link_directories(TrajoptLib PRIVATE ${CASADI_LIBDIR})
-    target_link_libraries(TrajoptLib PRIVATE casadi)
-
-    # Add current directory to RPATH
-    if(APPLE)
-        set_property(
-            TARGET TrajoptLib
-            APPEND
-            PROPERTY INSTALL_RPATH "@loader_path/../lib;@loader_path"
-        )
-    elseif(UNIX)
-        set_property(
-            TARGET TrajoptLib
-            APPEND
-            PROPERTY INSTALL_RPATH "$ORIGIN/../lib;$ORIGIN"
-        )
-    endif()
-
-    # Install CasADi libraries since FetchContent isn't setting that up properly
-    install(FILES ${CASADI_INSTALL_LIBS} DESTINATION ${CASADI_INSTALL_DEST})
-elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
+if(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     message(STATUS "Using Sleipnir optimizer")
 
     set(BUILD_TESTING_SAVE ${BUILD_TESTING})
