@@ -2,13 +2,7 @@ macro(compiler_flags target)
     if(NOT MSVC)
         target_compile_options(
             ${target}
-            PRIVATE
-                -Wall
-                -pedantic
-                -Wextra
-                -Werror
-                -Wno-unused-parameter
-                -Wno-psabi
+            PRIVATE -Wall -pedantic -Wextra -Werror -Wno-unused-parameter
         )
     else()
         # Suppress the following warnings:

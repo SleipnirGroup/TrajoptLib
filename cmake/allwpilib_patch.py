@@ -54,9 +54,22 @@ def remove_protobuf_support():
     )
 
 
+def disable_psabi_warning():
+    subprocess.run(
+        [
+            "git",
+            "apply",
+            "--ignore-whitespace",
+            os.path.join(sys.argv[1], "cmake/allwpilib-disable-psabi-warning.patch"),
+        ],
+        check=True,
+    )
+
+
 def main():
     make_emscripten_backtrace_a_no_op()
     remove_protobuf_support()
+    disable_psabi_warning()
 
 
 if __name__ == "__main__":
