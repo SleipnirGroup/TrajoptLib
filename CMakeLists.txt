@@ -94,8 +94,8 @@ if(BUILD_TESTING)
     fetchcontent_makeavailable(Catch2)
 endif()
 
-set(OPTIMIZER_BACKEND "casadi" CACHE STRING "Optimizer backend")
-set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS casadi sleipnir)
+set(OPTIMIZER_BACKEND "sleipnir" CACHE STRING "Optimizer backend")
+set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS sleipnir)
 
 if(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     message(STATUS "Using Sleipnir optimizer")
