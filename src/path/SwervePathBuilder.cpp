@@ -229,7 +229,7 @@ SwervePathBuilder::GenerateWaypointSplineTrajectories() const {
 
   // Iterate through the vector and parameterize each spline
   for (auto&& spline : splines) {
-    auto points = SplineParameterizer::Parameterize(spline);
+    auto points = trajopt::SplineParameterizer::Parameterize(spline);
     splinePoints.push_back(points);
   }
 
