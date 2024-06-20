@@ -69,15 +69,10 @@ option(BUILD_EXAMPLES "Build examples" OFF)
 
 include(CompilerFlags)
 
-file(GLOB_RECURSE src src/*.cpp)
-if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
-    list(FILTER src EXCLUDE REGEX "SleipnirOpti.cpp")
-elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
-    list(FILTER src EXCLUDE REGEX "CasADiOpti.cpp")
-endif()
-list(FILTER src EXCLUDE REGEX trajoptlibrust.cpp)
+file(GLOB_RECURSE TrajoptLib_src src/*.cpp)
+list(FILTER TrajoptLib_src EXCLUDE REGEX trajoptlibrust.cpp)
 
-add_library(TrajoptLib ${src})
+add_library(TrajoptLib ${TrajoptLib_src})
 compiler_flags(TrajoptLib)
 target_include_directories(TrajoptLib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
@@ -102,54 +97,17 @@ if(BUILD_TESTING)
     fetchcontent_makeavailable(Catch2)
 endif()
 
-set(OPTIMIZER_BACKEND "casadi" CACHE STRING "Optimizer backend")
-set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS casadi sleipnir)
+set(OPTIMIZER_BACKEND "sleipnir" CACHE STRING "Optimizer backend")
+set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS sleipnir)
 
-if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
-    message(STATUS "Using CasADi optimizer")
-
-    include(FetchCasADi)
-    fetch_casadi()
-    target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_CASADI)
-    target_include_directories(TrajoptLib SYSTEM PRIVATE ${CASADI_INCLUDEDIR})
-    target_link_directories(TrajoptLib PRIVATE ${CASADI_LIBDIR})
-    target_link_libraries(TrajoptLib PRIVATE casadi)
-
-    # Add current directory to RPATH
-    if(APPLE)
-        set_property(
-            TARGET TrajoptLib
-            APPEND
-            PROPERTY INSTALL_RPATH "@loader_path/../lib;@loader_path"
-        )
-    elseif(UNIX)
-        set_property(
-            TARGET TrajoptLib
-            APPEND
-            PROPERTY INSTALL_RPATH "$ORIGIN/../lib;$ORIGIN"
-        )
-    endif()
-
-    # Install CasADi libraries since FetchContent isn't setting that up properly
-    install(FILES ${CASADI_INSTALL_LIBS} DESTINATION ${CASADI_INSTALL_DEST})
-
-    # Eigen dependency
-    fetchcontent_declare(
-        Eigen3
-        GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
-        # master on 2024-04-02
-        GIT_TAG 86aee3d9c5b0ea73f7854901c1ce216135f1228b
-        PATCH_COMMAND
-            git apply
-            ${CMAKE_CURRENT_SOURCE_DIR}/cmake/eigen-disable-fortran-support.patch
-        UPDATE_DISCONNECTED 1
-    )
-    fetchcontent_makeavailable(Eigen3)
-elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
+if(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     message(STATUS "Using Sleipnir optimizer")
 
     set(BUILD_TESTING_SAVE ${BUILD_TESTING})
+    set(BUILD_EXAMPLES_SAVE ${BUILD_EXAMPLES})
+
     set(BUILD_TESTING OFF)
+    set(BUILD_EXAMPLES OFF)
 
     fetchcontent_declare(
         Sleipnir
@@ -164,6 +122,7 @@ elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     fetchcontent_makeavailable(Sleipnir)
 
     set(BUILD_TESTING ${BUILD_TESTING_SAVE})
+    set(BUILD_EXAMPLES ${BUILD_EXAMPLES_SAVE})
 
     target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_SLEIPNIR)
     target_link_libraries(TrajoptLib PRIVATE Sleipnir)
@@ -256,17 +215,6 @@ if(BUILD_TESTING)
     enable_testing()
     list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
     include(Catch)
-    if(
-        ${OPTIMIZER_BACKEND} STREQUAL "casadi"
-        AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux"
-        AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
-    )
-        target_compile_definitions(Catch2 PUBLIC "_GLIBCXX_USE_CXX11_ABI=0")
-        target_compile_definitions(
-            Catch2WithMain
-            PUBLIC "_GLIBCXX_USE_CXX11_ABI=0"
-        )
-    endif()
 endif()
 
 # Build TrajoptLib tests
@@ -279,7 +227,6 @@ if(BUILD_TESTING)
         PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/src
             ${CMAKE_CURRENT_SOURCE_DIR}/test/include
-            ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/units/include
     )
     target_link_libraries(
         TrajoptLibTest

@@ -7,10 +7,6 @@ fn main() {
         .profile("Release")
         .define("BUILD_TESTING", "OFF");
 
-    if cfg!(feature = "sleipnir") && cfg!(feature = "casadi") {
-        panic!("Only select one optimizer backend via cargo `--features sleipnir` or `--features casadi`.");
-    }
-
     if cfg!(feature = "sleipnir") {
         cmake_config
             .define("OPTIMIZER_BACKEND", "sleipnir")
@@ -21,28 +17,8 @@ fn main() {
                 .generator("Visual Studio 17 2022")
                 .cxxflag("/EHsc");
         }
-    } else if cfg!(feature = "casadi") {
-        cmake_config.define("OPTIMIZER_BACKEND", "casadi");
-
-        if cfg!(target_os = "windows") {
-            cmake_config
-                .generator("MinGW Makefiles")
-                .define("CMAKE_CXX_COMPILER", "x86_64-w64-mingw32-g++")
-                .define("CMAKE_C_COMPILER", "x86_64-w64-mingw32-gcc")
-                .define(
-                    "CMAKE_SHARED_LINKER_FLAGS",
-                    "-static-libgcc -static-libstdc++",
-                )
-                .define("CMAKE_EXE_LINKER_FLAGS", "-static-libgcc -static-libstdc++");
-        } else if cfg!(target_os = "linux") {
-            cmake_config
-                .define("CMAKE_CXX_COMPILER", "g++")
-                .define("CMAKE_C_COMPILER", "gcc");
-        }
     } else {
-        panic!(
-            "Select an optimizer backend via cargo `--features sleipnir` or `--features casadi`."
-        );
+        panic!("Select an optimizer backend via cargo `--features sleipnir`.");
     }
 
     let cmake_dest = cmake_config.build();
@@ -56,10 +32,6 @@ fn main() {
         .include(format!("{}/include/wpimath", cmake_dest.display()))
         .include(format!("{}/include/wpiutil", cmake_dest.display()))
         .std("c++20");
-
-    if cfg!(feature = "casadi") && cfg!(target_os = "linux") {
-        bridge_build.define("_GLIBCXX_USE_CXX11_ABI", "0");
-    }
 
     bridge_build.compile("trajoptrust");
 

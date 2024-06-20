@@ -22,15 +22,6 @@ jobs:
           - sanitizer-name: ubsan
             cmake-args: "-DCMAKE_BUILD_TYPE=Ubsan"
             optimizer_backend: sleipnir
-          - sanitizer-name: asan
-            cmake-args: "-DCMAKE_BUILD_TYPE=Asan"
-            optimizer_backend: casadi
-          - sanitizer-name: tsan
-            cmake-args: "-DCMAKE_BUILD_TYPE=Tsan"
-            optimizer_backend: casadi
-          - sanitizer-name: ubsan
-            cmake-args: "-DCMAKE_BUILD_TYPE=Ubsan"
-            optimizer_backend: casadi
 
     name: "${{ matrix.sanitizer-name }} with ${{ matrix.optimizer_backend }}"
     runs-on: ubuntu-24.04

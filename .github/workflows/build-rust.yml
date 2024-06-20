@@ -13,26 +13,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - artifact-name: Rust Native - Windows x86_64 (CasADi)
-            optimizer_backend: casadi
-            os: windows-2022
-            cmake-env:
-            cargo-build-flags:
-          - artifact-name: Rust Native - macOS x86_64 (CasADi)
-            optimizer_backend: casadi
-            os: macOS-14
-            cmake-env: CMAKE_OSX_ARCHITECTURES="x86_64"
-            cargo-build-flags:
-          - artifact-name: Rust Native - macOS arm64 (CasADi)
-            optimizer_backend: casadi
-            os: macOS-14
-            cmake-env: CMAKE_OSX_ARCHITECTURES="arm64"
-            cargo-build-flags:
-          - artifact-name: Rust Native - Linux x86_64 (CasADi)
-            optimizer_backend: casadi
-            os: ubuntu-24.04
-            cmake-env:
-            cargo-build-flags:
           - artifact-name: Rust Native - Windows x86_64 (Sleipnir)
             optimizer_backend: sleipnir
             os: windows-2022
@@ -64,18 +44,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set to Windows GNU Rust Toolchain
-        if: matrix.os == 'windows-2022' && matrix.optimizer_backend == 'casadi'
-        run: |
-          rustup install 1.76-gnu
-          rustup default 1.76-gnu
-
-      - name: Set up MinGW
-        if: matrix.os == 'windows-2022' && matrix.optimizer_backend == 'casadi'
-        run: |
-          choco upgrade mingw --version=11.2.0 -y --no-progress --allow-downgrade
-          echo C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin >> $env:GITHUB_PATH
 
       - name: Set up Windows aarch64 Rust compiler
         if: matrix.artifact-name == 'Rust Native - Windows aarch64 (Sleipnir)'

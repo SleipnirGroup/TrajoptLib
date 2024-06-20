@@ -15,7 +15,6 @@ cmake = "0.1"
 [features]
 default = []
 sleipnir = []
-casadi = []
 
 [[example]]
 name = "swerve"
