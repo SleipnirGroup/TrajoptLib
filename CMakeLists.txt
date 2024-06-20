@@ -170,17 +170,6 @@ if(BUILD_TESTING)
     enable_testing()
     list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
     include(Catch)
-    if(
-        ${OPTIMIZER_BACKEND} STREQUAL "casadi"
-        AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux"
-        AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
-    )
-        target_compile_definitions(Catch2 PUBLIC "_GLIBCXX_USE_CXX11_ABI=0")
-        target_compile_definitions(
-            Catch2WithMain
-            PUBLIC "_GLIBCXX_USE_CXX11_ABI=0"
-        )
-    endif()
 endif()
 
 # Build TrajoptLib tests
