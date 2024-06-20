@@ -1,18 +1,15 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Tyler Veness <calcmogul@gmail.com>
-Date: Mon, 17 Jun 2024 18:54:02 -0700
+Date: Thu, 20 Jun 2024 12:30:54 -0700
 Subject: [PATCH] Downgrade to C++20
 
 ---
- .styleguide                                   |  1 +
- CMakeLists.txt                                | 10 +++++++
- cmake/modules/CompilerFlags.cmake             |  2 +-
- examples/CurrentManager/src/Main.cpp          | 11 ++++----
- .../FlywheelDirectTranscription/src/Main.cpp  |  6 ++---
- examples/FlywheelOCP/src/Main.cpp             |  6 ++---
- include/.styleguide                           |  1 +
- include/sleipnir/util/Print.hpp               | 27 ++++++++++---------
- 8 files changed, 39 insertions(+), 25 deletions(-)
+ .styleguide                       |  1 +
+ CMakeLists.txt                    | 10 ++++++++++
+ cmake/modules/CompilerFlags.cmake |  2 +-
+ include/.styleguide               |  1 +
+ include/sleipnir/util/Print.hpp   | 27 ++++++++++++++-------------
+ 5 files changed, 27 insertions(+), 14 deletions(-)
 
 diff --git a/.styleguide b/.styleguide
 index fc51b044a61dd842dca50d013c52baed00612545..2476200a8763368007c3d4029bf326619a7bf0fa 100644
@@ -27,7 +24,7 @@ index fc51b044a61dd842dca50d013c52baed00612545..2476200a8763368007c3d4029bf32661
    ^sleipnir/
  }
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f8404b38b2e66c18d4425ca983100f515339dc7c..577c02937c88ab6c3d76d7b90d1f834c8eaff00b 100644
+index e9668b53d6a0317cf2367b212f5013cbb2aa7ad5..1db191b6492a5f10b657c42c7959a73ef72724e3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -114,6 +114,16 @@ endif()
@@ -60,91 +57,6 @@ index 9f3fad1ce359897d6e87d5c37efae51d55bcf160..4331baf9394a7f27bde51906c9dd14b8
      if(MSVC)
          target_compile_options(${target} PUBLIC /MP /Zf /utf-8 /bigobj)
      endif()
-diff --git a/examples/CurrentManager/src/Main.cpp b/examples/CurrentManager/src/Main.cpp
-index f4456e223750f47610a682ee465d675f93fd6153..85566120aae73e141ef8af3c51a1d560a3ee1cc0 100644
---- a/examples/CurrentManager/src/Main.cpp
-+++ b/examples/CurrentManager/src/Main.cpp
-@@ -1,7 +1,8 @@
- // Copyright (c) Sleipnir contributors
- 
- #include <array>
--#include <print>
-+
-+#include <fmt/core.h>
- 
- #include "CurrentManager.hpp"
- 
-@@ -11,13 +12,13 @@ int main() {
- 
-   auto currents = manager.Calculate(std::array{25.0, 10.0, 5.0, 0.0});
- 
--  std::print("currents = [");
-+  fmt::print("currents = [");
-   for (size_t i = 0; i < currents.size(); ++i) {
--    std::print("{}", currents[i]);
-+    fmt::print("{}", currents[i]);
-     if (i < currents.size() - 1) {
--      std::print(", ");
-+      fmt::print(", ");
-     }
-   }
--  std::println("]");
-+  fmt::println("]");
- }
- #endif
-diff --git a/examples/FlywheelDirectTranscription/src/Main.cpp b/examples/FlywheelDirectTranscription/src/Main.cpp
-index 1254ef3a99c409af017279939a0130e36dd2b8f6..52756410bb04bc3e3ba42358002463819b063a3f 100644
---- a/examples/FlywheelDirectTranscription/src/Main.cpp
-+++ b/examples/FlywheelDirectTranscription/src/Main.cpp
-@@ -2,8 +2,8 @@
- 
- #include <chrono>
- #include <cmath>
--#include <print>
- 
-+#include <fmt/core.h>
- #include <sleipnir/optimization/OptimizationProblem.hpp>
- 
- #ifndef RUNNING_TESTS
-@@ -45,9 +45,9 @@ int main() {
-   problem.Solve();
- 
-   // The first state
--  std::println("x₀ = {}", X.Value(0, 0));
-+  fmt::println("x₀ = {}", X.Value(0, 0));
- 
-   // The first input
--  std::println("u₀ = {}", U.Value(0, 0));
-+  fmt::println("u₀ = {}", U.Value(0, 0));
- }
- #endif
-diff --git a/examples/FlywheelOCP/src/Main.cpp b/examples/FlywheelOCP/src/Main.cpp
-index e6f6084200d73f4f877506b89018763a16d08398..cf8283bb0c8c9666b339402b3dd9c152087c485f 100644
---- a/examples/FlywheelOCP/src/Main.cpp
-+++ b/examples/FlywheelOCP/src/Main.cpp
-@@ -2,9 +2,9 @@
- 
- #include <chrono>
- #include <cmath>
--#include <print>
- 
- #include <Eigen/Core>
-+#include <fmt/core.h>
- #include <sleipnir/control/OCPSolver.hpp>
- #include <sleipnir/optimization/OptimizationProblem.hpp>
- 
-@@ -51,9 +51,9 @@ int main() {
-   solver.Solve();
- 
-   // The first state
--  std::println("x₀ = {}", solver.X().Value(0, 0));
-+  fmt::println("x₀ = {}", solver.X().Value(0, 0));
- 
-   // The first input
--  std::println("u₀ = {}", solver.U().Value(0, 0));
-+  fmt::println("u₀ = {}", solver.U().Value(0, 0));
- }
- #endif
 diff --git a/include/.styleguide b/include/.styleguide
 index 8fb61fdf9cc5ceff633d3126f0579eef25a1326f..6a7f8ed28f9cb037c9746a7e0ef5e110481d9825 100644
 --- a/include/.styleguide
