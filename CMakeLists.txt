@@ -149,21 +149,6 @@ fetchcontent_declare(
     UPDATE_DISCONNECTED 1
 )
 fetchcontent_makeavailable(wpilib)
-if(
-    ${OPTIMIZER_BACKEND} STREQUAL "casadi"
-    AND ${CMAKE_SYSTEM_NAME} STREQUAL "Windows"
-    AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
-)
-    target_compile_options(wpiutil PRIVATE -Wno-unknown-pragmas)
-
-    # Remove -gz=zlib option
-    get_target_property(WPIUTIL_COMPILE_OPTIONS wpiutil COMPILE_OPTIONS)
-    list(REMOVE_ITEM WPIUTIL_COMPILE_OPTIONS -gz=zlib)
-    set_target_properties(
-        wpiutil
-        PROPERTIES COMPILE_OPTIONS "${WPIUTIL_COMPILE_OPTIONS}"
-    )
-endif()
 target_link_libraries(TrajoptLib PUBLIC wpimath Eigen3::Eigen)
 
 target_include_directories(
