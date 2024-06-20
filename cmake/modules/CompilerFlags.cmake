@@ -1,4 +1,4 @@
-macro(trajoptlib_compiler_flags target)
+macro(compiler_flags target)
     if(NOT MSVC)
         target_compile_options(
             ${target}
@@ -24,6 +24,6 @@ macro(trajoptlib_compiler_flags target)
 
     target_compile_features(${target} PUBLIC cxx_std_20)
     if(MSVC)
-        target_compile_options(${target} PUBLIC /MP /Zf /bigobj)
+        target_compile_options(${target} PUBLIC /MP /Zf /utf-8 /bigobj)
     endif()
 endmacro()

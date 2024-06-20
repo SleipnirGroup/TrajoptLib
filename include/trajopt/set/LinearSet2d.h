@@ -3,8 +3,6 @@
 #pragma once
 
 #include "trajopt/SymbolExports.h"
-#include "trajopt/set/IntervalSet1d.h"
-#include "trajopt/set/RectangularSet2d.h"
 
 namespace trajopt {
 
@@ -12,17 +10,8 @@ namespace trajopt {
  * Linear 2D set.
  */
 struct TRAJOPT_DLLEXPORT LinearSet2d {
-  /// FIXME What does this do?
+  /// The direction in which to constrain a 2D vector.
   double theta;
-
-  /**
-   * FIXME What does this do?
-   *
-   * @param theta FIXME What does this do?
-   * @param rBound FIXME What does this do?
-   */
-  static RectangularSet2d RBoundToRectangular(double theta,
-                                              const IntervalSet1d& rBound);
 };
 
 }  // namespace trajopt

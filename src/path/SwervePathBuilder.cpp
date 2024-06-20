@@ -13,9 +13,7 @@
 
 #include <cassert>
 #include <cmath>
-#include <memory>
-#include <stdexcept>
-#include <vector>
+#include <utility>
 
 #include "optimization/Cancellation.h"
 #include "optimization/TrajoptUtil.h"
@@ -29,15 +27,11 @@
 #include "trajopt/constraint/PointLineConstraint.h"
 #include "trajopt/constraint/TranslationConstraint.h"
 #include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.h"
-#include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "trajopt/obstacle/Obstacle.h"
-#include "trajopt/path/InitialGuessPoint.h"
-#include "trajopt/path/Path.h"
 #include "trajopt/set/EllipticalSet2d.h"
 #include "trajopt/set/IntervalSet1d.h"
 #include "trajopt/set/LinearSet2d.h"
 #include "trajopt/set/RectangularSet2d.h"
-#include "trajopt/solution/Solution.h"
 
 namespace trajopt {
 

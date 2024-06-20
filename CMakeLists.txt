@@ -20,6 +20,8 @@ cmake_policy(SET CMP0077 NEW)
 
 project(TrajoptLib LANGUAGES CXX)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # Use, i.e. don't skip the full RPATH for the build tree
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 
@@ -63,7 +65,9 @@ option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
 
-include(TrajoptLibCompilerFlags)
+option(BUILD_EXAMPLES "Build examples" OFF)
+
+include(CompilerFlags)
 
 file(GLOB_RECURSE src src/*.cpp)
 if(${OPTIMIZER_BACKEND} STREQUAL "casadi")
@@ -74,7 +78,7 @@ endif()
 list(FILTER src EXCLUDE REGEX trajoptlibrust.cpp)
 
 add_library(TrajoptLib ${src})
-trajoptlib_compiler_flags(TrajoptLib)
+compiler_flags(TrajoptLib)
 target_include_directories(TrajoptLib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
@@ -84,7 +88,6 @@ set_target_properties(TrajoptLib PROPERTIES DEBUG_POSTFIX "d")
 set_property(TARGET TrajoptLib PROPERTY FOLDER "libraries")
 target_compile_definitions(TrajoptLib PRIVATE TRAJOPT_EXPORTS)
 
-include(CMakeDependentOption)
 include(CTest)
 include(FetchContent)
 
@@ -93,7 +96,7 @@ if(BUILD_TESTING)
     fetchcontent_declare(
         Catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG v3.5.2
+        GIT_TAG v3.6.0
         CMAKE_ARGS
     )
     fetchcontent_makeavailable(Catch2)
@@ -151,8 +154,12 @@ elseif(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
     fetchcontent_declare(
         Sleipnir
         GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        # main on 2024-05-01
-        GIT_TAG 5aa27bd9aaf50f57fca61b5990f31b0215316cd1
+        # main on 2024-06-18
+        GIT_TAG affeafcd797ad1312b18172dbaed0a69cca6546e
+        PATCH_COMMAND
+            git apply
+            ${CMAKE_CURRENT_SOURCE_DIR}/cmake/0001-Downgrade-to-C-20.patch
+        UPDATE_DISCONNECTED 1
     )
     fetchcontent_makeavailable(Sleipnir)
 
@@ -266,7 +273,7 @@ endif()
 if(BUILD_TESTING)
     file(GLOB_RECURSE TrajoptLib_test_src test/src/*.cpp)
     add_executable(TrajoptLibTest ${TrajoptLib_test_src})
-    trajoptlib_compiler_flags(TrajoptLibTest)
+    compiler_flags(TrajoptLibTest)
     target_include_directories(
         TrajoptLibTest
         PRIVATE
@@ -274,51 +281,58 @@ if(BUILD_TESTING)
             ${CMAKE_CURRENT_SOURCE_DIR}/test/include
             ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/units/include
     )
-    target_link_libraries(TrajoptLibTest PRIVATE TrajoptLib Catch2::Catch2)
+    target_link_libraries(
+        TrajoptLibTest
+        PRIVATE TrajoptLib Catch2::Catch2WithMain
+    )
     if(NOT CMAKE_TOOLCHAIN_FILE)
-        catch_discover_tests(TrajoptLibTest)
+        # https://github.com/catchorg/Catch2/issues/2873
+        catch_discover_tests(TrajoptLibTest PROPERTIES SKIP_RETURN_CODE 4)
     endif()
 endif()
 
 # Build examples and example tests
-include(TrajoptLibSubdirList)
-trajoptlib_subdir_list(EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/examples)
-foreach(example ${EXAMPLES})
-    # Build example
-    file(GLOB_RECURSE sources examples/${example}/src/*.cpp)
-    add_executable(${example} ${sources})
-    trajoptlib_compiler_flags(${example})
-    target_include_directories(
-        ${example}
-        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/include
-    )
-    target_link_libraries(${example} PRIVATE TrajoptLib)
-
-    # Build example test if files exist for it
-    if(
-        BUILD_TESTING
-        AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/test
-    )
-        file(GLOB_RECURSE test_sources examples/${example}/test/*.cpp)
-        add_executable(${example}Test ${sources} ${test_sources})
+if(BUILD_EXAMPLES)
+    include(SubdirList)
+    subdir_list(EXAMPLES ${CMAKE_CURRENT_SOURCE_DIR}/examples)
+    foreach(example ${EXAMPLES})
+        # Build example
+        file(GLOB_RECURSE sources examples/${example}/src/*.cpp)
+        add_executable(${example} ${sources})
+        compiler_flags(${example})
         target_include_directories(
-            ${example}Test
-            PRIVATE
-                ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/src
-                ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/test
-        )
-        trajoptlib_compiler_flags(${example}Test)
-        target_compile_definitions(${example}Test PUBLIC RUNNING_TESTS)
-        target_include_directories(
-            ${example}Test
+            ${example}
             PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/include
         )
-        target_link_libraries(
-            ${example}Test
-            PRIVATE TrajoptLib Catch2::Catch2WithMain
+        target_link_libraries(${example} PRIVATE TrajoptLib)
+
+        # Build example test if files exist for it
+        if(
+            BUILD_TESTING
+            AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/test
         )
-        if(NOT CMAKE_TOOLCHAIN_FILE)
-            catch_discover_tests(${example}Test)
+            file(GLOB_RECURSE test_sources examples/${example}/test/*.cpp)
+            add_executable(${example}Test ${sources} ${test_sources})
+            target_include_directories(
+                ${example}Test
+                PRIVATE
+                    ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/src
+                    ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/test
+            )
+            compiler_flags(${example}Test)
+            target_compile_definitions(${example}Test PUBLIC RUNNING_TESTS)
+            target_include_directories(
+                ${example}Test
+                PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/examples/${example}/include
+            )
+            target_link_libraries(
+                ${example}Test
+                PRIVATE TrajoptLib Catch2::Catch2WithMain
+            )
+            if(NOT CMAKE_TOOLCHAIN_FILE)
+                # https://github.com/catchorg/Catch2/issues/2873
+                catch_discover_tests(${example}Test PROPERTIES SKIP_RETURN_CODE 4)
+            endif()
         endif()
-    endif()
-endforeach()
+    endforeach()
+endif()

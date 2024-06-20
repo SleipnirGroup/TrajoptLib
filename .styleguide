@@ -1,7 +1,6 @@
 cppHeaderFileInclude {
   \.h$
   \.hpp$
-  \.inc$
   expected$
 }
 
@@ -12,6 +11,7 @@ cppSrcFileInclude {
 modifiableFileExclude {
   \.patch$
   expected$
+  \.patch$
 }
 
 includeOtherLibs {

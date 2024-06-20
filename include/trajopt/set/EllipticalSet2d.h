@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <cassert>
+
 #include "trajopt/SymbolExports.h"
 
 namespace trajopt {
@@ -11,14 +13,14 @@ namespace trajopt {
  */
 struct TRAJOPT_DLLEXPORT EllipticalSet2d {
   /**
-   * FIXME What does this do?
+   * The directionality of the set.
    */
   enum class Direction {
-    /// FIXME What does this do?
+    /// The set is every point inside the ellipse.
     kInside,
-    /// FIXME What does this do?
+    /// The set is every point on the border of the ellipse.
     kCentered,
-    /// FIXME What does this do?
+    /// The set is every point outside the ellipse.
     kOutside
   };
 
@@ -28,8 +30,20 @@ struct TRAJOPT_DLLEXPORT EllipticalSet2d {
   /// The y radius.
   double yRadius;
 
-  /// The direction.
+  /// The set direction.
   Direction direction;
+
+  /**
+   * Construct an EllipticalSet2d.
+   *
+   * @param xRadius The ellipse's x radius. Must be greater than zero.
+   * @param yRadius The ellipse's y radius. Must be greater than zero.
+   * @param direction The set direction.
+   */
+  constexpr EllipticalSet2d(double xRadius, double yRadius, Direction direction)
+      : xRadius{xRadius}, yRadius{yRadius}, direction{direction} {
+    assert(xRadius > 0.0 && yRadius > 0.0);
+  }
 
   /**
    * Construct a circular EllipticalSet2d from a radius.
@@ -37,23 +51,10 @@ struct TRAJOPT_DLLEXPORT EllipticalSet2d {
    * @param radius The radius.
    * @param direction The direction.
    */
-  static EllipticalSet2d CircularSet2d(
-      double radius, Direction direction = Direction::kInside);
-
-  /**
-   * Returns true if the ellipse is a circle.
-   */
-  bool IsCircular() const noexcept;
-
-  /**
-   * Returns true if the set spans R².
-   */
-  bool IsR2() const noexcept;
-
-  /**
-   * Returns true if the set is valid.
-   */
-  bool IsValid() const noexcept;
+  static constexpr EllipticalSet2d CircularSet2d(
+      double radius, Direction direction = Direction::kInside) {
+    return EllipticalSet2d{radius, radius, direction};
+  }
 };
 
 }  // namespace trajopt

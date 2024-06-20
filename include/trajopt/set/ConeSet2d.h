@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include <cassert>
+#include <numbers>
+
 #include "trajopt/SymbolExports.h"
 #include "trajopt/set/IntervalSet1d.h"
 
@@ -15,9 +18,15 @@ struct TRAJOPT_DLLEXPORT ConeSet2d {
   IntervalSet1d thetaBound;
 
   /**
-   * Returns true if the set is valid.
+   * Constructs a ConeSet2d.
+   *
+   * @param thetaBound The internal angle of the cone tip. Must be within (0,
+   *   π].
    */
-  bool IsValid() const noexcept;
+  explicit constexpr ConeSet2d(const IntervalSet1d& thetaBound)
+      : thetaBound{thetaBound} {
+    assert(thetaBound.Range() > 0.0 && thetaBound.Range() <= std::numbers::pi);
+  }
 };
 
 }  // namespace trajopt

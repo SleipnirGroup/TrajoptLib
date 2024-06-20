@@ -2,19 +2,19 @@
 
 #pragma once
 
-#include "trajopt/set/IntervalSet1d.h"
+#include "trajopt/SymbolExports.h"
 
 namespace trajopt {
 
 /**
  * Specifies a point on the field at which the robot should point.
  */
-struct PointAtConstraint {
-  /// field point x
+struct TRAJOPT_DLLEXPORT PointAtConstraint {
+  /// field point x (meters)
   double fieldPointX;
-  /// field point y
+  /// field point y (meters)
   double fieldPointY;
-  /// the allowed robot heading tolerance, must be positive
+  /// the allowed robot heading tolerance (radians), must be positive
   double headingTolerance;
 };
 
