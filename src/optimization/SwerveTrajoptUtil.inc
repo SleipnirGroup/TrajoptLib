@@ -7,10 +7,8 @@
 #include <utility>
 #include <vector>
 
-#include "DebugOptions.h"
 #include "optimization/SwerveTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
-#include "trajopt/TrajectoryGenerationException.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
 #include "trajopt/path/Path.h"
 #include "trajopt/solution/SwerveSolution.h"
@@ -172,19 +170,17 @@ SwerveSolution ConstructSwerveSolution(
       dtPerSamp.push_back(dt_val);
     }
   }
-  return SwerveSolution{dtPerSamp,
-                        RowSolutionValue(opti, x),
-                        RowSolutionValue(opti, y),
-                        RowSolutionValue(opti, thetacos),
-                        RowSolutionValue(opti, thetasin),
-                        RowSolutionValue(opti, vx),
-                        RowSolutionValue(opti, vy),
-                        RowSolutionValue(opti, omega),
-                        RowSolutionValue(opti, ax),
-                        RowSolutionValue(opti, ay),
-                        RowSolutionValue(opti, alpha),
-                        MatrixSolutionValue(opti, Fx),
-                        MatrixSolutionValue(opti, Fy)};
+  return SwerveSolution{
+      {{dtPerSamp, RowSolutionValue(opti, x), RowSolutionValue(opti, y),
+        RowSolutionValue(opti, thetacos), RowSolutionValue(opti, thetasin)},
+       RowSolutionValue(opti, vx),
+       RowSolutionValue(opti, vy),
+       RowSolutionValue(opti, omega),
+       RowSolutionValue(opti, ax),
+       RowSolutionValue(opti, ay),
+       RowSolutionValue(opti, alpha)},
+      MatrixSolutionValue(opti, Fx),
+      MatrixSolutionValue(opti, Fy)};
 }
 
 }  // namespace trajopt

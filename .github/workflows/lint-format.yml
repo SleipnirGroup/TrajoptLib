@@ -9,33 +9,38 @@ concurrency:
 jobs:
   wpiformat:
     name: "wpiformat"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Fetch all history and metadata
         run: |
-          git config --global --add safe.directory /__w/TrajoptLib/TrajoptLib
-          git fetch --prune --unshallow
           git checkout -b pr
           git branch -f main origin/main
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
+
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.8
-      - name: Install wpiformat
-        run: pip3 install wpiformat
-      - name: Run
-        run: wpiformat
+          python-version: 3.12
+
+      - run: pip3 install wpiformat==2024.33
+
+      - run: wpiformat
+
       - name: Check output
         run: git --no-pager diff --exit-code HEAD
+
       - name: Generate diff
         run: git diff HEAD > wpiformat-fixes.patch
         if: ${{ failure() }}
-      - uses: actions/upload-artifact@v3
+
+      - uses: actions/upload-artifact@v4
         with:
           name: wpiformat fixes
           path: wpiformat-fixes.patch
         if: ${{ failure() }}
+
       - name: Write to job summary
         run: |
           echo '```diff' >> $GITHUB_STEP_SUMMARY
@@ -46,41 +51,57 @@ jobs:
 
   tidy:
     name: "clang-tidy"
-    runs-on: ubuntu-latest
-    container: wpilib/roborio-cross-ubuntu:2023-22.04
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Fetch all history and metadata
         run: |
           git config --global --add safe.directory /__w/TrajoptLib/TrajoptLib
-          git fetch --prune --unshallow
           git checkout -b pr
           git branch -f main origin/main
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
+
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.8
-      - name: Install clang-tidy
+          python-version: 3.12
+
+      - name: Install LLVM 18
         run: |
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo sh -c "echo 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main' >> /etc/apt/sources.list.d/proposed-repositories.list"
-          sudo apt-get update -q
-          sudo apt-get install -y clang-tidy-15
-      - name: Install wpiformat
-        run: pip3 install wpiformat
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 18 all
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 200
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 200
+          echo "CC=clang" >> $GITHUB_ENV
+          echo "CXX=clang++" >> $GITHUB_ENV
+          echo "CXXFLAGS=-stdlib=libc++" >> $GITHUB_ENV
+
+      - run: pip3 install wpiformat
+
       - name: Create compile_commands.json
-        run: cmake -B build -S . -DOPTIMIZER_BACKEND=sleipnir -DCMAKE_C_COMPILER:FILEPATH=/usr/bin/clang-15 -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++-15 -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
+        run: cmake -B build -S . -DOPTIMIZER_BACKEND=sleipnir -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
+
       - name: List changed files
         run: wpiformat -list-changed-files
+
       - name: Run clang-tidy
-        run: wpiformat -no-format -tidy-all -compile-commands=build -tidy-extra-args std=c++20 -vv
+        run: wpiformat -no-format -tidy-all -compile-commands=build -tidy-extra-args std=c++23 -vv
 
-  rustfmt:
-    name: "rustfmt"
-    runs-on: ubuntu-latest
+  format-rust:
+    name: "Format Rust"
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Run rustfmt
-        working-directory: rust
-        run: cargo fmt
+      - name: Make GCC 14 the default toolchain
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 200
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 200
+
+      - run: cargo fmt --check
+
+      - run: cargo clippy --features casadi -- -D warnings
+
+      - run: cargo clippy --features sleipnir -- -D warnings

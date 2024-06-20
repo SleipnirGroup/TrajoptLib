@@ -2,7 +2,7 @@
 .gradle
 
 # Ignore Gradle build output directory
-build
+build*/
 altbuild
 
 # Ignore resources dir which will eventually hold binaries
@@ -33,4 +33,5 @@ compile_commands.json
 node_modules
 
 # Ignore rust build
-rust/target/
+Cargo.lock
+target/

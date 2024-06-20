@@ -3,8 +3,12 @@
 #pragma once
 
 #include <cmath>
+#include <functional>
 #include <memory>
+#include <string>
 #include <vector>
+
+#include <trajopt/expected>
 
 #include "optimization/OptiSys.h"
 
@@ -26,13 +30,14 @@ class TestOpti {
   }
   void SetInitial(double expr, double value) {}
 
-  void Solve() {}
+  trajopt::expected<void, std::string> Solve() { return {}; }
 
   double SolutionValue(double expr) const { return expr; }
 
   double GetMaximizeObjective() { return maximizeObjective; }
   double GetMinimizeObjective() { return minimizeObjective; }
   bool IsViolating() { return isViolating; }
+  void AddIntermediateCallback(std::function<void()> callback);
 };
 
 static_assert(OptiSys<double, TestOpti>);

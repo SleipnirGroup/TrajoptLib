@@ -2,11 +2,7 @@
 
 #pragma once
 
-#include <cstddef>
-#include <string>
 #include <vector>
-
-#include <fmt/format.h>
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/solution/HolonomicSolution.h"

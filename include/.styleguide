@@ -11,12 +11,10 @@ cppSrcFileInclude {
 
 modifiableFileExclude {
   expected$
-  \.patch$
 }
 
 includeOtherLibs {
   ^Eigen/
   ^casadi/
   ^sleipnir/
-  ^trajopt/
 }

@@ -7,140 +7,75 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-cpp:
+  build:
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
         include:
           - artifact-name: Native - Windows (CasADi)
-            cmake-config-env-vars:
-            cmake-flags: "-G \"MinGW Makefiles\" -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
-            optimizer: casadi
+            # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
+            cmake-flags: "-G \"MinGW Makefiles\" -DBUILD_TESTING=OFF"
+            optimizer_backend: casadi
             os: windows-2022
           - artifact-name: Native - macOS x86_64 (CasADi)
-            cmake-config-env-vars: CFLAGS="$CFLAGS -arch x86_64" CXXFLAGS="$CXXFLAGS -arch x86_64"
-            cmake-flags: "-DCMAKE_APPLE_SILICON_PROCESSOR=x86_64"
-            optimizer: casadi
-            os: macOS-12
+            cmake-flags: -DCMAKE_OSX_ARCHITECTURES="x86_64"
+            optimizer_backend: casadi
+            os: macOS-14
           - artifact-name: Native - macOS arm64 (CasADi)
-            cmake-config-env-vars: CFLAGS="$CFLAGS -arch arm64" CXXFLAGS="$CXXFLAGS -arch arm64"
-            cmake-flags: "-DCMAKE_APPLE_SILICON_PROCESSOR=arm64"
-            optimizer: casadi
-            os: macOS-12
-          - artifact-name: Native - Linux (CasADi)
-            cmake-config-env-vars:
+            cmake-flags: -DCMAKE_OSX_ARCHITECTURES="arm64"
+            optimizer_backend: casadi
+            os: macOS-14
+          - artifact-name: Native - Linux x86_64 (CasADi)
             cmake-flags:
-            optimizer: casadi
-            os: ubuntu-latest
-          - artifact-name: Native - Windows (Sleipnir)
-            cmake-config-env-vars:
-            cmake-flags:
-            optimizer: sleipnir
+            optimizer_backend: casadi
+            os: ubuntu-24.04
+          - artifact-name: Native - Windows x86_64 (Sleipnir)
+            # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
+            cmake-flags: "-DCMAKE_GENERATOR_PLATFORM=x64 -DBUILD_TESTING=OFF"
+            optimizer_backend: sleipnir
+            os: windows-2022
+          - artifact-name: Native - Windows aarch64 (Sleipnir)
+            # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
+            cmake-flags: "-DCMAKE_GENERATOR_PLATFORM=ARM64 -DBUILD_TESTING=OFF"
+            optimizer_backend: sleipnir
             os: windows-2022
           - artifact-name: Native - macOS universal (Sleipnir)
-            cmake-config-env-vars: CFLAGS="$CFLAGS -arch x86_64 -arch arm64" CXXFLAGS="$CXXFLAGS -arch x86_64 -arch arm64"
+            cmake-flags: -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+            optimizer_backend: sleipnir
+            os: macOS-14
+          - artifact-name: Native - Linux x86_64 (Sleipnir)
             cmake-flags:
-            optimizer: sleipnir
-            os: macOS-12
-          - artifact-name: Native - Linux (Sleipnir)
-            cmake-config-env-vars:
-            cmake-flags:
-            optimizer: sleipnir
-            os: ubuntu-latest
+            optimizer_backend: sleipnir
+            os: ubuntu-24.04
 
     name: "${{ matrix.artifact-name }}"
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up MinGW
-        if: matrix.os == 'windows-2022' && matrix.optimizer == 'casadi'
-        uses: egor-tensin/setup-mingw@v2
-        with:
-          platform: x64
-          version: 12.2.0
+        if: matrix.os == 'windows-2022' && matrix.optimizer_backend == 'casadi'
+        run: |
+          choco upgrade mingw --version=11.2.0 -y --no-progress --allow-downgrade
+          echo C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin >> $env:GITHUB_PATH
 
-      - name: configure
-        run: ${{ matrix.cmake-config-env-vars }} cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer }} -DWITH_JAVA=ON -DJAVA_INSTALL_JAR=OFF
+      - name: Make GCC 14 the default toolchain (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 200
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 200
 
-      - name: build
-        run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
+      - run: sudo xcode-select -switch /Applications/Xcode_15.3.app
+        if: startsWith(matrix.os, 'macOS')
 
-      - name: install
-        run: cmake --install build --config RelWithDebInfo --prefix pkg
+      - run: cmake -B build -S . ${{ matrix.cmake-flags }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer_backend }}
+      - run: cmake --build build --config RelWithDebInfo --parallel $(nproc)
+      - run: ctest --test-dir build -C RelWithDebInfo --output-on-failure
+      - run: cmake --install build --config RelWithDebInfo --prefix pkg
 
-      - uses: actions/upload-artifact@v3.1.1
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact-name }}
           path: pkg
-
-      - uses: actions/upload-artifact@v3.1.1
-        with:
-          name: ${{ matrix.artifact-name }}-java-libraries
-          path: java/src/main/resources
-
-  build-wasm:
-    name: "Wasm"
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup emscripten
-        uses: numworks/setup-emscripten@latest
-
-      - name: configure
-        run: emcmake cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DOPTIMIZER_BACKEND=sleipnir
-
-      - name: build
-        run: cmake --build build --config Release --parallel $(nproc)
-
-      - name: install
-        run: cmake --install build --config Release --prefix pkg
-
-      - uses: actions/upload-artifact@v3.1.1
-        with:
-          name: Wasm
-          path: pkg
-
-  collect-java-native-libs:
-    strategy:
-      fail-fast: false
-
-    needs: build-cpp
-    name: Collect Java Native Libs
-
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: Native - Windows (CasADi)-java-libraries
-          path: java/src/main/resources
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: Native - macOS x86_64 (CasADi)-java-libraries
-          path: java/src/main/resources
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: Native - macOS arm64 (CasADi)-java-libraries
-          path: java/src/main/resources
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: Native - Linux (CasADi)-java-libraries
-          path: java/src/main/resources
-
-      - run: cd java/src/main/resources/osx;ls
-
-      - uses: actions/upload-artifact@v3.1.1
-        with:
-          name: all-java-libraries
-          path: java/src/main/resources

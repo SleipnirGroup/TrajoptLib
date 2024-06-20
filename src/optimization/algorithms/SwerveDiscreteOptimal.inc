@@ -2,16 +2,16 @@
 
 #pragma once
 
-#include <iostream>
+#include <algorithm>
+#include <chrono>
 #include <string>
 #include <vector>
 
-#include "DebugOptions.h"
 #include "optimization/SwerveTrajoptUtil.h"
 #include "optimization/TrajoptUtil.h"
 #include "optimization/algorithms/SwerveDiscreteOptimal.h"
-#include "trajopt/TrajectoryGenerationException.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
+#include "trajopt/expected"
 #include "trajopt/path/Path.h"
 #include "trajopt/solution/SwerveSolution.h"
 
@@ -19,14 +19,13 @@ namespace trajopt {
 
 template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
-SwerveSolution SwerveDiscreteOptimal<Expr, Opti>::Generate() {
-  try {
-    opti.Solve();
+expected<SwerveSolution, std::string>
+SwerveDiscreteOptimal<Expr, Opti>::Generate(bool diagnostics) {
+  if (auto sol = opti.Solve(diagnostics); sol.has_value()) {
     return ConstructSwerveSolution(opti, x, y, thetacos, thetasin, vx, vy, omega, ax, ay,
                                    alpha, Fx, Fy, dt, N);
-  } catch (const std::exception& e) {
-    throw TrajectoryGenerationException("Error optimizing trajectory: " +
-                                        std::string(e.what()));
+  } else {
+    return unexpected{sol.error()};
   }
 }
 
@@ -34,8 +33,29 @@ template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     const SwervePath& path, const std::vector<size_t>& N,
-    const Solution& initialGuess)
+    const Solution& initialGuess, int64_t handle)
     : path(path), N(N) {
+  // force the initial call
+  auto lastFrameTime = std::chrono::steady_clock::now();
+
+  opti.AddIntermediateCallback([=, this, &lastFrameTime]() {
+    using namespace std::chrono_literals;
+
+    auto now = std::chrono::steady_clock::now();
+    constexpr int fps = 60;
+    constexpr std::chrono::duration<double> timePerFrame{1.0 / fps};
+    // FPS limit on sending updates
+    if (now - lastFrameTime < timePerFrame) {
+      return;
+    }
+
+    lastFrameTime = now;
+    auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax,
+                                        ay, alpha, Fx, Fy, dt, N);
+    for (auto& callback : path.callbacks) {
+      callback(soln, handle);
+    }
+  });
   size_t wptCnt = 1 + N.size();
   size_t sgmtCnt = N.size();
   size_t sampTot = GetIdx(N, wptCnt, 0);
@@ -81,8 +101,29 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     }
   }
 
+  double minWidth = INFINITY;
+  for (size_t i = 1; i < path.drivetrain.modules.size(); i++) {
+    if (std::abs(path.drivetrain.modules.at(i - 1).x -
+                 path.drivetrain.modules.at(i).x) != 0) {
+      minWidth =
+          std::min(minWidth, std::abs(path.drivetrain.modules.at(i - 1).x -
+                                      path.drivetrain.modules.at(i).x));
+    }
+    if (std::abs(path.drivetrain.modules.at(i - 1).y -
+                 path.drivetrain.modules.at(i).y) != 0) {
+      minWidth =
+          std::min(minWidth, std::abs(path.drivetrain.modules.at(i - 1).y -
+                                      path.drivetrain.modules.at(i).y));
+    }
+  }
+
   for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
     dt.emplace_back(opti.DecisionVariable());
+    for (auto module : path.drivetrain.modules) {
+      opti.SubjectTo(dt.at(sgmtIdx) * module.wheelRadius *
+                         module.wheelMaxAngularVelocity <=
+                     minWidth);
+    }
   }
 
   ApplyDiscreteTimeObjective(opti, dt, N);
@@ -124,6 +165,7 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     }
   }
 
-  ApplyInitialGuess(opti, initialGuess, x, y, thetacos, thetasin);
+  ApplyInitialGuess(opti, initialGuess, x, y, thetacos, thetasin, vx, vy, omega, ax, ay,
+                    alpha);
 }
 }  // namespace trajopt

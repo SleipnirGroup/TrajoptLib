@@ -1,0 +1,116 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Tyler Veness <calcmogul@gmail.com>
+Date: Mon, 17 Jun 2024 11:00:45 -0700
+Subject: [PATCH] Downgrade to C++20
+
+---
+ CMakeLists.txt                    | 10 ++++++++++
+ cmake/modules/CompilerFlags.cmake |  2 +-
+ include/sleipnir/util/Print.hpp   | 27 ++++++++++++++-------------
+ 3 files changed, 25 insertions(+), 14 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bfa8080a696e59741806e4be3539dbce259e8748..71ee7dcab5cf3eaf6ac1ccb418f6a0a7a40dfc15 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -114,6 +114,16 @@ endif()
+ 
+ target_link_libraries(Sleipnir PUBLIC Eigen3::Eigen)
+ 
++# fmt dependency
++fetchcontent_declare(
++    fmt
++    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
++    GIT_TAG 10.2.1
++)
++fetchcontent_makeavailable(fmt)
++
++target_link_libraries(Sleipnir PUBLIC fmt::fmt)
++
+ if(BUILD_TESTING)
+     # Catch2 dependency
+     fetchcontent_declare(
+diff --git a/cmake/modules/CompilerFlags.cmake b/cmake/modules/CompilerFlags.cmake
+index 9f3fad1ce359897d6e87d5c37efae51d55bcf160..4331baf9394a7f27bde51906c9dd14b8543e4af4 100644
+--- a/cmake/modules/CompilerFlags.cmake
++++ b/cmake/modules/CompilerFlags.cmake
+@@ -11,7 +11,7 @@ macro(compiler_flags target)
+         target_compile_options(${target} PRIVATE /wd4244 /wd4251 /WX)
+     endif()
+ 
+-    target_compile_features(${target} PUBLIC cxx_std_23)
++    target_compile_features(${target} PUBLIC cxx_std_20)
+     if(MSVC)
+         target_compile_options(${target} PUBLIC /MP /Zf /utf-8 /bigobj)
+     endif()
+diff --git a/include/sleipnir/util/Print.hpp b/include/sleipnir/util/Print.hpp
+index 339320bce6d017ca85025060ba445b2f025bb225..fcf2e69bfb5a081cd915bdded3caa80cd9c38518 100644
+--- a/include/sleipnir/util/Print.hpp
++++ b/include/sleipnir/util/Print.hpp
+@@ -2,52 +2,53 @@
+ 
+ #pragma once
+ 
+-#include <print>
+ #include <system_error>
+ #include <utility>
+ 
++#include <fmt/core.h>
++
+ namespace sleipnir {
+ 
+ /**
+- * Wrapper around std::print() that squelches write failure exceptions.
++ * Wrapper around fmt::print() that squelches write failure exceptions.
+  */
+ template <typename... T>
+-inline void print(std::format_string<T...> fmt, T&&... args) {
++inline void print(fmt::format_string<T...> fmt, T&&... args) {
+   try {
+-    std::print(fmt, std::forward<T>(args)...);
++    fmt::print(fmt, std::forward<T>(args)...);
+   } catch (const std::system_error&) {
+   }
+ }
+ 
+ /**
+- * Wrapper around std::print() that squelches write failure exceptions.
++ * Wrapper around fmt::print() that squelches write failure exceptions.
+  */
+ template <typename... T>
+-inline void print(std::FILE* f, std::format_string<T...> fmt, T&&... args) {
++inline void print(std::FILE* f, fmt::format_string<T...> fmt, T&&... args) {
+   try {
+-    std::print(f, fmt, std::forward<T>(args)...);
++    fmt::print(f, fmt, std::forward<T>(args)...);
+   } catch (const std::system_error&) {
+   }
+ }
+ 
+ /**
+- * Wrapper around std::println() that squelches write failure exceptions.
++ * Wrapper around fmt::println() that squelches write failure exceptions.
+  */
+ template <typename... T>
+-inline void println(std::format_string<T...> fmt, T&&... args) {
++inline void println(fmt::format_string<T...> fmt, T&&... args) {
+   try {
+-    std::println(fmt, std::forward<T>(args)...);
++    fmt::println(fmt, std::forward<T>(args)...);
+   } catch (const std::system_error&) {
+   }
+ }
+ 
+ /**
+- * Wrapper around std::println() that squelches write failure exceptions.
++ * Wrapper around fmt::println() that squelches write failure exceptions.
+  */
+ template <typename... T>
+-inline void println(std::FILE* f, std::format_string<T...> fmt, T&&... args) {
++inline void println(std::FILE* f, fmt::format_string<T...> fmt, T&&... args) {
+   try {
+-    std::println(f, fmt, std::forward<T>(args)...);
++    fmt::println(f, fmt, std::forward<T>(args)...);
+   } catch (const std::system_error&) {
+   }
+ }

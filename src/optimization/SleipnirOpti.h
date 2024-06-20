@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <functional>
+#include <string>
 #include <vector>
 
 #include <sleipnir/autodiff/Variable.hpp>
@@ -9,6 +11,7 @@
 #include <sleipnir/optimization/OptimizationProblem.hpp>
 
 #include "optimization/OptiSys.h"
+#include "trajopt/expected"
 
 namespace trajopt {
 
@@ -37,6 +40,8 @@ struct SleipnirExpr {
 
   friend SleipnirExpr fmin(const SleipnirExpr& a, const SleipnirExpr& b);
   friend SleipnirExpr fmax(const SleipnirExpr& a, const SleipnirExpr& b);
+  friend SleipnirExpr abs(const SleipnirExpr& a);
+  friend SleipnirExpr hypot(const SleipnirExpr& a, const SleipnirExpr& b);
 
   friend sleipnir::EqualityConstraints operator==(const SleipnirExpr& a,
                                                   const SleipnirExpr& b);
@@ -49,6 +54,7 @@ struct SleipnirExpr {
 class SleipnirOpti {
  private:
   sleipnir::OptimizationProblem opti;
+  std::vector<std::function<void()>> callbacks;
 
  public:
   trajopt::SleipnirExpr DecisionVariable();
@@ -57,8 +63,10 @@ class SleipnirOpti {
   void SubjectTo(sleipnir::EqualityConstraints&& constraint);
   void SubjectTo(sleipnir::InequalityConstraints&& constraint);
   void SetInitial(trajopt::SleipnirExpr& expr, double value);
-  void Solve();
+  [[nodiscard]]
+  expected<void, std::string> Solve(bool diagnostics = false);
   double SolutionValue(const trajopt::SleipnirExpr& expr) const;
+  void AddIntermediateCallback(std::function<void()> callback);
 };
 }  // namespace trajopt
 

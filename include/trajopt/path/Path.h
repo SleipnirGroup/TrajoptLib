@@ -2,22 +2,17 @@
 
 #pragma once
 
-#include <cstddef>
-#include <optional>
-#include <type_traits>
-#include <vector>
+#include <stdint.h>
 
-#include <nlohmann/json.hpp>
+#include <functional>
+#include <vector>
 
 #include "trajopt/SymbolExports.h"
 #include "trajopt/constraint/differential/DifferentialConstraint.h"
 #include "trajopt/constraint/holonomic/HolonomicConstraint.h"
 #include "trajopt/drivetrain/DifferentialDrivetrain.h"
 #include "trajopt/drivetrain/SwerveDrivetrain.h"
-#include "trajopt/path/InitialGuessPoint.h"
-#include "trajopt/solution/DifferentialSolution.h"
 #include "trajopt/solution/SwerveSolution.h"
-#include "trajopt/util/JsonFmtFormatter.h"
 
 namespace trajopt {
 
@@ -49,6 +44,10 @@ struct TRAJOPT_DLLEXPORT SwervePath {
   std::vector<SwerveWaypoint> waypoints;
   /// drivetrain of the robot
   SwerveDrivetrain drivetrain;
+
+  /// A vector of callbacks to be called with the intermediate SwerveSolution
+  /// and a user-specified handle at every iteration of the solver
+  std::vector<std::function<void(SwerveSolution&, int64_t)>> callbacks;
 };
 
 /**
@@ -61,13 +60,4 @@ struct TRAJOPT_DLLEXPORT DifferentialPath {
   DifferentialDrivetrain drivetrain;
 };
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwerveWaypoint, waypointConstraints,
-                                   segmentConstraints)
-
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(SwervePath, waypoints, drivetrain)
-
 }  // namespace trajopt
-
-_JSON_FMT_FORMATTER(trajopt::SwerveWaypoint)
-
-_JSON_FMT_FORMATTER(trajopt::SwervePath)
