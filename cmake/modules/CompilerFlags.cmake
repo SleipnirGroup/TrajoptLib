@@ -4,17 +4,6 @@ macro(compiler_flags target)
             ${target}
             PRIVATE -Wall -pedantic -Wextra -Werror -Wno-unused-parameter
         )
-
-        if(
-            ${OPTIMIZER_BACKEND} STREQUAL "casadi"
-            AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux"
-            AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU"
-        )
-            target_compile_definitions(
-                ${target}
-                PRIVATE _GLIBCXX_USE_CXX11_ABI=0
-            )
-        endif()
     else()
         # Suppress the following warnings:
         #   * C4244: lossy conversion

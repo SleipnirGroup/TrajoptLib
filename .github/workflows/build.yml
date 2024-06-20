@@ -13,23 +13,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - artifact-name: Native - Windows (CasADi)
-            # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
-            cmake-args: "-G \"MinGW Makefiles\" -DBUILD_TESTING=OFF"
-            optimizer_backend: casadi
-            os: windows-2022
-          - artifact-name: Native - macOS x86_64 (CasADi)
-            cmake-args: -DCMAKE_OSX_ARCHITECTURES="x86_64"
-            optimizer_backend: casadi
-            os: macOS-14
-          - artifact-name: Native - macOS arm64 (CasADi)
-            cmake-args: -DCMAKE_OSX_ARCHITECTURES="arm64"
-            optimizer_backend: casadi
-            os: macOS-14
-          - artifact-name: Native - Linux x86_64 (CasADi)
-            cmake-args:
-            optimizer_backend: casadi
-            os: ubuntu-24.04
           - artifact-name: Native - Windows x86_64 (Sleipnir)
             # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
             cmake-args: "-DCMAKE_GENERATOR_PLATFORM=x64 -DBUILD_TESTING=OFF"
@@ -54,12 +37,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up MinGW
-        if: matrix.os == 'windows-2022' && matrix.optimizer_backend == 'casadi'
-        run: |
-          choco upgrade mingw --version=11.2.0 -y --no-progress --allow-downgrade
-          echo C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin >> $env:GITHUB_PATH
 
       - name: Make GCC 14 the default toolchain (Linux)
         if: startsWith(matrix.os, 'ubuntu')
