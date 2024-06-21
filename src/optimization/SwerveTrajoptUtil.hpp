@@ -170,18 +170,14 @@ inline void ApplyPowerConstraints(sleipnir::OptimizationProblem& problem,
 
 inline SwerveSolution ConstructSwerveSolution(
     const sleipnir::OptimizationProblem& problem,
-    const std::vector<sleipnir::Variable>& x,
-    const std::vector<sleipnir::Variable>& y,
-    const std::vector<sleipnir::Variable>& theta,
-    const std::vector<sleipnir::Variable>& vx,
-    const std::vector<sleipnir::Variable>& vy,
-    const std::vector<sleipnir::Variable>& omega,
-    const std::vector<sleipnir::Variable>& ax,
-    const std::vector<sleipnir::Variable>& ay,
-    const std::vector<sleipnir::Variable>& alpha,
-    const std::vector<std::vector<sleipnir::Variable>>& Fx,
-    const std::vector<std::vector<sleipnir::Variable>>& Fy,
-    const std::vector<sleipnir::Variable>& dt, const std::vector<size_t>& N) {
+    std::vector<sleipnir::Variable>& x, std::vector<sleipnir::Variable>& y,
+    std::vector<sleipnir::Variable>& theta, std::vector<sleipnir::Variable>& vx,
+    std::vector<sleipnir::Variable>& vy, std::vector<sleipnir::Variable>& omega,
+    std::vector<sleipnir::Variable>& ax, std::vector<sleipnir::Variable>& ay,
+    std::vector<sleipnir::Variable>& alpha,
+    std::vector<std::vector<sleipnir::Variable>>& Fx,
+    std::vector<std::vector<sleipnir::Variable>>& Fy,
+    std::vector<sleipnir::Variable>& dt, const std::vector<size_t>& N) {
   std::vector<double> dtPerSamp;
   for (size_t sgmtIdx = 0; sgmtIdx < N.size(); ++sgmtIdx) {
     size_t N_sgmt = N.at(sgmtIdx);

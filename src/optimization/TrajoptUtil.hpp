@@ -141,7 +141,7 @@ inline void ApplySet2dConstraint(sleipnir::OptimizationProblem& problem,
 
 inline std::vector<double> RowSolutionValue(
     const sleipnir::OptimizationProblem& problem,
-    const std::vector<sleipnir::Variable>& rowVector) {
+    std::vector<sleipnir::Variable>& rowVector) {
   std::vector<double> valueRowVector;
   valueRowVector.reserve(rowVector.size());
   for (auto& expression : rowVector) {
@@ -152,7 +152,7 @@ inline std::vector<double> RowSolutionValue(
 
 inline std::vector<std::vector<double>> MatrixSolutionValue(
     const sleipnir::OptimizationProblem& problem,
-    const std::vector<std::vector<sleipnir::Variable>>& matrix) {
+    std::vector<std::vector<sleipnir::Variable>>& matrix) {
   std::vector<std::vector<double>> valueMatrix;
   valueMatrix.reserve(matrix.size());
   for (auto& row : matrix) {
