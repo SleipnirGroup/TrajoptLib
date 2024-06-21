@@ -3,11 +3,11 @@
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
-#include <trajopt/path/InitialGuessPoint.h>
-#include <trajopt/set/IntervalSet1d.h>
+#include <trajopt/path/InitialGuessPoint.hpp>
+#include <trajopt/set/IntervalSet1d.hpp>
 
-#include "TestOpti.h"
-#include "optimization/TrajoptUtil.h"
+#include "TestOpti.hpp"
+#include "optimization/TrajoptUtil.hpp"
 
 TEST_CASE("TrajoptUtil - GetIdx()", "[TrajoptUtil]") {
   auto result0 = trajopt::GetIdx({2, 3}, 0, 0);

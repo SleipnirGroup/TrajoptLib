@@ -1,22 +1,18 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "trajoptlibrust.h"
+#include "trajoptlibrust.hpp"
 
 #include <stdint.h>
-#include <trajopt/solution/SwerveSolution.h>
 
-#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <stdexcept>
-#include <utility>
 #include <vector>
 
-#include "trajopt/OptimalTrajectoryGenerator.h"
-#include "trajopt/drivetrain/SwerveDrivetrain.h"
-#include "trajopt/path/SwervePathBuilder.h"
-#include "trajopt/trajectory/HolonomicTrajectory.h"
-#include "trajopt/trajectory/HolonomicTrajectorySample.h"
+#include "trajopt/OptimalTrajectoryGenerator.hpp"
+#include "trajopt/drivetrain/SwerveDrivetrain.hpp"
+#include "trajopt/trajectory/HolonomicTrajectory.hpp"
+#include "trajopt/trajectory/HolonomicTrajectorySample.hpp"
 #include "trajoptlib/src/lib.rs.h"
 
 namespace trajoptlibrust {

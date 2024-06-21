@@ -1,12 +1,12 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "trajopt/OptimalTrajectoryGenerator.h"
+#include "trajopt/OptimalTrajectoryGenerator.hpp"
 
 #if defined(OPTIMIZER_BACKEND_SLEIPNIR)
-#include "optimization/SleipnirOpti.h"
+#include "optimization/SleipnirOpti.hpp"
 #endif
 
-#include "optimization/algorithms/SwerveDiscreteOptimal.h"
+#include "optimization/algorithms/SwerveDiscreteOptimal.hpp"
 
 namespace trajopt {
 

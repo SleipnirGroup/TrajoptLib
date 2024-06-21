@@ -4,12 +4,11 @@
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <trajopt/path/InitialGuessPoint.h>
-#include <trajopt/set/IntervalSet1d.h>
+#include <trajopt/path/InitialGuessPoint.hpp>
+#include <trajopt/set/IntervalSet1d.hpp>
 
-#include "TestOpti.h"
-#include "optimization/SwerveTrajoptUtil.h"
-#include "optimization/TrajoptUtil.h"
+#include "TestOpti.hpp"
+#include "optimization/SwerveTrajoptUtil.hpp"
 
 TEST_CASE("SwerveTrajoptUtil - SolveNetForce()", "[SwerveTrajoptUtil]") {
   std::vector<double> Fx{4.0, 1.0, 3.0, 5.0};
