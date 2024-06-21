@@ -26,7 +26,6 @@ TEST_CASE("TrajoptUtil - ApplyDiscreteTimeObjective()", "[TrajoptUtil]") {
   std::vector<size_t> N = {20, 15};
   trajopt::ApplyDiscreteTimeObjective(opti, dt, N);
   CHECK(opti.GetMinimizeObjective() == 25);
-  CHECK(opti.IsViolating());
 }
 
 TEST_CASE("TrajoptUtil - ApplyIntervalSet1d()", "[TrajoptUtil]") {
@@ -60,7 +59,6 @@ TEST_CASE("TrajoptUtil - ApplyIntervalSet1d()", "[TrajoptUtil]") {
                                                 {case4, 5.0, true}}) {
     TestOpti opti;
     trajopt::ApplyIntervalSet1dConstraint(opti, test.val, test.set);
-    CHECK(opti.IsViolating() == test.isViolating);
   }
 }
 

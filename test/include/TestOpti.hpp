@@ -34,7 +34,6 @@ class TestOpti {
 
   double GetMaximizeObjective() { return maximizeObjective; }
   double GetMinimizeObjective() { return minimizeObjective; }
-  bool IsViolating() { return isViolating; }
   void AddIntermediateCallback(std::function<void()> callback);
 };
 

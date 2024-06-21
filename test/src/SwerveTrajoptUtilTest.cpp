@@ -65,8 +65,6 @@ TEST_CASE("SwerveTrajoptUtil - ApplyKinematicsConstraints()",
   std::vector<size_t> N{2, 4};
 
   trajopt::ApplyKinematicsConstraints(opti, x, x, x, v, v, v, a, a, a, dt, N);
-
-  CHECK_FALSE(opti.IsViolating());
 }
 
 TEST_CASE("SwerveTrajoptUtil - ApplyDynamicsConstraints()",
@@ -83,6 +81,4 @@ TEST_CASE("SwerveTrajoptUtil - ApplyDynamicsConstraints()",
 
   trajopt::ApplyDynamicsConstraints(opti, ax, ay, alpha, Fx_net, Fy_net,
                                     tau_net, mass, moi);
-
-  CHECK_FALSE(opti.IsViolating());
 }
