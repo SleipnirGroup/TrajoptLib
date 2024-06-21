@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <sleipnir/optimization/OptimizationProblem.hpp>
+
 #include "optimization/TrajoptUtil.hpp"
 #include "trajopt/constraint/HeadingConstraint.hpp"
 #include "trajopt/constraint/LinePointConstraint.hpp"
@@ -12,30 +14,31 @@
 
 namespace trajopt {
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
-                              const Expr& theta, const Expr& vx, const Expr& vy,
-                              const Expr& omega, const Expr& ax, const Expr& ay,
-                              const Expr& alpha,
-                              const HolonomicConstraint& constraint) {
+inline void ApplyHolonomicConstraint(
+    sleipnir::OptimizationProblem& problem, const sleipnir::Variable& x,
+    const sleipnir::Variable& y, const sleipnir::Variable& theta,
+    const sleipnir::Variable& vx, const sleipnir::Variable& vy,
+    const sleipnir::Variable& omega, const sleipnir::Variable& ax,
+    const sleipnir::Variable& ay, const sleipnir::Variable& alpha,
+    const HolonomicConstraint& constraint) {
   if (std::holds_alternative<HolonomicVelocityConstraint>(constraint)) {
     const auto& velocityHolonomicConstraint =
         std::get<HolonomicVelocityConstraint>(constraint);
-    ApplySet2dConstraint(opti, vx, vy,
+    ApplySet2dConstraint(problem, vx, vy,
                          velocityHolonomicConstraint.velocityBound);
   } else if (std::holds_alternative<AngularVelocityConstraint>(constraint)) {
     const auto& angularVelocityConstraint =
         std::get<AngularVelocityConstraint>(constraint);
     ApplyIntervalSet1dConstraint(
-        opti, omega, angularVelocityConstraint.angularVelocityBound);
+        problem, omega, angularVelocityConstraint.angularVelocityBound);
   } else if (std::holds_alternative<TranslationConstraint>(constraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(problem, x, y, theta,
                     std::get<TranslationConstraint>(constraint));
   } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
-    ApplyConstraint(opti, x, y, theta, std::get<HeadingConstraint>(constraint));
+    ApplyConstraint(problem, x, y, theta,
+                    std::get<HeadingConstraint>(constraint));
   } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(problem, x, y, theta,
                     std::get<LinePointConstraint>(constraint));
   } else if (std::holds_alternative<PointAtConstraint>(constraint)) {
     auto pointAtConstraint = std::get<PointAtConstraint>(constraint);
@@ -60,12 +63,12 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto dot = hx * ux + hy * uy;
 
     ApplyIntervalSet1dConstraint(
-        opti, dot, IntervalSet1d(std::cos(headingTolerance), 1.0));
+        problem, dot, IntervalSet1d(std::cos(headingTolerance), 1.0));
   } else if (std::holds_alternative<PointLineConstraint>(constraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(problem, x, y, theta,
                     std::get<PointLineConstraint>(constraint));
   } else if (std::holds_alternative<PointPointConstraint>(constraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(problem, x, y, theta,
                     std::get<PointPointConstraint>(constraint));
   }  // TODO: Investigate a way to condense the code above
 }

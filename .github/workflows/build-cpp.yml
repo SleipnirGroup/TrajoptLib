@@ -1,4 +1,4 @@
-name: Build
+name: Build C++
 
 on: [pull_request, push]
 
@@ -13,23 +13,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - artifact-name: Native - Windows x86_64 (Sleipnir)
+          - artifact-name: Windows x86_64
             # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
             cmake-args: "-DCMAKE_GENERATOR_PLATFORM=x64 -DBUILD_TESTING=OFF"
-            optimizer_backend: sleipnir
             os: windows-2022
-          - artifact-name: Native - Windows aarch64 (Sleipnir)
+          - artifact-name: Windows aarch64
             # FIXME: Tests give "Exit code 0xc0000135" for missing DLLs
             cmake-args: "-DCMAKE_GENERATOR_PLATFORM=ARM64 -DBUILD_TESTING=OFF"
-            optimizer_backend: sleipnir
             os: windows-2022
-          - artifact-name: Native - macOS universal (Sleipnir)
+          - artifact-name: macOS universal
             cmake-args: -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
-            optimizer_backend: sleipnir
             os: macOS-14
-          - artifact-name: Native - Linux x86_64 (Sleipnir)
+          - artifact-name: Linux x86_64
             cmake-args:
-            optimizer_backend: sleipnir
             os: ubuntu-24.04
 
     name: "${{ matrix.artifact-name }}"
@@ -47,7 +43,7 @@ jobs:
       - run: sudo xcode-select -switch /Applications/Xcode_15.3.app
         if: startsWith(matrix.os, 'macOS')
 
-      - run: cmake -B build -S . -DBUILD_EXAMPLES=ON ${{ matrix.cmake-args }} -DOPTIMIZER_BACKEND=${{ matrix.optimizer_backend }}
+      - run: cmake -B build -S . -DBUILD_EXAMPLES=ON ${{ matrix.cmake-args }}
       - run: cmake --build build --config RelWithDebInfo --parallel 4
       - run: ctest --test-dir build -C RelWithDebInfo --output-on-failure
       - run: cmake --install build --config RelWithDebInfo --prefix pkg

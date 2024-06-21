@@ -7,18 +7,12 @@ fn main() {
         .profile("Release")
         .define("BUILD_TESTING", "OFF");
 
-    if cfg!(feature = "sleipnir") {
-        cmake_config
-            .define("OPTIMIZER_BACKEND", "sleipnir")
-            .define("BUILD_SHARED_LIBS", "OFF");
+    cmake_config.define("BUILD_SHARED_LIBS", "OFF");
 
-        if cfg!(target_os = "windows") {
-            cmake_config
-                .generator("Visual Studio 17 2022")
-                .cxxflag("/EHsc");
-        }
-    } else {
-        panic!("Select an optimizer backend via cargo `--features sleipnir`.");
+    if cfg!(target_os = "windows") {
+        cmake_config
+            .generator("Visual Studio 17 2022")
+            .cxxflag("/EHsc");
     }
 
     let cmake_dest = cmake_config.build();
@@ -43,10 +37,8 @@ fn main() {
     );
     println!("cargo:rustc-link-lib=trajoptrust");
     println!("cargo:rustc-link-lib=TrajoptLib");
-    if cfg!(feature = "sleipnir") {
-        println!("cargo:rustc-link-lib=Sleipnir");
-        println!("cargo:rustc-link-lib=fmt");
-    }
+    println!("cargo:rustc-link-lib=Sleipnir");
+    println!("cargo:rustc-link-lib=fmt");
 
     println!("cargo:rerun-if-changed=src/trajoptlibrust.hpp");
     println!("cargo:rerun-if-changed=src/trajoptlibrust.cpp");

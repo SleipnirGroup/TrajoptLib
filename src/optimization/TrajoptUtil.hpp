@@ -7,7 +7,8 @@
 #include <variant>
 #include <vector>
 
-#include "optimization/OptiSys.hpp"
+#include <sleipnir/optimization/OptimizationProblem.hpp>
+
 #include "trajopt/constraint/Constraint.hpp"
 #include "trajopt/constraint/LinePointConstraint.hpp"
 #include "trajopt/constraint/PointLineConstraint.hpp"
@@ -24,16 +25,19 @@
 
 namespace trajopt {
 
-template <ExprSys Expr>
-std::pair<Expr, Expr> RotateVector(const Expr& x, const Expr& y,
-                                   const Expr& theta) {
-  return {x * cos(theta) - y * sin(theta),   // NOLINT
-          x * sin(theta) + y * cos(theta)};  // NOLINT
+inline sleipnir::Variable fmax(const sleipnir::Variable& a,
+                               const sleipnir::Variable& b) {
+  return +0.5 * (1 + sleipnir::sign(b - a)) * (b - a) + a;
 }
 
-template <ExprSys Expr>
-std::pair<Expr, Expr> RotateConstantVector(double x, double y,
-                                           const Expr& theta) {
+inline sleipnir::Variable fmin(const sleipnir::Variable& a,
+                               const sleipnir::Variable& b) {
+  return -0.5 * (1 + sleipnir::sign(b - a)) * (b - a) + b;
+}
+
+inline std::pair<sleipnir::Variable, sleipnir::Variable> RotateVector(
+    const sleipnir::Variable& x, const sleipnir::Variable& y,
+    const sleipnir::Variable& theta) {
   return {x * cos(theta) - y * sin(theta),   // NOLINT
           x * sin(theta) + y * cos(theta)};  // NOLINT
 }
@@ -63,52 +67,50 @@ inline size_t GetIdx(const std::vector<size_t>& N, size_t wptIdx,
   return idx;
 }
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-void ApplyDiscreteTimeObjective(Opti& opti, std::vector<Expr>& dt,
-                                const std::vector<size_t> N) {
-  Expr T_tot = 0;
+inline void ApplyDiscreteTimeObjective(sleipnir::OptimizationProblem& problem,
+                                       std::vector<sleipnir::Variable>& dt,
+                                       const std::vector<size_t> N) {
+  sleipnir::Variable T_tot = 0;
   for (size_t sgmtIdx = 0; sgmtIdx < N.size(); ++sgmtIdx) {
     auto& dt_sgmt = dt.at(sgmtIdx);
     auto N_sgmt = N.at(sgmtIdx);
-    auto T_sgmt = dt_sgmt * N_sgmt;
+    auto T_sgmt = dt_sgmt * static_cast<int>(N_sgmt);
     T_tot += T_sgmt;
 
-    opti.SubjectTo(dt_sgmt >= 0);
-    opti.SetInitial(dt_sgmt, 5.0 / N_sgmt);
+    problem.SubjectTo(dt_sgmt >= 0);
+    dt_sgmt.SetValue(5.0 / N_sgmt);
   }
-  opti.Minimize(std::move(T_tot));
+  problem.Minimize(std::move(T_tot));
 }
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-void ApplyIntervalSet1dConstraint(Opti& opti, const Expr& scalar,
-                                  const IntervalSet1d& set1d) {
+inline void ApplyIntervalSet1dConstraint(sleipnir::OptimizationProblem& problem,
+                                         const sleipnir::Variable& scalar,
+                                         const IntervalSet1d& set1d) {
   if (set1d.IsExact()) {
-    opti.SubjectTo(scalar == set1d.lower);
+    problem.SubjectTo(scalar == set1d.lower);
   } else {
     if (set1d.IsLowerBounded()) {
-      opti.SubjectTo(scalar >= set1d.lower);
+      problem.SubjectTo(scalar >= set1d.lower);
     }
     if (set1d.IsUpperBounded()) {
-      opti.SubjectTo(scalar <= set1d.upper);
+      problem.SubjectTo(scalar <= set1d.upper);
     }
   }
 }
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-void ApplySet2dConstraint(Opti& opti, const Expr& vectorX, const Expr& vectorY,
-                          const Set2d& set2d) {
+inline void ApplySet2dConstraint(sleipnir::OptimizationProblem& problem,
+                                 const sleipnir::Variable& vectorX,
+                                 const sleipnir::Variable& vectorY,
+                                 const Set2d& set2d) {
   if (std::holds_alternative<RectangularSet2d>(set2d)) {
     auto& rectangularSet2d = std::get<RectangularSet2d>(set2d);
-    ApplyIntervalSet1dConstraint(opti, vectorX, rectangularSet2d.xBound);
-    ApplyIntervalSet1dConstraint(opti, vectorY, rectangularSet2d.yBound);
+    ApplyIntervalSet1dConstraint(problem, vectorX, rectangularSet2d.xBound);
+    ApplyIntervalSet1dConstraint(problem, vectorY, rectangularSet2d.yBound);
   } else if (std::holds_alternative<LinearSet2d>(set2d)) {
     auto& linearSet2d = std::get<LinearSet2d>(set2d);
     double sinTheta = std::sin(linearSet2d.theta);
     double cosTheta = std::cos(linearSet2d.theta);
-    opti.SubjectTo(vectorX * sinTheta == vectorY * cosTheta);
+    problem.SubjectTo(vectorX * sinTheta == vectorY * cosTheta);
   } else if (std::holds_alternative<EllipticalSet2d>(set2d)) {
     auto& ellipticalSet2d = std::get<EllipticalSet2d>(set2d);
     auto scaledVectorXSquared = (vectorX * vectorX) / (ellipticalSet2d.xRadius *
@@ -119,44 +121,42 @@ void ApplySet2dConstraint(Opti& opti, const Expr& vectorX, const Expr& vectorY,
     using enum EllipticalSet2d::Direction;
     switch (ellipticalSet2d.direction) {
       case kInside:
-        opti.SubjectTo(lhs <= 1.0);
+        problem.SubjectTo(lhs <= 1.0);
         break;
       case kCentered:
-        opti.SubjectTo(lhs == 1.0);
+        problem.SubjectTo(lhs == 1.0);
         break;
       case kOutside:
-        opti.SubjectTo(lhs >= 1.0);
+        problem.SubjectTo(lhs >= 1.0);
         break;
     }
   } else if (std::holds_alternative<ConeSet2d>(set2d)) {
     auto& coneSet2d = std::get<ConeSet2d>(set2d);
-    opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.upper) >=  // NOLINT
-                   vectorY * cos(coneSet2d.thetaBound.upper));   // NOLINT
-    opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.lower) <=  // NOLINT
-                   vectorY * cos(coneSet2d.thetaBound.lower));   // NOLINT
+    problem.SubjectTo(vectorX * sin(coneSet2d.thetaBound.upper) >=  // NOLINT
+                      vectorY * cos(coneSet2d.thetaBound.upper));   // NOLINT
+    problem.SubjectTo(vectorX * sin(coneSet2d.thetaBound.lower) <=  // NOLINT
+                      vectorY * cos(coneSet2d.thetaBound.lower));   // NOLINT
   }
 }
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-std::vector<double> RowSolutionValue(const Opti& opti,
-                                     const std::vector<Expr>& rowVector) {
+inline std::vector<double> RowSolutionValue(
+    const sleipnir::OptimizationProblem& problem,
+    const std::vector<sleipnir::Variable>& rowVector) {
   std::vector<double> valueRowVector;
   valueRowVector.reserve(rowVector.size());
   for (auto& expression : rowVector) {
-    valueRowVector.push_back(opti.SolutionValue(expression));
+    valueRowVector.push_back(expression.Value());
   }
   return valueRowVector;
 }
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-std::vector<std::vector<double>> MatrixSolutionValue(
-    const Opti& opti, const std::vector<std::vector<Expr>>& matrix) {
+inline std::vector<std::vector<double>> MatrixSolutionValue(
+    const sleipnir::OptimizationProblem& problem,
+    const std::vector<std::vector<sleipnir::Variable>>& matrix) {
   std::vector<std::vector<double>> valueMatrix;
   valueMatrix.reserve(matrix.size());
   for (auto& row : matrix) {
-    valueMatrix.push_back(RowSolutionValue(opti, row));
+    valueMatrix.push_back(RowSolutionValue(problem, row));
   }
   return valueMatrix;
 }
@@ -173,14 +173,12 @@ std::vector<std::vector<double>> MatrixSolutionValue(
  * @param bumperCorner the bumper corner to find the position for
  * @return the bumper corner 2 x 1 position vector
  */
-template <typename Expr>
-  requires ExprSys<Expr>
-static const std::pair<Expr, Expr> SolveRobotPointPosition(const Expr& x,
-                                                           const Expr& y,
-                                                           const Expr& theta,
-                                                           double robotPointX,
-                                                           double robotPointY) {
-  std::pair<Expr, Expr> position{0.0, 0.0};
+inline static const std::pair<sleipnir::Variable, sleipnir::Variable>
+SolveRobotPointPosition(const sleipnir::Variable& x,
+                        const sleipnir::Variable& y,
+                        const sleipnir::Variable& theta, double robotPointX,
+                        double robotPointY) {
+  std::pair<sleipnir::Variable, sleipnir::Variable> position{0.0, 0.0};
   if (robotPointX == 0.0 && robotPointY == 0.0) {
     position.first = x;
     position.second = y;
@@ -214,16 +212,18 @@ decltype(LineNumberType() + PointNumberType()) linePointDist(
   return distSquared;
 }
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-void ApplyConstraint(Opti& opti, const Expr& x, const Expr& y,
-                     const Expr& theta, const Constraint& constraint) {
+inline void ApplyConstraint(sleipnir::OptimizationProblem& problem,
+                            const sleipnir::Variable& x,
+                            const sleipnir::Variable& y,
+                            const sleipnir::Variable& theta,
+                            const Constraint& constraint) {
   if (std::holds_alternative<TranslationConstraint>(constraint)) {
     auto& translationConstraint = std::get<TranslationConstraint>(constraint);
-    ApplySet2dConstraint(opti, x, y, translationConstraint.translationBound);
+    ApplySet2dConstraint(problem, x, y, translationConstraint.translationBound);
   } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
     auto& headingConstraint = std::get<HeadingConstraint>(constraint);
-    ApplyIntervalSet1dConstraint(opti, theta, headingConstraint.headingBound);
+    ApplyIntervalSet1dConstraint(problem, theta,
+                                 headingConstraint.headingBound);
   } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
     auto linePointConstraint = std::get<LinePointConstraint>(constraint);
     auto [lineStartX, lineStartY] = SolveRobotPointPosition(
@@ -240,7 +240,7 @@ void ApplyConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto& distInterval = linePointConstraint.distance;
     auto distIntervalSquared = IntervalSet1d(std::pow(distInterval.lower, 2),
                                              std::pow(distInterval.upper, 2));
-    ApplyIntervalSet1dConstraint(opti, distSquared, distIntervalSquared);
+    ApplyIntervalSet1dConstraint(problem, distSquared, distIntervalSquared);
   } else if (std::holds_alternative<PointLineConstraint>(constraint)) {
     auto pointLineConstraint = std::get<PointLineConstraint>(constraint);
     double lineStartX = pointLineConstraint.fieldLineStartX;
@@ -256,7 +256,7 @@ void ApplyConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto& distInterval = pointLineConstraint.distance;
     auto distIntervalSquared = IntervalSet1d(std::pow(distInterval.lower, 2),
                                              std::pow(distInterval.upper, 2));
-    ApplyIntervalSet1dConstraint(opti, distSquared, distIntervalSquared);
+    ApplyIntervalSet1dConstraint(problem, distSquared, distIntervalSquared);
   } else if (std::holds_alternative<PointPointConstraint>(constraint)) {
     auto pointPointConstraint = std::get<PointPointConstraint>(constraint);
     double robotPointX = pointPointConstraint.robotPointX;
@@ -271,7 +271,7 @@ void ApplyConstraint(Opti& opti, const Expr& x, const Expr& y,
     IntervalSet1d distSquared = pointPointConstraint.distance;
     distSquared.lower *= distSquared.lower;
     distSquared.upper *= distSquared.upper;
-    ApplyIntervalSet1dConstraint(opti, pointDistSquared, distSquared);
+    ApplyIntervalSet1dConstraint(problem, pointDistSquared, distSquared);
   }
 }
 
@@ -361,47 +361,45 @@ inline Solution GenerateLinearInitialGuess(
   return initialGuess;
 }
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-void ApplyInitialGuess(Opti& opti, const Solution& solution,
-                       std::vector<Expr>& x, std::vector<Expr>& y,
-                       std::vector<Expr>& theta, std::vector<Expr>& vx,
-                       std::vector<Expr>& vy, std::vector<Expr>& omega,
-                       std::vector<Expr>& ax, std::vector<Expr>& ay,
-                       std::vector<Expr>& alpha) {
+inline void ApplyInitialGuess(
+    sleipnir::OptimizationProblem& problem, const Solution& solution,
+    std::vector<sleipnir::Variable>& x, std::vector<sleipnir::Variable>& y,
+    std::vector<sleipnir::Variable>& theta, std::vector<sleipnir::Variable>& vx,
+    std::vector<sleipnir::Variable>& vy, std::vector<sleipnir::Variable>& omega,
+    std::vector<sleipnir::Variable>& ax, std::vector<sleipnir::Variable>& ay,
+    std::vector<sleipnir::Variable>& alpha) {
   size_t sampleTotal = x.size();
   for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
-    opti.SetInitial(x[sampleIndex], solution.x[sampleIndex]);
-    opti.SetInitial(y[sampleIndex], solution.y[sampleIndex]);
-    opti.SetInitial(theta[sampleIndex], solution.theta[sampleIndex]);
+    x[sampleIndex].SetValue(solution.x[sampleIndex]);
+    y[sampleIndex].SetValue(solution.y[sampleIndex]);
+    theta[sampleIndex].SetValue(solution.theta[sampleIndex]);
   }
-  opti.SetInitial(vx[0], 0.0);
-  opti.SetInitial(vy[0], 0.0);
-  opti.SetInitial(omega[0], 0.0);
-  opti.SetInitial(ax[0], 0.0);
-  opti.SetInitial(ay[0], 0.0);
-  opti.SetInitial(alpha[0], 0.0);
+  vx[0].SetValue(0.0);
+  vy[0].SetValue(0.0);
+  omega[0].SetValue(0.0);
+  ax[0].SetValue(0.0);
+  ay[0].SetValue(0.0);
+  alpha[0].SetValue(0.0);
   for (size_t sampleIndex = 1; sampleIndex < sampleTotal; sampleIndex++) {
-    opti.SetInitial(vx[sampleIndex],
-                    (solution.x[sampleIndex] - solution.x[sampleIndex - 1]) /
-                        solution.dt[sampleIndex]);
-    opti.SetInitial(vy[sampleIndex],
-                    (solution.y[sampleIndex] - solution.y[sampleIndex - 1]) /
-                        solution.dt[sampleIndex]);
-    opti.SetInitial(omega[sampleIndex], (solution.theta[sampleIndex] -
-                                         solution.theta[sampleIndex - 1]) /
-                                            solution.dt[sampleIndex]);
+    vx[sampleIndex].SetValue(
+        (solution.x[sampleIndex] - solution.x[sampleIndex - 1]) /
+        solution.dt[sampleIndex]);
+    vy[sampleIndex].SetValue(
+        (solution.y[sampleIndex] - solution.y[sampleIndex - 1]) /
+        solution.dt[sampleIndex]);
+    omega[sampleIndex].SetValue(
+        (solution.theta[sampleIndex] - solution.theta[sampleIndex - 1]) /
+        solution.dt[sampleIndex]);
 
-    opti.SetInitial(ax[sampleIndex], (opti.SolutionValue(vx[sampleIndex]) -
-                                      opti.SolutionValue(vx[sampleIndex - 1])) /
-                                         solution.dt[sampleIndex]);
-    opti.SetInitial(ay[sampleIndex], (opti.SolutionValue(vy[sampleIndex]) -
-                                      opti.SolutionValue(vy[sampleIndex - 1])) /
-                                         solution.dt[sampleIndex]);
-    opti.SetInitial(alpha[sampleIndex],
-                    (opti.SolutionValue(omega[sampleIndex]) -
-                     opti.SolutionValue(omega[sampleIndex - 1])) /
-                        solution.dt[sampleIndex]);
+    ax[sampleIndex].SetValue(
+        (vx[sampleIndex].Value() - vx[sampleIndex - 1].Value()) /
+        solution.dt[sampleIndex]);
+    ay[sampleIndex].SetValue(
+        (vy[sampleIndex].Value() - vy[sampleIndex - 1].Value()) /
+        solution.dt[sampleIndex]);
+    alpha[sampleIndex].SetValue(
+        (omega[sampleIndex].Value() - omega[sampleIndex - 1].Value()) /
+        solution.dt[sampleIndex]);
   }
 }
 
