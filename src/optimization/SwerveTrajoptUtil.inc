@@ -87,7 +87,9 @@ void ApplyKinematicsConstraints(
       auto alpha_n = alpha.at(idx);
       opti.SubjectTo(x_n_1 + vx_n * dt_sgmt == x_n);
       opti.SubjectTo(y_n_1 + vy_n * dt_sgmt == y_n);
-      opti.SubjectTo(theta_cos_n_1 * theta_sin_n - theta_sin_n_1 * theta_cos_n == sin(omega_n * dt_sgmt));
+      auto theta_diff_cos = (theta_cos_n * theta_cos_n_1) - (theta_sin_n* -theta_sin_n_1);
+      auto theta_diff_sin = (theta_cos_n * -theta_sin_n_1) + (theta_sin_n*theta_cos_n_1);
+      opti.SubjectTo(theta_diff_cos*sin(omega_n*dt_sgmt) == theta_diff_sin*cos(omega_n*dt_sgmt));
       //opti.SubjectTo(theta_sin_n_1 * cos(omega_n * dt_sgmt) + theta_cos_n_1 * sin(omega_n * dt_sgmt) == theta_sin_n);
       opti.SubjectTo(theta_cos_n_1 * theta_cos_n_1 + theta_sin_n_1 * theta_sin_n_1 == 1);
       opti.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);

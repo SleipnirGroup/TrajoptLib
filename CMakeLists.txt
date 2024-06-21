@@ -85,6 +85,27 @@ include(CMakeDependentOption)
 include(CTest)
 include(FetchContent)
 
+
+# fmt dependency
+set(BUILD_SHARED_LIBS_SAVE ${BUILD_SHARED_LIBS})
+set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS_SAVE})
+set(FMT_INSTALL ON)
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG        10.1.1
+)
+FetchContent_MakeAvailable(fmt)
+set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_SAVE})
+
+if (${OPTIMIZER_BACKEND} STREQUAL "casadi" AND
+    ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND
+    ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  target_compile_definitions(fmt PRIVATE _GLIBCXX_USE_CXX11_ABI=0)
+endif()
+
+target_link_libraries(TrajoptLib PUBLIC fmt)
 if(BUILD_TESTING)
     # Catch2 dependency
     fetchcontent_declare(

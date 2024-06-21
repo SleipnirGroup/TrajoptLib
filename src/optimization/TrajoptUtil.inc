@@ -124,6 +124,10 @@ void ApplySet2dConstraint(Opti& opti, const Expr& vectorX, const Expr& vectorY,
                    vectorY * cos(coneSet2d.thetaBound.upper));   // NOLINT
     opti.SubjectTo(vectorX * sin(coneSet2d.thetaBound.lower) <=  // NOLINT
                    vectorY * cos(coneSet2d.thetaBound.lower));   // NOLINT
+  } else if (std::holds_alternative<ManifoldIntervalSet2d>(set2d)) {
+    auto& manifoldSet2d = std::get<ManifoldIntervalSet2d>(set2d);
+    opti.SubjectTo((cos(manifoldSet2d.middle) * vectorX) + (sin(manifoldSet2d.middle) * vectorY) >=  // NOLINT
+      cos(manifoldSet2d.tolerance));
   }
 }
 
@@ -374,8 +378,15 @@ void ApplyInitialGuess(Opti& opti, const Solution& solution,
     opti.SetInitial(vy[sampleIndex],
                     (solution.y[sampleIndex] - solution.y[sampleIndex - 1]) /
                         solution.dt[sampleIndex]);
-    opti.SetInitial(omega[sampleIndex], (solution.theta[sampleIndex] -
-                                         solution.theta[sampleIndex - 1]) /
+    double thetacos = solution.thetacos[sampleIndex];
+    double thetasin = solution.thetasin[sampleIndex];
+    double last_thetacos = solution.thetacos[sampleIndex-1];
+    double last_thetasin = solution.thetasin[sampleIndex-1];
+    // rotate <thetacos, thetasin> by the angle of -<last_thetacos, last_thetasin>
+    // cos(-last)=last_thetacos, sin(-last) = -last_thetasin
+    double diffcos = (thetacos * last_thetacos) + (thetasin * last_thetasin);
+    double diffsin = (thetacos * -last_thetasin) + (thetasin*last_thetacos);
+    opti.SetInitial(omega[sampleIndex], (std::atan2(diffsin, diffcos)) /
                                             solution.dt[sampleIndex]);
 
     opti.SetInitial(ax[sampleIndex], (opti.SolutionValue(vx[sampleIndex]) -

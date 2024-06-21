@@ -66,8 +66,8 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     auto dy = fieldPointY - y;
     auto ux = dx / hypot(dx, dy);  // NOLINT
     auto uy = dy / hypot(dx, dy);  // NOLINT
-    auto hx = cos(theta);          // NOLINT
-    auto hy = sin(theta);          // NOLINT
+    auto hx = thetacos;          // NOLINT
+    auto hy = thetasin;          // NOLINT
     auto dot = hx * ux + hy * uy;
 
     ApplyIntervalSet1dConstraint(

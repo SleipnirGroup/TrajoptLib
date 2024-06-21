@@ -50,7 +50,7 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
     }
 
     lastFrameTime = now;
-    auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax,
+    auto soln = ConstructSwerveSolution(opti, x, y, thetacos, thetasin, vx, vy, omega, ax,
                                         ay, alpha, Fx, Fy, dt, N);
     for (auto& callback : path.callbacks) {
       callback(soln, handle);
