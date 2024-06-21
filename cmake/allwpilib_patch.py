@@ -1,23 +1,44 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import shutil
 import subprocess
 import sys
+import typing
 
 
-def make_emscripten_backtrace_a_no_op():
-    subprocess.run(
-        [
-            "git",
-            "apply",
-            "--ignore-whitespace",
-            os.path.join(
-                sys.argv[1], "cmake/allwpilib-make-emscripten-backtrace-a-no-op.patch"
-            ),
-        ],
-        check=True,
-    )
+def get_linesep(contents):
+    """Returns string containing autodetected line separator for file.
+
+    Keyword arguments:
+    contents -- file contents string
+    """
+    # Find potential line separator
+    pos = contents.find("\n")
+
+    # If a newline character was found and the character preceding it is a
+    # carriage return, assume CRLF line endings. LF line endings are assumed
+    # for empty files.
+    if pos > 0 and contents[pos - 1] == "\r":
+        return "\r\n"
+    else:
+        return "\n"
+
+
+def modify_file(filename, func: typing.Callable[[list[str]], list[str]]):
+    """
+    Reads a file, modifies the contents with func, then writes the file.
+    """
+    with open(filename, encoding="utf-8") as f:
+        contents = f.read()
+
+    sep = get_linesep(contents)
+    lines = contents.split(sep)
+    lines = func(lines)
+
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(sep.join(lines))
 
 
 def remove_protobuf_support():
@@ -43,18 +64,48 @@ def remove_protobuf_support():
         "wpimath/src/main/native/include/frc/trajectory/proto", ignore_errors=True
     )
     shutil.rmtree("wpiutil/src/main/native/thirdparty/protobuf", ignore_errors=True)
-    subprocess.run(
-        [
-            "git",
-            "apply",
-            "--ignore-whitespace",
-            os.path.join(sys.argv[1], "cmake/allwpilib-remove-protobuf-support.patch"),
-        ],
-        check=True,
-    )
+    shutil.rmtree("wpiutil/src/main/native/cpp/DataLog.cpp", ignore_errors=True)
+    shutil.rmtree("wpiutil/src/main/native/include/wpi/DataLog.h", ignore_errors=True)
+
+    filenames = [os.path.join(dp, f) for dp, dn, fn in os.walk("wpimath") for f in fn]
+
+    def fix(lines):
+        # Remove lines mentioning protobuf
+        lines = [
+            line
+            for line in lines
+            if not re.search(r"find_package(Protobuf REQUIRED)", line)
+            and "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/protobuf>" not in line
+            and not re.search(r"#include \"\w+\.pb\.h\"", line)
+            and not re.search(r"#include \"frc/.*?Proto\.h\"", line)
+        ]
+
+        # Remove protobuf_generate_cpp() call
+        filtered_lines = []
+        found = False
+        for i in range(len(lines)):
+            if lines[i].startswith("# workaround for makefiles"):
+                found = True
+            if not found:
+                filtered_lines.append(lines[i])
+            if found and lines[i].startswith(")"):
+                found = False
+        lines = filtered_lines
+
+        # Remove protobuf target from CMake libraries
+        for i in range(len(lines)):
+            lines[i] = lines[i].replace("protobuf::libprotobuf", "")
+
+        return lines
+
+    for filename in filenames:
+        modify_file(filename, fix)
 
 
-def disable_psabi_warning():
+def main():
+    remove_protobuf_support()
+
+    # Disable psabi warning
     subprocess.run(
         [
             "git",
@@ -64,12 +115,6 @@ def disable_psabi_warning():
         ],
         check=True,
     )
-
-
-def main():
-    make_emscripten_backtrace_a_no_op()
-    remove_protobuf_support()
-    disable_psabi_warning()
 
 
 if __name__ == "__main__":

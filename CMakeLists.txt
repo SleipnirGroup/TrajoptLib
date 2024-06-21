@@ -141,7 +141,7 @@ find_package(Python REQUIRED COMPONENTS Interpreter)
 fetchcontent_declare(
     wpilib
     GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
-    GIT_TAG 74f648689ecd411f7529ca3f8ac9e7eec25758bc
+    GIT_TAG e2893fc1a36720b9c3986f2fc6c9607cea35c8fd
     PATCH_COMMAND
         ${Python_EXECUTABLE}
         ${CMAKE_CURRENT_SOURCE_DIR}/cmake/allwpilib_patch.py
