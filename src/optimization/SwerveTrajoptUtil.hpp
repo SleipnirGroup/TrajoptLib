@@ -5,18 +5,19 @@
 #include <utility>
 #include <vector>
 
+#include <sleipnir/optimization/OptimizationProblem.hpp>
+
 #include "optimization/TrajoptUtil.hpp"
 #include "trajopt/drivetrain/SwerveDrivetrain.hpp"
 #include "trajopt/solution/SwerveSolution.hpp"
 
 namespace trajopt {
 
-template <typename Expr>
-  requires ExprSys<Expr>
-std::pair<Expr, Expr> SolveNetForce(const std::vector<Expr>& Fx,
-                                    const std::vector<Expr>& Fy) {
-  Expr Fx_net = 0;
-  Expr Fy_net = 0;
+inline std::pair<sleipnir::Variable, sleipnir::Variable> SolveNetForce(
+    const std::vector<sleipnir::Variable>& Fx,
+    const std::vector<sleipnir::Variable>& Fy) {
+  sleipnir::Variable Fx_net = 0;
+  sleipnir::Variable Fy_net = 0;
 
   for (auto& _Fx : Fx) {
     Fx_net += _Fx;
@@ -28,17 +29,15 @@ std::pair<Expr, Expr> SolveNetForce(const std::vector<Expr>& Fx,
   return {Fx_net, Fy_net};
 }
 
-template <typename Expr>
-  requires ExprSys<Expr>
-Expr SolveNetTorque(const Expr& theta, const std::vector<Expr>& Fx,
-                    const std::vector<Expr>& Fy,
-                    const std::vector<SwerveModule>& swerveModules) {
-  Expr tau_net = 0;
+inline sleipnir::Variable SolveNetTorque(
+    const sleipnir::Variable& theta, const std::vector<sleipnir::Variable>& Fx,
+    const std::vector<sleipnir::Variable>& Fy,
+    const std::vector<SwerveModule>& swerveModules) {
+  sleipnir::Variable tau_net = 0;
 
   for (size_t moduleIdx = 0; moduleIdx < swerveModules.size(); ++moduleIdx) {
     auto& swerveModule = swerveModules.at(moduleIdx);
-    auto [x_m, y_m] =
-        RotateConstantVector(swerveModule.x, swerveModule.y, theta);
+    auto [x_m, y_m] = RotateVector(swerveModule.x, swerveModule.y, theta);
     auto& Fx_m = Fx.at(moduleIdx);
     auto& Fy_m = Fy.at(moduleIdx);
     tau_net += x_m * Fy_m - y_m * Fx_m;
@@ -47,15 +46,18 @@ Expr SolveNetTorque(const Expr& theta, const std::vector<Expr>& Fx,
   return tau_net;
 }
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-void ApplyKinematicsConstraints(
-    Opti& opti, const std::vector<Expr>& x, const std::vector<Expr>& y,
-    const std::vector<Expr>& theta, const std::vector<Expr>& vx,
-    const std::vector<Expr>& vy, const std::vector<Expr>& omega,
-    const std::vector<Expr>& ax, const std::vector<Expr>& ay,
-    const std::vector<Expr>& alpha, const std::vector<Expr>& dt,
-    const std::vector<size_t>& N) {
+inline void ApplyKinematicsConstraints(
+    sleipnir::OptimizationProblem& problem,
+    const std::vector<sleipnir::Variable>& x,
+    const std::vector<sleipnir::Variable>& y,
+    const std::vector<sleipnir::Variable>& theta,
+    const std::vector<sleipnir::Variable>& vx,
+    const std::vector<sleipnir::Variable>& vy,
+    const std::vector<sleipnir::Variable>& omega,
+    const std::vector<sleipnir::Variable>& ax,
+    const std::vector<sleipnir::Variable>& ay,
+    const std::vector<sleipnir::Variable>& alpha,
+    const std::vector<sleipnir::Variable>& dt, const std::vector<size_t>& N) {
   size_t wptCnt = N.size() + 1;
 
   for (size_t wptIdx = 1; wptIdx < wptCnt; ++wptIdx) {
@@ -78,12 +80,12 @@ void ApplyKinematicsConstraints(
       auto ax_n = ax.at(idx);
       auto ay_n = ay.at(idx);
       auto alpha_n = alpha.at(idx);
-      opti.SubjectTo(x_n_1 + vx_n * dt_sgmt == x_n);
-      opti.SubjectTo(y_n_1 + vy_n * dt_sgmt == y_n);
-      opti.SubjectTo(theta_n_1 + omega_n * dt_sgmt == theta_n);
-      opti.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
-      opti.SubjectTo(vy_n_1 + ay_n * dt_sgmt == vy_n);
-      opti.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
+      problem.SubjectTo(x_n_1 + vx_n * dt_sgmt == x_n);
+      problem.SubjectTo(y_n_1 + vy_n * dt_sgmt == y_n);
+      problem.SubjectTo(theta_n_1 + omega_n * dt_sgmt == theta_n);
+      problem.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
+      problem.SubjectTo(vy_n_1 + ay_n * dt_sgmt == vy_n);
+      problem.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
     }
   }
 }
@@ -99,7 +101,7 @@ void ApplyKinematicsConstraints(
  * the speed and torque of each wheel. This allows the optimizer to generate
  * an efficient, smooth path that the robot can follow.
  *
- * @param opti the current optimizer upon which constraints will be applied
+ * @param problem the current optimization problem to which to apply constraints
  * @param theta (controlIntervalTotal + 1) x 1 column vector of the robot's
  * heading for each sample point
  * @param vx (controlIntervalTotal + 1) x 1 column vector of the x-coordinate
@@ -116,30 +118,30 @@ void ApplyKinematicsConstraints(
  * velocity for each sample point
  * @param swerveDrivetrain the swerve drivetrain
  */
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-void ApplyDynamicsConstraints(Opti& opti, const Expr& ax, const Expr& ay,
-                              const Expr& alpha, const Expr& Fx_net,
-                              const Expr& Fy_net, const Expr& tau_net,
-                              double mass, double moi) {
-  opti.SubjectTo(Fx_net == mass * ax);
-  opti.SubjectTo(Fy_net == mass * ay);
-  opti.SubjectTo(tau_net == moi * alpha);
+inline void ApplyDynamicsConstraints(
+    sleipnir::OptimizationProblem& problem, const sleipnir::Variable& ax,
+    const sleipnir::Variable& ay, const sleipnir::Variable& alpha,
+    const sleipnir::Variable& Fx_net, const sleipnir::Variable& Fy_net,
+    const sleipnir::Variable& tau_net, double mass, double moi) {
+  problem.SubjectTo(Fx_net == mass * ax);
+  problem.SubjectTo(Fy_net == mass * ay);
+  problem.SubjectTo(tau_net == moi * alpha);
 }
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-void ApplyPowerConstraints(Opti& opti, const Expr& theta, const Expr& vx,
-                           const Expr& vy, const Expr& omega,
-                           const std::vector<Expr>& Fx,
-                           const std::vector<Expr>& Fy,
-                           const SwerveDrivetrain& swerveDrivetrain) {
+inline void ApplyPowerConstraints(sleipnir::OptimizationProblem& problem,
+                                  const sleipnir::Variable& theta,
+                                  const sleipnir::Variable& vx,
+                                  const sleipnir::Variable& vy,
+                                  const sleipnir::Variable& omega,
+                                  const std::vector<sleipnir::Variable>& Fx,
+                                  const std::vector<sleipnir::Variable>& Fy,
+                                  const SwerveDrivetrain& swerveDrivetrain) {
   auto [vx_prime, vy_prime] = RotateVector(vx, vy, -theta);
 
   size_t moduleCount = swerveDrivetrain.modules.size();
 
-  std::vector<Expr> vx_m;
-  std::vector<Expr> vy_m;
+  std::vector<sleipnir::Variable> vx_m;
+  std::vector<sleipnir::Variable> vy_m;
   vx_m.reserve(moduleCount);
   vy_m.reserve(moduleCount);
 
@@ -159,43 +161,47 @@ void ApplyPowerConstraints(Opti& opti, const Expr& theta, const Expr& vx,
     auto _vy_m = vy_m.at(moduleIdx);
     auto Fx_m = Fx.at(moduleIdx);
     auto Fy_m = Fy.at(moduleIdx);
-    opti.SubjectTo(_vx_m * _vx_m + _vy_m * _vy_m <=
-                   maxWheelVelocity * maxWheelVelocity);
+    problem.SubjectTo(_vx_m * _vx_m + _vy_m * _vy_m <=
+                      maxWheelVelocity * maxWheelVelocity);
 
-    opti.SubjectTo(Fx_m * Fx_m + Fy_m * Fy_m <= maxForce * maxForce);
+    problem.SubjectTo(Fx_m * Fx_m + Fy_m * Fy_m <= maxForce * maxForce);
   }
 }
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
-SwerveSolution ConstructSwerveSolution(
-    const Opti& opti, const std::vector<Expr>& x, const std::vector<Expr>& y,
-    const std::vector<Expr>& theta, const std::vector<Expr>& vx,
-    const std::vector<Expr>& vy, const std::vector<Expr>& omega,
-    const std::vector<Expr>& ax, const std::vector<Expr>& ay,
-    const std::vector<Expr>& alpha, const std::vector<std::vector<Expr>>& Fx,
-    const std::vector<std::vector<Expr>>& Fy, const std::vector<Expr>& dt,
-    const std::vector<size_t>& N) {
+inline SwerveSolution ConstructSwerveSolution(
+    const sleipnir::OptimizationProblem& problem,
+    const std::vector<sleipnir::Variable>& x,
+    const std::vector<sleipnir::Variable>& y,
+    const std::vector<sleipnir::Variable>& theta,
+    const std::vector<sleipnir::Variable>& vx,
+    const std::vector<sleipnir::Variable>& vy,
+    const std::vector<sleipnir::Variable>& omega,
+    const std::vector<sleipnir::Variable>& ax,
+    const std::vector<sleipnir::Variable>& ay,
+    const std::vector<sleipnir::Variable>& alpha,
+    const std::vector<std::vector<sleipnir::Variable>>& Fx,
+    const std::vector<std::vector<sleipnir::Variable>>& Fy,
+    const std::vector<sleipnir::Variable>& dt, const std::vector<size_t>& N) {
   std::vector<double> dtPerSamp;
   for (size_t sgmtIdx = 0; sgmtIdx < N.size(); ++sgmtIdx) {
     size_t N_sgmt = N.at(sgmtIdx);
-    Expr dt_sgmt = dt.at(sgmtIdx);
-    double dt_val = opti.SolutionValue(dt_sgmt);
+    sleipnir::Variable dt_sgmt = dt.at(sgmtIdx);
+    double dt_val = dt_sgmt.Value();
     for (size_t i = 0; i < N_sgmt; ++i) {
       dtPerSamp.push_back(dt_val);
     }
   }
   return SwerveSolution{
-      {{dtPerSamp, RowSolutionValue(opti, x), RowSolutionValue(opti, y),
-        RowSolutionValue(opti, theta)},
-       RowSolutionValue(opti, vx),
-       RowSolutionValue(opti, vy),
-       RowSolutionValue(opti, omega),
-       RowSolutionValue(opti, ax),
-       RowSolutionValue(opti, ay),
-       RowSolutionValue(opti, alpha)},
-      MatrixSolutionValue(opti, Fx),
-      MatrixSolutionValue(opti, Fy)};
+      {{dtPerSamp, RowSolutionValue(problem, x), RowSolutionValue(problem, y),
+        RowSolutionValue(problem, theta)},
+       RowSolutionValue(problem, vx),
+       RowSolutionValue(problem, vy),
+       RowSolutionValue(problem, omega),
+       RowSolutionValue(problem, ax),
+       RowSolutionValue(problem, ay),
+       RowSolutionValue(problem, alpha)},
+      MatrixSolutionValue(problem, Fx),
+      MatrixSolutionValue(problem, Fy)};
 }
 
 }  // namespace trajopt

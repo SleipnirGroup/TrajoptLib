@@ -4,11 +4,14 @@
 
 #include <algorithm>
 #include <chrono>
+#include <functional>
 #include <string>
 #include <vector>
 
+#include <sleipnir/optimization/OptimizationProblem.hpp>
+
+#include "optimization/Cancellation.hpp"
 #include "optimization/HolonomicTrajoptUtil.hpp"
-#include "optimization/OptiSys.hpp"
 #include "optimization/SwerveTrajoptUtil.hpp"
 #include "optimization/TrajoptUtil.hpp"
 #include "trajopt/drivetrain/SwerveDrivetrain.hpp"
@@ -18,8 +21,6 @@
 
 namespace trajopt {
 
-template <typename Expr, typename Opti>
-  requires OptiSys<Expr, Opti>
 class SwerveDiscreteOptimal {
  public:
   /**
@@ -28,7 +29,7 @@ class SwerveDiscreteOptimal {
   SwerveDiscreteOptimal(const SwervePath& path, const std::vector<size_t>& N,
                         const Solution& initialGuess, int64_t handle = 0)
       : path(path), N(N) {
-    opti.AddIntermediateCallback([this, handle = handle] {
+    callbacks.emplace_back([this, handle = handle] {
       constexpr int fps = 60;
       constexpr std::chrono::duration<double> timePerFrame{1.0 / fps};
 
@@ -41,8 +42,8 @@ class SwerveDiscreteOptimal {
 
       lastFrameTime = now;
 
-      auto soln = ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax,
-                                          ay, alpha, Fx, Fy, dt, this->N);
+      auto soln = ConstructSwerveSolution(problem, x, y, theta, vx, vy, omega,
+                                          ax, ay, alpha, Fx, Fy, dt, this->N);
       for (auto& callback : this->path.callbacks) {
         callback(soln, handle);
       }
@@ -74,19 +75,19 @@ class SwerveDiscreteOptimal {
     dt.reserve(sgmtCnt);
 
     for (size_t idx = 0; idx < sampTot; ++idx) {
-      x.emplace_back(opti.DecisionVariable());
-      y.emplace_back(opti.DecisionVariable());
-      theta.emplace_back(opti.DecisionVariable());
-      vx.emplace_back(opti.DecisionVariable());
-      vy.emplace_back(opti.DecisionVariable());
-      omega.emplace_back(opti.DecisionVariable());
-      ax.emplace_back(opti.DecisionVariable());
-      ay.emplace_back(opti.DecisionVariable());
-      alpha.emplace_back(opti.DecisionVariable());
+      x.emplace_back(problem.DecisionVariable());
+      y.emplace_back(problem.DecisionVariable());
+      theta.emplace_back(problem.DecisionVariable());
+      vx.emplace_back(problem.DecisionVariable());
+      vy.emplace_back(problem.DecisionVariable());
+      omega.emplace_back(problem.DecisionVariable());
+      ax.emplace_back(problem.DecisionVariable());
+      ay.emplace_back(problem.DecisionVariable());
+      alpha.emplace_back(problem.DecisionVariable());
 
       for (size_t moduleIdx = 0; moduleIdx < moduleCnt; ++moduleIdx) {
-        Fx.at(idx).emplace_back(opti.DecisionVariable());
-        Fy.at(idx).emplace_back(opti.DecisionVariable());
+        Fx.at(idx).emplace_back(problem.DecisionVariable());
+        Fy.at(idx).emplace_back(problem.DecisionVariable());
       }
     }
 
@@ -107,27 +108,27 @@ class SwerveDiscreteOptimal {
     }
 
     for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
-      dt.emplace_back(opti.DecisionVariable());
+      dt.emplace_back(problem.DecisionVariable());
       for (auto module : path.drivetrain.modules) {
-        opti.SubjectTo(dt.at(sgmtIdx) * module.wheelRadius *
-                           module.wheelMaxAngularVelocity <=
-                       minWidth);
+        problem.SubjectTo(dt.at(sgmtIdx) * module.wheelRadius *
+                              module.wheelMaxAngularVelocity <=
+                          minWidth);
       }
     }
 
-    ApplyDiscreteTimeObjective(opti, dt, N);
-    ApplyKinematicsConstraints(opti, x, y, theta, vx, vy, omega, ax, ay, alpha,
-                               dt, N);
+    ApplyDiscreteTimeObjective(problem, dt, N);
+    ApplyKinematicsConstraints(problem, x, y, theta, vx, vy, omega, ax, ay,
+                               alpha, dt, N);
 
     for (size_t idx = 0; idx < sampTot; ++idx) {
       auto [Fx_net, Fy_net] = SolveNetForce(Fx.at(idx), Fy.at(idx));
       ApplyDynamicsConstraints(
-          opti, ax.at(idx), ay.at(idx), alpha.at(idx), Fx_net, Fy_net,
+          problem, ax.at(idx), ay.at(idx), alpha.at(idx), Fx_net, Fy_net,
           SolveNetTorque(theta.at(idx), Fx.at(idx), Fy.at(idx),
                          path.drivetrain.modules),
           path.drivetrain.mass, path.drivetrain.moi);
 
-      ApplyPowerConstraints(opti, theta.at(idx), vx.at(idx), vy.at(idx),
+      ApplyPowerConstraints(problem, theta.at(idx), vx.at(idx), vy.at(idx),
                             omega.at(idx), Fx.at(idx), Fy.at(idx),
                             path.drivetrain);
     }
@@ -135,9 +136,10 @@ class SwerveDiscreteOptimal {
     for (size_t wptIdx = 0; wptIdx < wptCnt; ++wptIdx) {
       for (auto& constraint : path.waypoints.at(wptIdx).waypointConstraints) {
         size_t idx = GetIdx(N, wptIdx + 1, 0) - 1;  // first idx of next wpt - 1
-        ApplyHolonomicConstraint(
-            opti, x.at(idx), y.at(idx), theta.at(idx), vx.at(idx), vy.at(idx),
-            omega.at(idx), ax.at(idx), ay.at(idx), alpha.at(idx), constraint);
+        ApplyHolonomicConstraint(problem, x.at(idx), y.at(idx), theta.at(idx),
+                                 vx.at(idx), vy.at(idx), omega.at(idx),
+                                 ax.at(idx), ay.at(idx), alpha.at(idx),
+                                 constraint);
       }
     }  // TODO: try changing the path struct so instead of having waypoint
        // objects
@@ -149,14 +151,15 @@ class SwerveDiscreteOptimal {
         size_t startIdx = GetIdx(N, sgmtIdx + 1, 0);
         size_t endIdx = GetIdx(N, sgmtIdx + 2, 0);
         for (size_t idx = startIdx; idx < endIdx; ++idx) {
-          ApplyHolonomicConstraint(
-              opti, x.at(idx), y.at(idx), theta.at(idx), vx.at(idx), vy.at(idx),
-              omega.at(idx), ax.at(idx), ay.at(idx), alpha.at(idx), constraint);
+          ApplyHolonomicConstraint(problem, x.at(idx), y.at(idx), theta.at(idx),
+                                   vx.at(idx), vy.at(idx), omega.at(idx),
+                                   ax.at(idx), ay.at(idx), alpha.at(idx),
+                                   constraint);
         }
       }
     }
 
-    ApplyInitialGuess(opti, initialGuess, x, y, theta, vx, vy, omega, ax, ay,
+    ApplyInitialGuess(problem, initialGuess, x, y, theta, vx, vy, omega, ax, ay,
                       alpha);
   }
 
@@ -170,11 +173,25 @@ class SwerveDiscreteOptimal {
    *   failure reason.
    */
   expected<SwerveSolution, std::string> Generate(bool diagnostics = false) {
-    if (auto sol = opti.Solve(diagnostics); sol.has_value()) {
-      return ConstructSwerveSolution(opti, x, y, theta, vx, vy, omega, ax, ay,
-                                     alpha, Fx, Fy, dt, N);
+    GetCancellationFlag() = 0;
+    problem.Callback([=, this](const sleipnir::SolverIterationInfo&) -> bool {
+      for (auto& callback : callbacks) {
+        callback();
+      }
+      return trajopt::GetCancellationFlag();
+    });
+
+    // tolerance of 1e-4 is 0.1 mm
+    auto status =
+        problem.Solve({.tolerance = 1e-4, .diagnostics = diagnostics});
+
+    if (static_cast<int>(status.exitCondition) < 0 ||
+        status.exitCondition ==
+            sleipnir::SolverExitCondition::kCallbackRequestedStop) {
+      return unexpected{std::string{sleipnir::ToMessage(status.exitCondition)}};
     } else {
-      return unexpected{sol.error()};
+      return ConstructSwerveSolution(problem, x, y, theta, vx, vy, omega, ax,
+                                     ay, alpha, Fx, Fy, dt, N);
     }
   }
 
@@ -185,27 +202,28 @@ class SwerveDiscreteOptimal {
   const SwervePath& path;
 
   /// State Variables
-  std::vector<Expr> x;
-  std::vector<Expr> y;
-  std::vector<Expr> theta;
-  std::vector<Expr> vx;
-  std::vector<Expr> vy;
-  std::vector<Expr> omega;
-  std::vector<Expr> ax;
-  std::vector<Expr> ay;
-  std::vector<Expr> alpha;
+  std::vector<sleipnir::Variable> x;
+  std::vector<sleipnir::Variable> y;
+  std::vector<sleipnir::Variable> theta;
+  std::vector<sleipnir::Variable> vx;
+  std::vector<sleipnir::Variable> vy;
+  std::vector<sleipnir::Variable> omega;
+  std::vector<sleipnir::Variable> ax;
+  std::vector<sleipnir::Variable> ay;
+  std::vector<sleipnir::Variable> alpha;
 
   /// Input Variables
-  std::vector<std::vector<Expr>> Fx;
-  std::vector<std::vector<Expr>> Fy;
+  std::vector<std::vector<sleipnir::Variable>> Fx;
+  std::vector<std::vector<sleipnir::Variable>> Fy;
 
   /// Time Variables
-  std::vector<Expr> dt;
+  std::vector<sleipnir::Variable> dt;
 
   /// Discretization Constants
   const std::vector<size_t>& N;
 
-  Opti opti;
+  sleipnir::OptimizationProblem problem;
+  std::vector<std::function<void()>> callbacks;
 };
 
 }  // namespace trajopt
