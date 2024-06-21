@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "trajopt/SymbolExports.hpp"
 #include "trajopt/set/IntervalSet1d.hpp"
+#include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
 

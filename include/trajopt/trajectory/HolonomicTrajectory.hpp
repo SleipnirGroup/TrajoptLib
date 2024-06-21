@@ -5,10 +5,10 @@
 #include <utility>
 #include <vector>
 
-#include "trajopt/SymbolExports.hpp"
 #include "trajopt/solution/HolonomicSolution.hpp"
 #include "trajopt/solution/SwerveSolution.hpp"
 #include "trajopt/trajectory/HolonomicTrajectorySample.hpp"
+#include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
 

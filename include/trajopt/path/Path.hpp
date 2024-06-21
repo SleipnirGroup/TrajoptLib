@@ -7,12 +7,12 @@
 #include <functional>
 #include <vector>
 
-#include "trajopt/SymbolExports.hpp"
 #include "trajopt/constraint/differential/DifferentialConstraint.hpp"
 #include "trajopt/constraint/holonomic/HolonomicConstraint.hpp"
 #include "trajopt/drivetrain/DifferentialDrivetrain.hpp"
 #include "trajopt/drivetrain/SwerveDrivetrain.hpp"
 #include "trajopt/solution/SwerveSolution.hpp"
+#include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
 

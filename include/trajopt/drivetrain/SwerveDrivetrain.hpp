@@ -4,8 +4,8 @@
 
 #include <vector>
 
-#include "trajopt/SymbolExports.hpp"
 #include "trajopt/drivetrain/SwerveModule.hpp"
+#include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
 
