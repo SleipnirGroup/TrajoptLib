@@ -4,8 +4,8 @@
 
 #include <vector>
 
-#include "trajopt/SymbolExports.hpp"
 #include "trajopt/obstacle/ObstaclePoint.hpp"
+#include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
 

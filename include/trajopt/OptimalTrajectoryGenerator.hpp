@@ -6,10 +6,10 @@
 
 #include <string>
 
-#include "trajopt/SymbolExports.hpp"
 #include "trajopt/expected"
 #include "trajopt/path/SwervePathBuilder.hpp"
 #include "trajopt/solution/SwerveSolution.hpp"
+#include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
 

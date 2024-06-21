@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "trajopt/SymbolExports.hpp"
 #include "trajopt/constraint/Constraint.hpp"
 #include "trajopt/set/Set2d.hpp"
+#include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
 
