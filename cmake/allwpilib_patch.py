@@ -67,6 +67,21 @@ def remove_protobuf_support():
     shutil.rmtree("wpiutil/src/main/native/cpp/DataLog.cpp", ignore_errors=True)
     shutil.rmtree("wpiutil/src/main/native/include/wpi/DataLog.h", ignore_errors=True)
 
+    modify_file(
+        "CMakeLists.txt",
+        lambda lines: [
+            line for line in lines if line != "find_package(Protobuf REQUIRED)"
+        ],
+    )
+    modify_file(
+        "wpiutil/CMakeLists.txt",
+        lambda lines: [line.replace("protobuf::libprotobuf", "") for line in lines],
+    )
+    modify_file(
+        "wpiutil/wpiutil-config.cmake.in",
+        lambda lines: [line for line in lines if line != "find_dependency(Protobuf)"],
+    )
+
     filenames = [os.path.join(dp, f) for dp, dn, fn in os.walk("wpimath") for f in fn]
 
     def fix(lines):
@@ -74,9 +89,7 @@ def remove_protobuf_support():
         lines = [
             line
             for line in lines
-            if not re.search(r"find_dependency(Protobuf)", line)
-            if not re.search(r"find_package(Protobuf REQUIRED)", line)
-            and "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/protobuf>" not in line
+            if "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/protobuf>" not in line
             and not re.search(r"#include \"\w+\.pb\.h\"", line)
             and not re.search(r"#include \"frc/.*?Proto\.h\"", line)
         ]
@@ -92,10 +105,6 @@ def remove_protobuf_support():
             if found and lines[i].startswith(")"):
                 found = False
         lines = filtered_lines
-
-        # Remove protobuf target from CMake libraries
-        for i in range(len(lines)):
-            lines[i] = lines[i].replace("protobuf::libprotobuf", "")
 
         return lines
 
