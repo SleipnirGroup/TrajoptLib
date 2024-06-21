@@ -4,8 +4,9 @@
 
 #include <utility>
 
-#include "frc/spline/CubicHermiteSpline.h"
-#include "spline/CubicHermiteSpline1d.h"
+#include <frc/spline/CubicHermiteSpline.h>
+
+#include "spline/CubicHermiteSpline1d.hpp"
 #include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {

@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "frc/spline/SplineParameterizer.h"
+#include <frc/spline/SplineParameterizer.h>
 
 constexpr units::meter_t frc::SplineParameterizer::kMaxDx;
 constexpr units::meter_t frc::SplineParameterizer::kMaxDy;

@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "spline/CubicHermitePoseSplineHolonomic.h"
+#include "spline/CubicHermitePoseSplineHolonomic.hpp"
 #include "trajopt/path/InitialGuessPoint.hpp"
 
 namespace trajopt {

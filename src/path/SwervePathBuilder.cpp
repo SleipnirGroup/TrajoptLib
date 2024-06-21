@@ -2,12 +2,6 @@
 
 #include "trajopt/path/SwervePathBuilder.hpp"
 
-#include <frc/MathUtil.h>
-#include <frc/geometry/Translation2d.h>
-#include <frc/kinematics/SwerveDriveKinematics.h>
-#include <frc/trajectory/Trajectory.h>
-#include <frc/trajectory/TrajectoryGenerator.h>
-#include <frc/trajectory/TrajectoryParameterizer.h>
 #include <stdint.h>
 #include <wpi/array.h>
 
@@ -15,11 +9,18 @@
 #include <cmath>
 #include <utility>
 
+#include <frc/MathUtil.h>
+#include <frc/geometry/Translation2d.h>
+#include <frc/kinematics/SwerveDriveKinematics.h>
+#include <frc/trajectory/Trajectory.h>
+#include <frc/trajectory/TrajectoryGenerator.h>
+#include <frc/trajectory/TrajectoryParameterizer.h>
+
 #include "optimization/Cancellation.hpp"
 #include "optimization/TrajoptUtil.hpp"
-#include "spline/CubicHermitePoseSplineHolonomic.h"
-#include "spline/SplineParameterizer.h"
-#include "spline/SplineUtil.h"
+#include "spline/CubicHermitePoseSplineHolonomic.hpp"
+#include "spline/SplineParameterizer.hpp"
+#include "spline/SplineUtil.hpp"
 #include "trajopt/constraint/AngularVelocityConstraint.hpp"
 #include "trajopt/constraint/Constraint.hpp"
 #include "trajopt/constraint/HeadingConstraint.hpp"

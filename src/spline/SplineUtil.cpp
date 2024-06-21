@@ -1,14 +1,14 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "spline/SplineUtil.h"
+#include "spline/SplineUtil.hpp"
+
+#include <vector>
 
 #include <frc/geometry/Rotation2d.h>
 #include <frc/geometry/Translation2d.h>
 #include <frc/spline/SplineHelper.h>
 
-#include <vector>
-
-#include "spline/CubicHermitePoseSplineHolonomic.h"
+#include "spline/CubicHermitePoseSplineHolonomic.hpp"
 
 namespace trajopt {
 

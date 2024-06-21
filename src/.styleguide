@@ -14,7 +14,8 @@ modifiableFileExclude {
 
 includeOtherLibs {
   ^Eigen/
-  ^casadi/
+  ^frc/
   ^rust/
   ^sleipnir/
+  ^units/
 }
