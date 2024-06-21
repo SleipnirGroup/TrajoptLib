@@ -169,7 +169,6 @@ inline void ApplyPowerConstraints(sleipnir::OptimizationProblem& problem,
 }
 
 inline SwerveSolution ConstructSwerveSolution(
-    const sleipnir::OptimizationProblem& problem,
     std::vector<sleipnir::Variable>& x, std::vector<sleipnir::Variable>& y,
     std::vector<sleipnir::Variable>& theta, std::vector<sleipnir::Variable>& vx,
     std::vector<sleipnir::Variable>& vy, std::vector<sleipnir::Variable>& omega,
@@ -187,17 +186,16 @@ inline SwerveSolution ConstructSwerveSolution(
       dtPerSamp.push_back(dt_val);
     }
   }
-  return SwerveSolution{
-      {{dtPerSamp, RowSolutionValue(problem, x), RowSolutionValue(problem, y),
-        RowSolutionValue(problem, theta)},
-       RowSolutionValue(problem, vx),
-       RowSolutionValue(problem, vy),
-       RowSolutionValue(problem, omega),
-       RowSolutionValue(problem, ax),
-       RowSolutionValue(problem, ay),
-       RowSolutionValue(problem, alpha)},
-      MatrixSolutionValue(problem, Fx),
-      MatrixSolutionValue(problem, Fy)};
+  return SwerveSolution{{{dtPerSamp, RowSolutionValue(x), RowSolutionValue(y),
+                          RowSolutionValue(theta)},
+                         RowSolutionValue(vx),
+                         RowSolutionValue(vy),
+                         RowSolutionValue(omega),
+                         RowSolutionValue(ax),
+                         RowSolutionValue(ay),
+                         RowSolutionValue(alpha)},
+                        MatrixSolutionValue(Fx),
+                        MatrixSolutionValue(Fy)};
 }
 
 }  // namespace trajopt

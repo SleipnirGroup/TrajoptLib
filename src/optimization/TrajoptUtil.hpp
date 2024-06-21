@@ -140,7 +140,6 @@ inline void ApplySet2dConstraint(sleipnir::OptimizationProblem& problem,
 }
 
 inline std::vector<double> RowSolutionValue(
-    const sleipnir::OptimizationProblem& problem,
     std::vector<sleipnir::Variable>& rowVector) {
   std::vector<double> valueRowVector;
   valueRowVector.reserve(rowVector.size());
@@ -151,12 +150,11 @@ inline std::vector<double> RowSolutionValue(
 }
 
 inline std::vector<std::vector<double>> MatrixSolutionValue(
-    const sleipnir::OptimizationProblem& problem,
     std::vector<std::vector<sleipnir::Variable>>& matrix) {
   std::vector<std::vector<double>> valueMatrix;
   valueMatrix.reserve(matrix.size());
   for (auto& row : matrix) {
-    valueMatrix.push_back(RowSolutionValue(problem, row));
+    valueMatrix.push_back(RowSolutionValue(row));
   }
   return valueMatrix;
 }
@@ -362,11 +360,11 @@ inline Solution GenerateLinearInitialGuess(
 }
 
 inline void ApplyInitialGuess(
-    sleipnir::OptimizationProblem& problem, const Solution& solution,
-    std::vector<sleipnir::Variable>& x, std::vector<sleipnir::Variable>& y,
-    std::vector<sleipnir::Variable>& theta, std::vector<sleipnir::Variable>& vx,
-    std::vector<sleipnir::Variable>& vy, std::vector<sleipnir::Variable>& omega,
-    std::vector<sleipnir::Variable>& ax, std::vector<sleipnir::Variable>& ay,
+    const Solution& solution, std::vector<sleipnir::Variable>& x,
+    std::vector<sleipnir::Variable>& y, std::vector<sleipnir::Variable>& theta,
+    std::vector<sleipnir::Variable>& vx, std::vector<sleipnir::Variable>& vy,
+    std::vector<sleipnir::Variable>& omega, std::vector<sleipnir::Variable>& ax,
+    std::vector<sleipnir::Variable>& ay,
     std::vector<sleipnir::Variable>& alpha) {
   size_t sampleTotal = x.size();
   for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {

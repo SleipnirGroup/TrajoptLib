@@ -42,8 +42,8 @@ class SwerveDiscreteOptimal {
 
       lastFrameTime = now;
 
-      auto soln = ConstructSwerveSolution(problem, x, y, theta, vx, vy, omega,
-                                          ax, ay, alpha, Fx, Fy, dt, this->N);
+      auto soln = ConstructSwerveSolution(x, y, theta, vx, vy, omega, ax, ay,
+                                          alpha, Fx, Fy, dt, this->N);
       for (auto& callback : this->path.callbacks) {
         callback(soln, handle);
       }
@@ -159,8 +159,7 @@ class SwerveDiscreteOptimal {
       }
     }
 
-    ApplyInitialGuess(problem, initialGuess, x, y, theta, vx, vy, omega, ax, ay,
-                      alpha);
+    ApplyInitialGuess(initialGuess, x, y, theta, vx, vy, omega, ax, ay, alpha);
   }
 
   /**
@@ -190,8 +189,8 @@ class SwerveDiscreteOptimal {
             sleipnir::SolverExitCondition::kCallbackRequestedStop) {
       return unexpected{std::string{sleipnir::ToMessage(status.exitCondition)}};
     } else {
-      return ConstructSwerveSolution(problem, x, y, theta, vx, vy, omega, ax,
-                                     ay, alpha, Fx, Fy, dt, N);
+      return ConstructSwerveSolution(x, y, theta, vx, vy, omega, ax, ay, alpha,
+                                     Fx, Fy, dt, N);
     }
   }
 
