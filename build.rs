@@ -48,7 +48,7 @@ fn main() {
         println!("cargo:rustc-link-lib=fmt");
     }
 
-    println!("cargo:rerun-if-changed=src/trajoptlibrust.h");
+    println!("cargo:rerun-if-changed=src/trajoptlibrust.hpp");
     println!("cargo:rerun-if-changed=src/trajoptlibrust.cpp");
     println!("cargo:rerun-if-changed=src/lib.rs");
 }

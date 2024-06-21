@@ -1,17 +1,14 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "optimization/SleipnirOpti.h"
+#include "optimization/SleipnirOpti.hpp"
 
-#include <cstddef>
-#include <limits>
-#include <memory>
 #include <vector>
 
 #include <sleipnir/autodiff/Variable.hpp>
 #include <sleipnir/optimization/Constraints.hpp>
 #include <sleipnir/optimization/OptimizationProblem.hpp>
 
-#include "optimization/Cancellation.h"
+#include "optimization/Cancellation.hpp"
 
 namespace trajopt {
 

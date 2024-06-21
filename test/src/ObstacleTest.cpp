@@ -3,9 +3,9 @@
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
-#include <trajopt/OptimalTrajectoryGenerator.h>
-#include <trajopt/path/InitialGuessPoint.h>
-#include <trajopt/path/SwervePathBuilder.h>
+#include <trajopt/OptimalTrajectoryGenerator.hpp>
+#include <trajopt/path/InitialGuessPoint.hpp>
+#include <trajopt/path/SwervePathBuilder.hpp>
 
 TEST_CASE("Obstacle - Linear initial guess", "[Obstacle]") {
   SKIP("Fails");
