@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "trajopt/geometry/Translation2.hpp"
 #include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
@@ -10,11 +11,10 @@ namespace trajopt {
  * Specifies a point on the field at which the robot should point.
  */
 struct TRAJOPT_DLLEXPORT PointAtConstraint {
-  /// field point x (meters)
-  double fieldPointX;
-  /// field point y (meters)
-  double fieldPointY;
-  /// the allowed robot heading tolerance (radians), must be positive
+  /// Field point (meters).
+  Translation2d fieldPoint;
+
+  /// The allowed robot heading tolerance (radians), must be positive.
   double headingTolerance;
 };
 

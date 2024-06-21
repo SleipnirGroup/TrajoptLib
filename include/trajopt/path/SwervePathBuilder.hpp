@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "trajopt/drivetrain/SwerveDrivetrain.hpp"
+#include "trajopt/geometry/Pose2.hpp"
 #include "trajopt/obstacle/Bumpers.hpp"
 #include "trajopt/obstacle/Obstacle.hpp"
-#include "trajopt/path/InitialGuessPoint.hpp"
 #include "trajopt/path/Path.hpp"
 #include "trajopt/solution/Solution.hpp"
 #include "trajopt/solution/SwerveSolution.hpp"
@@ -77,7 +77,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    * @param wptIdx the waypoint to apply the guess to
    * @param poseGuess the guess of the robot's pose
    */
-  void WptInitialGuessPoint(size_t wptIdx, const InitialGuessPoint& poseGuess);
+  void WptInitialGuessPoint(size_t wptIdx, const Pose2d& poseGuess);
 
   /**
    * Add a sequence of initial guess points between two waypoints. The points
@@ -90,8 +90,8 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    *                 comes immediately after
    * @param sgmtPoseGuess the sequence of initial guess points
    */
-  void SgmtInitialGuessPoints(
-      size_t fromIdx, const std::vector<InitialGuessPoint>& sgmtPoseGuess);
+  void SgmtInitialGuessPoints(size_t fromIdx,
+                              const std::vector<Pose2d>& sgmtPoseGuess);
 
   /**
    * Specify the required direction of the velocity vector of the robot
@@ -315,7 +315,7 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
 
   std::vector<Bumpers> bumpers;
 
-  std::vector<std::vector<InitialGuessPoint>> initialGuessPoints;
+  std::vector<std::vector<Pose2d>> initialGuessPoints;
   std::vector<size_t> controlIntervalCounts;
 
   void NewWpts(size_t finalIndex);

@@ -2,13 +2,16 @@
 
 #pragma once
 
+#include <numeric>
 #include <utility>
 #include <vector>
 
+#include <sleipnir/autodiff/Variable.hpp>
 #include <sleipnir/optimization/OptimizationProblem.hpp>
 
 #include "optimization/TrajoptUtil.hpp"
 #include "trajopt/drivetrain/SwerveDrivetrain.hpp"
+#include "trajopt/geometry/Translation2.hpp"
 #include "trajopt/solution/SwerveSolution.hpp"
 
 namespace trajopt {
@@ -16,33 +19,25 @@ namespace trajopt {
 inline std::pair<sleipnir::Variable, sleipnir::Variable> SolveNetForce(
     const std::vector<sleipnir::Variable>& Fx,
     const std::vector<sleipnir::Variable>& Fy) {
-  sleipnir::Variable Fx_net = 0;
-  sleipnir::Variable Fy_net = 0;
-
-  for (auto& _Fx : Fx) {
-    Fx_net += _Fx;
-  }
-  for (auto& _Fy : Fy) {
-    Fy_net += _Fy;
-  }
-
-  return {Fx_net, Fy_net};
+  return {std::accumulate(Fx.begin(), Fx.end(), sleipnir::Variable{0.0}),
+          std::accumulate(Fy.begin(), Fy.end(), sleipnir::Variable{0.0})};
 }
 
 inline sleipnir::Variable SolveNetTorque(
-    const sleipnir::Variable& thetacos, const sleipnir::Variable& thetasin,
-    const std::vector<sleipnir::Variable>& Fx,
+    const Rotation2v& theta, const std::vector<sleipnir::Variable>& Fx,
     const std::vector<sleipnir::Variable>& Fy,
     const std::vector<SwerveModule>& swerveModules) {
   sleipnir::Variable tau_net = 0;
 
   for (size_t moduleIdx = 0; moduleIdx < swerveModules.size(); ++moduleIdx) {
     auto& swerveModule = swerveModules.at(moduleIdx);
-    auto x_m = swerveModule.x * thetacos - swerveModule.y * thetasin;
-    auto y_m = swerveModule.x * thetasin + swerveModule.y * thetacos;
-    auto& Fx_m = Fx.at(moduleIdx);
-    auto& Fy_m = Fy.at(moduleIdx);
-    tau_net += x_m * Fy_m - y_m * Fx_m;
+
+    const auto& [x_m, y_m] = swerveModule.translation.RotateBy(theta);
+    Translation2v r{x_m, y_m};
+
+    Translation2v F{Fx.at(moduleIdx), Fy.at(moduleIdx)};
+
+    tau_net += r.Cross(F);
   }
 
   return tau_net;
@@ -72,10 +67,8 @@ inline void ApplyKinematicsConstraints(
       auto x_n_1 = x.at(idx - 1);
       auto y_n = y.at(idx);
       auto y_n_1 = y.at(idx - 1);
-      auto theta_cos_n = thetacos.at(idx);
-      auto theta_cos_n_1 = thetacos.at(idx - 1);
-      auto theta_sin_n = thetasin.at(idx);
-      auto theta_sin_n_1 = thetasin.at(idx - 1);
+      Rotation2v theta_n{thetacos.at(idx), thetasin.at(idx)};
+      Rotation2v theta_n_1{thetacos.at(idx - 1), thetasin.at(idx - 1)};
       auto vx_n = vx.at(idx);
       auto vx_n_1 = vx.at(idx - 1);
       auto vy_n = vy.at(idx);
@@ -85,13 +78,12 @@ inline void ApplyKinematicsConstraints(
       auto ax_n = ax.at(idx);
       auto ay_n = ay.at(idx);
       auto alpha_n = alpha.at(idx);
+
       problem.SubjectTo(x_n_1 + vx_n * dt_sgmt == x_n);
       problem.SubjectTo(y_n_1 + vy_n * dt_sgmt == y_n);
-      // Rotate theta_n by -theta_n_1 to get the difference
-      auto theta_diff_cos =
-          (theta_cos_n * theta_cos_n_1) - (theta_sin_n * -theta_sin_n_1);
-      auto theta_diff_sin =
-          (theta_cos_n * -theta_sin_n_1) + (theta_sin_n * theta_cos_n_1);
+
+      auto theta_diff = theta_n - theta_n_1;
+
       // Constrain angle equality on manifold: theta_diff = omega_n * dt_sgmt.
       //
       // Let a = <cos(theta_diff), sin(theta_diff)>.  NOLINT
@@ -103,18 +95,13 @@ inline void ApplyKinematicsConstraints(
       //   a x b = ||a|| ||b|| sin(angleBetween)  NOLINT
       //         = 1 * 1 * 0
       //         = 0
-      //
-      //   a x b = 0
-      //   a.x * b.y - b.x * a.y = 0
-      //   a.x * b.y = b.x * a.y
-      //   cos(theta_diff) * sin(omega_n * dt_sgmt) = NOLINT
-      //     sin(theta_diff) * cos(omega_n * dt_sgmt) NOLINT
-      // NOTE: angleBetween = pi rad would be another solution
-      problem.SubjectTo(theta_diff_cos * sleipnir::sin(omega_n * dt_sgmt) -
-                            theta_diff_sin * sleipnir::cos(omega_n * dt_sgmt) ==
-                        0);
+      Translation2v a{theta_diff.Cos(), theta_diff.Sin()};
+      Translation2v b{sleipnir::cos(omega_n * dt_sgmt),
+                      sleipnir::sin(omega_n * dt_sgmt)};
+      problem.SubjectTo(a.Cross(b) == 0);
       problem.SubjectTo(
-          theta_cos_n_1 * theta_cos_n_1 + theta_sin_n_1 * theta_sin_n_1 == 1);
+          Translation2v{theta_n_1.Cos(), theta_n_1.Sin()}.SquaredNorm() == 1);
+
       problem.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
       problem.SubjectTo(vy_n_1 + ay_n * dt_sgmt == vy_n);
       problem.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
@@ -165,16 +152,13 @@ inline void ApplyDynamicsConstraints(
 }
 
 inline void ApplyPowerConstraints(sleipnir::OptimizationProblem& problem,
-                                  const sleipnir::Variable& thetacos,
-                                  const sleipnir::Variable& thetasin,
-                                  const sleipnir::Variable& vx,
-                                  const sleipnir::Variable& vy,
+                                  const Rotation2v& theta,
+                                  const Translation2v& v,
                                   const sleipnir::Variable& omega,
                                   const std::vector<sleipnir::Variable>& Fx,
                                   const std::vector<sleipnir::Variable>& Fy,
                                   const SwerveDrivetrain& swerveDrivetrain) {
-  auto vx_prime = vx * thetacos - vy * -thetasin;
-  auto vy_prime = vx * -thetasin + vy * thetacos;
+  const auto [vx_prime, vy_prime] = v.RotateBy(-theta);
 
   size_t moduleCount = swerveDrivetrain.modules.size();
 
@@ -184,8 +168,7 @@ inline void ApplyPowerConstraints(sleipnir::OptimizationProblem& problem,
   vy_m.reserve(moduleCount);
 
   for (size_t moduleIdx = 0; moduleIdx < moduleCount; ++moduleIdx) {
-    auto x_m = swerveDrivetrain.modules.at(moduleIdx).x;
-    auto y_m = swerveDrivetrain.modules.at(moduleIdx).y;
+    const auto& [x_m, y_m] = swerveDrivetrain.modules.at(moduleIdx).translation;
     vx_m.emplace_back(vx_prime - y_m * omega);
     vy_m.emplace_back(vy_prime + x_m * omega);
   }

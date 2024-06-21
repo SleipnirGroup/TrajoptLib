@@ -38,7 +38,7 @@ void SwervePathBuilder::PoseWpt(size_t index, double x, double y,
       TranslationConstraint{RectangularSet2d{x, y}});
   path.waypoints.at(index).waypointConstraints.emplace_back(
       HeadingConstraint{heading});
-  WptInitialGuessPoint(index, InitialGuessPoint{x, y, heading});
+  WptInitialGuessPoint(index, {x, y, {heading}});
 }
 
 void SwervePathBuilder::TranslationWpt(size_t index, double x, double y,
@@ -46,19 +46,19 @@ void SwervePathBuilder::TranslationWpt(size_t index, double x, double y,
   NewWpts(index);
   path.waypoints.at(index).waypointConstraints.emplace_back(
       TranslationConstraint{RectangularSet2d{x, y}});
-  WptInitialGuessPoint(index, InitialGuessPoint{x, y, headingGuess});
+  WptInitialGuessPoint(index, {x, y, {headingGuess}});
 }
 
-void SwervePathBuilder::WptInitialGuessPoint(
-    size_t wptIdx, const InitialGuessPoint& poseGuess) {
+void SwervePathBuilder::WptInitialGuessPoint(size_t wptIdx,
+                                             const Pose2d& poseGuess) {
   NewWpts(wptIdx);
   initialGuessPoints.at(wptIdx).back() = poseGuess;
 }
 
 void SwervePathBuilder::SgmtInitialGuessPoints(
-    size_t fromIdx, const std::vector<InitialGuessPoint>& sgmtPoseGuess) {
+    size_t fromIdx, const std::vector<Pose2d>& sgmtPoseGuess) {
   NewWpts(fromIdx + 1);
-  std::vector<InitialGuessPoint>& toInitialGuessPoints =
+  std::vector<Pose2d>& toInitialGuessPoints =
       initialGuessPoints.at(fromIdx + 1);
   toInitialGuessPoints.insert(toInitialGuessPoints.begin(),
                               sgmtPoseGuess.begin(), sgmtPoseGuess.end());
@@ -211,8 +211,7 @@ void SwervePathBuilder::NewWpts(size_t finalIndex) {
   if (targetIdx > greatestIdx) {
     for (int64_t i = greatestIdx + 1; i <= targetIdx; ++i) {
       path.waypoints.emplace_back(SwerveWaypoint{});
-      initialGuessPoints.emplace_back(
-          std::vector{InitialGuessPoint{0.0, 0.0, 0.0}});
+      initialGuessPoints.emplace_back(std::vector<Pose2d>{{0.0, 0.0, {0.0}}});
       if (i != 0) {
         controlIntervalCounts.push_back(40);
       }
@@ -229,9 +228,8 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
   size_t obstacleCornerCount = obstacle.points.size();
   if (bumperCornerCount == 1 && obstacleCornerCount == 1) {
     // if the bumpers and obstacle are only one point
-    return {PointPointConstraint{bumpers.points.at(0).x, bumpers.points.at(0).y,
-                                 obstacle.points.at(0).x,
-                                 obstacle.points.at(0).y, distConst}};
+    return {PointPointConstraint{bumpers.points.at(0), obstacle.points.at(0),
+                                 distConst}};
   }
 
   std::vector<HolonomicConstraint> constraints;
@@ -241,20 +239,16 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
     // First apply constraint for all but last edge
     for (size_t bumperCornerIndex = 0;
          bumperCornerIndex < bumperCornerCount - 1; bumperCornerIndex++) {
-      constraints.emplace_back(
-          LinePointConstraint{bumpers.points.at(bumperCornerIndex).x,
-                              bumpers.points.at(bumperCornerIndex).y,
-                              bumpers.points.at(bumperCornerIndex + 1).x,
-                              bumpers.points.at(bumperCornerIndex + 1).y,
-                              obstaclePoint.x, obstaclePoint.y, distConst});
+      constraints.emplace_back(LinePointConstraint{
+          bumpers.points.at(bumperCornerIndex),
+          bumpers.points.at(bumperCornerIndex + 1), obstaclePoint, distConst});
     }
     // apply to last edge: the edge connecting the last point to the first
     // must have at least three points to need this
     if (bumperCornerCount >= 3) {
-      constraints.emplace_back(LinePointConstraint{
-          bumpers.points.at(bumperCornerCount - 1).x,
-          bumpers.points.at(bumperCornerCount - 1).y, bumpers.points.at(0).x,
-          bumpers.points.at(0).y, obstaclePoint.x, obstaclePoint.y, distConst});
+      constraints.emplace_back(
+          LinePointConstraint{bumpers.points.at(bumperCornerCount - 1),
+                              bumpers.points.at(0), obstaclePoint, distConst});
     }
   }
 
@@ -265,23 +259,17 @@ std::vector<HolonomicConstraint> SwervePathBuilder::GetConstraintsForObstacle(
            obstacleCornerIndex < obstacleCornerCount - 1;
            obstacleCornerIndex++) {
         constraints.emplace_back(PointLineConstraint{
-            bumperCorner.x, bumperCorner.y,
-            obstacle.points.at(obstacleCornerIndex).x,
-            obstacle.points.at(obstacleCornerIndex).y,
-            obstacle.points.at(obstacleCornerIndex + 1).x,
-            obstacle.points.at(obstacleCornerIndex + 1).y, distConst});
+            bumperCorner, obstacle.points.at(obstacleCornerIndex),
+            obstacle.points.at(obstacleCornerIndex + 1), distConst});
       }
       if (obstacleCornerCount >= 3) {
         constraints.emplace_back(PointLineConstraint{
-            bumperCorner.x, bumperCorner.y,
-            obstacle.points.at(bumperCornerCount - 1).x,
-            obstacle.points.at(bumperCornerCount - 1).y,
-            obstacle.points.at(0).x, obstacle.points.at(0).y, distConst});
+            bumperCorner, obstacle.points.at(bumperCornerCount - 1),
+            obstacle.points.at(0), distConst});
       }
     } else {
-      constraints.emplace_back(PointPointConstraint{
-          bumperCorner.x, bumperCorner.y, obstacle.points.at(0).x,
-          obstacle.points.at(0).y, distConst});
+      constraints.emplace_back(
+          PointPointConstraint{bumperCorner, obstacle.points.at(0), distConst});
     }
   }
   return constraints;

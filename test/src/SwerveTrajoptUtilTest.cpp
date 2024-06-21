@@ -4,7 +4,7 @@
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <trajopt/path/InitialGuessPoint.hpp>
+#include <trajopt/geometry/Translation2.hpp>
 #include <trajopt/set/IntervalSet1d.hpp>
 
 #include "optimization/SwerveTrajoptUtil.hpp"
@@ -25,30 +25,14 @@ TEST_CASE("SwerveTrajoptUtil - SolveNetTorque()", "[SwerveTrajoptUtil]") {
   std::vector<sleipnir::Variable> Fx{-3.0, -5.0, -4.0, 2.0};
   std::vector<sleipnir::Variable> Fy{4.0, -5.0, -2.0, -4.0};
   std::vector<trajopt::SwerveModule> swerveModules = {
-      {.x = 1.0,
-       .y = 1.0,
-       .wheelRadius = 0.0,
-       .wheelMaxAngularVelocity = 0.0,
-       .wheelMaxTorque = 0.0},
-      {.x = 1.0,
-       .y = -1.0,
-       .wheelRadius = 0.0,
-       .wheelMaxAngularVelocity = 0.0,
-       .wheelMaxTorque = 0.0},
-      {.x = -1.0,
-       .y = 1.0,
-       .wheelRadius = 0.0,
-       .wheelMaxAngularVelocity = 0.0,
-       .wheelMaxTorque = 0.0},
-      {.x = -1.0,
-       .y = -1.0,
-       .wheelRadius = 0.0,
-       .wheelMaxAngularVelocity = 0.0,
-       .wheelMaxTorque = 0.0},
+      {trajopt::Translation2d{1.0, 1.0}, 0.0, 0.0, 0.0},
+      {trajopt::Translation2d{1.0, -1.0}, 0.0, 0.0, 0.0},
+      {trajopt::Translation2d{-1.0, 1.0}, 0.0, 0.0, 0.0},
+      {trajopt::Translation2d{-1.0, -1.0}, 0.0, 0.0, 0.0},
   };
 
   sleipnir::Variable tau_net = trajopt::SolveNetTorque(
-      std::cos(theta), std::sin(theta), Fx, Fy, swerveModules);
+      {std::cos(theta), std::sin(theta)}, Fx, Fy, swerveModules);
 
   CHECK(tau_net.Value() == Catch::Approx(0.6553658).margin(1e-3));
 }

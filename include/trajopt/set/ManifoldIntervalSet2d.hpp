@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <cassert>
+
 #include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
@@ -33,7 +35,7 @@ struct TRAJOPT_DLLEXPORT ManifoldIntervalSet2d {
    *
    * @param angle the angle of the vector to.
    */
-  constexpr ManifoldIntervalSet2d(double angle)
+  constexpr ManifoldIntervalSet2d(double angle)  // NOLINT
       : ManifoldIntervalSet2d(angle, 0) {}
 
   constexpr ManifoldIntervalSet2d() = default;

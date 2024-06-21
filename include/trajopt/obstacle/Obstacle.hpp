@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "trajopt/obstacle/ObstaclePoint.hpp"
+#include "trajopt/geometry/Translation2.hpp"
 #include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
@@ -20,7 +20,7 @@ struct TRAJOPT_DLLEXPORT Obstacle {
   double safetyDistance;
 
   /// The list of points that make up this obstacle.
-  std::vector<ObstaclePoint> points;
+  std::vector<Translation2d> points;
 };
 
 }  // namespace trajopt

@@ -11,6 +11,7 @@
 
 #include "trajopt/OptimalTrajectoryGenerator.hpp"
 #include "trajopt/drivetrain/SwerveDrivetrain.hpp"
+#include "trajopt/geometry/Translation2.hpp"
 #include "trajopt/trajectory/HolonomicTrajectory.hpp"
 #include "trajopt/trajectory/HolonomicTrajectorySample.hpp"
 #include "trajoptlib/src/lib.rs.h"
@@ -46,11 +47,9 @@ rust::Vec<RustType> _cpp_vector_to_rust_vec(
 
 trajopt::SwerveModule _convert_swerve_module(const SwerveModule& swerveModule) {
   return trajopt::SwerveModule{
-      .x = swerveModule.x,
-      .y = swerveModule.y,
-      .wheelRadius = swerveModule.wheel_radius,
-      .wheelMaxAngularVelocity = swerveModule.wheel_max_angular_velocity,
-      .wheelMaxTorque = swerveModule.wheel_max_torque};
+      trajopt::Translation2d{swerveModule.x, swerveModule.y},
+      swerveModule.wheel_radius, swerveModule.wheel_max_angular_velocity,
+      swerveModule.wheel_max_torque};
 }
 
 trajopt::SwerveDrivetrain _convert_swerve_drivetrain(
@@ -63,11 +62,9 @@ trajopt::SwerveDrivetrain _convert_swerve_drivetrain(
                                   &_convert_swerve_module>(drivetrain.modules)};
 }
 
-trajopt::InitialGuessPoint _convert_initial_guess_point(
+trajopt::Pose2d _convert_initial_guess_point(
     const InitialGuessPoint& initialGuessPoint) {
-  return trajopt::InitialGuessPoint{.x = initialGuessPoint.x,
-                                    .y = initialGuessPoint.y,
-                                    .heading = initialGuessPoint.heading};
+  return {initialGuessPoint.x, initialGuessPoint.y, initialGuessPoint.heading};
 }
 
 void SwervePathBuilderImpl::set_drivetrain(const SwerveDrivetrain& drivetrain) {
@@ -110,8 +107,8 @@ void SwervePathBuilderImpl::empty_wpt(size_t idx, double x_guess,
 
 void SwervePathBuilderImpl::sgmt_initial_guess_points(
     size_t from_idx, const rust::Vec<InitialGuessPoint>& guess_points) {
-  std::vector<trajopt::InitialGuessPoint> convertedGuessPoints =
-      _rust_vec_to_cpp_vector<InitialGuessPoint, trajopt::InitialGuessPoint,
+  std::vector<trajopt::Pose2d> convertedGuessPoints =
+      _rust_vec_to_cpp_vector<InitialGuessPoint, trajopt::Pose2d,
                               &_convert_initial_guess_point>(guess_points);
   path.SgmtInitialGuessPoints(from_idx, convertedGuessPoints);
 }
@@ -162,10 +159,10 @@ void SwervePathBuilderImpl::wpt_heading(size_t idx, double heading) {
 void SwervePathBuilderImpl::wpt_point_at(size_t idx, double field_point_x,
                                          double field_point_y,
                                          double heading_tolerance) {
-  path.WptConstraint(
-      idx, trajopt::PointAtConstraint{.fieldPointX = field_point_x,
-                                      .fieldPointY = field_point_y,
-                                      .headingTolerance = heading_tolerance});
+  path.WptConstraint(idx,
+                     trajopt::PointAtConstraint{
+                         trajopt::Translation2d{field_point_x, field_point_y},
+                         heading_tolerance});
 }
 
 void SwervePathBuilderImpl::sgmt_linear_velocity_direction(size_t from_idx,
@@ -224,11 +221,10 @@ void SwervePathBuilderImpl::sgmt_point_at(size_t from_idx, size_t to_idx,
                                           double field_point_x,
                                           double field_point_y,
                                           double heading_tolerance) {
-  path.SgmtConstraint(
-      from_idx, to_idx,
-      trajopt::PointAtConstraint{.fieldPointX = field_point_x,
-                                 .fieldPointY = field_point_y,
-                                 .headingTolerance = heading_tolerance});
+  path.SgmtConstraint(from_idx, to_idx,
+                      trajopt::PointAtConstraint{
+                          trajopt::Translation2d{field_point_x, field_point_y},
+                          heading_tolerance});
 }
 
 void SwervePathBuilderImpl::sgmt_circle_obstacle(size_t from_idx, size_t to_idx,
@@ -244,7 +240,7 @@ void SwervePathBuilderImpl::sgmt_polygon_obstacle(size_t from_idx,
                                                   const rust::Vec<double> x,
                                                   const rust::Vec<double> y,
                                                   double radius) {
-  std::vector<trajopt::ObstaclePoint> points;
+  std::vector<trajopt::Translation2d> points;
   if (x.size() != y.size()) {
     return;
   }

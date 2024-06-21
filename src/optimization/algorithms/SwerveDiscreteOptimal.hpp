@@ -96,17 +96,19 @@ class SwerveDiscreteOptimal {
 
     double minWidth = INFINITY;
     for (size_t i = 1; i < path.drivetrain.modules.size(); i++) {
-      if (std::abs(path.drivetrain.modules.at(i - 1).x -
-                   path.drivetrain.modules.at(i).x) != 0) {
-        minWidth =
-            std::min(minWidth, std::abs(path.drivetrain.modules.at(i - 1).x -
-                                        path.drivetrain.modules.at(i).x));
+      if (std::abs(path.drivetrain.modules.at(i - 1).translation.X() -
+                   path.drivetrain.modules.at(i).translation.X()) != 0) {
+        minWidth = std::min(
+            minWidth,
+            std::abs(path.drivetrain.modules.at(i - 1).translation.X() -
+                     path.drivetrain.modules.at(i).translation.X()));
       }
-      if (std::abs(path.drivetrain.modules.at(i - 1).y -
-                   path.drivetrain.modules.at(i).y) != 0) {
-        minWidth =
-            std::min(minWidth, std::abs(path.drivetrain.modules.at(i - 1).y -
-                                        path.drivetrain.modules.at(i).y));
+      if (std::abs(path.drivetrain.modules.at(i - 1).translation.Y() -
+                   path.drivetrain.modules.at(i).translation.Y()) != 0) {
+        minWidth = std::min(
+            minWidth,
+            std::abs(path.drivetrain.modules.at(i - 1).translation.Y() -
+                     path.drivetrain.modules.at(i).translation.Y()));
       }
     }
 
@@ -127,27 +129,29 @@ class SwerveDiscreteOptimal {
       auto [Fx_net, Fy_net] = SolveNetForce(Fx.at(idx), Fy.at(idx));
       ApplyDynamicsConstraints(
           problem, ax.at(idx), ay.at(idx), alpha.at(idx), Fx_net, Fy_net,
-          SolveNetTorque(thetacos.at(idx), thetasin.at(idx), Fx.at(idx),
+          SolveNetTorque({thetacos.at(idx), thetasin.at(idx)}, Fx.at(idx),
                          Fy.at(idx), path.drivetrain.modules),
           path.drivetrain.mass, path.drivetrain.moi);
 
-      ApplyPowerConstraints(problem, thetacos.at(idx), thetasin.at(idx),
-                            vx.at(idx), vy.at(idx), omega.at(idx), Fx.at(idx),
+      ApplyPowerConstraints(problem,
+                            Rotation2v{thetacos.at(idx), thetasin.at(idx)},
+                            {vx.at(idx), vy.at(idx)}, omega.at(idx), Fx.at(idx),
                             Fy.at(idx), path.drivetrain);
     }
 
     for (size_t wptIdx = 0; wptIdx < wptCnt; ++wptIdx) {
       for (auto& constraint : path.waypoints.at(wptIdx).waypointConstraints) {
         size_t idx = GetIdx(N, wptIdx + 1, 0) - 1;  // first idx of next wpt - 1
-        ApplyHolonomicConstraint(problem, x.at(idx), y.at(idx),
-                                 thetacos.at(idx), thetasin.at(idx), vx.at(idx),
-                                 vy.at(idx), omega.at(idx), ax.at(idx),
-                                 ay.at(idx), alpha.at(idx), constraint);
+        ApplyHolonomicConstraint(
+            problem,
+            {x.at(idx), y.at(idx), {thetacos.at(idx), thetasin.at(idx)}},
+            {vx.at(idx), vy.at(idx)}, omega.at(idx), {ax.at(idx), ay.at(idx)},
+            alpha.at(idx), constraint);
       }
-    }  // TODO: try changing the path struct so instead of having waypoint
-       // objects
-       //       it's just two vectors of waypoint constraints and segment
-       //       constraints, the waypoint one would be one larger by size
+    }
+    // TODO: try changing the path struct so instead of having waypoint objects
+    //       it's just two vectors of waypoint constraints and segment
+    //       constraints, the waypoint one would be one larger by size
     for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
       for (auto& constraint :
            path.waypoints.at(sgmtIdx + 1).segmentConstraints) {
@@ -155,8 +159,9 @@ class SwerveDiscreteOptimal {
         size_t endIdx = GetIdx(N, sgmtIdx + 2, 0);
         for (size_t idx = startIdx; idx < endIdx; ++idx) {
           ApplyHolonomicConstraint(
-              problem, x.at(idx), y.at(idx), thetacos.at(idx), thetasin.at(idx),
-              vx.at(idx), vy.at(idx), omega.at(idx), ax.at(idx), ay.at(idx),
+              problem,
+              {x.at(idx), y.at(idx), {thetacos.at(idx), thetasin.at(idx)}},
+              {vx.at(idx), vy.at(idx)}, omega.at(idx), {ax.at(idx), ay.at(idx)},
               alpha.at(idx), constraint);
         }
       }
