@@ -3,8 +3,8 @@
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
-#include <trajopt/path/InitialGuessPoint.h>
-#include <trajopt/path/SwervePathBuilder.h>
+#include <trajopt/path/InitialGuessPoint.hpp>
+#include <trajopt/path/SwervePathBuilder.hpp>
 
 TEST_CASE("SwervePathBuilder - Linear initial guess", "[SwervePathBuilder]") {
   using namespace trajopt;

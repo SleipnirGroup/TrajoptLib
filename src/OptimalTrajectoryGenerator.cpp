@@ -1,20 +1,14 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "trajopt/OptimalTrajectoryGenerator.h"
+#include "trajopt/OptimalTrajectoryGenerator.hpp"
 
-#if defined(OPTIMIZER_BACKEND_SLEIPNIR)
-#include "optimization/SleipnirOpti.h"
-#endif
-
-#include "optimization/algorithms/SwerveDiscreteOptimal.h"
+#include "optimization/algorithms/SwerveDiscreteOptimal.hpp"
 
 namespace trajopt {
 
 expected<SwerveSolution, std::string> OptimalTrajectoryGenerator::Generate(
     const SwervePathBuilder& path, bool diagnostics, int64_t handle) {
-#if defined(OPTIMIZER_BACKEND_SLEIPNIR)
-  SwerveDiscreteOptimal<SleipnirExpr, SleipnirOpti> problem(
-#endif
+  SwerveDiscreteOptimal problem(
       path.GetPath(), path.GetControlIntervalCounts(),
       path.CalculateSplineInitialGuessWithKinematicsAndConstraints(), handle);
   return problem.Generate(diagnostics);

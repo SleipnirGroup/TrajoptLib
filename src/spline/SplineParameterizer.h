@@ -34,7 +34,7 @@
 #include "frc/spline/Spline.h"
 #include "frc/spline/SplineParameterizer.h"
 #include "spline/CubicHermitePoseSplineHolonomic.h"
-#include "trajopt/SymbolExports.h"
+#include "trajopt/util/SymbolExports.hpp"
 #include "units/angle.h"
 #include "units/curvature.h"
 #include "units/length.h"

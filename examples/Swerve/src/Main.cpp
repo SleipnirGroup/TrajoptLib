@@ -5,18 +5,18 @@
 #include <numbers>
 #include <vector>
 
-#include <trajopt/OptimalTrajectoryGenerator.h>
-#include <trajopt/constraint/Constraint.h>
-#include <trajopt/constraint/TranslationConstraint.h>
-#include <trajopt/constraint/holonomic/HolonomicConstraint.h>
-#include <trajopt/drivetrain/SwerveDrivetrain.h>
-#include <trajopt/obstacle/Obstacle.h>
-#include <trajopt/path/InitialGuessPoint.h>
-#include <trajopt/path/Path.h>
-#include <trajopt/path/SwervePathBuilder.h>
-#include <trajopt/set/ConeSet2d.h>
-#include <trajopt/solution/SwerveSolution.h>
-#include <trajopt/trajectory/HolonomicTrajectory.h>
+#include <trajopt/OptimalTrajectoryGenerator.hpp>
+#include <trajopt/constraint/Constraint.hpp>
+#include <trajopt/constraint/TranslationConstraint.hpp>
+#include <trajopt/constraint/holonomic/HolonomicConstraint.hpp>
+#include <trajopt/drivetrain/SwerveDrivetrain.hpp>
+#include <trajopt/obstacle/Obstacle.hpp>
+#include <trajopt/path/InitialGuessPoint.hpp>
+#include <trajopt/path/Path.hpp>
+#include <trajopt/path/SwervePathBuilder.hpp>
+#include <trajopt/set/ConeSet2d.hpp>
+#include <trajopt/solution/SwerveSolution.hpp>
+#include <trajopt/trajectory/HolonomicTrajectory.hpp>
 
 int main() {
   using namespace trajopt;

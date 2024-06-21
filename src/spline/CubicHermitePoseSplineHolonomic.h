@@ -6,7 +6,7 @@
 
 #include "frc/spline/CubicHermiteSpline.h"
 #include "spline/CubicHermiteSpline1d.h"
-#include "trajopt/SymbolExports.h"
+#include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
 /**

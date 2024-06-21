@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "trajopt/path/SwervePathBuilder.h"
+#include "trajopt/path/SwervePathBuilder.hpp"
 
 #include <frc/MathUtil.h>
 #include <frc/geometry/Translation2d.h>
@@ -15,23 +15,23 @@
 #include <cmath>
 #include <utility>
 
-#include "optimization/Cancellation.h"
-#include "optimization/TrajoptUtil.h"
+#include "optimization/Cancellation.hpp"
+#include "optimization/TrajoptUtil.hpp"
 #include "spline/CubicHermitePoseSplineHolonomic.h"
 #include "spline/SplineParameterizer.h"
 #include "spline/SplineUtil.h"
-#include "trajopt/constraint/AngularVelocityConstraint.h"
-#include "trajopt/constraint/Constraint.h"
-#include "trajopt/constraint/HeadingConstraint.h"
-#include "trajopt/constraint/LinePointConstraint.h"
-#include "trajopt/constraint/PointLineConstraint.h"
-#include "trajopt/constraint/TranslationConstraint.h"
-#include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.h"
-#include "trajopt/obstacle/Obstacle.h"
-#include "trajopt/set/EllipticalSet2d.h"
-#include "trajopt/set/IntervalSet1d.h"
-#include "trajopt/set/LinearSet2d.h"
-#include "trajopt/set/RectangularSet2d.h"
+#include "trajopt/constraint/AngularVelocityConstraint.hpp"
+#include "trajopt/constraint/Constraint.hpp"
+#include "trajopt/constraint/HeadingConstraint.hpp"
+#include "trajopt/constraint/LinePointConstraint.hpp"
+#include "trajopt/constraint/PointLineConstraint.hpp"
+#include "trajopt/constraint/TranslationConstraint.hpp"
+#include "trajopt/constraint/holonomic/HolonomicVelocityConstraint.hpp"
+#include "trajopt/obstacle/Obstacle.hpp"
+#include "trajopt/set/EllipticalSet2d.hpp"
+#include "trajopt/set/IntervalSet1d.hpp"
+#include "trajopt/set/LinearSet2d.hpp"
+#include "trajopt/set/RectangularSet2d.hpp"
 
 namespace trajopt {
 

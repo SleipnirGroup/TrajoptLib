@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "spline/CubicHermitePoseSplineHolonomic.h"
-#include "trajopt/path/InitialGuessPoint.h"
 
 namespace trajopt {
 
