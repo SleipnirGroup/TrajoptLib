@@ -6,13 +6,13 @@
 #include "trajopt/constraint/Constraint.h"
 #include "trajopt/constraint/differential/DifferentialCentripetalAccelerationConstraint.h"
 #include "trajopt/constraint/differential/DifferentialTangentialVelocityConstraint.h"
-#include "trajopt/util/AppendVariant.h"
+#include "trajopt/util/VariantCat.h"
 
 namespace trajopt {
 
 using DifferentialConstraint =
-    decltype(_append_variant(Constraint{}, AngularVelocityConstraint{},
-                             DifferentialTangentialVelocityConstraint{},
-                             DifferentialCentripetalAccelerationConstraint{}));
+    variant_cat_t<Constraint, AngularVelocityConstraint,
+                  DifferentialTangentialVelocityConstraint,
+                  DifferentialCentripetalAccelerationConstraint>;
 
 }  // namespace trajopt
