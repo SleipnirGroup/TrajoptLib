@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <numeric>
+#include <numbers>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -268,6 +269,25 @@ std::vector<double> Linspace(double startValue, double endValue,
   return result;
 }
 
+std::vector<double> AngleLinspace(double startValue, double endValue,
+                             size_t numSamples) {
+    auto diff = endValue - startValue;
+    //angleModulus
+    const double modulus = 2 * std::numbers::pi;
+    const double minimumInput = -std::numbers::pi;
+    const double maximumInput = std::numbers::pi;
+    // Wrap input if it's above the maximum input
+    const double numMax = std::floor((diff - minimumInput) / modulus);
+    diff -= numMax * modulus;
+
+    // Wrap input if it's below the minimum input
+    const double numMin = std::floor((diff - maximumInput) / modulus);
+    diff -= numMin * modulus;
+    
+    return Linspace(startValue,
+                   startValue + diff, numSamples);
+}
+
 template <typename T>
 inline void append_vector(std::vector<T>& base,
                           const std::vector<T>& newItems) {
@@ -303,7 +323,7 @@ Solution GenerateLinearInitialGuess(
         initialGuess.y,
         Linspace(initialGuessPoints.at(wptIdx - 1).back().y,
                  initialGuessPoints.at(wptIdx).front().y, N_guessSgmt));
-    auto wptTheta = Linspace(initialGuessPoints.at(wptIdx - 1).back().heading,
+    auto wptTheta = AngleLinspace(initialGuessPoints.at(wptIdx - 1).back().heading,
                  initialGuessPoints.at(wptIdx).front().heading, N_guessSgmt);
     for (auto it = wptTheta.cbegin(); it != wptTheta.cend(); it++) {
       initialGuess.thetacos.push_back(cos(*it));
@@ -321,8 +341,10 @@ Solution GenerateLinearInitialGuess(
           Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).y,
                    initialGuessPoints.at(wptIdx).at(guessPointIdx).y,
                    N_guessSgmt));
-    auto guessTheta = Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).heading,
-                   initialGuessPoints.at(wptIdx).at(guessPointIdx).heading, N_guessSgmt);
+   
+    auto guessTheta = AngleLinspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).heading,
+                   initialGuessPoints.at(wptIdx).at(guessPointIdx).heading,
+                   N_guessSgmt);
     for (auto it = guessTheta.cbegin(); it != guessTheta.cend(); it++) {
       initialGuess.thetacos.push_back(cos(*it));
       initialGuess.thetasin.push_back(sin(*it));
@@ -338,7 +360,7 @@ Solution GenerateLinearInitialGuess(
           initialGuess.y,
           Linspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).y,
                    initialGuessPoints.at(wptIdx).back().y, N_lastGuessSgmt));
-          auto lastTheta = Linspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
+          auto lastTheta = AngleLinspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
                    initialGuessPoints.at(wptIdx).back().heading, N_lastGuessSgmt);
     for (auto it = lastTheta.cbegin(); it != lastTheta.cend(); it++) {
       initialGuess.thetacos.push_back(cos(*it));
@@ -362,8 +384,8 @@ void ApplyInitialGuess(Opti& opti, const Solution& solution,
   for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
     opti.SetInitial(x[sampleIndex], solution.x[sampleIndex]);
     opti.SetInitial(y[sampleIndex], solution.y[sampleIndex]);
-    opti.SetInitial(thetacos[sampleIndex], cos(solution.thetacos[sampleIndex]));
-    opti.SetInitial(thetasin[sampleIndex], sin(solution.thetasin[sampleIndex]));
+    opti.SetInitial(thetacos[sampleIndex], solution.thetacos[sampleIndex]);
+    opti.SetInitial(thetasin[sampleIndex], solution.thetasin[sampleIndex]);
   }
   opti.SetInitial(vx[0], 0.0);
   opti.SetInitial(vy[0], 0.0);

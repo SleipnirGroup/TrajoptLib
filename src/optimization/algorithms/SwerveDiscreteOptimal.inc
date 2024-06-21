@@ -40,7 +40,7 @@ SwerveDiscreteOptimal<Expr, Opti>::SwerveDiscreteOptimal(
 
   opti.AddIntermediateCallback([=, this, &lastFrameTime]() {
     using namespace std::chrono_literals;
-
+    
     auto now = std::chrono::steady_clock::now();
     constexpr int fps = 60;
     constexpr std::chrono::duration<double> timePerFrame{1.0 / fps};

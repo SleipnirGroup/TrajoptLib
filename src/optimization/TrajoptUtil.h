@@ -89,6 +89,9 @@ template <typename Expr, typename Opti>
 void ApplyConstraint(Opti& opti, const Expr& x, const Expr& y,
                      const Expr& thetacos, const Expr& thetasin, const Constraint& constraint);
 
+inline std::vector<double> AngleLinspace(double startValue, double endValue,
+                                    size_t numSamples);
+
 inline std::vector<double> Linspace(double startValue, double endValue,
                                     size_t numSamples);
 
