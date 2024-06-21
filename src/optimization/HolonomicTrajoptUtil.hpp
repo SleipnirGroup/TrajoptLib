@@ -11,6 +11,7 @@
 #include "trajopt/constraint/PointLineConstraint.hpp"
 #include "trajopt/constraint/PointPointConstraint.hpp"
 #include "trajopt/constraint/TranslationConstraint.hpp"
+#include "trajopt/constraint/holonomic/HolonomicConstraint.hpp"
 
 namespace trajopt {
 
