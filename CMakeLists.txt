@@ -141,6 +141,7 @@ find_package(Python REQUIRED COMPONENTS Interpreter)
 fetchcontent_declare(
     wpilib
     GIT_REPOSITORY https://github.com/wpilibsuite/allwpilib.git
+    # main on 2024-06-20
     GIT_TAG e2893fc1a36720b9c3986f2fc6c9607cea35c8fd
     PATCH_COMMAND
         ${Python_EXECUTABLE}
