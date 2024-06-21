@@ -74,6 +74,7 @@ def remove_protobuf_support():
         lines = [
             line
             for line in lines
+            if not re.search(r"find_dependency(Protobuf)", line)
             if not re.search(r"find_package(Protobuf REQUIRED)", line)
             and "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/protobuf>" not in line
             and not re.search(r"#include \"\w+\.pb\.h\"", line)
