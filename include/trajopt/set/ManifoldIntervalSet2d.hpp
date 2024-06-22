@@ -34,7 +34,7 @@ struct TRAJOPT_DLLEXPORT ManifoldIntervalSet2d {
    * @param angle the angle of the vector to.
    */
   constexpr ManifoldIntervalSet2d(double angle)
-      : ManifoldIntervalSet2d(middle, 0) {
+      : ManifoldIntervalSet2d(angle, 0) {
   }
 
   constexpr ManifoldIntervalSet2d() = default;
