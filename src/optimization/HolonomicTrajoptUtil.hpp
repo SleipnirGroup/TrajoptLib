@@ -19,8 +19,10 @@ inline void ApplyHolonomicConstraint(
     sleipnir::OptimizationProblem& problem, const sleipnir::Variable& x,
     const sleipnir::Variable& y, const sleipnir::Variable& theta,
     const sleipnir::Variable& vx, const sleipnir::Variable& vy,
-    const sleipnir::Variable& omega, const sleipnir::Variable& ax,
-    const sleipnir::Variable& ay, const sleipnir::Variable& alpha,
+    const sleipnir::Variable& omega,
+    [[maybe_unused]] const sleipnir::Variable& ax,
+    [[maybe_unused]] const sleipnir::Variable& ay,
+    [[maybe_unused]] const sleipnir::Variable& alpha,
     const HolonomicConstraint& constraint) {
   if (std::holds_alternative<HolonomicVelocityConstraint>(constraint)) {
     const auto& velocityHolonomicConstraint =
