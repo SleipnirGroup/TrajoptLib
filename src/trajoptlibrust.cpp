@@ -161,7 +161,7 @@ void SwervePathBuilderImpl::wpt_y(size_t idx, double y) {
 
 void SwervePathBuilderImpl::wpt_heading(size_t idx, double heading) {
   path.WptConstraint(
-      idx, trajopt::HeadingConstraint{trajopt::IntervalSet1d(heading)});
+      idx, trajopt::HeadingConstraint{heading});
 }
 
 void SwervePathBuilderImpl::wpt_point_at(size_t idx, double field_point_x,

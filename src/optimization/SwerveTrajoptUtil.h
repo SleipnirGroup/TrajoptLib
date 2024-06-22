@@ -30,15 +30,15 @@ std::pair<Expr, Expr> SolveNetForce(const std::vector<Expr>& Fx,
 
 template <typename Expr>
   requires ExprSys<Expr>
-Expr SolveNetTorque(const Expr& theta, const std::vector<Expr>& Fx,
+Expr SolveNetTorque(const Expr& thetacos, const Expr& thetasin, const std::vector<Expr>& Fx,
                     const std::vector<Expr>& Fy,
                     const std::vector<SwerveModule>& swerveModules) {
   Expr tau_net = 0;
 
   for (size_t moduleIdx = 0; moduleIdx < swerveModules.size(); ++moduleIdx) {
     auto& swerveModule = swerveModules.at(moduleIdx);
-    auto [x_m, y_m] =
-        RotateConstantVector(swerveModule.x, swerveModule.y, theta);
+    auto x_m = swerveModule.x * thetacos - swerveModule.y * thetasin;   // NOLINT
+    auto y_m = swerveModule.x * thetasin + swerveModule.y * thetacos;
     auto& Fx_m = Fx.at(moduleIdx);
     auto& Fy_m = Fy.at(moduleIdx);
     tau_net += x_m * Fy_m - y_m * Fx_m;
@@ -51,7 +51,7 @@ template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 void ApplyKinematicsConstraints(
     Opti& opti, const std::vector<Expr>& x, const std::vector<Expr>& y,
-    const std::vector<Expr>& theta, const std::vector<Expr>& vx,
+    const std::vector<Expr>& thetacos, const std::vector<Expr>& thetasin, const std::vector<Expr>& vx,
     const std::vector<Expr>& vy, const std::vector<Expr>& omega,
     const std::vector<Expr>& ax, const std::vector<Expr>& ay,
     const std::vector<Expr>& alpha, const std::vector<Expr>& dt,
@@ -67,8 +67,10 @@ void ApplyKinematicsConstraints(
       auto x_n_1 = x.at(idx - 1);
       auto y_n = y.at(idx);
       auto y_n_1 = y.at(idx - 1);
-      auto theta_n = theta.at(idx);
-      auto theta_n_1 = theta.at(idx - 1);
+      auto theta_cos_n = thetacos.at(idx);
+      auto theta_cos_n_1 = thetacos.at(idx - 1);
+      auto theta_sin_n = thetasin.at(idx);
+      auto theta_sin_n_1 = thetasin.at(idx - 1);
       auto vx_n = vx.at(idx);
       auto vx_n_1 = vx.at(idx - 1);
       auto vy_n = vy.at(idx);
@@ -80,11 +82,17 @@ void ApplyKinematicsConstraints(
       auto alpha_n = alpha.at(idx);
       opti.SubjectTo(x_n_1 + vx_n * dt_sgmt == x_n);
       opti.SubjectTo(y_n_1 + vy_n * dt_sgmt == y_n);
-      opti.SubjectTo(theta_n_1 + omega_n * dt_sgmt == theta_n);
+      // Rotate theta_n by -theta_n_1
+      auto theta_diff_cos = (theta_cos_n * theta_cos_n_1) - (theta_sin_n* -theta_sin_n_1);
+      auto theta_diff_sin = (theta_cos_n * -theta_sin_n_1) + (theta_sin_n*theta_cos_n_1);
+      opti.SubjectTo(theta_diff_cos*sin(omega_n*dt_sgmt) == theta_diff_sin*cos(omega_n*dt_sgmt));
+      opti.SubjectTo(theta_cos_n_1 * theta_cos_n_1 + theta_sin_n_1 * theta_sin_n_1 == 1);
       opti.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
       opti.SubjectTo(vy_n_1 + ay_n * dt_sgmt == vy_n);
       opti.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
     }
+    size_t lastIdx = GetIdx(N, wptIdx, N_sgmt-1);
+    opti.SubjectTo(thetacos.at(lastIdx) * thetacos.at(lastIdx) + thetasin.at(lastIdx) * thetasin.at(lastIdx) == 1);
   }
 }
 
@@ -129,12 +137,14 @@ void ApplyDynamicsConstraints(Opti& opti, const Expr& ax, const Expr& ay,
 
 template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
-void ApplyPowerConstraints(Opti& opti, const Expr& theta, const Expr& vx,
+void ApplyPowerConstraints(Opti& opti, const Expr& thetacos, const Expr& thetasin, const Expr& vx,
                            const Expr& vy, const Expr& omega,
                            const std::vector<Expr>& Fx,
                            const std::vector<Expr>& Fy,
                            const SwerveDrivetrain& swerveDrivetrain) {
-  auto [vx_prime, vy_prime] = RotateVector(vx, vy, -theta);
+  // Rotate velocity by -theta
+  auto vx_prime = vx * thetacos - vy * -thetasin;   // NOLINT
+  auto vy_prime = vx * -thetasin + vy * thetacos;
 
   size_t moduleCount = swerveDrivetrain.modules.size();
 
@@ -170,7 +180,7 @@ template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 SwerveSolution ConstructSwerveSolution(
     const Opti& opti, const std::vector<Expr>& x, const std::vector<Expr>& y,
-    const std::vector<Expr>& theta, const std::vector<Expr>& vx,
+    const std::vector<Expr>& thetacos, const std::vector<Expr>& thetasin, const std::vector<Expr>& vx,
     const std::vector<Expr>& vy, const std::vector<Expr>& omega,
     const std::vector<Expr>& ax, const std::vector<Expr>& ay,
     const std::vector<Expr>& alpha, const std::vector<std::vector<Expr>>& Fx,
@@ -187,7 +197,7 @@ SwerveSolution ConstructSwerveSolution(
   }
   return SwerveSolution{
       {{dtPerSamp, RowSolutionValue(opti, x), RowSolutionValue(opti, y),
-        RowSolutionValue(opti, theta)},
+        RowSolutionValue(opti, thetacos), RowSolutionValue(opti, thetasin)},
        RowSolutionValue(opti, vx),
        RowSolutionValue(opti, vy),
        RowSolutionValue(opti, omega),

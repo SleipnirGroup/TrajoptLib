@@ -15,7 +15,7 @@ namespace trajopt {
 template <typename Expr, typename Opti>
   requires OptiSys<Expr, Opti>
 void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
-                              const Expr& theta, const Expr& vx, const Expr& vy,
+                              const Expr& thetacos, const Expr& thetasin, const Expr& vx, const Expr& vy,
                               const Expr& omega, const Expr& ax, const Expr& ay,
                               const Expr& alpha,
                               const HolonomicConstraint& constraint) {
@@ -30,12 +30,12 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
     ApplyIntervalSet1dConstraint(
         opti, omega, angularVelocityConstraint.angularVelocityBound);
   } else if (std::holds_alternative<TranslationConstraint>(constraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(opti, x, y, thetacos, thetasin,
                     std::get<TranslationConstraint>(constraint));
   } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
-    ApplyConstraint(opti, x, y, theta, std::get<HeadingConstraint>(constraint));
+    ApplyConstraint(opti, x, y, thetacos, thetasin, std::get<HeadingConstraint>(constraint));
   } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(opti, x, y, thetacos, thetasin,
                     std::get<LinePointConstraint>(constraint));
   } else if (std::holds_alternative<PointAtConstraint>(constraint)) {
     auto pointAtConstraint = std::get<PointAtConstraint>(constraint);
@@ -53,19 +53,13 @@ void ApplyHolonomicConstraint(Opti& opti, const Expr& x, const Expr& y,
      */
     auto dx = fieldPointX - x;
     auto dy = fieldPointY - y;
-    auto ux = dx / hypot(dx, dy);  // NOLINT
-    auto uy = dy / hypot(dx, dy);  // NOLINT
-    auto hx = cos(theta);          // NOLINT
-    auto hy = sin(theta);          // NOLINT
-    auto dot = hx * ux + hy * uy;
-
-    ApplyIntervalSet1dConstraint(
-        opti, dot, IntervalSet1d(std::cos(headingTolerance), 1.0));
+    auto dot = thetacos * dx + thetasin * dy;
+    opti.SubjectTo(dot >= std::cos(headingTolerance) * hypot(dx, dy));
   } else if (std::holds_alternative<PointLineConstraint>(constraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(opti, x, y, thetacos, thetasin,
                     std::get<PointLineConstraint>(constraint));
   } else if (std::holds_alternative<PointPointConstraint>(constraint)) {
-    ApplyConstraint(opti, x, y, theta,
+    ApplyConstraint(opti, x, y, thetacos, thetasin,
                     std::get<PointPointConstraint>(constraint));
   }  // TODO: Investigate a way to condense the code above
 }

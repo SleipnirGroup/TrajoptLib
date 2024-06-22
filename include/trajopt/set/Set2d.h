@@ -8,6 +8,7 @@
 #include "trajopt/set/EllipticalSet2d.h"
 #include "trajopt/set/LinearSet2d.h"
 #include "trajopt/set/RectangularSet2d.h"
+#include "trajopt/set/ManifoldIntervalSet2d.h"
 
 namespace trajopt {
 
@@ -33,6 +34,6 @@ namespace trajopt {
  * force the vector to be colinear with the x-axis.
  */
 using Set2d =
-    std::variant<RectangularSet2d, LinearSet2d, EllipticalSet2d, ConeSet2d>;
+    std::variant<RectangularSet2d, LinearSet2d, EllipticalSet2d, ConeSet2d, ManifoldIntervalSet2d>;
 
 }  // namespace trajopt

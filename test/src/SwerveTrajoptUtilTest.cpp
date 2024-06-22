@@ -49,7 +49,7 @@ TEST_CASE("SwerveTrajoptUtil - SolveNetTorque()", "[SwerveTrajoptUtil]") {
        .wheelMaxTorque = 0.0},
   };
 
-  double tau_net = trajopt::SolveNetTorque(theta, Fx, Fy, swerveModules);
+  double tau_net = trajopt::SolveNetTorque(std::cos(theta), std::sin(theta), Fx, Fy, swerveModules);
 
   CHECK(tau_net == Catch::Approx(0.6553658).margin(1e-3));
 }
@@ -65,7 +65,13 @@ TEST_CASE("SwerveTrajoptUtil - ApplyKinematicsConstraints()",
   std::vector<double> dt{2.0, 4.0};
   std::vector<size_t> N{2, 4};
 
-  trajopt::ApplyKinematicsConstraints(opti, x, x, x, v, v, v, a, a, a, dt, N);
+    std::vector<double> xcos;
+  xcos.reserve(x.size());
+  std::transform(x.cbegin(), x.cend(), std::back_inserter(xcos), std::cos<double>);
+  std::vector<double> xsin;
+  xsin.reserve(x.size());
+  std::transform(x.cbegin(), x.cend(), std::back_inserter(xsin), std::sin<double>);
+  trajopt::ApplyKinematicsConstraints(opti, x, x, xcos, xsin, v, v, v, a, a, a, dt, N);
 
   CHECK_FALSE(opti.IsViolating());
 }
