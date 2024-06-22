@@ -143,10 +143,10 @@ inline void ApplySet2dConstraint(sleipnir::OptimizationProblem& problem,
     auto dot = (mid_cos * vectorX) + (mid_sin * vectorY);
     // vector dot middle >= std::cos(tolerance) * ||vector||
     if (manifoldSet2d.tolerance == 0) {
-      problem.SubjectTo(dot == std::hypot(vectorX, vectorY));
+      problem.SubjectTo(dot == hypot(vectorX, vectorY));
     } else if (manifoldSet2d.tolerance < std::numbers::pi) {
       problem.SubjectTo(dot >= std::cos(manifoldSet2d.tolerance) *
-                                   std::hypot(vectorX, vectorY));
+                                   hypot(vectorX, vectorY));
     }
     // wider tolerances permit the whole circle, so do nothing
   }
@@ -198,10 +198,10 @@ SolveRobotPointPosition(const sleipnir::Variable& x,
     double cornerDiagonal = std::hypot(robotPointX, robotPointY);
     double cornerAngle = std::atan2(robotPointY, robotPointX);
     position.first =
-        x + cornerDiagonal * (thetacos * cos(cornerAngle) -
+        x + cornerDiagonal * (thetacos * cos(cornerAngle) -  // NOLINT
                               thetasin * sin(cornerAngle));  // NOLINT
     position.second =
-        y + cornerDiagonal * (thetacos * sin(cornerAngle) +
+        y + cornerDiagonal * (thetacos * sin(cornerAngle) +  // NOLINT
                               thetasin * cos(cornerAngle));  // NOLINT
   }
   return position;

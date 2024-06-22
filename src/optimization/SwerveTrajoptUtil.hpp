@@ -92,8 +92,8 @@ inline void ApplyKinematicsConstraints(
           (theta_cos_n * theta_cos_n_1) - (theta_sin_n * -theta_sin_n_1);
       auto theta_diff_sin =
           (theta_cos_n * -theta_sin_n_1) + (theta_sin_n * theta_cos_n_1);
-      problem.SubjectTo(theta_diff_cos * std::sin(omega_n * dt_sgmt) ==
-                        theta_diff_sin * std::cos(omega_n * dt_sgmt));
+      problem.SubjectTo(theta_diff_cos * sin(omega_n * dt_sgmt) ==
+                        theta_diff_sin * cos(omega_n * dt_sgmt));
       problem.SubjectTo(
           theta_cos_n_1 * theta_cos_n_1 + theta_sin_n_1 * theta_sin_n_1 == 1);
       problem.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
