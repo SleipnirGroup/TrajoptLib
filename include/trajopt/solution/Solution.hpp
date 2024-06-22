@@ -21,8 +21,9 @@ struct TRAJOPT_DLLEXPORT Solution {
   /// Y positions.
   std::vector<double> y;
 
-  /// Headings.
+  /// Heading cosine.
   std::vector<double> thetacos;
+  /// Heading sine.
   std::vector<double> thetasin;
 };
 
