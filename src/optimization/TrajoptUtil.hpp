@@ -133,19 +133,20 @@ inline void ApplySet2dConstraint(sleipnir::OptimizationProblem& problem,
   } else if (std::holds_alternative<ConeSet2d>(set2d)) {
     auto& coneSet2d = std::get<ConeSet2d>(set2d);
     problem.SubjectTo(vectorX * sin(coneSet2d.thetaBound.upper) >=  // NOLINT
-                   vectorY * cos(coneSet2d.thetaBound.upper));   // NOLINT
+                      vectorY * cos(coneSet2d.thetaBound.upper));   // NOLINT
     problem.SubjectTo(vectorX * sin(coneSet2d.thetaBound.lower) <=  // NOLINT
-                   vectorY * cos(coneSet2d.thetaBound.lower));   // NOLINT
+                      vectorY * cos(coneSet2d.thetaBound.lower));   // NOLINT
   } else if (std::holds_alternative<ManifoldIntervalSet2d>(set2d)) {
     auto& manifoldSet2d = std::get<ManifoldIntervalSet2d>(set2d);
-    auto mid_cos = cos(manifoldSet2d.middle);
-    auto mid_sin = sin(manifoldSet2d.middle);
+    auto mid_cos = std::cos(manifoldSet2d.middle);
+    auto mid_sin = std::sin(manifoldSet2d.middle);
     auto dot = (mid_cos * vectorX) + (mid_sin * vectorY);
-    // vector dot middle >= cos(tolerance) * ||vector||
+    // vector dot middle >= std::cos(tolerance) * ||vector||
     if (manifoldSet2d.tolerance == 0) {
-      problem.SubjectTo(dot == hypot(vectorX, vectorY));
+      problem.SubjectTo(dot == std::hypot(vectorX, vectorY));
     } else if (manifoldSet2d.tolerance < std::numbers::pi) {
-      problem.SubjectTo(dot >= cos(manifoldSet2d.tolerance)*hypot(vectorX, vectorY));
+      problem.SubjectTo(dot >= std::cos(manifoldSet2d.tolerance) *
+                                   std::hypot(vectorX, vectorY));
     }
     // wider tolerances permit the whole circle, so do nothing
   }
@@ -196,8 +197,12 @@ SolveRobotPointPosition(const sleipnir::Variable& x,
   } else {
     double cornerDiagonal = std::hypot(robotPointX, robotPointY);
     double cornerAngle = std::atan2(robotPointY, robotPointX);
-    position.first = x + cornerDiagonal * (thetacos * cos(cornerAngle) - thetasin* sin(cornerAngle));   // NOLINT
-    position.second = y + cornerDiagonal * (thetacos * sin(cornerAngle) + thetasin * cos(cornerAngle));  // NOLINT
+    position.first =
+        x + cornerDiagonal * (thetacos * cos(cornerAngle) -
+                              thetasin * sin(cornerAngle));  // NOLINT
+    position.second =
+        y + cornerDiagonal * (thetacos * sin(cornerAngle) +
+                              thetasin * cos(cornerAngle));  // NOLINT
   }
   return position;
 }
@@ -234,15 +239,16 @@ inline void ApplyConstraint(sleipnir::OptimizationProblem& problem,
     ApplySet2dConstraint(problem, x, y, translationConstraint.translationBound);
   } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
     auto& headingConstraint = std::get<HeadingConstraint>(constraint);
-    ApplySet2dConstraint(problem, thetacos, thetasin, headingConstraint.headingBound);
+    ApplySet2dConstraint(problem, thetacos, thetasin,
+                         headingConstraint.headingBound);
   } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
     auto linePointConstraint = std::get<LinePointConstraint>(constraint);
     auto [lineStartX, lineStartY] = SolveRobotPointPosition(
         x, y, thetacos, thetasin, linePointConstraint.robotLineStartX,
         linePointConstraint.robotLineStartY);
-    auto [lineEndX, lineEndY] =
-        SolveRobotPointPosition(x, y, thetacos, thetasin, linePointConstraint.robotLineEndX,
-                                linePointConstraint.robotLineEndY);
+    auto [lineEndX, lineEndY] = SolveRobotPointPosition(
+        x, y, thetacos, thetasin, linePointConstraint.robotLineEndX,
+        linePointConstraint.robotLineEndY);
     double pointX = linePointConstraint.fieldPointX;
     double pointY = linePointConstraint.fieldPointY;
     auto dist = linePointDist(lineStartX, lineStartY, lineEndX, lineEndY,
@@ -258,9 +264,9 @@ inline void ApplyConstraint(sleipnir::OptimizationProblem& problem,
     double lineStartY = pointLineConstraint.fieldLineStartY;
     double lineEndX = pointLineConstraint.fieldLineEndX;
     double lineEndY = pointLineConstraint.fieldLineEndY;
-    auto [pointX, pointY] =
-        SolveRobotPointPosition(x, y, thetacos, thetasin, pointLineConstraint.robotPointX,
-                                pointLineConstraint.robotPointY);
+    auto [pointX, pointY] = SolveRobotPointPosition(
+        x, y, thetacos, thetasin, pointLineConstraint.robotPointX,
+        pointLineConstraint.robotPointY);
     auto dist = linePointDist(lineStartX, lineStartY, lineEndX, lineEndY,
                               pointX, pointY);
     auto distSquared = dist * dist;
@@ -274,8 +280,8 @@ inline void ApplyConstraint(sleipnir::OptimizationProblem& problem,
     double robotPointY = pointPointConstraint.robotPointY;
     double fieldPointX = pointPointConstraint.fieldPointX;
     double fieldPointY = pointPointConstraint.fieldPointY;
-    auto [bumperCornerX, bumperCornerY] =
-        SolveRobotPointPosition(x, y, thetacos, thetasin, robotPointX, robotPointY);
+    auto [bumperCornerX, bumperCornerY] = SolveRobotPointPosition(
+        x, y, thetacos, thetasin, robotPointX, robotPointY);
     auto dx = fieldPointX - bumperCornerX;
     auto dy = fieldPointY - bumperCornerY;
     auto pointDistSquared = dx * dx + dy * dy;
@@ -297,22 +303,21 @@ inline std::vector<double> Linspace(double startValue, double endValue,
 }
 
 inline std::vector<double> AngleLinspace(double startValue, double endValue,
-                             size_t numSamples) {
-    auto diff = endValue - startValue;
-    //angleModulus
-   const double modulus = 2 * std::numbers::pi;
-    const double minimumInput = -std::numbers::pi;
-    const double maximumInput = std::numbers::pi;
-    // Wrap input if it's above the maximum input
-    const double numMax = std::trunc((diff - minimumInput) / modulus);
-    diff -= numMax * modulus;
+                                         size_t numSamples) {
+  auto diff = endValue - startValue;
+  // angleModulus
+  const double modulus = 2 * std::numbers::pi;
+  const double minimumInput = -std::numbers::pi;
+  const double maximumInput = std::numbers::pi;
+  // Wrap input if it's above the maximum input
+  const double numMax = std::trunc((diff - minimumInput) / modulus);
+  diff -= numMax * modulus;
 
-    // Wrap input if it's below the minimum input
-    const double numMin = std::trunc((diff - maximumInput) / modulus);
-    diff -= numMin * modulus;
+  // Wrap input if it's below the minimum input
+  const double numMin = std::trunc((diff - maximumInput) / modulus);
+  diff -= numMin * modulus;
 
-    return Linspace(startValue,
-                   startValue + diff, numSamples);
+  return Linspace(startValue, startValue + diff, numSamples);
 }
 
 template <typename T>
@@ -334,8 +339,10 @@ inline Solution GenerateLinearInitialGuess(
   initialGuess.dt.reserve(sampTot);
   initialGuess.x.push_back(initialGuessPoints.front().front().x);
   initialGuess.y.push_back(initialGuessPoints.front().front().y);
-  initialGuess.thetacos.push_back(cos(initialGuessPoints.front().front().heading));
-  initialGuess.thetasin.push_back(sin(initialGuessPoints.front().front().heading));
+  initialGuess.thetacos.push_back(
+      std::cos(initialGuessPoints.front().front().heading));
+  initialGuess.thetasin.push_back(
+      std::sin(initialGuessPoints.front().front().heading));
   for (size_t i = 0; i < sampTot; i++) {
     initialGuess.dt.push_back((wptCnt * 5.0) / sampTot);
   }
@@ -351,11 +358,12 @@ inline Solution GenerateLinearInitialGuess(
         initialGuess.y,
         Linspace(initialGuessPoints.at(wptIdx - 1).back().y,
                  initialGuessPoints.at(wptIdx).front().y, N_guessSgmt));
-    auto wptTheta = AngleLinspace(initialGuessPoints.at(wptIdx - 1).back().heading,
-                 initialGuessPoints.at(wptIdx).front().heading, N_guessSgmt);
+    auto wptTheta = AngleLinspace(
+        initialGuessPoints.at(wptIdx - 1).back().heading,
+        initialGuessPoints.at(wptIdx).front().heading, N_guessSgmt);
     for (auto it = wptTheta.cbegin(); it != wptTheta.cend(); it++) {
-      initialGuess.thetacos.push_back(cos(*it));
-      initialGuess.thetasin.push_back(sin(*it));
+      initialGuess.thetacos.push_back(std::cos(*it));
+      initialGuess.thetasin.push_back(std::sin(*it));
     }
     for (size_t guessPointIdx = 1; guessPointIdx < guessPointCount - 1;
          guessPointIdx++) {  // if three or more guess points
@@ -369,13 +377,13 @@ inline Solution GenerateLinearInitialGuess(
           Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).y,
                    initialGuessPoints.at(wptIdx).at(guessPointIdx).y,
                    N_guessSgmt));
-    auto guessTheta = AngleLinspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).heading,
-                   initialGuessPoints.at(wptIdx).at(guessPointIdx).heading,
-                   N_guessSgmt);
-    for (auto it = guessTheta.cbegin(); it != guessTheta.cend(); it++) {
-      initialGuess.thetacos.push_back(cos(*it));
-      initialGuess.thetasin.push_back(sin(*it));
-    }
+      auto guessTheta = AngleLinspace(
+          initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).heading,
+          initialGuessPoints.at(wptIdx).at(guessPointIdx).heading, N_guessSgmt);
+      for (auto it = guessTheta.cbegin(); it != guessTheta.cend(); it++) {
+        initialGuess.thetacos.push_back(std::cos(*it));
+        initialGuess.thetasin.push_back(std::sin(*it));
+      }
     }
     if (guessPointCount > 1) {  // if two or more guess points
       size_t N_lastGuessSgmt = N_sgmt - (guessPointCount - 1) * N_guessSgmt;
@@ -387,24 +395,29 @@ inline Solution GenerateLinearInitialGuess(
           initialGuess.y,
           Linspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).y,
                    initialGuessPoints.at(wptIdx).back().y, N_lastGuessSgmt));
-      auto lastTheta = AngleLinspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
-                   initialGuessPoints.at(wptIdx).back().heading, N_lastGuessSgmt);
+      auto lastTheta = AngleLinspace(
+          initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
+          initialGuessPoints.at(wptIdx).back().heading, N_lastGuessSgmt);
       for (auto it = lastTheta.cbegin(); it != lastTheta.cend(); it++) {
-        initialGuess.thetacos.push_back(cos(*it));
-        initialGuess.thetasin.push_back(sin(*it));
+        initialGuess.thetacos.push_back(std::cos(*it));
+        initialGuess.thetasin.push_back(std::sin(*it));
       }
     }
   }
   return initialGuess;
 }
 
-inline void ApplyInitialGuess(
-    const Solution& solution, std::vector<sleipnir::Variable>& x,
-    std::vector<sleipnir::Variable>& y, std::vector<sleipnir::Variable>& thetacos, std::vector<sleipnir::Variable>& thetasin,
-    std::vector<sleipnir::Variable>& vx, std::vector<sleipnir::Variable>& vy,
-    std::vector<sleipnir::Variable>& omega, std::vector<sleipnir::Variable>& ax,
-    std::vector<sleipnir::Variable>& ay,
-    std::vector<sleipnir::Variable>& alpha) {
+inline void ApplyInitialGuess(const Solution& solution,
+                              std::vector<sleipnir::Variable>& x,
+                              std::vector<sleipnir::Variable>& y,
+                              std::vector<sleipnir::Variable>& thetacos,
+                              std::vector<sleipnir::Variable>& thetasin,
+                              std::vector<sleipnir::Variable>& vx,
+                              std::vector<sleipnir::Variable>& vy,
+                              std::vector<sleipnir::Variable>& omega,
+                              std::vector<sleipnir::Variable>& ax,
+                              std::vector<sleipnir::Variable>& ay,
+                              std::vector<sleipnir::Variable>& alpha) {
   size_t sampleTotal = x.size();
   for (size_t sampleIndex = 0; sampleIndex < sampleTotal; sampleIndex++) {
     x[sampleIndex].SetValue(solution.x[sampleIndex]);
@@ -427,13 +440,15 @@ inline void ApplyInitialGuess(
         solution.dt[sampleIndex]);
     double thetacos = solution.thetacos[sampleIndex];
     double thetasin = solution.thetasin[sampleIndex];
-    double last_thetacos = solution.thetacos[sampleIndex-1];
-    double last_thetasin = solution.thetasin[sampleIndex-1];
-    // rotate <thetacos, thetasin> by the angle of -<last_thetacos, last_thetasin>
-    // cos(-last)=last_thetacos, sin(-last) = -last_thetasin
+    double last_thetacos = solution.thetacos[sampleIndex - 1];
+    double last_thetasin = solution.thetasin[sampleIndex - 1];
+    // rotate <thetacos, thetasin> by the angle of -<last_thetacos,
+    // last_thetasin> std::cos(-last)=last_thetacos, std::sin(-last) =
+    // -last_thetasin
     double diffcos = (thetacos * last_thetacos) + (thetasin * last_thetasin);
-    double diffsin = (thetacos * -last_thetasin) + (thetasin*last_thetacos);
-    omega[sampleIndex].SetValue((std::atan2(diffsin, diffcos)) / solution.dt[sampleIndex]);
+    double diffsin = (thetacos * -last_thetasin) + (thetasin * last_thetacos);
+    omega[sampleIndex].SetValue((std::atan2(diffsin, diffcos)) /
+                                solution.dt[sampleIndex]);
 
     ax[sampleIndex].SetValue(
         (vx[sampleIndex].Value() - vx[sampleIndex - 1].Value()) /

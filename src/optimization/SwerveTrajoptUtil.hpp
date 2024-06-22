@@ -30,14 +30,15 @@ inline std::pair<sleipnir::Variable, sleipnir::Variable> SolveNetForce(
 }
 
 inline sleipnir::Variable SolveNetTorque(
-    const sleipnir::Variable& thetacos, const sleipnir::Variable& thetasin, const std::vector<sleipnir::Variable>& Fx,
+    const sleipnir::Variable& thetacos, const sleipnir::Variable& thetasin,
+    const std::vector<sleipnir::Variable>& Fx,
     const std::vector<sleipnir::Variable>& Fy,
     const std::vector<SwerveModule>& swerveModules) {
   sleipnir::Variable tau_net = 0;
 
   for (size_t moduleIdx = 0; moduleIdx < swerveModules.size(); ++moduleIdx) {
     auto& swerveModule = swerveModules.at(moduleIdx);
-    auto x_m = swerveModule.x * thetacos - swerveModule.y * thetasin;   // NOLINT
+    auto x_m = swerveModule.x * thetacos - swerveModule.y * thetasin;  // NOLINT
     auto y_m = swerveModule.x * thetasin + swerveModule.y * thetacos;
     auto& Fx_m = Fx.at(moduleIdx);
     auto& Fy_m = Fy.at(moduleIdx);
@@ -87,16 +88,22 @@ inline void ApplyKinematicsConstraints(
       problem.SubjectTo(x_n_1 + vx_n * dt_sgmt == x_n);
       problem.SubjectTo(y_n_1 + vy_n * dt_sgmt == y_n);
       // Rotate theta_n by -theta_n_1
-      auto theta_diff_cos = (theta_cos_n * theta_cos_n_1) - (theta_sin_n* -theta_sin_n_1);
-      auto theta_diff_sin = (theta_cos_n * -theta_sin_n_1) + (theta_sin_n*theta_cos_n_1);
-      problem.SubjectTo(theta_diff_cos*sin(omega_n*dt_sgmt) == theta_diff_sin*cos(omega_n*dt_sgmt));
-      problem.SubjectTo(theta_cos_n_1 * theta_cos_n_1 + theta_sin_n_1 * theta_sin_n_1 == 1);
+      auto theta_diff_cos =
+          (theta_cos_n * theta_cos_n_1) - (theta_sin_n * -theta_sin_n_1);
+      auto theta_diff_sin =
+          (theta_cos_n * -theta_sin_n_1) + (theta_sin_n * theta_cos_n_1);
+      problem.SubjectTo(theta_diff_cos * std::sin(omega_n * dt_sgmt) ==
+                        theta_diff_sin * std::cos(omega_n * dt_sgmt));
+      problem.SubjectTo(
+          theta_cos_n_1 * theta_cos_n_1 + theta_sin_n_1 * theta_sin_n_1 == 1);
       problem.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
       problem.SubjectTo(vy_n_1 + ay_n * dt_sgmt == vy_n);
       problem.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
     }
-    size_t lastIdx = GetIdx(N, wptIdx, N_sgmt-1);
-    problem.SubjectTo(thetacos.at(lastIdx) * thetacos.at(lastIdx) + thetasin.at(lastIdx) * thetasin.at(lastIdx) == 1);
+    size_t lastIdx = GetIdx(N, wptIdx, N_sgmt - 1);
+    problem.SubjectTo(thetacos.at(lastIdx) * thetacos.at(lastIdx) +
+                          thetasin.at(lastIdx) * thetasin.at(lastIdx) ==
+                      1);
   }
 }
 
@@ -147,9 +154,8 @@ inline void ApplyPowerConstraints(sleipnir::OptimizationProblem& problem,
                                   const std::vector<sleipnir::Variable>& Fx,
                                   const std::vector<sleipnir::Variable>& Fy,
                                   const SwerveDrivetrain& swerveDrivetrain) {
-  auto vx_prime = vx * thetacos - vy * -thetasin;   // NOLINT
+  auto vx_prime = vx * thetacos - vy * -thetasin;  // NOLINT
   auto vy_prime = vx * -thetasin + vy * thetacos;
-
 
   size_t moduleCount = swerveDrivetrain.modules.size();
 
@@ -183,11 +189,11 @@ inline void ApplyPowerConstraints(sleipnir::OptimizationProblem& problem,
 
 inline SwerveSolution ConstructSwerveSolution(
     std::vector<sleipnir::Variable>& x, std::vector<sleipnir::Variable>& y,
-    std::vector<sleipnir::Variable>& thetacos, std::vector<sleipnir::Variable>& thetasin,
-    std::vector<sleipnir::Variable>& vx,
-    std::vector<sleipnir::Variable>& vy, std::vector<sleipnir::Variable>& omega,
-    std::vector<sleipnir::Variable>& ax, std::vector<sleipnir::Variable>& ay,
-    std::vector<sleipnir::Variable>& alpha,
+    std::vector<sleipnir::Variable>& thetacos,
+    std::vector<sleipnir::Variable>& thetasin,
+    std::vector<sleipnir::Variable>& vx, std::vector<sleipnir::Variable>& vy,
+    std::vector<sleipnir::Variable>& omega, std::vector<sleipnir::Variable>& ax,
+    std::vector<sleipnir::Variable>& ay, std::vector<sleipnir::Variable>& alpha,
     std::vector<std::vector<sleipnir::Variable>>& Fx,
     std::vector<std::vector<sleipnir::Variable>>& Fy,
     std::vector<sleipnir::Variable>& dt, const std::vector<size_t>& N) {
@@ -200,16 +206,17 @@ inline SwerveSolution ConstructSwerveSolution(
       dtPerSamp.push_back(dt_val);
     }
   }
-  return SwerveSolution{{{dtPerSamp, RowSolutionValue(x), RowSolutionValue(y),
-                          RowSolutionValue(thetacos), RowSolutionValue(thetasin)},
-                         RowSolutionValue(vx),
-                         RowSolutionValue(vy),
-                         RowSolutionValue(omega),
-                         RowSolutionValue(ax),
-                         RowSolutionValue(ay),
-                         RowSolutionValue(alpha)},
-                        MatrixSolutionValue(Fx),
-                        MatrixSolutionValue(Fy)};
+  return SwerveSolution{
+      {{dtPerSamp, RowSolutionValue(x), RowSolutionValue(y),
+        RowSolutionValue(thetacos), RowSolutionValue(thetasin)},
+       RowSolutionValue(vx),
+       RowSolutionValue(vy),
+       RowSolutionValue(omega),
+       RowSolutionValue(ax),
+       RowSolutionValue(ay),
+       RowSolutionValue(alpha)},
+      MatrixSolutionValue(Fx),
+      MatrixSolutionValue(Fy)};
 }
 
 }  // namespace trajopt

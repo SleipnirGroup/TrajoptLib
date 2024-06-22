@@ -17,11 +17,11 @@ namespace trajopt {
 
 inline void ApplyHolonomicConstraint(
     sleipnir::OptimizationProblem& problem, const sleipnir::Variable& x,
-    const sleipnir::Variable& y, const sleipnir::Variable& thetacos, const sleipnir::Variable& thetasin,
-    const sleipnir::Variable& vx, const sleipnir::Variable& vy,
-    const sleipnir::Variable& omega, const sleipnir::Variable& ax,
-    const sleipnir::Variable& ay, const sleipnir::Variable& alpha,
-    const HolonomicConstraint& constraint) {
+    const sleipnir::Variable& y, const sleipnir::Variable& thetacos,
+    const sleipnir::Variable& thetasin, const sleipnir::Variable& vx,
+    const sleipnir::Variable& vy, const sleipnir::Variable& omega,
+    const sleipnir::Variable& ax, const sleipnir::Variable& ay,
+    const sleipnir::Variable& alpha, const HolonomicConstraint& constraint) {
   if (std::holds_alternative<HolonomicVelocityConstraint>(constraint)) {
     const auto& velocityHolonomicConstraint =
         std::get<HolonomicVelocityConstraint>(constraint);
@@ -36,7 +36,8 @@ inline void ApplyHolonomicConstraint(
     ApplyConstraint(problem, x, y, thetacos, thetasin,
                     std::get<TranslationConstraint>(constraint));
   } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
-    ApplyConstraint(problem, x, y, thetacos, thetasin, std::get<HeadingConstraint>(constraint));
+    ApplyConstraint(problem, x, y, thetacos, thetasin,
+                    std::get<HeadingConstraint>(constraint));
   } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
     ApplyConstraint(problem, x, y, thetacos, thetasin,
                     std::get<LinePointConstraint>(constraint));
@@ -57,7 +58,7 @@ inline void ApplyHolonomicConstraint(
     auto dx = fieldPointX - x;
     auto dy = fieldPointY - y;
     auto dot = thetacos * dx + thetasin * dy;
-    problem.SubjectTo(dot >= std::cos(headingTolerance) * hypot(dx, dy));
+    problem.SubjectTo(dot >= std::cos(headingTolerance) * std::hypot(dx, dy));
   } else if (std::holds_alternative<PointLineConstraint>(constraint)) {
     ApplyConstraint(problem, x, y, thetacos, thetasin,
                     std::get<PointLineConstraint>(constraint));

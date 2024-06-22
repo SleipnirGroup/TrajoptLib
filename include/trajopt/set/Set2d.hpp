@@ -7,8 +7,8 @@
 #include "trajopt/set/ConeSet2d.hpp"
 #include "trajopt/set/EllipticalSet2d.hpp"
 #include "trajopt/set/LinearSet2d.hpp"
-#include "trajopt/set/RectangularSet2d.hpp"
 #include "trajopt/set/ManifoldIntervalSet2d.hpp"
+#include "trajopt/set/RectangularSet2d.hpp"
 
 namespace trajopt {
 
@@ -33,7 +33,7 @@ namespace trajopt {
  * Bounding theta within [-pi, -pi] or within [pi, pi] is equivalent; both will
  * force the vector to be colinear with the x-axis.
  */
-using Set2d =
-    std::variant<RectangularSet2d, LinearSet2d, EllipticalSet2d, ConeSet2d, ManifoldIntervalSet2d>;
+using Set2d = std::variant<RectangularSet2d, LinearSet2d, EllipticalSet2d,
+                           ConeSet2d, ManifoldIntervalSet2d>;
 
 }  // namespace trajopt
