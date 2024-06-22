@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
-#include <trajopt/OptimalTrajectoryGenerator.hpp>
+#include <trajopt/SwerveTrajectoryGenerator.hpp>
 #include <trajopt/path/SwervePathBuilder.hpp>
 
 TEST_CASE("Obstacle - Linear initial guess", "[Obstacle]") {
@@ -34,5 +34,6 @@ TEST_CASE("Obstacle - Linear initial guess", "[Obstacle]") {
       0, 1, trajopt::Obstacle{.safetyDistance = 1.0, .points = {{1.0, 1.0}}});
 
   path.ControlIntervalCounts({10});
-  CHECK_NOTHROW(trajopt::OptimalTrajectoryGenerator::Generate(path));
+  trajopt::SwerveTrajectoryGenerator generator{path};
+  CHECK_NOTHROW(generator.Generate());
 }

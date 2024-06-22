@@ -1,6 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-#include <trajopt/OptimalTrajectoryGenerator.hpp>
+#include <trajopt/SwerveTrajectoryGenerator.hpp>
 
 int main() {
   trajopt::SwerveDrivetrain swerveDrivetrain{
@@ -19,11 +19,13 @@ int main() {
   path.SetDrivetrain(swerveDrivetrain);
   path.PoseWpt(0, 0.0, 0.0, 0.0);
   path.PoseWpt(1, 5.0, 0.0, 0.0);
-  path.WptZeroVelocity(0);
-  path.WptZeroVelocity(1);
+  path.WptConstraint(0, trajopt::LinearVelocityMaxMagnitudeConstraint{0.0});
+  path.WptConstraint(1, trajopt::LinearVelocityMaxMagnitudeConstraint{0.0});
   path.ControlIntervalCounts({4});
+
+  trajopt::SwerveTrajectoryGenerator generator{path};
 
   // SOLVE
   [[maybe_unused]]
-  auto solution = trajopt::OptimalTrajectoryGenerator::Generate(path, true);
+  auto solution = generator.Generate(true);
 }
