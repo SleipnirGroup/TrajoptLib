@@ -100,17 +100,19 @@ inline void ApplyKinematicsConstraints(
       // If the angles are equal, the angle between the unit vectors should be
       // zero.
       //
-      //   a ⋅ b = ||a|| ||b|| cos(angleBetween)  NOLINT
-      //         = 1 * 1 * 1
-      //         = 1
+      //   a x b = ||a|| ||b|| sin(angleBetween)  NOLINT
+      //         = 1 * 1 * 0
+      //         = 0
       //
-      //   a ⋅ b = 1
-      //   a.x * b.x + a.y * b.y = 1
-      //   cos(theta_diff) * cos(omega_n * dt_sgmt) +       NOLINT
-      //     sin(theta_diff) * sin(omega_n * dt_sgmt) = 1   NOLINT
-      problem.SubjectTo(theta_diff_cos * sleipnir::cos(omega_n * dt_sgmt) +
-                            theta_diff_sin * sleipnir::sin(omega_n * dt_sgmt) ==
-                        1);
+      //   a x b = 0
+      //   a.x * b.y - b.x * a.y = 0
+      //   a.x * b.y = b.x * a.y
+      //   cos(theta_diff) * sin(omega_n * dt_sgmt) =
+      //     sin(theta_diff) * cos(omega_n * dt_sgmt)
+      // NOTE: angleBetween = pi rad would be another solution
+      problem.SubjectTo(theta_diff_cos * sleipnir::sin(omega_n * dt_sgmt) -
+                            theta_diff_sin * sleipnir::cos(omega_n * dt_sgmt) ==
+                        0);
       problem.SubjectTo(
           theta_cos_n_1 * theta_cos_n_1 + theta_sin_n_1 * theta_sin_n_1 == 1);
       problem.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
