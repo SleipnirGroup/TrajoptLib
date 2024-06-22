@@ -58,7 +58,8 @@ inline void ApplyHolonomicConstraint(
     auto dx = fieldPointX - x;
     auto dy = fieldPointY - y;
     auto dot = thetacos * dx + thetasin * dy;
-    problem.SubjectTo(dot >= std::cos(headingTolerance) * sleipnir::hypot(dx, dy));
+    problem.SubjectTo(dot >=
+                      std::cos(headingTolerance) * sleipnir::hypot(dx, dy));
   } else if (std::holds_alternative<PointLineConstraint>(constraint)) {
     ApplyConstraint(problem, x, y, thetacos, thetasin,
                     std::get<PointLineConstraint>(constraint));
