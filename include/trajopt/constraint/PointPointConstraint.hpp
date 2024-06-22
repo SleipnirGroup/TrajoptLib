@@ -19,8 +19,8 @@ struct TRAJOPT_DLLEXPORT PointPointConstraint {
   /// Field point (meters).
   Translation2d fieldPoint;
 
-  /// The required distance (meters) between the point and point. Must be
-  /// positive.
+  /// The required distance (meters) between the robot point and field point.
+  /// Must be positive.
   IntervalSet1d distance;
 };
 

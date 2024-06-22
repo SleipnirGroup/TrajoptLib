@@ -95,6 +95,8 @@ inline void ApplyKinematicsConstraints(
       //   a x b = ||a|| ||b|| sin(angleBetween)  NOLINT
       //         = 1 * 1 * 0
       //         = 0
+      //
+      // NOTE: angleBetween = π rad would be another solution
       Translation2v a{theta_diff.Cos(), theta_diff.Sin()};
       Translation2v b{sleipnir::cos(omega_n * dt_sgmt),
                       sleipnir::sin(omega_n * dt_sgmt)};
