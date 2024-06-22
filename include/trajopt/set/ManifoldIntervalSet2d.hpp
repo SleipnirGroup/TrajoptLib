@@ -16,12 +16,12 @@ struct TRAJOPT_DLLEXPORT ManifoldIntervalSet2d {
   /// Half of the width of the valid range.
   double tolerance;
 
-    /**
+  /**
    * Construct a manifold vector bound to a particular value +- a tolerance.
    *
    * @param middle The angle at the midpoint of the valid range
-   * @param tolerance The tolerance. Must be positive. Tolerances greater than pi,
-   * (half the period) do not constrain the vector at all.
+   * @param tolerance The tolerance. Must be positive. Tolerances greater than
+   * pi, (half the period) do not constrain the vector at all.
    */
   constexpr ManifoldIntervalSet2d(double middle, double tolerance)
       : middle(middle), tolerance(tolerance) {
@@ -34,8 +34,7 @@ struct TRAJOPT_DLLEXPORT ManifoldIntervalSet2d {
    * @param angle the angle of the vector to.
    */
   constexpr ManifoldIntervalSet2d(double angle)
-      : ManifoldIntervalSet2d(angle, 0) {
-  }
+      : ManifoldIntervalSet2d(angle, 0) {}
 
   constexpr ManifoldIntervalSet2d() = default;
 };
