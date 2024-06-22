@@ -395,7 +395,7 @@ inline Solution GenerateLinearInitialGuess(
           initialGuess.y,
           Linspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).y,
                    initialGuessPoints.at(wptIdx).back().y, N_lastGuessSgmt));
-      auto lastTheta = AngleLinspace(
+      auto lastThetas = AngleLinspace(
           initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
           initialGuessPoints.at(wptIdx).back().heading, N_lastGuessSgmt);
       for (auto it = lastTheta.cbegin(); it != lastTheta.cend(); it++) {
