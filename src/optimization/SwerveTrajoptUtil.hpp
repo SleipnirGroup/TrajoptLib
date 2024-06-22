@@ -87,13 +87,30 @@ inline void ApplyKinematicsConstraints(
       auto alpha_n = alpha.at(idx);
       problem.SubjectTo(x_n_1 + vx_n * dt_sgmt == x_n);
       problem.SubjectTo(y_n_1 + vy_n * dt_sgmt == y_n);
-      // Rotate theta_n by -theta_n_1
+      // Rotate theta_n by -theta_n_1 to get the difference
       auto theta_diff_cos =
           (theta_cos_n * theta_cos_n_1) - (theta_sin_n * -theta_sin_n_1);
       auto theta_diff_sin =
           (theta_cos_n * -theta_sin_n_1) + (theta_sin_n * theta_cos_n_1);
-      problem.SubjectTo(theta_diff_cos * sleipnir::sin(omega_n * dt_sgmt) ==
-                        theta_diff_sin * sleipnir::cos(omega_n * dt_sgmt));
+      // Constrain angle equality on manifold: theta_diff = omega_n * dt_sgmt.
+      //
+      // Let a = <cos(theta_diff), sin(theta_diff)>.  NOLINT
+      // Let b = <cos(omega_n * dt_sgmt), sin(omega_n * dt_sgmt)>.  NOLINT
+      //
+      // If the angles are equal, the angle between the unit vectors should be
+      // zero.
+      //
+      //   a ⋅ b = ||a|| ||b|| cos(angleBetween)  NOLINT
+      //         = 1 * 1 * 1
+      //         = 1
+      //
+      //   a ⋅ b = 1
+      //   a.x * b.x + a.y * b.y = 1
+      //   cos(theta_diff) * cos(omega_n * dt_sgmt) +       NOLINT
+      //     sin(theta_diff) * sin(omega_n * dt_sgmt) = 1   NOLINT
+      problem.SubjectTo(theta_diff_cos * sleipnir::cos(omega_n * dt_sgmt) +
+                            theta_diff_sin * sleipnir::sin(omega_n * dt_sgmt) ==
+                        1);
       problem.SubjectTo(
           theta_cos_n_1 * theta_cos_n_1 + theta_sin_n_1 * theta_sin_n_1 == 1);
       problem.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
