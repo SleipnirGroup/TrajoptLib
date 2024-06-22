@@ -13,30 +13,21 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - artifact-name: Rust Native - Windows x86_64 (Sleipnir)
-            optimizer_backend: sleipnir
+          - artifact-name: Windows x86_64
             os: windows-2022
-            cmake-env:
             cargo-build-flags:
-          - artifact-name: Rust Native - Windows aarch64 (Sleipnir)
-            optimizer_backend: sleipnir
+          - artifact-name: Windows aarch64
             os: windows-2022
-            cmake-env:
             cargo-build-flags: --target aarch64-pc-windows-msvc
-          - artifact-name: Rust Native - macOS universal (Sleipnir)
-            optimizer_backend: sleipnir
+          - artifact-name: macOS universal
             os: macOS-14
             cmake_env:
             cargo-build-flags:
-          - artifact-name: Rust Native - Linux x86_64 (Sleipnir)
-            optimizer_backend: sleipnir
+          - artifact-name: Linux x86_64
             os: ubuntu-24.04
-            cmake-env:
             cargo-build-flags:
-          - artifact-name: Rust Native - Linux aarch64 (Sleipnir)
-            optimizer_backend: sleipnir
+          - artifact-name: Linux aarch64
             os: ubuntu-24.04
-            cmake-env:
             cargo-build-flags: --target aarch64-unknown-linux-gnu
 
     name: "${{ matrix.artifact-name }}"
@@ -46,11 +37,11 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Windows aarch64 Rust compiler
-        if: matrix.artifact-name == 'Rust Native - Windows aarch64 (Sleipnir)'
+        if: matrix.artifact-name == 'Windows aarch64'
         run: rustup target install aarch64-pc-windows-msvc
 
       - name: Set up Linux aarch64 Rust compiler
-        if: matrix.artifact-name == 'Rust Native - Linux aarch64 (Sleipnir)'
+        if: matrix.artifact-name == 'Linux aarch64'
         run: |
           sudo apt-get update -q
           sudo apt-get install -y g++-14-aarch64-linux-gnu
@@ -67,8 +58,8 @@ jobs:
       - run: sudo xcode-select -switch /Applications/Xcode_15.3.app
         if: startsWith(matrix.os, 'macOS')
 
-      - run: ${{matrix.cmake-env }} cargo build ${{ matrix.cargo-build-flags }} --features ${{ matrix.optimizer_backend }}
+      - run: cargo build ${{ matrix.cargo-build-flags }}
 
-      - run: cargo run --example swerve --features ${{ matrix.optimizer_backend }}
-        if: matrix.artifact-name != 'Rust Native - Windows aarch64 (Sleipnir)' &&
-            matrix.artifact-name != 'Rust Native - Linux aarch64 (Sleipnir)'
+      - run: cargo run --example swerve
+        if: matrix.artifact-name != 'Windows aarch64' &&
+            matrix.artifact-name != 'Linux aarch64'

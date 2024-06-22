@@ -94,36 +94,27 @@ if(BUILD_TESTING)
     fetchcontent_makeavailable(Catch2)
 endif()
 
-set(OPTIMIZER_BACKEND "sleipnir" CACHE STRING "Optimizer backend")
-set_property(CACHE OPTIMIZER_BACKEND PROPERTY STRINGS sleipnir)
+set(BUILD_TESTING_SAVE ${BUILD_TESTING})
+set(BUILD_EXAMPLES_SAVE ${BUILD_EXAMPLES})
 
-if(${OPTIMIZER_BACKEND} STREQUAL "sleipnir")
-    message(STATUS "Using Sleipnir optimizer")
+set(BUILD_TESTING OFF)
+set(BUILD_EXAMPLES OFF)
 
-    set(BUILD_TESTING_SAVE ${BUILD_TESTING})
-    set(BUILD_EXAMPLES_SAVE ${BUILD_EXAMPLES})
+fetchcontent_declare(
+    Sleipnir
+    GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
+    # main on 2024-06-20
+    GIT_TAG b060d361b68d23a6499ebd9d08560c073dfac462
+    PATCH_COMMAND
+        git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/0001-Downgrade-to-C-20.patch
+    UPDATE_DISCONNECTED 1
+)
+fetchcontent_makeavailable(Sleipnir)
 
-    set(BUILD_TESTING OFF)
-    set(BUILD_EXAMPLES OFF)
+set(BUILD_TESTING ${BUILD_TESTING_SAVE})
+set(BUILD_EXAMPLES ${BUILD_EXAMPLES_SAVE})
 
-    fetchcontent_declare(
-        Sleipnir
-        GIT_REPOSITORY https://github.com/SleipnirGroup/Sleipnir.git
-        # main on 2024-06-18
-        GIT_TAG affeafcd797ad1312b18172dbaed0a69cca6546e
-        PATCH_COMMAND
-            git apply
-            ${CMAKE_CURRENT_SOURCE_DIR}/cmake/0001-Downgrade-to-C-20.patch
-        UPDATE_DISCONNECTED 1
-    )
-    fetchcontent_makeavailable(Sleipnir)
-
-    set(BUILD_TESTING ${BUILD_TESTING_SAVE})
-    set(BUILD_EXAMPLES ${BUILD_EXAMPLES_SAVE})
-
-    target_compile_definitions(TrajoptLib PRIVATE OPTIMIZER_BACKEND_SLEIPNIR)
-    target_link_libraries(TrajoptLib PRIVATE Sleipnir)
-endif()
+target_link_libraries(TrajoptLib PUBLIC Sleipnir)
 
 target_include_directories(
     TrajoptLib

@@ -4,28 +4,26 @@
 
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
-#include <trajopt/path/InitialGuessPoint.h>
-#include <trajopt/set/IntervalSet1d.h>
+#include <trajopt/path/InitialGuessPoint.hpp>
+#include <trajopt/set/IntervalSet1d.hpp>
 
-#include "TestOpti.h"
-#include "optimization/SwerveTrajoptUtil.h"
-#include "optimization/TrajoptUtil.h"
+#include "optimization/SwerveTrajoptUtil.hpp"
 
 TEST_CASE("SwerveTrajoptUtil - SolveNetForce()", "[SwerveTrajoptUtil]") {
-  std::vector<double> Fx{4.0, 1.0, 3.0, 5.0};
-  std::vector<double> Fy{0.0, 2.0, -5.0, 2.0};
+  std::vector<sleipnir::Variable> Fx{4.0, 1.0, 3.0, 5.0};
+  std::vector<sleipnir::Variable> Fy{0.0, 2.0, -5.0, 2.0};
 
   auto [Fx_net, Fy_net] = trajopt::SolveNetForce(Fx, Fy);
 
-  CHECK(Fx_net == Catch::Approx(13.0).margin(1e-3));
-  CHECK(Fy_net == Catch::Approx(-1.0).margin(1e-3));
+  CHECK(Fx_net.Value() == Catch::Approx(13.0).margin(1e-3));
+  CHECK(Fy_net.Value() == Catch::Approx(-1.0).margin(1e-3));
 }
 
 TEST_CASE("SwerveTrajoptUtil - SolveNetTorque()", "[SwerveTrajoptUtil]") {
   constexpr double theta = 1.0;
 
-  std::vector<double> Fx{-3.0, -5.0, -4.0, 2.0};
-  std::vector<double> Fy{4.0, -5.0, -2.0, -4.0};
+  std::vector<sleipnir::Variable> Fx{-3.0, -5.0, -4.0, 2.0};
+  std::vector<sleipnir::Variable> Fy{4.0, -5.0, -2.0, -4.0};
   std::vector<trajopt::SwerveModule> swerveModules = {
       {.x = 1.0,
        .y = 1.0,
@@ -49,9 +47,10 @@ TEST_CASE("SwerveTrajoptUtil - SolveNetTorque()", "[SwerveTrajoptUtil]") {
        .wheelMaxTorque = 0.0},
   };
 
-  double tau_net = trajopt::SolveNetTorque(std::cos(theta), std::sin(theta), Fx, Fy, swerveModules);
+  sleipnir::Variable tau_net =
+      trajopt::SolveNetTorque(std::cos(theta), std::sin(theta), Fx, Fy, swerveModules);
 
-  CHECK(tau_net == Catch::Approx(0.6553658).margin(1e-3));
+  CHECK(tau_net.Value() == Catch::Approx(0.6553658).margin(1e-3));
 }
 
 TEST_CASE("SwerveTrajoptUtil - ApplyKinematicsConstraints()",

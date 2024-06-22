@@ -43,8 +43,8 @@ On Windows, open a [Developer PowerShell](https://learn.microsoft.com/en-us/visu
 git clone git@github.com:SleipnirGroup/TrajoptLib
 cd TrajoptLib
 
-# Configure with Sleipnir backend; automatically downloads library dependencies
-cmake -B build -S . -DOPTIMIZER_BACKEND=sleipnir
+# Configure
+cmake -B build -S .
 
 # Build
 cmake --build build
@@ -78,5 +78,5 @@ On Windows, open a [Developer PowerShell](https://learn.microsoft.com/en-us/visu
 git clone git@github.com:SleipnirGroup/TrajoptLib
 cd TrajoptLib
 
-cargo build --features sleipnir  # Sleipnir backend
+cargo build
 ```

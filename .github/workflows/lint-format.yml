@@ -102,4 +102,4 @@ jobs:
 
       - run: cargo fmt --check
 
-      - run: cargo clippy --features sleipnir -- -D warnings
+      - run: cargo clippy -- -D warnings
