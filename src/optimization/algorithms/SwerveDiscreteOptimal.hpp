@@ -42,8 +42,9 @@ class SwerveDiscreteOptimal {
 
       lastFrameTime = now;
 
-      auto soln = ConstructSwerveSolution(x, y, theta, vx, vy, omega, ax, ay,
-                                          alpha, Fx, Fy, dt, this->N);
+      auto soln =
+          ConstructSwerveSolution(x, y, thetacos, thetasin, vx, vy, omega, ax,
+                                  ay, alpha, Fx, Fy, dt, this->N);
       for (auto& callback : this->path.callbacks) {
         callback(soln, handle);
       }
@@ -55,7 +56,8 @@ class SwerveDiscreteOptimal {
 
     x.reserve(sampTot);
     y.reserve(sampTot);
-    theta.reserve(sampTot);
+    thetacos.reserve(sampTot);
+    thetasin.reserve(sampTot);
     vx.reserve(sampTot);
     vy.reserve(sampTot);
     omega.reserve(sampTot);
@@ -77,7 +79,8 @@ class SwerveDiscreteOptimal {
     for (size_t idx = 0; idx < sampTot; ++idx) {
       x.emplace_back(problem.DecisionVariable());
       y.emplace_back(problem.DecisionVariable());
-      theta.emplace_back(problem.DecisionVariable());
+      thetacos.emplace_back(problem.DecisionVariable());
+      thetasin.emplace_back(problem.DecisionVariable());
       vx.emplace_back(problem.DecisionVariable());
       vy.emplace_back(problem.DecisionVariable());
       omega.emplace_back(problem.DecisionVariable());
@@ -117,29 +120,29 @@ class SwerveDiscreteOptimal {
     }
 
     ApplyDiscreteTimeObjective(problem, dt, N);
-    ApplyKinematicsConstraints(problem, x, y, theta, vx, vy, omega, ax, ay,
-                               alpha, dt, N);
+    ApplyKinematicsConstraints(problem, x, y, thetacos, thetasin, vx, vy, omega,
+                               ax, ay, alpha, dt, N);
 
     for (size_t idx = 0; idx < sampTot; ++idx) {
       auto [Fx_net, Fy_net] = SolveNetForce(Fx.at(idx), Fy.at(idx));
       ApplyDynamicsConstraints(
           problem, ax.at(idx), ay.at(idx), alpha.at(idx), Fx_net, Fy_net,
-          SolveNetTorque(theta.at(idx), Fx.at(idx), Fy.at(idx),
-                         path.drivetrain.modules),
+          SolveNetTorque(thetacos.at(idx), thetasin.at(idx), Fx.at(idx),
+                         Fy.at(idx), path.drivetrain.modules),
           path.drivetrain.mass, path.drivetrain.moi);
 
-      ApplyPowerConstraints(problem, theta.at(idx), vx.at(idx), vy.at(idx),
-                            omega.at(idx), Fx.at(idx), Fy.at(idx),
-                            path.drivetrain);
+      ApplyPowerConstraints(problem, thetacos.at(idx), thetasin.at(idx),
+                            vx.at(idx), vy.at(idx), omega.at(idx), Fx.at(idx),
+                            Fy.at(idx), path.drivetrain);
     }
 
     for (size_t wptIdx = 0; wptIdx < wptCnt; ++wptIdx) {
       for (auto& constraint : path.waypoints.at(wptIdx).waypointConstraints) {
         size_t idx = GetIdx(N, wptIdx + 1, 0) - 1;  // first idx of next wpt - 1
-        ApplyHolonomicConstraint(problem, x.at(idx), y.at(idx), theta.at(idx),
-                                 vx.at(idx), vy.at(idx), omega.at(idx),
-                                 ax.at(idx), ay.at(idx), alpha.at(idx),
-                                 constraint);
+        ApplyHolonomicConstraint(problem, x.at(idx), y.at(idx),
+                                 thetacos.at(idx), thetasin.at(idx), vx.at(idx),
+                                 vy.at(idx), omega.at(idx), ax.at(idx),
+                                 ay.at(idx), alpha.at(idx), constraint);
       }
     }  // TODO: try changing the path struct so instead of having waypoint
        // objects
@@ -151,15 +154,16 @@ class SwerveDiscreteOptimal {
         size_t startIdx = GetIdx(N, sgmtIdx + 1, 0);
         size_t endIdx = GetIdx(N, sgmtIdx + 2, 0);
         for (size_t idx = startIdx; idx < endIdx; ++idx) {
-          ApplyHolonomicConstraint(problem, x.at(idx), y.at(idx), theta.at(idx),
-                                   vx.at(idx), vy.at(idx), omega.at(idx),
-                                   ax.at(idx), ay.at(idx), alpha.at(idx),
-                                   constraint);
+          ApplyHolonomicConstraint(
+              problem, x.at(idx), y.at(idx), thetacos.at(idx), thetasin.at(idx),
+              vx.at(idx), vy.at(idx), omega.at(idx), ax.at(idx), ay.at(idx),
+              alpha.at(idx), constraint);
         }
       }
     }
 
-    ApplyInitialGuess(initialGuess, x, y, theta, vx, vy, omega, ax, ay, alpha);
+    ApplyInitialGuess(initialGuess, x, y, thetacos, thetasin, vx, vy, omega, ax,
+                      ay, alpha);
   }
 
   /**
@@ -189,8 +193,8 @@ class SwerveDiscreteOptimal {
             sleipnir::SolverExitCondition::kCallbackRequestedStop) {
       return unexpected{std::string{sleipnir::ToMessage(status.exitCondition)}};
     } else {
-      return ConstructSwerveSolution(x, y, theta, vx, vy, omega, ax, ay, alpha,
-                                     Fx, Fy, dt, N);
+      return ConstructSwerveSolution(x, y, thetacos, thetasin, vx, vy, omega,
+                                     ax, ay, alpha, Fx, Fy, dt, N);
     }
   }
 
@@ -203,7 +207,8 @@ class SwerveDiscreteOptimal {
   /// State Variables
   std::vector<sleipnir::Variable> x;
   std::vector<sleipnir::Variable> y;
-  std::vector<sleipnir::Variable> theta;
+  std::vector<sleipnir::Variable> thetacos;
+  std::vector<sleipnir::Variable> thetasin;
   std::vector<sleipnir::Variable> vx;
   std::vector<sleipnir::Variable> vy;
   std::vector<sleipnir::Variable> omega;

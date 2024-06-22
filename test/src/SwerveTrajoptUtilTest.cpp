@@ -47,8 +47,8 @@ TEST_CASE("SwerveTrajoptUtil - SolveNetTorque()", "[SwerveTrajoptUtil]") {
        .wheelMaxTorque = 0.0},
   };
 
-  sleipnir::Variable tau_net =
-      trajopt::SolveNetTorque(theta, Fx, Fy, swerveModules);
+  sleipnir::Variable tau_net = trajopt::SolveNetTorque(
+      std::cos(theta), std::sin(theta), Fx, Fy, swerveModules);
 
   CHECK(tau_net.Value() == Catch::Approx(0.6553658).margin(1e-3));
 }

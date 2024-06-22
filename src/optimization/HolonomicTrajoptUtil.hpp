@@ -17,9 +17,9 @@ namespace trajopt {
 
 inline void ApplyHolonomicConstraint(
     sleipnir::OptimizationProblem& problem, const sleipnir::Variable& x,
-    const sleipnir::Variable& y, const sleipnir::Variable& theta,
-    const sleipnir::Variable& vx, const sleipnir::Variable& vy,
-    const sleipnir::Variable& omega,
+    const sleipnir::Variable& y, const sleipnir::Variable& thetacos,
+    const sleipnir::Variable& thetasin, const sleipnir::Variable& vx,
+    const sleipnir::Variable& vy, const sleipnir::Variable& omega,
     [[maybe_unused]] const sleipnir::Variable& ax,
     [[maybe_unused]] const sleipnir::Variable& ay,
     [[maybe_unused]] const sleipnir::Variable& alpha,
@@ -35,13 +35,13 @@ inline void ApplyHolonomicConstraint(
     ApplyIntervalSet1dConstraint(
         problem, omega, angularVelocityConstraint.angularVelocityBound);
   } else if (std::holds_alternative<TranslationConstraint>(constraint)) {
-    ApplyConstraint(problem, x, y, theta,
+    ApplyConstraint(problem, x, y, thetacos, thetasin,
                     std::get<TranslationConstraint>(constraint));
   } else if (std::holds_alternative<HeadingConstraint>(constraint)) {
-    ApplyConstraint(problem, x, y, theta,
+    ApplyConstraint(problem, x, y, thetacos, thetasin,
                     std::get<HeadingConstraint>(constraint));
   } else if (std::holds_alternative<LinePointConstraint>(constraint)) {
-    ApplyConstraint(problem, x, y, theta,
+    ApplyConstraint(problem, x, y, thetacos, thetasin,
                     std::get<LinePointConstraint>(constraint));
   } else if (std::holds_alternative<PointAtConstraint>(constraint)) {
     auto pointAtConstraint = std::get<PointAtConstraint>(constraint);
@@ -59,19 +59,14 @@ inline void ApplyHolonomicConstraint(
      */
     auto dx = fieldPointX - x;
     auto dy = fieldPointY - y;
-    auto ux = dx / hypot(dx, dy);  // NOLINT
-    auto uy = dy / hypot(dx, dy);  // NOLINT
-    auto hx = cos(theta);          // NOLINT
-    auto hy = sin(theta);          // NOLINT
-    auto dot = hx * ux + hy * uy;
-
-    ApplyIntervalSet1dConstraint(
-        problem, dot, IntervalSet1d(std::cos(headingTolerance), 1.0));
+    auto dot = thetacos * dx + thetasin * dy;
+    problem.SubjectTo(dot >=
+                      std::cos(headingTolerance) * sleipnir::hypot(dx, dy));
   } else if (std::holds_alternative<PointLineConstraint>(constraint)) {
-    ApplyConstraint(problem, x, y, theta,
+    ApplyConstraint(problem, x, y, thetacos, thetasin,
                     std::get<PointLineConstraint>(constraint));
   } else if (std::holds_alternative<PointPointConstraint>(constraint)) {
-    ApplyConstraint(problem, x, y, theta,
+    ApplyConstraint(problem, x, y, thetacos, thetasin,
                     std::get<PointPointConstraint>(constraint));
   }  // TODO: Investigate a way to condense the code above
 }

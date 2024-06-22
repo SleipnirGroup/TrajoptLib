@@ -30,14 +30,16 @@ inline std::pair<sleipnir::Variable, sleipnir::Variable> SolveNetForce(
 }
 
 inline sleipnir::Variable SolveNetTorque(
-    const sleipnir::Variable& theta, const std::vector<sleipnir::Variable>& Fx,
+    const sleipnir::Variable& thetacos, const sleipnir::Variable& thetasin,
+    const std::vector<sleipnir::Variable>& Fx,
     const std::vector<sleipnir::Variable>& Fy,
     const std::vector<SwerveModule>& swerveModules) {
   sleipnir::Variable tau_net = 0;
 
   for (size_t moduleIdx = 0; moduleIdx < swerveModules.size(); ++moduleIdx) {
     auto& swerveModule = swerveModules.at(moduleIdx);
-    auto [x_m, y_m] = RotateVector(swerveModule.x, swerveModule.y, theta);
+    auto x_m = swerveModule.x * thetacos - swerveModule.y * thetasin;
+    auto y_m = swerveModule.x * thetasin + swerveModule.y * thetacos;
     auto& Fx_m = Fx.at(moduleIdx);
     auto& Fy_m = Fy.at(moduleIdx);
     tau_net += x_m * Fy_m - y_m * Fx_m;
@@ -50,7 +52,8 @@ inline void ApplyKinematicsConstraints(
     sleipnir::OptimizationProblem& problem,
     const std::vector<sleipnir::Variable>& x,
     const std::vector<sleipnir::Variable>& y,
-    const std::vector<sleipnir::Variable>& theta,
+    const std::vector<sleipnir::Variable>& thetacos,
+    const std::vector<sleipnir::Variable>& thetasin,
     const std::vector<sleipnir::Variable>& vx,
     const std::vector<sleipnir::Variable>& vy,
     const std::vector<sleipnir::Variable>& omega,
@@ -69,8 +72,10 @@ inline void ApplyKinematicsConstraints(
       auto x_n_1 = x.at(idx - 1);
       auto y_n = y.at(idx);
       auto y_n_1 = y.at(idx - 1);
-      auto theta_n = theta.at(idx);
-      auto theta_n_1 = theta.at(idx - 1);
+      auto theta_cos_n = thetacos.at(idx);
+      auto theta_cos_n_1 = thetacos.at(idx - 1);
+      auto theta_sin_n = thetasin.at(idx);
+      auto theta_sin_n_1 = thetasin.at(idx - 1);
       auto vx_n = vx.at(idx);
       auto vx_n_1 = vx.at(idx - 1);
       auto vy_n = vy.at(idx);
@@ -82,11 +87,40 @@ inline void ApplyKinematicsConstraints(
       auto alpha_n = alpha.at(idx);
       problem.SubjectTo(x_n_1 + vx_n * dt_sgmt == x_n);
       problem.SubjectTo(y_n_1 + vy_n * dt_sgmt == y_n);
-      problem.SubjectTo(theta_n_1 + omega_n * dt_sgmt == theta_n);
+      // Rotate theta_n by -theta_n_1 to get the difference
+      auto theta_diff_cos =
+          (theta_cos_n * theta_cos_n_1) - (theta_sin_n * -theta_sin_n_1);
+      auto theta_diff_sin =
+          (theta_cos_n * -theta_sin_n_1) + (theta_sin_n * theta_cos_n_1);
+      // Constrain angle equality on manifold: theta_diff = omega_n * dt_sgmt.
+      //
+      // Let a = <cos(theta_diff), sin(theta_diff)>.  NOLINT
+      // Let b = <cos(omega_n * dt_sgmt), sin(omega_n * dt_sgmt)>.  NOLINT
+      //
+      // If the angles are equal, the angle between the unit vectors should be
+      // zero.
+      //
+      //   a ⋅ b = ||a|| ||b|| cos(angleBetween)  NOLINT
+      //         = 1 * 1 * 1
+      //         = 1
+      //
+      //   a ⋅ b = 1
+      //   a.x * b.x + a.y * b.y = 1
+      //   cos(theta_diff) * cos(omega_n * dt_sgmt) +       NOLINT
+      //     sin(theta_diff) * sin(omega_n * dt_sgmt) = 1   NOLINT
+      problem.SubjectTo(theta_diff_cos * sleipnir::cos(omega_n * dt_sgmt) +
+                            theta_diff_sin * sleipnir::sin(omega_n * dt_sgmt) ==
+                        1);
+      problem.SubjectTo(
+          theta_cos_n_1 * theta_cos_n_1 + theta_sin_n_1 * theta_sin_n_1 == 1);
       problem.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
       problem.SubjectTo(vy_n_1 + ay_n * dt_sgmt == vy_n);
       problem.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
     }
+    size_t lastIdx = GetIdx(N, wptIdx, N_sgmt - 1);
+    problem.SubjectTo(thetacos.at(lastIdx) * thetacos.at(lastIdx) +
+                          thetasin.at(lastIdx) * thetasin.at(lastIdx) ==
+                      1);
   }
 }
 
@@ -129,14 +163,16 @@ inline void ApplyDynamicsConstraints(
 }
 
 inline void ApplyPowerConstraints(sleipnir::OptimizationProblem& problem,
-                                  const sleipnir::Variable& theta,
+                                  const sleipnir::Variable& thetacos,
+                                  const sleipnir::Variable& thetasin,
                                   const sleipnir::Variable& vx,
                                   const sleipnir::Variable& vy,
                                   const sleipnir::Variable& omega,
                                   const std::vector<sleipnir::Variable>& Fx,
                                   const std::vector<sleipnir::Variable>& Fy,
                                   const SwerveDrivetrain& swerveDrivetrain) {
-  auto [vx_prime, vy_prime] = RotateVector(vx, vy, -theta);
+  auto vx_prime = vx * thetacos - vy * -thetasin;
+  auto vy_prime = vx * -thetasin + vy * thetacos;
 
   size_t moduleCount = swerveDrivetrain.modules.size();
 
@@ -170,10 +206,11 @@ inline void ApplyPowerConstraints(sleipnir::OptimizationProblem& problem,
 
 inline SwerveSolution ConstructSwerveSolution(
     std::vector<sleipnir::Variable>& x, std::vector<sleipnir::Variable>& y,
-    std::vector<sleipnir::Variable>& theta, std::vector<sleipnir::Variable>& vx,
-    std::vector<sleipnir::Variable>& vy, std::vector<sleipnir::Variable>& omega,
-    std::vector<sleipnir::Variable>& ax, std::vector<sleipnir::Variable>& ay,
-    std::vector<sleipnir::Variable>& alpha,
+    std::vector<sleipnir::Variable>& thetacos,
+    std::vector<sleipnir::Variable>& thetasin,
+    std::vector<sleipnir::Variable>& vx, std::vector<sleipnir::Variable>& vy,
+    std::vector<sleipnir::Variable>& omega, std::vector<sleipnir::Variable>& ax,
+    std::vector<sleipnir::Variable>& ay, std::vector<sleipnir::Variable>& alpha,
     std::vector<std::vector<sleipnir::Variable>>& Fx,
     std::vector<std::vector<sleipnir::Variable>>& Fy,
     std::vector<sleipnir::Variable>& dt, const std::vector<size_t>& N) {
@@ -186,16 +223,17 @@ inline SwerveSolution ConstructSwerveSolution(
       dtPerSamp.push_back(dt_val);
     }
   }
-  return SwerveSolution{{{dtPerSamp, RowSolutionValue(x), RowSolutionValue(y),
-                          RowSolutionValue(theta)},
-                         RowSolutionValue(vx),
-                         RowSolutionValue(vy),
-                         RowSolutionValue(omega),
-                         RowSolutionValue(ax),
-                         RowSolutionValue(ay),
-                         RowSolutionValue(alpha)},
-                        MatrixSolutionValue(Fx),
-                        MatrixSolutionValue(Fy)};
+  return SwerveSolution{
+      {{dtPerSamp, RowSolutionValue(x), RowSolutionValue(y),
+        RowSolutionValue(thetacos), RowSolutionValue(thetasin)},
+       RowSolutionValue(vx),
+       RowSolutionValue(vy),
+       RowSolutionValue(omega),
+       RowSolutionValue(ax),
+       RowSolutionValue(ay),
+       RowSolutionValue(alpha)},
+      MatrixSolutionValue(Fx),
+      MatrixSolutionValue(Fy)};
 }
 
 }  // namespace trajopt

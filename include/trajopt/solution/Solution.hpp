@@ -21,8 +21,10 @@ struct TRAJOPT_DLLEXPORT Solution {
   /// Y positions.
   std::vector<double> y;
 
-  /// Headings.
-  std::vector<double> theta;
+  /// Heading cosine.
+  std::vector<double> thetacos;
+  /// Heading sine.
+  std::vector<double> thetasin;
 };
 
 }  // namespace trajopt
