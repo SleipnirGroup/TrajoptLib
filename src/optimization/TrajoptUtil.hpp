@@ -358,12 +358,12 @@ inline Solution GenerateLinearInitialGuess(
         initialGuess.y,
         Linspace(initialGuessPoints.at(wptIdx - 1).back().y,
                  initialGuessPoints.at(wptIdx).front().y, N_guessSgmt));
-    auto wptTheta = AngleLinspace(
+    auto wptThetas = AngleLinspace(
         initialGuessPoints.at(wptIdx - 1).back().heading,
         initialGuessPoints.at(wptIdx).front().heading, N_guessSgmt);
-    for (auto it = wptTheta.cbegin(); it != wptTheta.cend(); it++) {
-      initialGuess.thetacos.push_back(std::cos(*it));
-      initialGuess.thetasin.push_back(std::sin(*it));
+    for (auto theta : wptThetas) {
+      initialGuess.thetacos.push_back(std::cos(theta));
+      initialGuess.thetasin.push_back(std::sin(theta));
     }
     for (size_t guessPointIdx = 1; guessPointIdx < guessPointCount - 1;
          guessPointIdx++) {  // if three or more guess points
@@ -377,12 +377,12 @@ inline Solution GenerateLinearInitialGuess(
           Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).y,
                    initialGuessPoints.at(wptIdx).at(guessPointIdx).y,
                    N_guessSgmt));
-      auto guessTheta = AngleLinspace(
+      auto guessThetas = AngleLinspace(
           initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).heading,
           initialGuessPoints.at(wptIdx).at(guessPointIdx).heading, N_guessSgmt);
-      for (auto it = guessTheta.cbegin(); it != guessTheta.cend(); it++) {
-        initialGuess.thetacos.push_back(std::cos(*it));
-        initialGuess.thetasin.push_back(std::sin(*it));
+      for (auto theta : guessThetas) {
+        initialGuess.thetacos.push_back(std::cos(theta));
+        initialGuess.thetasin.push_back(std::sin(theta));
       }
     }
     if (guessPointCount > 1) {  // if two or more guess points
@@ -398,9 +398,9 @@ inline Solution GenerateLinearInitialGuess(
       auto lastThetas = AngleLinspace(
           initialGuessPoints.at(wptIdx).at(guessPointCount - 2).heading,
           initialGuessPoints.at(wptIdx).back().heading, N_lastGuessSgmt);
-      for (auto it = lastTheta.cbegin(); it != lastTheta.cend(); it++) {
-        initialGuess.thetacos.push_back(std::cos(*it));
-        initialGuess.thetasin.push_back(std::sin(*it));
+      for (auto theta : lastThetas) {
+        initialGuess.thetacos.push_back(std::cos(theta));
+        initialGuess.thetasin.push_back(std::sin(theta));
       }
     }
   }
