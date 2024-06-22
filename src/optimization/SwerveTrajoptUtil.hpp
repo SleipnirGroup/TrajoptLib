@@ -107,8 +107,8 @@ inline void ApplyKinematicsConstraints(
       //   a x b = 0
       //   a.x * b.y - b.x * a.y = 0
       //   a.x * b.y = b.x * a.y
-      //   cos(theta_diff) * sin(omega_n * dt_sgmt) =
-      //     sin(theta_diff) * cos(omega_n * dt_sgmt)
+      //   cos(theta_diff) * sin(omega_n * dt_sgmt) = NOLINT
+      //     sin(theta_diff) * cos(omega_n * dt_sgmt) NOLINT
       // NOTE: angleBetween = pi rad would be another solution
       problem.SubjectTo(theta_diff_cos * sleipnir::sin(omega_n * dt_sgmt) -
                             theta_diff_sin * sleipnir::cos(omega_n * dt_sgmt) ==
