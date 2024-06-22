@@ -96,7 +96,7 @@ inline void ApplyKinematicsConstraints(
       problem.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
     }
     size_t lastIdx = GetIdx(N, wptIdx, N_sgmt-1);
-    opti.SubjectTo(thetacos.at(lastIdx) * thetacos.at(lastIdx) + thetasin.at(lastIdx) * thetasin.at(lastIdx) == 1);
+    problem.SubjectTo(thetacos.at(lastIdx) * thetacos.at(lastIdx) + thetasin.at(lastIdx) * thetasin.at(lastIdx) == 1);
   }
 }
 

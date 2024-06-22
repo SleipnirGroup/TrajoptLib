@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "trajopt/SymbolExports.hpp"
+#include "trajopt/util/SymbolExports.hpp"
 #include "trajopt/set/ManifoldIntervalSet2d.hpp"
 
 namespace trajopt {
