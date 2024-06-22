@@ -38,8 +38,8 @@ inline sleipnir::Variable fmin(const sleipnir::Variable& a,
 inline std::pair<sleipnir::Variable, sleipnir::Variable> RotateVector(
     const sleipnir::Variable& x, const sleipnir::Variable& y,
     const sleipnir::Variable& theta) {
-  return {x * cos(theta) - y * sin(theta),   // NOLINT
-          x * sin(theta) + y * cos(theta)};  // NOLINT
+  return {x * sleipnir::cos(theta) - y * sleipnir::sin(theta),
+          x * sleipnir::sin(theta) + y * sleipnir::cos(theta)};
 }
 
 /**
@@ -132,10 +132,10 @@ inline void ApplySet2dConstraint(sleipnir::OptimizationProblem& problem,
     }
   } else if (std::holds_alternative<ConeSet2d>(set2d)) {
     auto& coneSet2d = std::get<ConeSet2d>(set2d);
-    problem.SubjectTo(vectorX * sin(coneSet2d.thetaBound.upper) >=  // NOLINT
-                      vectorY * cos(coneSet2d.thetaBound.upper));   // NOLINT
-    problem.SubjectTo(vectorX * sin(coneSet2d.thetaBound.lower) <=  // NOLINT
-                      vectorY * cos(coneSet2d.thetaBound.lower));   // NOLINT
+    problem.SubjectTo(vectorX * sleipnir::sin(coneSet2d.thetaBound.upper) >=
+                      vectorY * sleipnir::cos(coneSet2d.thetaBound.upper));
+    problem.SubjectTo(vectorX * sleipnir::sin(coneSet2d.thetaBound.lower) <=
+                      vectorY * sleipnir::cos(coneSet2d.thetaBound.lower));
   } else if (std::holds_alternative<ManifoldIntervalSet2d>(set2d)) {
     auto& manifoldSet2d = std::get<ManifoldIntervalSet2d>(set2d);
     auto mid_cos = std::cos(manifoldSet2d.middle);
@@ -143,10 +143,10 @@ inline void ApplySet2dConstraint(sleipnir::OptimizationProblem& problem,
     auto dot = (mid_cos * vectorX) + (mid_sin * vectorY);
     // vector dot middle >= std::cos(tolerance) * ||vector||
     if (manifoldSet2d.tolerance == 0) {
-      problem.SubjectTo(dot == hypot(vectorX, vectorY));
+      problem.SubjectTo(dot == sleipnir::hypot(vectorX, vectorY));
     } else if (manifoldSet2d.tolerance < std::numbers::pi) {
       problem.SubjectTo(dot >= std::cos(manifoldSet2d.tolerance) *
-                                   hypot(vectorX, vectorY));
+                                   sleipnir::hypot(vectorX, vectorY));
     }
     // wider tolerances permit the whole circle, so do nothing
   }
@@ -198,11 +198,11 @@ SolveRobotPointPosition(const sleipnir::Variable& x,
     double cornerDiagonal = std::hypot(robotPointX, robotPointY);
     double cornerAngle = std::atan2(robotPointY, robotPointX);
     position.first =
-        x + cornerDiagonal * (thetacos * cos(cornerAngle) -  // NOLINT
-                              thetasin * sin(cornerAngle));  // NOLINT
+        x + cornerDiagonal * (thetacos * sleipnir::cos(cornerAngle) -
+                              thetasin * sleipnir::sin(cornerAngle));
     position.second =
-        y + cornerDiagonal * (thetacos * sin(cornerAngle) +  // NOLINT
-                              thetasin * cos(cornerAngle));  // NOLINT
+        y + cornerDiagonal * (thetacos * sleipnir::sin(cornerAngle) +
+                              thetasin * sleipnir::cos(cornerAngle));
   }
   return position;
 }

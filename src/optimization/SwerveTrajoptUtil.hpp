@@ -38,7 +38,7 @@ inline sleipnir::Variable SolveNetTorque(
 
   for (size_t moduleIdx = 0; moduleIdx < swerveModules.size(); ++moduleIdx) {
     auto& swerveModule = swerveModules.at(moduleIdx);
-    auto x_m = swerveModule.x * thetacos - swerveModule.y * thetasin;  // NOLINT
+    auto x_m = swerveModule.x * thetacos - swerveModule.y * thetasin;
     auto y_m = swerveModule.x * thetasin + swerveModule.y * thetacos;
     auto& Fx_m = Fx.at(moduleIdx);
     auto& Fy_m = Fy.at(moduleIdx);
@@ -92,8 +92,8 @@ inline void ApplyKinematicsConstraints(
           (theta_cos_n * theta_cos_n_1) - (theta_sin_n * -theta_sin_n_1);
       auto theta_diff_sin =
           (theta_cos_n * -theta_sin_n_1) + (theta_sin_n * theta_cos_n_1);
-      problem.SubjectTo(theta_diff_cos * sin(omega_n * dt_sgmt) == //NOLINT
-                        theta_diff_sin * cos(omega_n * dt_sgmt));  //NOLINT
+      problem.SubjectTo(theta_diff_cos * sleipnir::sin(omega_n * dt_sgmt) ==
+                        theta_diff_sin * sleipnir::cos(omega_n * dt_sgmt));
       problem.SubjectTo(
           theta_cos_n_1 * theta_cos_n_1 + theta_sin_n_1 * theta_sin_n_1 == 1);
       problem.SubjectTo(vx_n_1 + ax_n * dt_sgmt == vx_n);
@@ -154,7 +154,7 @@ inline void ApplyPowerConstraints(sleipnir::OptimizationProblem& problem,
                                   const std::vector<sleipnir::Variable>& Fx,
                                   const std::vector<sleipnir::Variable>& Fy,
                                   const SwerveDrivetrain& swerveDrivetrain) {
-  auto vx_prime = vx * thetacos - vy * -thetasin;  // NOLINT
+  auto vx_prime = vx * thetacos - vy * -thetasin;
   auto vy_prime = vx * -thetasin + vy * thetacos;
 
   size_t moduleCount = swerveDrivetrain.modules.size();
