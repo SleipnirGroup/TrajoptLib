@@ -4,7 +4,6 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <trajopt/OptimalTrajectoryGenerator.hpp>
-#include <trajopt/path/InitialGuessPoint.hpp>
 #include <trajopt/path/SwervePathBuilder.hpp>
 
 TEST_CASE("Obstacle - Linear initial guess", "[Obstacle]") {
@@ -14,10 +13,10 @@ TEST_CASE("Obstacle - Linear initial guess", "[Obstacle]") {
 
   SwerveDrivetrain swerveDrivetrain{.mass = 45,
                                     .moi = 6,
-                                    .modules = {{+0.6, +0.6, 0.04, 70, 2},
-                                                {+0.6, -0.6, 0.04, 70, 2},
-                                                {-0.6, +0.6, 0.04, 70, 2},
-                                                {-0.6, -0.6, 0.04, 70, 2}}};
+                                    .modules = {{{+0.6, +0.6}, 0.04, 70, 2},
+                                                {{+0.6, -0.6}, 0.04, 70, 2},
+                                                {{-0.6, +0.6}, 0.04, 70, 2},
+                                                {{-0.6, -0.6}, 0.04, 70, 2}}};
 
   trajopt::SwervePathBuilder path;
   path.PoseWpt(0, 0.0, 0.0, 0.0);

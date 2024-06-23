@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "trajopt/geometry/Translation2.hpp"
 #include "trajopt/set/IntervalSet1d.hpp"
 #include "trajopt/util/SymbolExports.hpp"
 
@@ -12,20 +13,17 @@ namespace trajopt {
  * frame and a line segment on the field.
  */
 struct TRAJOPT_DLLEXPORT PointLineConstraint {
-  /// robot point x (meters)
-  double robotPointX;
-  /// robot point y (meters)
-  double robotPointY;
-  /// field line start x (meters)
-  double fieldLineStartX;
-  /// field line start y (meters)
-  double fieldLineStartY;
-  /// field line end x (meters)
-  double fieldLineEndX;
-  /// field line end y (meters)
-  double fieldLineEndY;
-  /// the required minimum distance (meters) between the point and line, must be
-  /// positive
+  /// Robot point (meters).
+  Translation2d robotPoint;
+
+  /// Field line start (meters).
+  Translation2d fieldLineStart;
+
+  /// Field line end (meters).
+  Translation2d fieldLineEnd;
+
+  /// The required minimum distance (meters) between the point and line. Must be
+  /// positive.
   IntervalSet1d distance;
 };
 
