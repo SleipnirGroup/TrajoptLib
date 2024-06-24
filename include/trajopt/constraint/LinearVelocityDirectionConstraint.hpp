@@ -35,7 +35,7 @@ class TRAJOPT_DLLEXPORT LinearVelocityDirectionConstraint {
    */
   void Apply([[maybe_unused]] sleipnir::OptimizationProblem& problem,
              [[maybe_unused]] const Pose2v& pose,
-             [[maybe_unused]] const Translation2v& linearVelocity,
+             const Translation2v& linearVelocity,
              [[maybe_unused]] const sleipnir::Variable& angularVelocity,
              [[maybe_unused]] const Translation2v& linearAcceleration,
              [[maybe_unused]] const sleipnir::Variable& angularAcceleration) {
