@@ -50,12 +50,12 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    * position and heading of the robot at the waypoint must be fixed at the
    * values provided.
    *
-   * @param idx index of the pose waypoint
+   * @param index index of the pose waypoint
    * @param x the x
    * @param y the y
    * @param heading the heading
    */
-  void PoseWpt(size_t idx, double x, double y, double heading);
+  void PoseWpt(size_t index, double x, double y, double heading);
 
   /**
    * Create a translation waypoint constraint on the waypoint at the
@@ -63,150 +63,150 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    * This specifies that the position of the robot at the waypoint must be fixed
    * at the value provided.
    *
-   * @param idx index of the pose waypoint
+   * @param index index of the pose waypoint
    * @param x the x
    * @param y the y
    * @param headingGuess optionally, an initial guess of the heading
    */
-  void TranslationWpt(size_t idx, double x, double y,
+  void TranslationWpt(size_t index, double x, double y,
                       double headingGuess = 0.0);
 
   /**
    * Provide a guess of the instantaneous pose of the robot at a waypoint.
    *
-   * @param wptIdx the waypoint to apply the guess to
+   * @param wptIndex the waypoint to apply the guess to
    * @param poseGuess the guess of the robot's pose
    */
-  void WptInitialGuessPoint(size_t wptIdx, const Pose2d& poseGuess);
+  void WptInitialGuessPoint(size_t wptIndex, const Pose2d& poseGuess);
 
   /**
    * Add a sequence of initial guess points between two waypoints. The points
-   * are inserted between the waypoints at fromIdx and fromIdx + 1. Linear
+   * are inserted between the waypoints at fromIndex and fromIndex + 1. Linear
    * interpolation between the waypoint initial guess points and these segment
    * initial guess points is used as the initial guess of the robot's pose over
    * the trajectory.
    *
-   * @param fromIdx index of the waypoint the initial guess point
+   * @param fromIndex index of the waypoint the initial guess point
    *                 comes immediately after
    * @param sgmtPoseGuess the sequence of initial guess points
    */
-  void SgmtInitialGuessPoints(size_t fromIdx,
+  void SgmtInitialGuessPoints(size_t fromIndex,
                               const std::vector<Pose2d>& sgmtPoseGuess);
 
   /**
    * Specify the required direction of the velocity vector of the robot
    * at a waypoint.
    *
-   * @param idx index of the waypoint
+   * @param index index of the waypoint
    * @param angle the polar angle of the required direction
    */
-  void WptVelocityDirection(size_t idx, double angle);
+  void WptVelocityDirection(size_t index, double angle);
 
   /**
    * Specify the required maximum magnitude of the velocity vector of the
    * robot at a waypoint.
    *
-   * @param idx index of the waypoint
+   * @param index index of the waypoint
    * @param v the maximum velocity magnitude
    */
-  void WptVelocityMagnitude(size_t idx, double v);
+  void WptVelocityMagnitude(size_t index, double v);
 
   /**
    * Specify the required velocity vector of the robot at a waypoint to
    * be zero.
    *
-   * @param idx index of the waypoint
+   * @param index index of the waypoint
    */
-  void WptZeroVelocity(size_t idx);
+  void WptZeroVelocity(size_t index);
 
   /**
    * Specify the exact required velocity vector of the robot at a
    * waypoint.
    *
-   * @param idx index of the waypoint
+   * @param index index of the waypoint
    * @param vr velocity vector magnitude
    * @param vtheta velocity vector polar angle
    */
-  void WptVelocityPolar(size_t idx, double vr, double vtheta);
+  void WptVelocityPolar(size_t index, double vr, double vtheta);
 
   /**
    * Specify the required angular velocity of the robot at a waypoint
    *
-   * @param idx index of the waypoint
+   * @param index index of the waypoint
    * @param angular_velocity the angular velocity
    */
-  void WptAngularVelocity(size_t idx, double angular_velocity);
+  void WptAngularVelocity(size_t index, double angular_velocity);
 
   /**
    * Specify the required angular velocity of the robot at a waypoint
    *
-   * @param idx index of the waypoint
+   * @param index index of the waypoint
    * @param angular_velocity the maximum angular velocity magnitude
    */
-  void WptAngularVelocityMaxMagnitude(size_t idx, double angular_velocity);
+  void WptAngularVelocityMaxMagnitude(size_t index, double angular_velocity);
 
   /**
    * Specify the required angular velocity of the robot to be zero
    * at a waypoint
    *
-   * @param idx index of the waypoint
+   * @param index index of the waypoint
    */
-  void WptZeroAngularVelocity(size_t idx);
+  void WptZeroAngularVelocity(size_t index);
 
   /**
    * Specify the required direction of the velocity vector of the robot
    * for the continuum of robot state between two waypoints.
    *
-   * @param fromIdx the waypoint at the beginning of the continuum
-   * @param toIdx the waypoint at the end of the continuum
+   * @param fromIndex the waypoint at the beginning of the continuum
+   * @param toIndex the waypoint at the end of the continuum
    * @param angle the polar angle of the required direction
    * @param includeWpts if using a discrete algorithm, false does not apply the
-   * constraint at the instantaneous state at waypoints at indices fromIdx and
-   * toIdx
+   * constraint at the instantaneous state at waypoints at indices fromIndex and
+   * toIndex
    */
-  void SgmtVelocityDirection(size_t fromIdx, size_t toIdx, double angle,
+  void SgmtVelocityDirection(size_t fromIndex, size_t toIndex, double angle,
                              bool includeWpts = true);
 
   /**
    * Specify the required maximum magnitude of the velocity vector of the
    * robot for the continuum of robot state between two waypoints.
    *
-   * @param fromIdx the waypoint at the beginning of the continuum
-   * @param toIdx the waypoint at the end of the continuum
+   * @param fromIndex the waypoint at the beginning of the continuum
+   * @param toIndex the waypoint at the end of the continuum
    * @param v the maximum velocity magnitude
    * @param includeWpts if using a discrete algorithm, false does not apply the
-   * constraint at the instantaneous state at waypoints at indices fromIdx and
-   * toIdx
+   * constraint at the instantaneous state at waypoints at indices fromIndex and
+   * toIndex
    */
-  void SgmtVelocityMagnitude(size_t fromIdx, size_t toIdx, double v,
+  void SgmtVelocityMagnitude(size_t fromIndex, size_t toIndex, double v,
                              bool includeWpts = true);
 
   /**
    * Specify the required angular velocity of the robot for the continuum
    * of robot state between two waypoints.
    *
-   * @param fromIdx index of the waypoint at the beginning of the continuum
-   * @param toIdx index of the waypoint at the end of the continuum
+   * @param fromIndex index of the waypoint at the beginning of the continuum
+   * @param toIndex index of the waypoint at the end of the continuum
    * @param angular_velocity the angular velocity
    * @param includeWpts if using a discrete algorithm, false does not apply the
-   * constraint at the instantaneous state at waypoints at indices fromIdx and
-   * toIdx
+   * constraint at the instantaneous state at waypoints at indices fromIndex and
+   * toIndex
    */
-  void SgmtAngularVelocity(size_t fromIdx, size_t toIdx,
+  void SgmtAngularVelocity(size_t fromIndex, size_t toIndex,
                            double angular_velocity, bool includeWpts = true);
 
   /**
    * Specify the required angular velocity magnitude of the robot for the
    * continuum of robot state between two waypoints.
    *
-   * @param fromIdx index of the waypoint at the beginning of the continuum
-   * @param toIdx index of the waypoint at the end of the continuum
+   * @param fromIndex index of the waypoint at the beginning of the continuum
+   * @param toIndex index of the waypoint at the end of the continuum
    * @param angular_velocity the maximum angular velocity magnitudeks
    * @param includeWpts if using a discrete algorithm, false does not apply the
-   * constraint at the instantaneous state at waypoints at indices fromIdx and
-   * toIdx
+   * constraint at the instantaneous state at waypoints at indices fromIndex and
+   * toIndex
    */
-  void SgmtAngularVelocityMaxMagnitude(size_t fromIdx, size_t toIdx,
+  void SgmtAngularVelocityMaxMagnitude(size_t fromIndex, size_t toIndex,
                                        double angular_velocity,
                                        bool includeWpts = true);
 
@@ -214,34 +214,34 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    * Specify the required angular velocity of the robot to be zero
    * for the continuum of robot state between two waypoints.
    *
-   * @param fromIdx index of the waypoint at the beginning of the continuum
-   * @param toIdx index of the waypoint at the end of the continuum
+   * @param fromIndex index of the waypoint at the beginning of the continuum
+   * @param toIndex index of the waypoint at the end of the continuum
    * @param includeWpts if using a discrete algorithm, false does not apply the
-   * constraint at the instantaneous state at waypoints at indices fromIdx and
-   * toIdx
+   * constraint at the instantaneous state at waypoints at indices fromIndex and
+   * toIndex
    */
-  void SgmtZeroAngularVelocity(size_t fromIdx, size_t toIdx,
+  void SgmtZeroAngularVelocity(size_t fromIndex, size_t toIndex,
                                bool includeWpts = true);
 
   /**
    * Apply a custom holonomic constraint at a waypoint
    *
-   * @param idx index of the waypoint
+   * @param index index of the waypoint
    * @param constraint the constraint to be applied
    */
-  void WptConstraint(size_t idx, const HolonomicConstraint& constraint);
+  void WptConstraint(size_t index, const HolonomicConstraint& constraint);
 
   /**
    * Apply a custom holonomic constraint to the continuum of state
    * between two waypoints.
    *
-   * @param fromIdx index of the waypoint at the beginning of the continuum
-   * @param toIdx index of the waypoint at the end of the continuum
+   * @param fromIndex index of the waypoint at the beginning of the continuum
+   * @param toIndex index of the waypoint at the end of the continuum
    * @param constraint the custom constraint to be applied
    * @param includeWpts if using a discrete algorithm, false does not apply the
-   * constraint at the waypoints at fromIdx and toIdx
+   * constraint at the waypoints at fromIndex and toIndex
    */
-  void SgmtConstraint(size_t fromIdx, size_t toIdx,
+  void SgmtConstraint(size_t fromIndex, size_t toIndex,
                       const HolonomicConstraint& constraint,
                       bool includeWpts = true);
 
@@ -256,23 +256,23 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   /**
    * Apply an obstacle constraint to a waypoint.
    *
-   * @param idx index of the waypoint
+   * @param index index of the waypoint
    * @param obstacle the obstacle
    */
-  void WptObstacle(size_t idx, const Obstacle& obstacle);
+  void WptObstacle(size_t index, const Obstacle& obstacle);
 
   /**
    * Apply an obstacle constraint to the continuum of state between two
    * waypoints.
    *
-   * @param fromIdx index of the waypoint at the beginning of the continuum
-   * @param toIdx index of the waypoint at the end of the continuum
+   * @param fromIndex index of the waypoint at the beginning of the continuum
+   * @param toIndex index of the waypoint at the end of the continuum
    * @param obstacle the obstacle
    * @param includeWpts if using a discrete algorithm, false does not apply the
-   * constraint at the instantaneous state at waypoints at indices fromIdx and
-   * toIdx
+   * constraint at the instantaneous state at waypoints at indices fromIndex and
+   * toIndex
    */
-  void SgmtObstacle(size_t fromIdx, size_t toIdx, const Obstacle& obstacle,
+  void SgmtObstacle(size_t fromIndex, size_t toIndex, const Obstacle& obstacle,
                     bool includeWpts = true);
 
   /**

@@ -29,13 +29,14 @@ inline sleipnir::Variable SolveNetTorque(
     const std::vector<SwerveModule>& swerveModules) {
   sleipnir::Variable tau_net = 0;
 
-  for (size_t moduleIdx = 0; moduleIdx < swerveModules.size(); ++moduleIdx) {
-    auto& swerveModule = swerveModules.at(moduleIdx);
+  for (size_t moduleIndex = 0; moduleIndex < swerveModules.size();
+       ++moduleIndex) {
+    auto& swerveModule = swerveModules.at(moduleIndex);
 
     const auto& [x_m, y_m] = swerveModule.translation.RotateBy(theta);
     Translation2v r{x_m, y_m};
 
-    Translation2v F{Fx.at(moduleIdx), Fy.at(moduleIdx)};
+    Translation2v F{Fx.at(moduleIndex), Fy.at(moduleIndex)};
 
     tau_net += r.Cross(F);
   }
@@ -58,26 +59,26 @@ inline void ApplyKinematicsConstraints(
     const std::vector<sleipnir::Variable>& dt, const std::vector<size_t>& N) {
   size_t wptCnt = N.size() + 1;
 
-  for (size_t wptIdx = 1; wptIdx < wptCnt; ++wptIdx) {
-    size_t N_sgmt = N.at(wptIdx - 1);
-    auto dt_sgmt = dt.at(wptIdx - 1);
-    for (size_t sampIdx = 0; sampIdx < N_sgmt; ++sampIdx) {
-      size_t idx = GetIdx(N, wptIdx, sampIdx);
-      auto x_n = x.at(idx);
-      auto x_n_1 = x.at(idx - 1);
-      auto y_n = y.at(idx);
-      auto y_n_1 = y.at(idx - 1);
-      Rotation2v theta_n{thetacos.at(idx), thetasin.at(idx)};
-      Rotation2v theta_n_1{thetacos.at(idx - 1), thetasin.at(idx - 1)};
-      auto vx_n = vx.at(idx);
-      auto vx_n_1 = vx.at(idx - 1);
-      auto vy_n = vy.at(idx);
-      auto vy_n_1 = vy.at(idx - 1);
-      auto omega_n = omega.at(idx);
-      auto omega_n_1 = omega.at(idx - 1);
-      auto ax_n = ax.at(idx);
-      auto ay_n = ay.at(idx);
-      auto alpha_n = alpha.at(idx);
+  for (size_t wptIndex = 1; wptIndex < wptCnt; ++wptIndex) {
+    size_t N_sgmt = N.at(wptIndex - 1);
+    auto dt_sgmt = dt.at(wptIndex - 1);
+    for (size_t sampIndex = 0; sampIndex < N_sgmt; ++sampIndex) {
+      size_t index = GetIndex(N, wptIndex, sampIndex);
+      auto x_n = x.at(index);
+      auto x_n_1 = x.at(index - 1);
+      auto y_n = y.at(index);
+      auto y_n_1 = y.at(index - 1);
+      Rotation2v theta_n{thetacos.at(index), thetasin.at(index)};
+      Rotation2v theta_n_1{thetacos.at(index - 1), thetasin.at(index - 1)};
+      auto vx_n = vx.at(index);
+      auto vx_n_1 = vx.at(index - 1);
+      auto vy_n = vy.at(index);
+      auto vy_n_1 = vy.at(index - 1);
+      auto omega_n = omega.at(index);
+      auto omega_n_1 = omega.at(index - 1);
+      auto ax_n = ax.at(index);
+      auto ay_n = ay.at(index);
+      auto alpha_n = alpha.at(index);
 
       problem.SubjectTo(x_n_1 + vx_n * dt_sgmt == x_n);
       problem.SubjectTo(y_n_1 + vy_n * dt_sgmt == y_n);
@@ -108,9 +109,9 @@ inline void ApplyKinematicsConstraints(
       problem.SubjectTo(vy_n_1 + ay_n * dt_sgmt == vy_n);
       problem.SubjectTo(omega_n_1 + alpha_n * dt_sgmt == omega_n);
     }
-    size_t lastIdx = GetIdx(N, wptIdx, N_sgmt - 1);
-    problem.SubjectTo(thetacos.at(lastIdx) * thetacos.at(lastIdx) +
-                          thetasin.at(lastIdx) * thetasin.at(lastIdx) ==
+    size_t lastIndex = GetIndex(N, wptIndex, N_sgmt - 1);
+    problem.SubjectTo(thetacos.at(lastIndex) * thetacos.at(lastIndex) +
+                          thetasin.at(lastIndex) * thetasin.at(lastIndex) ==
                       1);
   }
 }
@@ -169,21 +170,22 @@ inline void ApplyPowerConstraints(sleipnir::OptimizationProblem& problem,
   vx_m.reserve(moduleCount);
   vy_m.reserve(moduleCount);
 
-  for (size_t moduleIdx = 0; moduleIdx < moduleCount; ++moduleIdx) {
-    const auto& [x_m, y_m] = swerveDrivetrain.modules.at(moduleIdx).translation;
+  for (size_t moduleIndex = 0; moduleIndex < moduleCount; ++moduleIndex) {
+    const auto& [x_m, y_m] =
+        swerveDrivetrain.modules.at(moduleIndex).translation;
     vx_m.emplace_back(vx_prime - y_m * omega);
     vy_m.emplace_back(vy_prime + x_m * omega);
   }
 
-  for (size_t moduleIdx = 0; moduleIdx < moduleCount; ++moduleIdx) {
-    auto& _module = swerveDrivetrain.modules.at(moduleIdx);
+  for (size_t moduleIndex = 0; moduleIndex < moduleCount; ++moduleIndex) {
+    auto& _module = swerveDrivetrain.modules.at(moduleIndex);
     double maxWheelVelocity =
         _module.wheelRadius * _module.wheelMaxAngularVelocity;
     double maxForce = _module.wheelMaxTorque / _module.wheelRadius;
-    auto _vx_m = vx_m.at(moduleIdx);
-    auto _vy_m = vy_m.at(moduleIdx);
-    auto Fx_m = Fx.at(moduleIdx);
-    auto Fy_m = Fy.at(moduleIdx);
+    auto _vx_m = vx_m.at(moduleIndex);
+    auto _vy_m = vy_m.at(moduleIndex);
+    auto Fx_m = Fx.at(moduleIndex);
+    auto Fy_m = Fy.at(moduleIndex);
     problem.SubjectTo(_vx_m * _vx_m + _vy_m * _vy_m <=
                       maxWheelVelocity * maxWheelVelocity);
 
@@ -202,9 +204,9 @@ inline SwerveSolution ConstructSwerveSolution(
     std::vector<std::vector<sleipnir::Variable>>& Fy,
     std::vector<sleipnir::Variable>& dt, const std::vector<size_t>& N) {
   std::vector<double> dtPerSamp;
-  for (size_t sgmtIdx = 0; sgmtIdx < N.size(); ++sgmtIdx) {
-    size_t N_sgmt = N.at(sgmtIdx);
-    sleipnir::Variable dt_sgmt = dt.at(sgmtIdx);
+  for (size_t sgmtIndex = 0; sgmtIndex < N.size(); ++sgmtIndex) {
+    size_t N_sgmt = N.at(sgmtIndex);
+    sleipnir::Variable dt_sgmt = dt.at(sgmtIndex);
     double dt_val = dt_sgmt.Value();
     for (size_t i = 0; i < N_sgmt; ++i) {
       dtPerSamp.push_back(dt_val);

@@ -51,7 +51,7 @@ class SwerveDiscreteOptimal {
     });
     size_t wptCnt = 1 + N.size();
     size_t sgmtCnt = N.size();
-    size_t sampTot = GetIdx(N, wptCnt, 0);
+    size_t sampTot = GetIndex(N, wptCnt, 0);
     size_t moduleCnt = path.drivetrain.modules.size();
 
     x.reserve(sampTot);
@@ -67,7 +67,7 @@ class SwerveDiscreteOptimal {
 
     Fx.reserve(sampTot);
     Fy.reserve(sampTot);
-    for (size_t sampIdx = 0; sampIdx < sampTot; ++sampIdx) {
+    for (size_t sampIndex = 0; sampIndex < sampTot; ++sampIndex) {
       auto& _Fx = Fx.emplace_back();
       auto& _Fy = Fy.emplace_back();
       _Fx.reserve(moduleCnt);
@@ -76,7 +76,7 @@ class SwerveDiscreteOptimal {
 
     dt.reserve(sgmtCnt);
 
-    for (size_t idx = 0; idx < sampTot; ++idx) {
+    for (size_t index = 0; index < sampTot; ++index) {
       x.emplace_back(problem.DecisionVariable());
       y.emplace_back(problem.DecisionVariable());
       thetacos.emplace_back(problem.DecisionVariable());
@@ -88,9 +88,9 @@ class SwerveDiscreteOptimal {
       ay.emplace_back(problem.DecisionVariable());
       alpha.emplace_back(problem.DecisionVariable());
 
-      for (size_t moduleIdx = 0; moduleIdx < moduleCnt; ++moduleIdx) {
-        Fx.at(idx).emplace_back(problem.DecisionVariable());
-        Fy.at(idx).emplace_back(problem.DecisionVariable());
+      for (size_t moduleIndex = 0; moduleIndex < moduleCnt; ++moduleIndex) {
+        Fx.at(index).emplace_back(problem.DecisionVariable());
+        Fy.at(index).emplace_back(problem.DecisionVariable());
       }
     }
 
@@ -112,10 +112,10 @@ class SwerveDiscreteOptimal {
       }
     }
 
-    for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
+    for (size_t sgmtIndex = 0; sgmtIndex < sgmtCnt; ++sgmtIndex) {
       dt.emplace_back(problem.DecisionVariable());
       for (auto module : path.drivetrain.modules) {
-        problem.SubjectTo(dt.at(sgmtIdx) * module.wheelRadius *
+        problem.SubjectTo(dt.at(sgmtIndex) * module.wheelRadius *
                               module.wheelMaxAngularVelocity <=
                           minWidth);
       }
@@ -125,44 +125,49 @@ class SwerveDiscreteOptimal {
     ApplyKinematicsConstraints(problem, x, y, thetacos, thetasin, vx, vy, omega,
                                ax, ay, alpha, dt, N);
 
-    for (size_t idx = 0; idx < sampTot; ++idx) {
-      auto [Fx_net, Fy_net] = SolveNetForce(Fx.at(idx), Fy.at(idx));
+    for (size_t index = 0; index < sampTot; ++index) {
+      auto [Fx_net, Fy_net] = SolveNetForce(Fx.at(index), Fy.at(index));
       ApplyDynamicsConstraints(
-          problem, ax.at(idx), ay.at(idx), alpha.at(idx), Fx_net, Fy_net,
-          SolveNetTorque({thetacos.at(idx), thetasin.at(idx)}, Fx.at(idx),
-                         Fy.at(idx), path.drivetrain.modules),
+          problem, ax.at(index), ay.at(index), alpha.at(index), Fx_net, Fy_net,
+          SolveNetTorque({thetacos.at(index), thetasin.at(index)}, Fx.at(index),
+                         Fy.at(index), path.drivetrain.modules),
           path.drivetrain.mass, path.drivetrain.moi);
 
       ApplyPowerConstraints(problem,
-                            Rotation2v{thetacos.at(idx), thetasin.at(idx)},
-                            {vx.at(idx), vy.at(idx)}, omega.at(idx), Fx.at(idx),
-                            Fy.at(idx), path.drivetrain);
+                            Rotation2v{thetacos.at(index), thetasin.at(index)},
+                            {vx.at(index), vy.at(index)}, omega.at(index),
+                            Fx.at(index), Fy.at(index), path.drivetrain);
     }
 
-    for (size_t wptIdx = 0; wptIdx < wptCnt; ++wptIdx) {
-      for (auto& constraint : path.waypoints.at(wptIdx).waypointConstraints) {
-        size_t idx = GetIdx(N, wptIdx + 1, 0) - 1;  // first idx of next wpt - 1
-        ApplyHolonomicConstraint(
-            problem,
-            {x.at(idx), y.at(idx), {thetacos.at(idx), thetasin.at(idx)}},
-            {vx.at(idx), vy.at(idx)}, omega.at(idx), {ax.at(idx), ay.at(idx)},
-            alpha.at(idx), constraint);
+    for (size_t wptIndex = 0; wptIndex < wptCnt; ++wptIndex) {
+      for (auto& constraint : path.waypoints.at(wptIndex).waypointConstraints) {
+        size_t index =
+            GetIndex(N, wptIndex + 1, 0) - 1;  // first index of next wpt - 1
+        ApplyHolonomicConstraint(problem,
+                                 {x.at(index),
+                                  y.at(index),
+                                  {thetacos.at(index), thetasin.at(index)}},
+                                 {vx.at(index), vy.at(index)}, omega.at(index),
+                                 {ax.at(index), ay.at(index)}, alpha.at(index),
+                                 constraint);
       }
     }
     // TODO: try changing the path struct so instead of having waypoint objects
     //       it's just two vectors of waypoint constraints and segment
     //       constraints, the waypoint one would be one larger by size
-    for (size_t sgmtIdx = 0; sgmtIdx < sgmtCnt; ++sgmtIdx) {
+    for (size_t sgmtIndex = 0; sgmtIndex < sgmtCnt; ++sgmtIndex) {
       for (auto& constraint :
-           path.waypoints.at(sgmtIdx + 1).segmentConstraints) {
-        size_t startIdx = GetIdx(N, sgmtIdx + 1, 0);
-        size_t endIdx = GetIdx(N, sgmtIdx + 2, 0);
-        for (size_t idx = startIdx; idx < endIdx; ++idx) {
+           path.waypoints.at(sgmtIndex + 1).segmentConstraints) {
+        size_t startIndex = GetIndex(N, sgmtIndex + 1, 0);
+        size_t endIndex = GetIndex(N, sgmtIndex + 2, 0);
+        for (size_t index = startIndex; index < endIndex; ++index) {
           ApplyHolonomicConstraint(
               problem,
-              {x.at(idx), y.at(idx), {thetacos.at(idx), thetasin.at(idx)}},
-              {vx.at(idx), vy.at(idx)}, omega.at(idx), {ax.at(idx), ay.at(idx)},
-              alpha.at(idx), constraint);
+              {x.at(index),
+               y.at(index),
+               {thetacos.at(index), thetasin.at(index)}},
+              {vx.at(index), vy.at(index)}, omega.at(index),
+              {ax.at(index), ay.at(index)}, alpha.at(index), constraint);
         }
       }
     }
