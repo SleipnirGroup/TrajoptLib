@@ -232,10 +232,13 @@ SwerveTrajectoryGenerator::SwerveTrajectoryGenerator(
           x.at(index), y.at(index), {thetacos.at(index), thetasin.at(index)}};
       Translation2v linearVelocity{vx.at(index), vy.at(index)};
       auto angularVelocity = omega.at(index);
+      Translation2v linearAcceleration{ax.at(index), ay.at(index)};
+      auto angularAcceleration = alpha.at(index);
 
       std::visit(
           [&](auto&& arg) {
-            arg.Apply(problem, pose, linearVelocity, angularVelocity);
+            arg.Apply(problem, pose, linearVelocity, angularVelocity,
+                      linearAcceleration, angularAcceleration);
           },
           constraint);
     }
@@ -252,10 +255,13 @@ SwerveTrajectoryGenerator::SwerveTrajectoryGenerator(
             x.at(index), y.at(index), {thetacos.at(index), thetasin.at(index)}};
         Translation2v linearVelocity{vx.at(index), vy.at(index)};
         auto angularVelocity = omega.at(index);
+        Translation2v linearAcceleration{ax.at(index), ay.at(index)};
+        auto angularAcceleration = alpha.at(index);
 
         std::visit(
             [&](auto&& arg) {
-              arg.Apply(problem, pose, linearVelocity, angularVelocity);
+              arg.Apply(problem, pose, linearVelocity, angularVelocity,
+                        linearAcceleration, angularAcceleration);
             },
             constraint);
       }

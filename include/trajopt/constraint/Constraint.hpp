@@ -5,6 +5,7 @@
 #include <utility>
 #include <variant>
 
+#include <sleipnir/autodiff/Variable.hpp>
 #include <sleipnir/optimization/OptimizationProblem.hpp>
 
 #include "trajopt/constraint/AngularVelocityEqualityConstraint.hpp"
@@ -28,8 +29,17 @@ namespace trajopt {
 template <typename T>
 concept ConstraintType = requires(T t) {
   {
+    // Parameters:
+    //
+    // sleipnir::OptimizationProblem& problem
+    // const Pose2v& pose
+    // const Translation2v& linearVelocity
+    // const sleipnir::Variable& angularVelocity
+    // const Translation2v& linearAcceleration
+    // const sleipnir::Variable& angularAcceleration
     t.Apply(std::declval<sleipnir::OptimizationProblem>(),
             std::declval<Pose2v>(), std::declval<Translation2v>(),
+            std::declval<sleipnir::Variable>(), std::declval<Translation2v>(),
             std::declval<sleipnir::Variable>())
   };  // NOLINT(readability/braces)
 };
