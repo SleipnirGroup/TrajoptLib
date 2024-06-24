@@ -2,16 +2,12 @@
 
 #pragma once
 
+#include <atomic>
+
 #include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
 
-/**
- * Linear 2D set.
- */
-struct TRAJOPT_DLLEXPORT LinearSet2d {
-  /// The direction in which to constrain a 2D vector.
-  double theta;
-};
+TRAJOPT_DLLEXPORT std::atomic<int>& GetCancellationFlag();
 
 }  // namespace trajopt

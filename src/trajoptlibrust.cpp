@@ -9,7 +9,12 @@
 #include <stdexcept>
 #include <vector>
 
-#include "trajopt/OptimalTrajectoryGenerator.hpp"
+#include "trajopt/SwerveTrajectoryGenerator.hpp"
+#include "trajopt/constraint/AngularVelocityEqualityConstraint.hpp"
+#include "trajopt/constraint/AngularVelocityMaxMagnitudeConstraint.hpp"
+#include "trajopt/constraint/LinearVelocityDirectionConstraint.hpp"
+#include "trajopt/constraint/LinearVelocityMaxMagnitudeConstraint.hpp"
+#include "trajopt/constraint/PointAtConstraint.hpp"
 #include "trajopt/drivetrain/SwerveDrivetrain.hpp"
 #include "trajopt/geometry/Translation2.hpp"
 #include "trajopt/trajectory/HolonomicTrajectory.hpp"
@@ -115,23 +120,26 @@ void SwervePathBuilderImpl::sgmt_initial_guess_points(
 
 void SwervePathBuilderImpl::wpt_linear_velocity_direction(size_t index,
                                                           double angle) {
-  path.WptVelocityDirection(index, angle);
+  path.WptConstraint(index, trajopt::LinearVelocityDirectionConstraint{angle});
 }
 
 void SwervePathBuilderImpl::wpt_linear_velocity_max_magnitude(
     size_t index, double magnitude) {
-  path.WptVelocityMagnitude(index, magnitude);
+  path.WptConstraint(index,
+                     trajopt::LinearVelocityMaxMagnitudeConstraint{magnitude});
 }
 
 void SwervePathBuilderImpl::wpt_angular_velocity(size_t index,
                                                  double angular_velocity) {
   // this probably ought to be added to SwervePathBuilder in the C++ API
-  path.WptAngularVelocity(index, angular_velocity);
+  path.WptConstraint(
+      index, trajopt::AngularVelocityEqualityConstraint{angular_velocity});
 }
 
 void SwervePathBuilderImpl::wpt_angular_velocity_max_magnitude(
     size_t index, double angular_velocity) {
-  path.WptAngularVelocityMaxMagnitude(index, angular_velocity);
+  path.WptConstraint(
+      index, trajopt::AngularVelocityMaxMagnitudeConstraint{angular_velocity});
 }
 
 void SwervePathBuilderImpl::wpt_point_at(size_t index, double field_point_x,
@@ -146,23 +154,29 @@ void SwervePathBuilderImpl::wpt_point_at(size_t index, double field_point_x,
 void SwervePathBuilderImpl::sgmt_linear_velocity_direction(size_t from_index,
                                                            size_t to_index,
                                                            double angle) {
-  path.SgmtVelocityDirection(from_index, to_index, angle);
+  path.SgmtConstraint(from_index, to_index,
+                      trajopt::LinearVelocityDirectionConstraint{angle});
 }
 
 void SwervePathBuilderImpl::sgmt_linear_velocity_max_magnitude(
     size_t from_index, size_t to_index, double magnitude) {
-  path.SgmtVelocityMagnitude(from_index, to_index, magnitude);
+  path.SgmtConstraint(from_index, to_index,
+                      trajopt::LinearVelocityMaxMagnitudeConstraint{magnitude});
 }
 
 void SwervePathBuilderImpl::sgmt_angular_velocity(size_t from_index,
                                                   size_t to_index,
                                                   double angular_velocity) {
-  path.SgmtAngularVelocity(from_index, to_index, angular_velocity);
+  path.SgmtConstraint(
+      from_index, to_index,
+      trajopt::AngularVelocityEqualityConstraint{angular_velocity});
 }
 
 void SwervePathBuilderImpl::sgmt_angular_velocity_max_magnitude(
     size_t from_index, size_t to_index, double angular_velocity) {
-  path.SgmtAngularVelocityMaxMagnitude(from_index, to_index, angular_velocity);
+  path.SgmtConstraint(
+      from_index, to_index,
+      trajopt::AngularVelocityMaxMagnitudeConstraint{angular_velocity});
 }
 
 void SwervePathBuilderImpl::sgmt_point_at(size_t from_index, size_t to_index,
@@ -234,9 +248,8 @@ HolonomicTrajectory _convert_holonomic_trajectory(
 
 HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
                                                     int64_t handle) const {
-  if (auto sol = trajopt::OptimalTrajectoryGenerator::Generate(
-          path, diagnostics, handle);
-      sol.has_value()) {
+  trajopt::SwerveTrajectoryGenerator generator{path, handle};
+  if (auto sol = generator.Generate(diagnostics); sol.has_value()) {
     return _convert_holonomic_trajectory(
         trajopt::HolonomicTrajectory{sol.value()});
   } else {

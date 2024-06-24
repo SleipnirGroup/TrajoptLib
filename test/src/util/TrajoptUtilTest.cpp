@@ -3,9 +3,7 @@
 #include <vector>
 
 #include <catch2/catch_test_macros.hpp>
-#include <trajopt/set/IntervalSet1d.hpp>
-
-#include "optimization/TrajoptUtil.hpp"
+#include <trajopt/util/TrajoptUtil.hpp>
 
 TEST_CASE("TrajoptUtil - GetIndex()", "[TrajoptUtil]") {
   auto result0 = trajopt::GetIndex({2, 3}, 0, 0);
@@ -22,14 +20,4 @@ TEST_CASE("TrajoptUtil - Linspace()", "[TrajoptUtil]") {
   auto result = trajopt::Linspace(0.0, 2.0, 2);
   std::vector correct{1.0, 2.0};
   CHECK(result == correct);
-}
-
-TEST_CASE("TrajoptUtil - Linear initial guess", "[TrajoptUtil]") {
-  std::vector<std::vector<trajopt::Pose2d>> initialGuessPoints{
-      {{1, 0, 0}}, {{2, 0, 0}, {3, 0, 0}}, {{6, 0, 0}}};
-  std::vector<size_t> controlIntervalCounts{2, 3};
-  std::vector<double> expectedX{1, 2, 3, 4, 5, 6};
-  auto result = trajopt::GenerateLinearInitialGuess(initialGuessPoints,
-                                                    controlIntervalCounts);
-  CHECK(expectedX == result.x);
 }
