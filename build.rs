@@ -23,6 +23,7 @@ fn main() {
         .file("src/trajoptlibrust.cpp")
         .include("src")
         .include(format!("{}/include", cmake_dest.display()))
+        .include(format!("{}/include/eigen3", cmake_dest.display()))
         .std("c++20");
 
     bridge_build.compile("trajoptrust");

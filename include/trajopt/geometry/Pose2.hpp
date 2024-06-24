@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include <concepts>
 #include <utility>
 
 #include <sleipnir/autodiff/Variable.hpp>
+#include <sleipnir/optimization/Constraints.hpp>
 
 #include "trajopt/geometry/Rotation2.hpp"
 #include "trajopt/geometry/Translation2.hpp"
@@ -98,5 +100,13 @@ class Pose2 {
 
 using Pose2d = Pose2<double>;
 using Pose2v = Pose2<sleipnir::Variable>;
+
+template <typename T, typename U>
+  requires std::convertible_to<T, U> || std::convertible_to<U, T>
+sleipnir::EqualityConstraints operator==(const Pose2<T>& lhs,
+                                         const Pose2<U>& rhs) {
+  return {{lhs.Translation() == rhs.Translation(),
+           lhs.Rotation() == rhs.Rotation()}};
+}
 
 }  // namespace trajopt

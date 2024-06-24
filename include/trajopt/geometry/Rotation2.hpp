@@ -2,11 +2,15 @@
 
 #pragma once
 
+#include <cassert>
 #include <cmath>
+#include <concepts>
 #include <numbers>
 #include <utility>
+#include <vector>
 
 #include <sleipnir/autodiff/Variable.hpp>
+#include <sleipnir/optimization/Constraints.hpp>
 
 namespace trajopt {
 
@@ -37,7 +41,9 @@ class Rotation2 {
    * @param x The x component or cosine of the rotation.
    * @param y The y component or sine of the rotation.
    */
-  constexpr Rotation2(T x, T y) : m_cos{std::move(x)}, m_sin{std::move(y)} {}
+  constexpr Rotation2(T x, T y) : m_cos{std::move(x)}, m_sin{std::move(y)} {
+    assert(abs(x * x + y * y - 1.0) < 1e-9);  // NOLINT
+  }
 
   /**
    * Coerces one rotation type into another.
@@ -130,5 +136,42 @@ class Rotation2 {
 
 using Rotation2d = Rotation2<double>;
 using Rotation2v = Rotation2<sleipnir::Variable>;
+
+template <typename T, typename U>
+  requires std::same_as<T, sleipnir::Variable> ||
+           std::same_as<U, sleipnir::Variable>
+sleipnir::EqualityConstraints operator==(const Rotation2<T>& lhs,
+                                         const Rotation2<U>& rhs) {
+  std::vector<sleipnir::EqualityConstraints> constraints;
+
+  // Constrain angle equality on manifold.
+  //
+  // Let lhs = <cos(a), sin(a)>.  NOLINT
+  // Let rhs = <cos(b), sin(b)>.  NOLINT
+  //
+  // If the angles are equal, the angle between the unit vectors should be
+  // zero.
+  //
+  //   lhs x rhs = ‖lhs‖ ‖rhs‖ sin(angleBetween)  NOLINT
+  //         = 1 * 1 * 0
+  //         = 0
+  //
+  // NOTE: angleBetween = π rad would be another solution
+  constraints.emplace_back(lhs.Cos() * rhs.Sin() - lhs.Sin() * rhs.Cos() ==
+                           0.0);
+
+  // Require that lhs and rhs are unit vectors if they contain autodiff
+  // variables, since their values can change.
+  if constexpr (std::same_as<T, sleipnir::Variable>) {
+    constraints.emplace_back(lhs.Cos() * lhs.Cos() + lhs.Sin() * lhs.Sin() ==
+                             1.0);
+  }
+  if constexpr (std::same_as<U, sleipnir::Variable>) {
+    constraints.emplace_back(rhs.Cos() * rhs.Cos() + rhs.Sin() * rhs.Sin() ==
+                             1.0);
+  }
+
+  return sleipnir::EqualityConstraints{constraints};
+}
 
 }  // namespace trajopt

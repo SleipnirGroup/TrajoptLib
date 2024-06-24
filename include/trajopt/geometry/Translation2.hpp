@@ -3,10 +3,14 @@
 #pragma once
 
 #include <cmath>
+#include <concepts>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include <sleipnir/autodiff/Variable.hpp>
+#include <sleipnir/autodiff/VariableMatrix.hpp>
+#include <sleipnir/optimization/Constraints.hpp>
 
 #include "trajopt/geometry/Rotation2.hpp"
 
@@ -103,6 +107,32 @@ class Translation2 {
   constexpr Translation2<T> operator-() const { return {-m_x, -m_y}; }
 
   /**
+   * Returns the translation multiplied by a scalar.
+   *
+   * @param scalar The scalar to multiply by.
+   *
+   * @return The scaled translation.
+   */
+  template <typename U>
+  constexpr auto operator*(const U& scalar) const {
+    using R = decltype(std::declval<T>() + std::declval<U>());
+    return Translation2<R>{m_x * scalar, m_y * scalar};
+  }
+
+  /**
+   * Returns the translation divided by a scalar.
+   *
+   * @param scalar The scalar to divide by.
+   *
+   * @return The scaled translation.
+   */
+  template <typename U>
+  constexpr auto operator/(const U& scalar) const {
+    using R = decltype(std::declval<T>() + std::declval<U>());
+    return Translation2<R>{m_x / scalar, m_y / scalar};
+  }
+
+  /**
    * Applies a rotation to the translation in 2D space.
    *
    * @param other The rotation to rotate the translation by.
@@ -191,6 +221,15 @@ constexpr decltype(auto) get(const trajopt::Translation2<T>& translation) {
 
 using Translation2d = Translation2<double>;
 using Translation2v = Translation2<sleipnir::Variable>;
+
+template <typename T, typename U>
+  requires std::same_as<T, sleipnir::Variable> ||
+           std::same_as<U, sleipnir::Variable>
+sleipnir::EqualityConstraints operator==(const Translation2<T>& lhs,
+                                         const Translation2<U>& rhs) {
+  return sleipnir::VariableMatrix{{lhs.X()}, {lhs.Y()}} ==
+         sleipnir::VariableMatrix{{rhs.X()}, {rhs.Y()}};
+}
 
 }  // namespace trajopt
 
