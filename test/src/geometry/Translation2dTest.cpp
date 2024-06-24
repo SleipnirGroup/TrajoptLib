@@ -45,6 +45,22 @@ TEST_CASE("Translation2d - UnaryMinus", "[Translation2d]") {
   CHECK(inverted.Y() == -7.0);
 }
 
+TEST_CASE("Translation2d - Multiplication", "[Translation2d]") {
+  const trajopt::Translation2d original{3.0, 5.0};
+  const auto mult = original * 3;
+
+  CHECK(mult.X() == 9.0);
+  CHECK(mult.Y() == 15.0);
+}
+
+TEST_CASE("Translation2d - Division", "[Translation2d]") {
+  const trajopt::Translation2d original{3.0, 5.0};
+  const auto div = original / 2;
+
+  CHECK(div.X() == 1.5);
+  CHECK(div.Y() == 2.5);
+}
+
 TEST_CASE("Translation2d - RotateBy", "[Translation2d]") {
   const trajopt::Translation2d another{3.0, 0.0};
   const auto rotated =
