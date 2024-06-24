@@ -123,12 +123,6 @@ void SwervePathBuilderImpl::wpt_linear_velocity_max_magnitude(
   path.WptVelocityMagnitude(index, magnitude);
 }
 
-void SwervePathBuilderImpl::wpt_linear_velocity_polar(size_t index,
-                                                      double magnitude,
-                                                      double angle) {
-  path.WptVelocityPolar(index, magnitude, angle);
-}
-
 void SwervePathBuilderImpl::wpt_angular_velocity(size_t index,
                                                  double angular_velocity) {
   // this probably ought to be added to SwervePathBuilder in the C++ API
@@ -138,22 +132,6 @@ void SwervePathBuilderImpl::wpt_angular_velocity(size_t index,
 void SwervePathBuilderImpl::wpt_angular_velocity_max_magnitude(
     size_t index, double angular_velocity) {
   path.WptAngularVelocityMaxMagnitude(index, angular_velocity);
-}
-
-void SwervePathBuilderImpl::wpt_x(size_t index, double x) {
-  path.WptConstraint(index,
-                     trajopt::TranslationConstraint{trajopt::RectangularSet2d{
-                         .xBound = x, .yBound = trajopt::IntervalSet1d::R1()}});
-}
-
-void SwervePathBuilderImpl::wpt_y(size_t index, double y) {
-  path.WptConstraint(index,
-                     trajopt::TranslationConstraint{trajopt::RectangularSet2d{
-                         .xBound = trajopt::IntervalSet1d::R1(), .yBound = y}});
-}
-
-void SwervePathBuilderImpl::wpt_heading(size_t index, double heading) {
-  path.WptConstraint(index, trajopt::HeadingConstraint{heading});
 }
 
 void SwervePathBuilderImpl::wpt_point_at(size_t index, double field_point_x,
@@ -176,17 +154,6 @@ void SwervePathBuilderImpl::sgmt_linear_velocity_max_magnitude(
   path.SgmtVelocityMagnitude(from_index, to_index, magnitude);
 }
 
-void SwervePathBuilderImpl::sgmt_linear_velocity_polar(size_t from_index,
-                                                       size_t to_index,
-                                                       double magnitude,
-                                                       double angle) {
-  path.SgmtConstraint(
-      from_index, to_index,
-      trajopt::HolonomicVelocityConstraint{
-          trajopt::RectangularSet2d::PolarExactSet2d(magnitude, angle),
-          trajopt::CoordinateSystem::kField});
-}
-
 void SwervePathBuilderImpl::sgmt_angular_velocity(size_t from_index,
                                                   size_t to_index,
                                                   double angular_velocity) {
@@ -196,28 +163,6 @@ void SwervePathBuilderImpl::sgmt_angular_velocity(size_t from_index,
 void SwervePathBuilderImpl::sgmt_angular_velocity_max_magnitude(
     size_t from_index, size_t to_index, double angular_velocity) {
   path.SgmtAngularVelocityMaxMagnitude(from_index, to_index, angular_velocity);
-}
-
-void SwervePathBuilderImpl::sgmt_x(size_t from_index, size_t to_index,
-                                   double x) {
-  path.SgmtConstraint(
-      from_index, to_index,
-      trajopt::TranslationConstraint{trajopt::RectangularSet2d{
-          .xBound = x, .yBound = trajopt::IntervalSet1d::R1()}});
-}
-
-void SwervePathBuilderImpl::sgmt_y(size_t from_index, size_t to_index,
-                                   double y) {
-  path.SgmtConstraint(
-      from_index, to_index,
-      trajopt::TranslationConstraint{trajopt::RectangularSet2d{
-          .xBound = trajopt::IntervalSet1d::R1(), .yBound = y}});
-}
-
-void SwervePathBuilderImpl::sgmt_heading(size_t from_index, size_t to_index,
-                                         double heading) {
-  path.SgmtConstraint(from_index, to_index,
-                      trajopt::HeadingConstraint{heading});
 }
 
 void SwervePathBuilderImpl::sgmt_point_at(size_t from_index, size_t to_index,
@@ -287,6 +232,18 @@ HolonomicTrajectory _convert_holonomic_trajectory(
           trajectory.samples)};
 }
 
+HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
+                                                    int64_t handle) const {
+  if (auto sol = trajopt::OptimalTrajectoryGenerator::Generate(
+          path, diagnostics, handle);
+      sol.has_value()) {
+    return _convert_holonomic_trajectory(
+        trajopt::HolonomicTrajectory{sol.value()});
+  } else {
+    throw std::runtime_error{sol.error()};
+  }
+}
+
 /**
  * Add a callback that will be called on each iteration of the solver.
  *
@@ -306,24 +263,12 @@ void SwervePathBuilderImpl::add_progress_callback(
   });
 }
 
-HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
-                                                    int64_t handle) const {
-  if (auto sol = trajopt::OptimalTrajectoryGenerator::Generate(
-          path, diagnostics, handle);
-      sol.has_value()) {
-    return _convert_holonomic_trajectory(
-        trajopt::HolonomicTrajectory{sol.value()});
-  } else {
-    throw std::runtime_error{sol.error()};
-  }
+void SwervePathBuilderImpl::cancel_all() {
+  path.CancelAll();
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {
   return std::make_unique<SwervePathBuilderImpl>(SwervePathBuilderImpl());
-}
-
-void SwervePathBuilderImpl::cancel_all() {
-  path.CancelAll();
 }
 
 }  // namespace trajoptlibrust

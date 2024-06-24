@@ -46,7 +46,6 @@ mod ffi {
 
         type SwervePathBuilderImpl;
 
-        fn cancel_all(self: Pin<&mut SwervePathBuilderImpl>);
         fn set_drivetrain(self: Pin<&mut SwervePathBuilderImpl>, drivetrain: &SwerveDrivetrain);
         fn set_bumpers(self: Pin<&mut SwervePathBuilderImpl>, length: f64, width: f64);
         fn set_control_interval_counts(self: Pin<&mut SwervePathBuilderImpl>, counts: Vec<usize>);
@@ -89,12 +88,6 @@ mod ffi {
             index: usize,
             magnitude: f64,
         );
-        fn wpt_linear_velocity_polar(
-            self: Pin<&mut SwervePathBuilderImpl>,
-            index: usize,
-            magnitude: f64,
-            angle: f64,
-        );
         fn wpt_angular_velocity(
             self: Pin<&mut SwervePathBuilderImpl>,
             index: usize,
@@ -105,9 +98,6 @@ mod ffi {
             index: usize,
             angular_velocity: f64,
         );
-        fn wpt_x(self: Pin<&mut SwervePathBuilderImpl>, index: usize, x: f64);
-        fn wpt_y(self: Pin<&mut SwervePathBuilderImpl>, index: usize, y: f64);
-        fn wpt_heading(self: Pin<&mut SwervePathBuilderImpl>, index: usize, heading: f64);
         fn wpt_point_at(
             self: Pin<&mut SwervePathBuilderImpl>,
             index: usize,
@@ -128,13 +118,6 @@ mod ffi {
             to_index: usize,
             magnitude: f64,
         );
-        fn sgmt_linear_velocity_polar(
-            self: Pin<&mut SwervePathBuilderImpl>,
-            from_index: usize,
-            to_index: usize,
-            magnitude: f64,
-            angle: f64,
-        );
         fn sgmt_angular_velocity(
             self: Pin<&mut SwervePathBuilderImpl>,
             from_index: usize,
@@ -146,24 +129,6 @@ mod ffi {
             from_index: usize,
             to_index: usize,
             angular_velocity: f64,
-        );
-        fn sgmt_x(
-            self: Pin<&mut SwervePathBuilderImpl>,
-            from_index: usize,
-            to_index: usize,
-            x: f64,
-        );
-        fn sgmt_y(
-            self: Pin<&mut SwervePathBuilderImpl>,
-            from_index: usize,
-            to_index: usize,
-            y: f64,
-        );
-        fn sgmt_heading(
-            self: Pin<&mut SwervePathBuilderImpl>,
-            from_index: usize,
-            to_index: usize,
-            heading: f64,
         );
         fn sgmt_point_at(
             self: Pin<&mut SwervePathBuilderImpl>,
@@ -197,10 +162,13 @@ mod ffi {
             diagnostics: bool,
             uuid: i64,
         ) -> Result<HolonomicTrajectory>;
+
         fn add_progress_callback(
             self: Pin<&mut SwervePathBuilderImpl>,
             callback: fn(HolonomicTrajectory, i64),
         );
+
+        fn cancel_all(self: Pin<&mut SwervePathBuilderImpl>);
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
@@ -281,15 +249,6 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn wpt_linear_velocity_polar(&mut self, index: usize, magnitude: f64, angle: f64) {
-        crate::ffi::SwervePathBuilderImpl::wpt_linear_velocity_polar(
-            self.path.pin_mut(),
-            index,
-            magnitude,
-            angle,
-        );
-    }
-
     pub fn wpt_angular_velocity(&mut self, index: usize, angular_velocity: f64) {
         crate::ffi::SwervePathBuilderImpl::wpt_angular_velocity(
             self.path.pin_mut(),
@@ -304,18 +263,6 @@ impl SwervePathBuilder {
             index,
             angular_velocity,
         );
-    }
-
-    pub fn wpt_x(&mut self, index: usize, x: f64) {
-        crate::ffi::SwervePathBuilderImpl::wpt_x(self.path.pin_mut(), index, x);
-    }
-
-    pub fn wpt_y(&mut self, index: usize, y: f64) {
-        crate::ffi::SwervePathBuilderImpl::wpt_y(self.path.pin_mut(), index, y);
-    }
-
-    pub fn wpt_heading(&mut self, index: usize, heading: f64) {
-        crate::ffi::SwervePathBuilderImpl::wpt_heading(self.path.pin_mut(), index, heading);
     }
 
     pub fn wpt_point_at(
@@ -362,22 +309,6 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn sgmt_linear_velocity_polar(
-        &mut self,
-        from_index: usize,
-        to_index: usize,
-        magnitude: f64,
-        angle: f64,
-    ) {
-        crate::ffi::SwervePathBuilderImpl::sgmt_linear_velocity_polar(
-            self.path.pin_mut(),
-            from_index,
-            to_index,
-            magnitude,
-            angle,
-        );
-    }
-
     pub fn sgmt_angular_velocity(
         &mut self,
         from_index: usize,
@@ -403,23 +334,6 @@ impl SwervePathBuilder {
             from_index,
             to_index,
             angular_velocity,
-        );
-    }
-
-    pub fn sgmt_x(&mut self, from_index: usize, to_index: usize, x: f64) {
-        crate::ffi::SwervePathBuilderImpl::sgmt_x(self.path.pin_mut(), from_index, to_index, x);
-    }
-
-    pub fn sgmt_y(&mut self, from_index: usize, to_index: usize, y: f64) {
-        crate::ffi::SwervePathBuilderImpl::sgmt_y(self.path.pin_mut(), from_index, to_index, y);
-    }
-
-    pub fn sgmt_heading(&mut self, from_index: usize, to_index: usize, heading: f64) {
-        crate::ffi::SwervePathBuilderImpl::sgmt_heading(
-            self.path.pin_mut(),
-            from_index,
-            to_index,
-            heading,
         );
     }
 
