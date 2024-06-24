@@ -6,7 +6,6 @@
 #include <concepts>
 #include <tuple>
 #include <utility>
-#include <vector>
 
 #include <sleipnir/autodiff/Variable.hpp>
 #include <sleipnir/autodiff/VariableMatrix.hpp>
