@@ -43,32 +43,32 @@ inline sleipnir::Variable min(const sleipnir::Variable& a,
  * for the initial sample point ("dt" does not, "x" does).
  *
  * @param ctrlIntCnts the control interval counts of each segment, in order
- * @param wpIdx the waypoint index (1 + segment index)
- * @param sampIdx the sample index within the segment
+ * @param wpIndex the waypoint index (1 + segment index)
+ * @param sampIndex the sample index within the segment
  * @param hasInitialSamp whether this decision variable includes a value for
  * the initial sample
  * @return the index in the array
  */
-inline size_t GetIdx(const std::vector<size_t>& N, size_t wptIdx,
-                     size_t sampIdx = 0) {
-  size_t idx = 0;
-  if (wptIdx > 0) {
-    ++idx;
+inline size_t GetIndex(const std::vector<size_t>& N, size_t wptIndex,
+                       size_t sampIndex = 0) {
+  size_t index = 0;
+  if (wptIndex > 0) {
+    ++index;
   }
-  for (size_t _wptIdx = 1; _wptIdx < wptIdx; ++_wptIdx) {
-    idx += N.at(_wptIdx - 1);
+  for (size_t _wptIndex = 1; _wptIndex < wptIndex; ++_wptIndex) {
+    index += N.at(_wptIndex - 1);
   }
-  idx += sampIdx;
-  return idx;
+  index += sampIndex;
+  return index;
 }
 
 inline void ApplyDiscreteTimeObjective(sleipnir::OptimizationProblem& problem,
                                        std::vector<sleipnir::Variable>& dt,
                                        const std::vector<size_t> N) {
   sleipnir::Variable T_tot = 0;
-  for (size_t sgmtIdx = 0; sgmtIdx < N.size(); ++sgmtIdx) {
-    auto& dt_sgmt = dt.at(sgmtIdx);
-    auto N_sgmt = N.at(sgmtIdx);
+  for (size_t sgmtIndex = 0; sgmtIndex < N.size(); ++sgmtIndex) {
+    auto& dt_sgmt = dt.at(sgmtIndex);
+    auto N_sgmt = N.at(sgmtIndex);
     auto T_sgmt = dt_sgmt * static_cast<int>(N_sgmt);
     T_tot += T_sgmt;
 
@@ -288,7 +288,7 @@ inline Solution GenerateLinearInitialGuess(
     const std::vector<std::vector<Pose2d>>& initialGuessPoints,
     const std::vector<size_t> controlIntervalCounts) {
   size_t wptCnt = controlIntervalCounts.size() + 1;
-  size_t sampTot = GetIdx(controlIntervalCounts, wptCnt, 0);
+  size_t sampTot = GetIndex(controlIntervalCounts, wptCnt, 0);
 
   Solution initialGuess;
 
@@ -309,45 +309,47 @@ inline Solution GenerateLinearInitialGuess(
     initialGuess.dt.push_back((wptCnt * 5.0) / sampTot);
   }
 
-  for (size_t wptIdx = 1; wptIdx < wptCnt; wptIdx++) {
-    size_t N_sgmt = controlIntervalCounts.at(wptIdx - 1);
-    size_t guessPointCount = initialGuessPoints.at(wptIdx).size();
+  for (size_t wptIndex = 1; wptIndex < wptCnt; wptIndex++) {
+    size_t N_sgmt = controlIntervalCounts.at(wptIndex - 1);
+    size_t guessPointCount = initialGuessPoints.at(wptIndex).size();
     size_t N_guessSgmt = N_sgmt / guessPointCount;
     append_vector(
         initialGuess.x,
-        Linspace(initialGuessPoints.at(wptIdx - 1).back().X(),
-                 initialGuessPoints.at(wptIdx).front().X(), N_guessSgmt));
+        Linspace(initialGuessPoints.at(wptIndex - 1).back().X(),
+                 initialGuessPoints.at(wptIndex).front().X(), N_guessSgmt));
     append_vector(
         initialGuess.y,
-        Linspace(initialGuessPoints.at(wptIdx - 1).back().Y(),
-                 initialGuessPoints.at(wptIdx).front().Y(), N_guessSgmt));
+        Linspace(initialGuessPoints.at(wptIndex - 1).back().Y(),
+                 initialGuessPoints.at(wptIndex).front().Y(), N_guessSgmt));
     auto wptThetas = AngleLinspace(
-        initialGuessPoints.at(wptIdx - 1).back().Rotation().Radians(),
-        initialGuessPoints.at(wptIdx).front().Rotation().Radians(),
+        initialGuessPoints.at(wptIndex - 1).back().Rotation().Radians(),
+        initialGuessPoints.at(wptIndex).front().Rotation().Radians(),
         N_guessSgmt);
     for (auto theta : wptThetas) {
       initialGuess.thetacos.push_back(std::cos(theta));
       initialGuess.thetasin.push_back(std::sin(theta));
     }
-    for (size_t guessPointIdx = 1; guessPointIdx < guessPointCount - 1;
-         guessPointIdx++) {  // if three or more guess points
+    for (size_t guessPointIndex = 1; guessPointIndex < guessPointCount - 1;
+         guessPointIndex++) {  // if three or more guess points
       append_vector(
           initialGuess.x,
-          Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).X(),
-                   initialGuessPoints.at(wptIdx).at(guessPointIdx).X(),
+          Linspace(initialGuessPoints.at(wptIndex).at(guessPointIndex - 1).X(),
+                   initialGuessPoints.at(wptIndex).at(guessPointIndex).X(),
                    N_guessSgmt));
       append_vector(
           initialGuess.y,
-          Linspace(initialGuessPoints.at(wptIdx).at(guessPointIdx - 1).Y(),
-                   initialGuessPoints.at(wptIdx).at(guessPointIdx).Y(),
+          Linspace(initialGuessPoints.at(wptIndex).at(guessPointIndex - 1).Y(),
+                   initialGuessPoints.at(wptIndex).at(guessPointIndex).Y(),
                    N_guessSgmt));
-      auto guessThetas = AngleLinspace(
-          initialGuessPoints.at(wptIdx)
-              .at(guessPointIdx - 1)
-              .Rotation()
-              .Radians(),
-          initialGuessPoints.at(wptIdx).at(guessPointIdx).Rotation().Radians(),
-          N_guessSgmt);
+      auto guessThetas = AngleLinspace(initialGuessPoints.at(wptIndex)
+                                           .at(guessPointIndex - 1)
+                                           .Rotation()
+                                           .Radians(),
+                                       initialGuessPoints.at(wptIndex)
+                                           .at(guessPointIndex)
+                                           .Rotation()
+                                           .Radians(),
+                                       N_guessSgmt);
       for (auto theta : guessThetas) {
         initialGuess.thetacos.push_back(std::cos(theta));
         initialGuess.thetasin.push_back(std::sin(theta));
@@ -357,18 +359,20 @@ inline Solution GenerateLinearInitialGuess(
       size_t N_lastGuessSgmt = N_sgmt - (guessPointCount - 1) * N_guessSgmt;
       append_vector(
           initialGuess.x,
-          Linspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).X(),
-                   initialGuessPoints.at(wptIdx).back().X(), N_lastGuessSgmt));
+          Linspace(initialGuessPoints.at(wptIndex).at(guessPointCount - 2).X(),
+                   initialGuessPoints.at(wptIndex).back().X(),
+                   N_lastGuessSgmt));
       append_vector(
           initialGuess.y,
-          Linspace(initialGuessPoints.at(wptIdx).at(guessPointCount - 2).Y(),
-                   initialGuessPoints.at(wptIdx).back().Y(), N_lastGuessSgmt));
+          Linspace(initialGuessPoints.at(wptIndex).at(guessPointCount - 2).Y(),
+                   initialGuessPoints.at(wptIndex).back().Y(),
+                   N_lastGuessSgmt));
       auto lastThetas = AngleLinspace(
-          initialGuessPoints.at(wptIdx)
+          initialGuessPoints.at(wptIndex)
               .at(guessPointCount - 2)
               .Rotation()
               .Radians(),
-          initialGuessPoints.at(wptIdx).back().Rotation().Radians(),
+          initialGuessPoints.at(wptIndex).back().Rotation().Radians(),
           N_lastGuessSgmt);
       for (auto theta : lastThetas) {
         initialGuess.thetacos.push_back(std::cos(theta));
