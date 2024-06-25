@@ -42,9 +42,9 @@ fn main() {
     path.set_bumpers(1.3, 1.3);
     path.pose_wpt(0, 0.0, 0.0, 0.0);
     path.pose_wpt(1, 1.0, 0.0, 0.0);
-    // path.wpt_angular_velocity(0, 0.0);
-    // path.wpt_angular_velocity(1, 0.0);
-    // path.sgmt_circle_obstacle(0, 1, 0.5, 0.1, 0.2);
+    path.wpt_angular_velocity(0, 0.0);
+    path.wpt_angular_velocity(1, 0.0);
+    path.sgmt_circle_obstacle(0, 1, 0.5, 0.1, 0.2);
     path.set_control_interval_counts(vec![40]);
     println!("setup complete");
     println!("{:?}", path.generate(true, 0));
