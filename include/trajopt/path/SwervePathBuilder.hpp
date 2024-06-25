@@ -7,7 +7,6 @@
 #include <cassert>
 #include <cstddef>
 #include <functional>
-#include <memory>
 #include <vector>
 
 #include "trajopt/constraint/Constraint.hpp"
