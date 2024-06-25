@@ -30,7 +30,7 @@ class TRAJOPT_DLLEXPORT CubicHermiteSpline1d : public Spline1d {
 
   double getAcceleration(double t) const override { return 6 * a * t + 2 * b; }
 
-  double getJerk(double t) const override { return 6 * a; }
+  double getJerk([[maybe_unused]] double t) const override { return 6 * a; }
 };
 
 }  // namespace trajopt

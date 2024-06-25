@@ -19,7 +19,7 @@ TEST_CASE("SwervePathBuilder - Linear initial guess", "[SwervePathBuilder]") {
 
   path.ControlIntervalCounts({3, 2});
 
-  std::vector<double> result = path.CalculateLinearInitialGuess().x;
+  std::vector<double> result = path.CalculateInitialGuess().x;
   std::vector<double> expected = {0.0, 1.0, 2.0, 1.0, 3.0, 5.0};
 
   CHECK(result == expected);

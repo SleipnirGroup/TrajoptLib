@@ -1,5 +1,9 @@
 // Copyright (c) TrajoptLib contributors
 
+#if __GNUC__
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
+
 #include "trajopt/path/SwervePathBuilder.hpp"
 
 #include <stdint.h>
