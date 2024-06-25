@@ -18,6 +18,9 @@ namespace trajopt {
  */
 class TRAJOPT_DLLEXPORT AngularVelocityMaxMagnitudeConstraint {
  public:
+  /// The maximum angular velocity magnitude.
+  double m_maxMagnitude;
+
   /**
    * Constructs an AngularVelocityMaxMagnitudeConstraint.
    *
@@ -52,8 +55,6 @@ class TRAJOPT_DLLEXPORT AngularVelocityMaxMagnitudeConstraint {
       problem.SubjectTo(angularVelocity <= m_maxMagnitude);
     }
   }
-
-  double m_maxMagnitude;
 };
 
 }  // namespace trajopt
