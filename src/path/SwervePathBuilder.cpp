@@ -19,7 +19,6 @@
 #include "spline/CubicHermitePoseSplineHolonomic.hpp"
 #include "spline/SplineParameterizer.hpp"
 #include "spline/SplineUtil.hpp"
-
 #include "trajopt/constraint/AngularVelocityMaxMagnitudeConstraint.hpp"
 #include "trajopt/constraint/Constraint.hpp"
 #include "trajopt/constraint/LinePointConstraint.hpp"
@@ -32,7 +31,6 @@
 #include "trajopt/util/Cancellation.hpp"
 #include "trajopt/util/GenerateLinearInitialGuess.hpp"
 #include "trajopt/util/TrajoptUtil.hpp"
-
 
 namespace trajopt {
 
@@ -240,8 +238,9 @@ SwervePathBuilder::GenerateWaypointSplineTrajectories() const {
   wpi::array<frc::Translation2d, 4> moduleTranslations{wpi::empty_array};
   for (size_t i = 0; i < path.drivetrain.modules.size(); ++i) {
     const auto mod = path.drivetrain.modules.at(0);
-    moduleTranslations.at(0) = 
-      frc::Translation2d{units::meter_t(mod.translation.X()), units::meter_t(mod.translation.Y())};
+    moduleTranslations.at(0) =
+        frc::Translation2d{units::meter_t(mod.translation.X()),
+                           units::meter_t(mod.translation.Y())};
   }
   const frc::SwerveDriveKinematics kinematics{
       moduleTranslations.at(0), moduleTranslations.at(1),
@@ -263,11 +262,13 @@ SwervePathBuilder::GenerateWaypointSplineTrajectories() const {
       }
       auto dtheta =
           std::abs(frc::AngleModulus(
-                      units::radian_t(std::abs(start.Rotation().Radians() - end.Rotation().Radians())))
+                       units::radian_t(std::abs(start.Rotation().Radians() -
+                                                end.Rotation().Radians())))
                        .value());
       frc::Translation2d sgmtStart{units::meter_t(start.Translation().X()),
                                    units::meter_t(start.Translation().Y())};
-      frc::Translation2d sgmtEnd{units::meter_t(end.Translation().X()), units::meter_t(end.Translation().Y())};
+      frc::Translation2d sgmtEnd{units::meter_t(end.Translation().X()),
+                                 units::meter_t(end.Translation().Y())};
 
       for (auto& c : path.waypoints.at(sgmtIdx).segmentConstraints) {
         // assuming HolonomicVelocityConstraint with CircularSet2d
@@ -275,13 +276,15 @@ SwervePathBuilder::GenerateWaypointSplineTrajectories() const {
           const auto& velocityHolonomicConstraint =
               std::get<LinearVelocityMaxMagnitudeConstraint>(c);
           auto vel = units::meters_per_second_t(
-                        velocityHolonomicConstraint.m_maxMagnitude);
+              velocityHolonomicConstraint.m_maxMagnitude);
           std::printf("max lin vel: %.2f - ", vel.value());
           if (vel < sgmtVel) {
             sgmtVel = vel;
           }
-        } else if (std::holds_alternative<AngularVelocityMaxMagnitudeConstraint>(c)) {
-          const auto& angVelConstraint = std::get<AngularVelocityMaxMagnitudeConstraint>(c);
+        } else if (std::holds_alternative<
+                       AngularVelocityMaxMagnitudeConstraint>(c)) {
+          const auto& angVelConstraint =
+              std::get<AngularVelocityMaxMagnitudeConstraint>(c);
           auto maxAngVel = angVelConstraint.m_maxMagnitude;
           std::printf("max ang vel: %.2f - ", maxAngVel);
           // TODO add how the 1.5 is determined
@@ -434,7 +437,7 @@ SwervePathBuilder::CalculateSplineInitialGuessWithKinematicsAndConstraints()
     }
   }
 
-  // fix headings 
+  // fix headings
   /// FIXME: TODO: NOT SURE IF THIS IS NEEDED AFTER THE SIN/COS CHANGE
   /*
   int fullRots = 0;

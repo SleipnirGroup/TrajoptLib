@@ -28,8 +28,10 @@ CubicPoseControlVectorsFromWaypoints(
   for (const auto& guessPoints : initialGuessPoints) {
     for (const auto& guessPoint : guessPoints) {
       flatTranslationPoints.emplace_back(
-        units::meter_t(guessPoint.Translation().X()), units::meter_t(guessPoint.Translation().Y()));
-      flatHeadings.emplace_back(guessPoint.Rotation().Cos(), guessPoint.Rotation().Sin());
+          units::meter_t(guessPoint.Translation().X()),
+          units::meter_t(guessPoint.Translation().Y()));
+      flatHeadings.emplace_back(guessPoint.Rotation().Cos(),
+                                guessPoint.Rotation().Sin());
     }
   }
 

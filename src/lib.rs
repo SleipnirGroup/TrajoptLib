@@ -173,7 +173,7 @@ mod ffi {
         fn calculate_spline_initial_guess(self: &SwervePathBuilderImpl) -> HolonomicTrajectory;
 
         fn calculate_control_interval_counts(self: &SwervePathBuilderImpl) -> Vec<usize>;
-        
+
         fn cancel_all(self: Pin<&mut SwervePathBuilderImpl>);
 
         fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;

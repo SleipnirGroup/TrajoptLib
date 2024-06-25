@@ -218,7 +218,8 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    *
    * @return the initial guess, as a solution
    */
-  SwerveSolution CalculateSplineInitialGuessWithKinematicsAndConstraints() const;
+  SwerveSolution CalculateSplineInitialGuessWithKinematicsAndConstraints()
+      const;
 
   /**
    * Add a callback to retrieve the state of the solver as a SwerveSolution.

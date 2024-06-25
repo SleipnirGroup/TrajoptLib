@@ -302,8 +302,7 @@ HolonomicTrajectory _convert_sol_to_holonomic_trajectory(
 
 HolonomicTrajectory SwervePathBuilderImpl::calculate_linear_initial_guess()
     const {
-  return _convert_sol_to_holonomic_trajectory(
-    path.CalculateInitialGuess());
+  return _convert_sol_to_holonomic_trajectory(path.CalculateInitialGuess());
 }
 
 HolonomicTrajectory SwervePathBuilderImpl::calculate_spline_initial_guess()
