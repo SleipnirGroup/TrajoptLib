@@ -212,6 +212,11 @@ const std::vector<size_t>& SwervePathBuilder::GetControlIntervalCounts() const {
   return controlIntervalCounts;
 }
 
+SwerveSolution SwervePathBuilder::CalculateInitialGuess() const {
+  return GenerateLinearInitialGuess<SwerveSolution>(initialGuessPoints,
+                                                    controlIntervalCounts);
+}
+
 // TODO make control interval fn that is the first part of the below function
 std::vector<frc::Trajectory>
 SwervePathBuilder::GenerateWaypointSplineTrajectories() const {

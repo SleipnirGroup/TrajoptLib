@@ -170,6 +170,14 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   const std::vector<size_t>& GetControlIntervalCounts() const;
 
   /**
+   * Calculate a discrete, linear initial guess of the x, y, and heading
+   * of the robot that goes through each segment.
+   *
+   * @return the initial guess, as a solution
+   */
+  SwerveSolution CalculateInitialGuess() const;
+
+  /**
    * Calculate control intervals
    *
    * @return control intervals for each waypoint

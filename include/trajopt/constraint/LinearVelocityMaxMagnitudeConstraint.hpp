@@ -49,7 +49,7 @@ class TRAJOPT_DLLEXPORT LinearVelocityMaxMagnitudeConstraint {
     }
   }
 
-  const double m_maxMagnitude;
+  double m_maxMagnitude;
 };
 
 }  // namespace trajopt

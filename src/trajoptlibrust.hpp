@@ -68,7 +68,6 @@ class SwervePathBuilderImpl {
   HolonomicTrajectory calculate_spline_initial_guess() const;
   rust::Vec<rust::usize> calculate_control_interval_counts() const;
 
-  SwervePathBuilderImpl() = default;
   void cancel_all();
 
  private:
