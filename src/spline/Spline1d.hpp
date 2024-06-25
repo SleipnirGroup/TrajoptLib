@@ -15,10 +15,10 @@ class TRAJOPT_DLLEXPORT Spline1d {
   // ds/dt
   virtual double getVelocity(double t) const = 0;
 
-  // ds^2/dt
+  // ds²/dt
   virtual double getAcceleration(double t) const = 0;
 
-  // ds^3/dt
+  // ds³/dt
   virtual double getJerk(double t) const = 0;
 };
 }  // namespace trajopt

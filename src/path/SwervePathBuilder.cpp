@@ -7,7 +7,6 @@
 #include "trajopt/path/SwervePathBuilder.hpp"
 
 #include <stdint.h>
-#include <wpi/array.h>
 
 #include <cassert>
 #include <cmath>
@@ -19,6 +18,7 @@
 #include <frc/trajectory/Trajectory.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
 #include <frc/trajectory/TrajectoryParameterizer.h>
+#include <wpi/array.h>
 
 #include "spline/CubicHermitePoseSplineHolonomic.hpp"
 #include "spline/SplineParameterizer.hpp"
@@ -426,7 +426,7 @@ SwervePathBuilder::CalculateSplineInitialGuessWithKinematicsAndConstraints()
   const auto trajectoriesSamples =
       CalculateWaypointStatesWithControlIntervals();
 
-  SwerveSolution initialGuess{};
+  SwerveSolution initialGuess;
   for (const auto& traj : trajectoriesSamples) {
     auto dt = 0.1_s;
     if (traj.size() > 1) {
@@ -440,27 +440,6 @@ SwervePathBuilder::CalculateSplineInitialGuessWithKinematicsAndConstraints()
       initialGuess.dt.push_back(dt.value());
     }
   }
-
-  // fix headings
-  /// FIXME: TODO: NOT SURE IF THIS IS NEEDED AFTER THE SIN/COS CHANGE
-  /*
-  int fullRots = 0;
-  double prevHeading = initialGuess.theta.front();
-  for (size_t i = 0; i < initialGuess.theta.size(); ++i) {
-    const auto prevHeadingMod =
-        frc::AngleModulus(units::radian_t(prevHeading)).value();
-    const auto heading = initialGuess.theta.at(i);
-    const auto headingMod = frc::AngleModulus(units::radian_t(heading)).value();
-    if (prevHeadingMod < 0 && headingMod > prevHeadingMod + std::numbers::pi) {
-      fullRots--;
-    } else if (prevHeadingMod > 0 &&
-               heading < prevHeadingMod - std::numbers::pi) {
-      fullRots++;
-    }
-    initialGuess.theta.at(i) = fullRots * 2.0 * std::numbers::pi + headingMod;
-    prevHeading = initialGuess.theta.at(i);
-  }
-  */
 
   return initialGuess;
 }

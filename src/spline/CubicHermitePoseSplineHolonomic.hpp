@@ -60,8 +60,8 @@ class TRAJOPT_DLLEXPORT CubicHermitePoseSplineHolonomic {
   }
 
  private:
-  const frc::Rotation2d r0;
-  const CubicHermiteSpline1d theta;
-  const frc::CubicHermiteSpline spline;
+  frc::Rotation2d r0;
+  CubicHermiteSpline1d theta;
+  frc::CubicHermiteSpline spline;
 };
 }  // namespace trajopt

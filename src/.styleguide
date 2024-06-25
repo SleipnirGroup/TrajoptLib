@@ -18,4 +18,5 @@ includeOtherLibs {
   ^rust/
   ^sleipnir/
   ^units/
+  ^wpi/
 }
