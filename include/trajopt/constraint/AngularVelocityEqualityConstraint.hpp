@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <sleipnir/autodiff/Variable.hpp>
 #include <sleipnir/optimization/OptimizationProblem.hpp>
 
 #include "trajopt/geometry/Pose2.hpp"
@@ -30,11 +31,15 @@ class TRAJOPT_DLLEXPORT AngularVelocityEqualityConstraint {
    * @param pose The robot's pose.
    * @param linearVelocity The robot's linear velocity.
    * @param angularVelocity The robot's angular velocity.
+   * @param linearAcceleration The robot's linear acceleration.
+   * @param angularAcceleration The robot's angular acceleration.
    */
   void Apply(sleipnir::OptimizationProblem& problem,
              [[maybe_unused]] const Pose2v& pose,
              [[maybe_unused]] const Translation2v& linearVelocity,
-             const sleipnir::Variable& angularVelocity) {
+             const sleipnir::Variable& angularVelocity,
+             [[maybe_unused]] const Translation2v& linearAcceleration,
+             [[maybe_unused]] const sleipnir::Variable& angularAcceleration) {
     problem.SubjectTo(angularVelocity == m_angularVelocity);
   }
 
