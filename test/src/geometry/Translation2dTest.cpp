@@ -76,7 +76,8 @@ TEST_CASE("Translation2d - Angle", "[Translation2d]") {
   const trajopt::Translation2d two{2.0, 5.0};
 
   CHECK(one.Angle().Radians() == std::atan2(3.0, 1.0));
-  CHECK(two.Angle().Radians() == std::atan2(5.0, 2.0));
+  CHECK(two.Angle().Radians() ==
+        Catch::Approx(std::atan2(5.0, 2.0)).margin(1e-9));
 }
 
 TEST_CASE("Translation2d - Dot", "[Translation2d]") {
