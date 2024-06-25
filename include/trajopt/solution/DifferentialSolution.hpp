@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "trajopt/solution/Solution.hpp"
 #include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
@@ -12,14 +11,32 @@ namespace trajopt {
 /**
  * The holonomic trajectory optimization solution.
  */
-struct TRAJOPT_DLLEXPORT DifferentialSolution : public Solution {
+struct TRAJOPT_DLLEXPORT DifferentialSolution {
+  /// Times between samples.
+  std::vector<double> dt;
+
+  /// X positions.
+  std::vector<double> x;
+
+  /// Y positions.
+  std::vector<double> y;
+
+  /// Heading cosine.
+  std::vector<double> thetacos;
+
+  /// Heading sine.
+  std::vector<double> thetasin;
+
   /// The x velocities.
   std::vector<double> vL;
+
   /// The y velocities.
   std::vector<double> vR;
-  /// the torque of the left driverail wheels
+
+  /// The torque of the left driverail wheels.
   std::vector<double> tauL;
-  /// the torque of the right driverail wheels
+
+  /// The torque of the right driverail wheels.
   std::vector<double> tauR;
 };
 

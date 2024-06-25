@@ -2,20 +2,65 @@
 
 #pragma once
 
+#include <cassert>
+#include <utility>
+
+#include <sleipnir/optimization/OptimizationProblem.hpp>
+
+#include "trajopt/geometry/Pose2.hpp"
+#include "trajopt/geometry/Translation2.hpp"
 #include "trajopt/util/SymbolExports.hpp"
 
 namespace trajopt {
 
 /**
+ * Point-at constraint.
+ *
  * Specifies a point on the field at which the robot should point.
  */
-struct TRAJOPT_DLLEXPORT PointAtConstraint {
-  /// field point x (meters)
-  double fieldPointX;
-  /// field point y (meters)
-  double fieldPointY;
-  /// the allowed robot heading tolerance (radians), must be positive
-  double headingTolerance;
+class TRAJOPT_DLLEXPORT PointAtConstraint {
+ public:
+  /**
+   * Cosntructs a PointAtConstraint.
+   *
+   * @param fieldPoint Field point.
+   * @param headingTolerance The allowed robot heading tolerance (radians). Must
+   *     be nonnegative.
+   */
+  explicit PointAtConstraint(Translation2d fieldPoint, double headingTolerance)
+      : m_fieldPoint{std::move(fieldPoint)},
+        m_headingTolerance{headingTolerance} {
+    assert(m_headingTolerance >= 0.0);
+  }
+
+  /**
+   * Applies this constraint to the given problem.
+   *
+   * @param problem The optimization problem.
+   * @param pose The robot's pose.
+   * @param linearVelocity The robot's linear velocity.
+   * @param angularVelocity The robot's angular velocity.
+   */
+  void Apply(sleipnir::OptimizationProblem& problem, const Pose2v& pose,
+             [[maybe_unused]] const Translation2v& linearVelocity,
+             [[maybe_unused]] const sleipnir::Variable& angularVelocity) {
+    // dx,dy = desired heading
+    // ux,uy = unit vector of desired heading
+    // hx,hy = heading
+    // dot = dot product of ux,uy and hx,hy
+    //
+    // constrain dot to cos(1.0), which is colinear
+    // and cos(thetaTolerance)
+    auto dx = m_fieldPoint.X() - pose.X();
+    auto dy = m_fieldPoint.Y() - pose.Y();
+    auto dot = pose.Rotation().Cos() * dx + pose.Rotation().Sin() * dy;
+    problem.SubjectTo(dot >=
+                      std::cos(m_headingTolerance) * sleipnir::hypot(dx, dy));
+  }
+
+ private:
+  Translation2d m_fieldPoint;
+  double m_headingTolerance;
 };
 
 }  // namespace trajopt

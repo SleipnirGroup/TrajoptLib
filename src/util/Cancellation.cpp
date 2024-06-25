@@ -1,8 +1,6 @@
 // Copyright (c) TrajoptLib contributors
 
-#include "optimization/Cancellation.hpp"
-
-#include <atomic>
+#include "trajopt/util/Cancellation.hpp"
 
 namespace trajopt {
 

@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include <cmath>
 #include <utility>
 #include <vector>
 
-#include "trajopt/solution/HolonomicSolution.hpp"
 #include "trajopt/solution/SwerveSolution.hpp"
 #include "trajopt/trajectory/HolonomicTrajectorySample.hpp"
 #include "trajopt/util/SymbolExports.hpp"
@@ -31,23 +31,6 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectory {
       : samples{std::move(samples)} {}
 
   /**
-   * Construct a HolonomicTrajectory from a solution.
-   *
-   * @param solution The solution.
-   */
-  explicit HolonomicTrajectory(const HolonomicSolution& solution) {
-    double ts = 0.0;
-    for (size_t samp = 0; samp < solution.x.size(); ++samp) {
-      if (samp != 0) {
-        ts += solution.dt[samp - 1];
-      }
-      samples.emplace_back(ts, solution.x[samp], solution.y[samp],
-                           solution.theta[samp], solution.vx[samp],
-                           solution.vy[samp], solution.omega[samp]);
-    }
-  }
-
-  /**
    * Construct a HolonomicTrajectory from a swerve solution.
    *
    * @param solution The swerve solution.
@@ -58,10 +41,11 @@ class TRAJOPT_DLLEXPORT HolonomicTrajectory {
       if (samp != 0) {
         ts += solution.dt[samp - 1];
       }
-      samples.emplace_back(ts, solution.x[samp], solution.y[samp],
-                           solution.theta[samp], solution.vx[samp],
-                           solution.vy[samp], solution.omega[samp],
-                           solution.moduleFX[samp], solution.moduleFY[samp]);
+      samples.emplace_back(
+          ts, solution.x[samp], solution.y[samp],
+          std::atan2(solution.thetasin[samp], solution.thetacos[samp]),
+          solution.vx[samp], solution.vy[samp], solution.omega[samp],
+          solution.moduleFX[samp], solution.moduleFY[samp]);
     }
   }
 };
