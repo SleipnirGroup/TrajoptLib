@@ -394,12 +394,14 @@ SwervePathBuilder::CalculateWaypointStatesWithControlIntervals() const {
       if (guessIdx == (guessPointsSize - 1)) {
         samples += (samplesForSgmt % guessPointsSize);
       }
-      for (size_t sampleIdx = 0; sampleIdx < samples; ++sampleIdx) {
+      for (size_t sampleIdx = 1; sampleIdx < samples + 1; ++sampleIdx) {
         auto t = trajs.at(trajIdx).TotalTime() *
                  static_cast<double>(sampleIdx) / samples;
         const auto state = trajs.at(trajIdx).Sample(t);
         waypoint_states.at(trajIdx + 1).push_back(state);
-        std::printf("%zd,", sampleIdx);
+        // std::printf("%zd, x: %f, y: %f, t: %f\n", 
+        //               sampleIdx, state.pose.X().value(), 
+        //               state.pose.Y().value(), t.value());
       }
       std::printf(" size: %zd\n", waypoint_states.at(trajIdx + 1).size());
       ++trajIdx;
@@ -433,6 +435,12 @@ SwervePathBuilder::CalculateSplineInitialGuessWithKinematicsAndConstraints()
       dt = traj.at(1).t - traj.front().t;
     }
     for (const auto& point : traj) {
+      // printf("point{%f, %f, %f, %f, %f}\n",
+      //   point.pose.X().value(),
+      //   point.pose.Y().value(),
+      //   point.pose.Rotation().Cos(),
+      //   point.pose.Rotation().Sin(),
+      //   dt.value());
       initialGuess.x.push_back(point.pose.X().value());
       initialGuess.y.push_back(point.pose.Y().value());
       initialGuess.thetacos.push_back(point.pose.Rotation().Cos());
