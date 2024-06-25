@@ -14,7 +14,7 @@ namespace trajopt {
 
 std::vector<CubicHermitePoseSplineHolonomic>
 CubicPoseControlVectorsFromWaypoints(
-    const std::vector<std::vector<InitialGuessPoint>> initialGuessPoints) {
+    const std::vector<std::vector<Pose2d>> initialGuessPoints) {
   size_t totalGuessPoints = 0;
   for (const auto& points : initialGuessPoints) {
     totalGuessPoints += points.size();
@@ -27,9 +27,8 @@ CubicPoseControlVectorsFromWaypoints(
   // populate translation and heading vectors
   for (const auto& guessPoints : initialGuessPoints) {
     for (const auto& guessPoint : guessPoints) {
-      flatTranslationPoints.emplace_back(units::meter_t(guessPoint.x),
-                                         units::meter_t(guessPoint.y));
-      flatHeadings.emplace_back(units::radian_t(guessPoint.heading));
+      flatTranslationPoints.emplace_back(guessPoint.Translation());
+      flatHeadings.emplace_back(guessPoint.Rotation());
     }
   }
 

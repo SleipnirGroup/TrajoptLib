@@ -48,8 +48,7 @@ class TRAJOPT_DLLEXPORT AngularVelocityMaxMagnitudeConstraint {
     }
   }
 
- private:
-  double m_maxMagnitude;
+  const double m_maxMagnitude;
 };
 
 }  // namespace trajopt
