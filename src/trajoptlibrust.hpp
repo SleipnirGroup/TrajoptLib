@@ -35,6 +35,7 @@ class SwervePathBuilderImpl {
   void wpt_linear_velocity_max_magnitude(size_t index, double magnitude);
   void wpt_angular_velocity_max_magnitude(size_t index,
                                           double angular_velocity);
+  void wpt_linear_acceleration_max_magnitude(size_t index, double magnitude);
   void wpt_point_at(size_t index, double field_point_x, double field_point_y,
                     double heading_tolerance);
 
@@ -44,6 +45,9 @@ class SwervePathBuilderImpl {
                                           double magnitude);
   void sgmt_angular_velocity_max_magnitude(size_t from_index, size_t to_index,
                                            double angular_velocity);
+  void sgmt_linear_acceleration_max_magnitude(size_t from_index,
+                                              size_t to_index,
+                                              double magnitude);
   void sgmt_point_at(size_t from_index, size_t to_index, double field_point_x,
                      double field_point_y, double heading_tolerance);
 

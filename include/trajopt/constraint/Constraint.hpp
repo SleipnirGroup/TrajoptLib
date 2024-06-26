@@ -11,6 +11,7 @@
 
 #include "trajopt/constraint/AngularVelocityMaxMagnitudeConstraint.hpp"
 #include "trajopt/constraint/LinePointConstraint.hpp"
+#include "trajopt/constraint/LinearAccelerationMaxMagnitudeConstraint.hpp"
 #include "trajopt/constraint/LinearVelocityDirectionConstraint.hpp"
 #include "trajopt/constraint/LinearVelocityMaxMagnitudeConstraint.hpp"
 #include "trajopt/constraint/PointAtConstraint.hpp"
@@ -48,6 +49,7 @@ concept ConstraintType =
 
 static_assert(ConstraintType<AngularVelocityMaxMagnitudeConstraint>);
 static_assert(ConstraintType<LinePointConstraint>);
+static_assert(ConstraintType<LinearAccelerationMaxMagnitudeConstraint>);
 static_assert(ConstraintType<LinearVelocityDirectionConstraint>);
 static_assert(ConstraintType<LinearVelocityMaxMagnitudeConstraint>);
 static_assert(ConstraintType<PointAtConstraint>);
@@ -58,6 +60,7 @@ static_assert(ConstraintType<TranslationEqualityConstraint>);
 
 using Constraint =
     std::variant<AngularVelocityMaxMagnitudeConstraint, LinePointConstraint,
+                 LinearAccelerationMaxMagnitudeConstraint,
                  LinearVelocityDirectionConstraint,
                  LinearVelocityMaxMagnitudeConstraint, PointAtConstraint,
                  PointLineConstraint, PointPointConstraint,
