@@ -16,10 +16,6 @@
 
 namespace trajopt {
 
-void SwervePathBuilder::CancelAll() {
-  trajopt::GetCancellationFlag() = 1;
-}
-
 SwervePath& SwervePathBuilder::GetPath() {
   return path;
 }
@@ -200,6 +196,10 @@ SwerveSolution SwervePathBuilder::CalculateInitialGuess() const {
 void SwervePathBuilder::AddIntermediateCallback(
     const std::function<void(SwerveSolution&, int64_t)> callback) {
   path.callbacks.push_back(callback);
+}
+
+void SwervePathBuilder::CancelAll() {
+  trajopt::GetCancellationFlag() = 1;
 }
 
 void SwervePathBuilder::NewWpts(size_t finalIndex) {
