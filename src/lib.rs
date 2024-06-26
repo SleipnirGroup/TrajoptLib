@@ -93,6 +93,11 @@ mod ffi {
             index: usize,
             angular_velocity: f64,
         );
+        fn wpt_linear_acceleration_max_magnitude(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            index: usize,
+            magnitude: f64,
+        );
         fn wpt_point_at(
             self: Pin<&mut SwervePathBuilderImpl>,
             index: usize,
@@ -118,6 +123,12 @@ mod ffi {
             from_index: usize,
             to_index: usize,
             angular_velocity: f64,
+        );
+        fn sgmt_linear_acceleration_max_magnitude(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            from_index: usize,
+            to_index: usize,
+            magnitude: f64,
         );
         fn sgmt_point_at(
             self: Pin<&mut SwervePathBuilderImpl>,
@@ -246,6 +257,14 @@ impl SwervePathBuilder {
         );
     }
 
+    pub fn wpt_linear_acceleration_max_magnitude(&mut self, index: usize, magnitude: f64) {
+        crate::ffi::SwervePathBuilderImpl::wpt_linear_acceleration_max_magnitude(
+            self.path.pin_mut(),
+            index,
+            magnitude,
+        );
+    }
+
     pub fn wpt_point_at(
         &mut self,
         index: usize,
@@ -301,6 +320,20 @@ impl SwervePathBuilder {
             from_index,
             to_index,
             angular_velocity,
+        );
+    }
+
+    pub fn sgmt_linear_acceleration_max_magnitude(
+        &mut self,
+        from_index: usize,
+        to_index: usize,
+        magnitude: f64,
+    ) {
+        crate::ffi::SwervePathBuilderImpl::sgmt_linear_acceleration_max_magnitude(
+            self.path.pin_mut(),
+            from_index,
+            to_index,
+            magnitude,
         );
     }
 
