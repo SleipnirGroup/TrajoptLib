@@ -12,7 +12,7 @@
 namespace trajoptlibrust {
 
 struct HolonomicTrajectory;
-struct InitialGuessPoint;
+struct Pose2d;
 struct SwerveDrivetrain;
 
 class SwervePathBuilderImpl {
@@ -28,8 +28,8 @@ class SwervePathBuilderImpl {
   void empty_wpt(size_t index, double x_guess, double y_guess,
                  double heading_guess);
 
-  void sgmt_initial_guess_points(
-      size_t from_index, const rust::Vec<InitialGuessPoint>& guess_points);
+  void sgmt_initial_guess_points(size_t from_index,
+                                 const rust::Vec<Pose2d>& guess_points);
 
   void wpt_linear_velocity_direction(size_t index, double angle);
   void wpt_linear_velocity_max_magnitude(size_t index, double magnitude);

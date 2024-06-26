@@ -67,8 +67,7 @@ trajopt::SwerveDrivetrain _convert_swerve_drivetrain(
                                   &_convert_swerve_module>(drivetrain.modules)};
 }
 
-trajopt::Pose2d _convert_initial_guess_point(
-    const InitialGuessPoint& initialGuessPoint) {
+trajopt::Pose2d _convert_initial_guess_point(const Pose2d& initialGuessPoint) {
   return {initialGuessPoint.x, initialGuessPoint.y, initialGuessPoint.heading};
 }
 
@@ -111,9 +110,9 @@ void SwervePathBuilderImpl::empty_wpt(size_t index, double x_guess,
 }
 
 void SwervePathBuilderImpl::sgmt_initial_guess_points(
-    size_t from_index, const rust::Vec<InitialGuessPoint>& guess_points) {
+    size_t from_index, const rust::Vec<Pose2d>& guess_points) {
   std::vector<trajopt::Pose2d> convertedGuessPoints =
-      _rust_vec_to_cpp_vector<InitialGuessPoint, trajopt::Pose2d,
+      _rust_vec_to_cpp_vector<Pose2d, trajopt::Pose2d,
                               &_convert_initial_guess_point>(guess_points);
   path.SgmtInitialGuessPoints(from_index, convertedGuessPoints);
 }

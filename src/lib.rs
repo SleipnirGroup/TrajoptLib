@@ -17,7 +17,7 @@ mod ffi {
     }
 
     #[derive(Debug, Deserialize, Serialize)]
-    struct InitialGuessPoint {
+    struct Pose2d {
         x: f64,
         y: f64,
         heading: f64,
@@ -75,7 +75,7 @@ mod ffi {
         fn sgmt_initial_guess_points(
             self: Pin<&mut SwervePathBuilderImpl>,
             from_index: usize,
-            guess_points: &Vec<InitialGuessPoint>,
+            guess_points: &Vec<Pose2d>,
         );
 
         fn wpt_linear_velocity_direction(
@@ -224,7 +224,7 @@ impl SwervePathBuilder {
     pub fn sgmt_initial_guess_points(
         &mut self,
         from_index: usize,
-        guess_points: &Vec<crate::ffi::InitialGuessPoint>,
+        guess_points: &Vec<crate::ffi::Pose2d>,
     ) {
         crate::ffi::SwervePathBuilderImpl::sgmt_initial_guess_points(
             self.path.pin_mut(),
@@ -439,6 +439,6 @@ impl Default for SwervePathBuilder {
 
 pub use ffi::HolonomicTrajectory;
 pub use ffi::HolonomicTrajectorySample;
-pub use ffi::InitialGuessPoint;
+pub use ffi::Pose2d;
 pub use ffi::SwerveDrivetrain;
 pub use ffi::SwerveModule;
