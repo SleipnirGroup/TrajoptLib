@@ -34,24 +34,13 @@ class Rotation2 {
       : m_cos{cos(angle)}, m_sin{sin(angle)} {}  // NOLINT
 
   /**
-   * Constructs a rotation with the given x and y (cosine and sine) components.
-   * The x and y don't have to be normalized.
+   * Constructs a rotation with the given cosine and sine components.
    *
-   * @param x The x component or cosine of the rotation.
-   * @param y The y component or sine of the rotation.
+   * @param cos The cosine component of the rotation.
+   * @param sin The sine component of the rotation.
    */
-  constexpr Rotation2(T x, T y) : m_cos{std::move(x)}, m_sin{std::move(y)} {
-    auto magnitude = hypot(m_cos, m_sin);  // NOLINT
-    if (magnitude > 1e-6) {
-      if (abs(m_cos * m_cos + m_sin * m_sin - 1.0) > 1e-9) {  // NOLINT
-        m_cos /= magnitude;
-        m_sin /= magnitude;
-      }
-    } else {
-      m_cos = 1.0;
-      m_sin = 0.0;
-    }
-  }
+  constexpr Rotation2(T cos, T sin)
+      : m_cos{std::move(cos)}, m_sin{std::move(sin)} {}
 
   /**
    * Coerces one rotation type into another.
