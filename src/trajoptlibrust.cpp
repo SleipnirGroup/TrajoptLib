@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "trajopt/SwerveTrajectoryGenerator.hpp"
-#include "trajopt/constraint/AngularVelocityEqualityConstraint.hpp"
 #include "trajopt/constraint/AngularVelocityMaxMagnitudeConstraint.hpp"
 #include "trajopt/constraint/LinearVelocityDirectionConstraint.hpp"
 #include "trajopt/constraint/LinearVelocityMaxMagnitudeConstraint.hpp"
@@ -129,13 +128,6 @@ void SwervePathBuilderImpl::wpt_linear_velocity_max_magnitude(
                      trajopt::LinearVelocityMaxMagnitudeConstraint{magnitude});
 }
 
-void SwervePathBuilderImpl::wpt_angular_velocity(size_t index,
-                                                 double angular_velocity) {
-  // this probably ought to be added to SwervePathBuilder in the C++ API
-  path.WptConstraint(
-      index, trajopt::AngularVelocityEqualityConstraint{angular_velocity});
-}
-
 void SwervePathBuilderImpl::wpt_angular_velocity_max_magnitude(
     size_t index, double angular_velocity) {
   path.WptConstraint(
@@ -162,14 +154,6 @@ void SwervePathBuilderImpl::sgmt_linear_velocity_max_magnitude(
     size_t from_index, size_t to_index, double magnitude) {
   path.SgmtConstraint(from_index, to_index,
                       trajopt::LinearVelocityMaxMagnitudeConstraint{magnitude});
-}
-
-void SwervePathBuilderImpl::sgmt_angular_velocity(size_t from_index,
-                                                  size_t to_index,
-                                                  double angular_velocity) {
-  path.SgmtConstraint(
-      from_index, to_index,
-      trajopt::AngularVelocityEqualityConstraint{angular_velocity});
 }
 
 void SwervePathBuilderImpl::sgmt_angular_velocity_max_magnitude(

@@ -88,11 +88,6 @@ mod ffi {
             index: usize,
             magnitude: f64,
         );
-        fn wpt_angular_velocity(
-            self: Pin<&mut SwervePathBuilderImpl>,
-            index: usize,
-            angular_velocity: f64,
-        );
         fn wpt_angular_velocity_max_magnitude(
             self: Pin<&mut SwervePathBuilderImpl>,
             index: usize,
@@ -117,12 +112,6 @@ mod ffi {
             from_index: usize,
             to_index: usize,
             magnitude: f64,
-        );
-        fn sgmt_angular_velocity(
-            self: Pin<&mut SwervePathBuilderImpl>,
-            from_index: usize,
-            to_index: usize,
-            angular_velocity: f64,
         );
         fn sgmt_angular_velocity_max_magnitude(
             self: Pin<&mut SwervePathBuilderImpl>,
@@ -249,14 +238,6 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn wpt_angular_velocity(&mut self, index: usize, angular_velocity: f64) {
-        crate::ffi::SwervePathBuilderImpl::wpt_angular_velocity(
-            self.path.pin_mut(),
-            index,
-            angular_velocity,
-        );
-    }
-
     pub fn wpt_angular_velocity_max_magnitude(&mut self, index: usize, angular_velocity: f64) {
         crate::ffi::SwervePathBuilderImpl::wpt_angular_velocity_max_magnitude(
             self.path.pin_mut(),
@@ -306,20 +287,6 @@ impl SwervePathBuilder {
             from_index,
             to_index,
             magnitude,
-        );
-    }
-
-    pub fn sgmt_angular_velocity(
-        &mut self,
-        from_index: usize,
-        to_index: usize,
-        angular_velocity: f64,
-    ) {
-        crate::ffi::SwervePathBuilderImpl::sgmt_angular_velocity(
-            self.path.pin_mut(),
-            from_index,
-            to_index,
-            angular_velocity,
         );
     }
 
@@ -413,9 +380,6 @@ impl SwervePathBuilder {
         }
     }
 
-    pub fn cancel_all(&mut self) {
-        crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
-    }
     ///
     /// Add a callback that will be called on each iteration of the solver.
     ///
@@ -427,6 +391,10 @@ impl SwervePathBuilder {
     ///
     pub fn add_progress_callback(&mut self, callback: fn(HolonomicTrajectory, i64)) {
         crate::ffi::SwervePathBuilderImpl::add_progress_callback(self.path.pin_mut(), callback);
+    }
+
+    pub fn cancel_all(&mut self) {
+        crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
     }
 }
 

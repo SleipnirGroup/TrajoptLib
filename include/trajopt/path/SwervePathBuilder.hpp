@@ -27,11 +27,6 @@ namespace trajopt {
 class TRAJOPT_DLLEXPORT SwervePathBuilder {
  public:
   /**
-   * Cancel all currently generating SwervePathBuilders.
-   */
-  void CancelAll();
-
-  /**
    * Get the SwervePath being constructed
    *
    * @return the path
@@ -185,6 +180,11 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    */
   void AddIntermediateCallback(
       const std::function<void(SwerveSolution&, int64_t)> callback);
+
+  /**
+   * Cancel all currently generating SwervePathBuilders.
+   */
+  void CancelAll();
 
  private:
   SwervePath path;
