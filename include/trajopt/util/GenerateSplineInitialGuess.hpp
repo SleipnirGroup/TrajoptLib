@@ -19,7 +19,8 @@
 
 namespace trajopt {
 
-// TODO make control interval fn that is the first part of the below function
+/// TODO: make a better way to pass control intervals to choreo
+/// TODO: refactor this file. add inline? possible to template?
 std::vector<frc::Trajectory> GenerateWaypointSplineTrajectories(
     const trajopt::SwervePath path,
     const std::vector<std::vector<Pose2d>> initialGuessPoints) {
@@ -243,6 +244,7 @@ SwerveSolution CalculateSplineInitialGuessWithKinematicsAndConstraints(
 
   SwerveSolution initialGuess;
   for (const auto& traj : trajectoriesSamples) {
+    /// FIXME: first segment is always 1 point long so always 0.1s to second sample
     auto dt = 0.1_s;
     if (traj.size() > 1) {
       dt = traj.at(1).t - traj.front().t;
