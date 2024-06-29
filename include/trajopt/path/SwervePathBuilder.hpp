@@ -8,7 +8,6 @@
 #include <cassert>
 #include <cstddef>
 #include <functional>
-#include <memory>
 #include <vector>
 
 #include "trajopt/constraint/Constraint.hpp"
@@ -28,11 +27,6 @@ namespace trajopt {
  */
 class TRAJOPT_DLLEXPORT SwervePathBuilder {
  public:
-  /**
-   * Cancel all currently generating SwervePathBuilders.
-   */
-  void CancelAll();
-
   /**
    * Get the SwervePath being constructed
    *
@@ -231,6 +225,11 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
    */
   void AddIntermediateCallback(
       const std::function<void(SwerveSolution&, int64_t)> callback);
+
+  /**
+   * Cancel all currently generating SwervePathBuilders.
+   */
+  void CancelAll();
 
  private:
   SwervePath path;

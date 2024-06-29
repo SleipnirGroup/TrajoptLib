@@ -12,7 +12,7 @@
 namespace trajoptlibrust {
 
 struct HolonomicTrajectory;
-struct InitialGuessPoint;
+struct Pose2d;
 struct SwerveDrivetrain;
 
 class SwervePathBuilderImpl {
@@ -28,14 +28,14 @@ class SwervePathBuilderImpl {
   void empty_wpt(size_t index, double x_guess, double y_guess,
                  double heading_guess);
 
-  void sgmt_initial_guess_points(
-      size_t from_index, const rust::Vec<InitialGuessPoint>& guess_points);
+  void sgmt_initial_guess_points(size_t from_index,
+                                 const rust::Vec<Pose2d>& guess_points);
 
   void wpt_linear_velocity_direction(size_t index, double angle);
   void wpt_linear_velocity_max_magnitude(size_t index, double magnitude);
-  void wpt_angular_velocity(size_t index, double angular_velocity);
   void wpt_angular_velocity_max_magnitude(size_t index,
                                           double angular_velocity);
+  void wpt_linear_acceleration_max_magnitude(size_t index, double magnitude);
   void wpt_point_at(size_t index, double field_point_x, double field_point_y,
                     double heading_tolerance);
 
@@ -43,10 +43,11 @@ class SwervePathBuilderImpl {
                                       double angle);
   void sgmt_linear_velocity_max_magnitude(size_t from_index, size_t to_index,
                                           double magnitude);
-  void sgmt_angular_velocity(size_t from_index, size_t to_index,
-                             double angular_velocity);
   void sgmt_angular_velocity_max_magnitude(size_t from_index, size_t to_index,
                                            double angular_velocity);
+  void sgmt_linear_acceleration_max_magnitude(size_t from_index,
+                                              size_t to_index,
+                                              double magnitude);
   void sgmt_point_at(size_t from_index, size_t to_index, double field_point_x,
                      double field_point_y, double heading_tolerance);
 

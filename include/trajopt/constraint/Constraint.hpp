@@ -9,9 +9,9 @@
 #include <sleipnir/autodiff/Variable.hpp>
 #include <sleipnir/optimization/OptimizationProblem.hpp>
 
-#include "trajopt/constraint/AngularVelocityEqualityConstraint.hpp"
 #include "trajopt/constraint/AngularVelocityMaxMagnitudeConstraint.hpp"
 #include "trajopt/constraint/LinePointConstraint.hpp"
+#include "trajopt/constraint/LinearAccelerationMaxMagnitudeConstraint.hpp"
 #include "trajopt/constraint/LinearVelocityDirectionConstraint.hpp"
 #include "trajopt/constraint/LinearVelocityMaxMagnitudeConstraint.hpp"
 #include "trajopt/constraint/PointAtConstraint.hpp"
@@ -47,9 +47,9 @@ concept ConstraintType =
       } -> std::same_as<void>;
     };
 
-static_assert(ConstraintType<AngularVelocityEqualityConstraint>);
 static_assert(ConstraintType<AngularVelocityMaxMagnitudeConstraint>);
 static_assert(ConstraintType<LinePointConstraint>);
+static_assert(ConstraintType<LinearAccelerationMaxMagnitudeConstraint>);
 static_assert(ConstraintType<LinearVelocityDirectionConstraint>);
 static_assert(ConstraintType<LinearVelocityMaxMagnitudeConstraint>);
 static_assert(ConstraintType<PointAtConstraint>);
@@ -59,8 +59,8 @@ static_assert(ConstraintType<PoseEqualityConstraint>);
 static_assert(ConstraintType<TranslationEqualityConstraint>);
 
 using Constraint =
-    std::variant<AngularVelocityEqualityConstraint,
-                 AngularVelocityMaxMagnitudeConstraint, LinePointConstraint,
+    std::variant<AngularVelocityMaxMagnitudeConstraint, LinePointConstraint,
+                 LinearAccelerationMaxMagnitudeConstraint,
                  LinearVelocityDirectionConstraint,
                  LinearVelocityMaxMagnitudeConstraint, PointAtConstraint,
                  PointLineConstraint, PointPointConstraint,

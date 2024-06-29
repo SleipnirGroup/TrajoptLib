@@ -10,70 +10,40 @@
 #include <vector>
 
 #include "trajopt/SwerveTrajectoryGenerator.hpp"
-#include "trajopt/constraint/AngularVelocityEqualityConstraint.hpp"
 #include "trajopt/constraint/AngularVelocityMaxMagnitudeConstraint.hpp"
+#include "trajopt/constraint/LinearAccelerationMaxMagnitudeConstraint.hpp"
 #include "trajopt/constraint/LinearVelocityDirectionConstraint.hpp"
 #include "trajopt/constraint/LinearVelocityMaxMagnitudeConstraint.hpp"
 #include "trajopt/constraint/PointAtConstraint.hpp"
-#include "trajopt/drivetrain/SwerveDrivetrain.hpp"
-#include "trajopt/geometry/Translation2.hpp"
+#include "trajopt/drivetrain/SwerveModule.hpp"
 #include "trajopt/trajectory/HolonomicTrajectory.hpp"
 #include "trajopt/trajectory/HolonomicTrajectorySample.hpp"
 #include "trajoptlib/src/lib.rs.h"
 
 namespace trajoptlibrust {
 
-template <typename FromType, typename ToType, typename FromVecType,
-          typename ToVecType, ToType (*Converter)(const FromType&)>
-ToVecType _convert_generic_vec(const FromVecType& fromVec) {
-  ToVecType toVec;
-  toVec.reserve(fromVec.size());
-  for (const FromType& item : fromVec) {
-    toVec.emplace_back(Converter(item));
-  }
-  return toVec;
-}
-
-template <typename RustType, typename CppType,
-          CppType (*Converter)(const RustType&)>
-std::vector<CppType> _rust_vec_to_cpp_vector(
-    const rust::Vec<RustType>& rustVec) {
-  return _convert_generic_vec<RustType, CppType, rust::Vec<RustType>,
-                              std::vector<CppType>, Converter>(rustVec);
-}
-
-template <typename CppType, typename RustType,
-          RustType (*Converter)(const CppType&)>
-rust::Vec<RustType> _cpp_vector_to_rust_vec(
-    const std::vector<CppType>& cppVec) {
-  return _convert_generic_vec<CppType, RustType, std::vector<CppType>,
-                              rust::Vec<RustType>, Converter>(cppVec);
-}
-
-trajopt::SwerveModule _convert_swerve_module(const SwerveModule& swerveModule) {
-  return trajopt::SwerveModule{
-      trajopt::Translation2d{swerveModule.x, swerveModule.y},
-      swerveModule.wheel_radius, swerveModule.wheel_max_angular_velocity,
-      swerveModule.wheel_max_torque};
-}
-
-trajopt::SwerveDrivetrain _convert_swerve_drivetrain(
-    const SwerveDrivetrain& drivetrain) {
-  return trajopt::SwerveDrivetrain{
-      .mass = drivetrain.mass,
-      .moi = drivetrain.moi,
-      .modules =
-          _rust_vec_to_cpp_vector<SwerveModule, trajopt::SwerveModule,
-                                  &_convert_swerve_module>(drivetrain.modules)};
-}
-
-trajopt::Pose2d _convert_initial_guess_point(
-    const InitialGuessPoint& initialGuessPoint) {
-  return {initialGuessPoint.x, initialGuessPoint.y, initialGuessPoint.heading};
-}
-
 void SwervePathBuilderImpl::set_drivetrain(const SwerveDrivetrain& drivetrain) {
-  path.SetDrivetrain(_convert_swerve_drivetrain(drivetrain));
+  std::vector<trajopt::SwerveModule> cppModules;
+  for (const auto& module : drivetrain.modules) {
+    cppModules.push_back(
+        trajopt::SwerveModule{{module.x, module.y},
+                              module.wheel_radius,
+                              module.wheel_max_angular_velocity,
+                              module.wheel_max_torque});
+  }
+
+  path.SetDrivetrain(trajopt::SwerveDrivetrain{drivetrain.mass, drivetrain.moi,
+                                               std::move(cppModules)});
+}
+
+void SwervePathBuilderImpl::set_control_interval_counts(
+    const rust::Vec<size_t> counts) {
+  std::vector<size_t> cppCounts;
+  for (const auto& count : counts) {
+    cppCounts.emplace_back(count);
+  }
+
+  path.ControlIntervalCounts(std::move(cppCounts));
 }
 
 void SwervePathBuilderImpl::set_bumpers(double length, double width) {
@@ -82,17 +52,6 @@ void SwervePathBuilderImpl::set_bumpers(double length, double width) {
                                               {-length / 2, +width / 2},
                                               {-length / 2, -width / 2},
                                               {+length / 2, -width / 2}}});
-}
-
-size_t _rust_usize_to_cpp_size(const rust::usize& count) {
-  return count;
-}
-
-void SwervePathBuilderImpl::set_control_interval_counts(
-    const rust::Vec<size_t> counts) {
-  std::vector<size_t> converted_counts =
-      _rust_vec_to_cpp_vector<size_t, size_t, &_rust_usize_to_cpp_size>(counts);
-  path.ControlIntervalCounts(std::move(converted_counts));
 }
 
 void SwervePathBuilderImpl::pose_wpt(size_t index, double x, double y,
@@ -111,11 +70,14 @@ void SwervePathBuilderImpl::empty_wpt(size_t index, double x_guess,
 }
 
 void SwervePathBuilderImpl::sgmt_initial_guess_points(
-    size_t from_index, const rust::Vec<InitialGuessPoint>& guess_points) {
-  std::vector<trajopt::Pose2d> convertedGuessPoints =
-      _rust_vec_to_cpp_vector<InitialGuessPoint, trajopt::Pose2d,
-                              &_convert_initial_guess_point>(guess_points);
-  path.SgmtInitialGuessPoints(from_index, convertedGuessPoints);
+    size_t from_index, const rust::Vec<Pose2d>& guess_points) {
+  std::vector<trajopt::Pose2d> cppGuessPoints;
+  for (const auto& guess_point : guess_points) {
+    cppGuessPoints.emplace_back(guess_point.x, guess_point.y,
+                                guess_point.heading);
+  }
+
+  path.SgmtInitialGuessPoints(from_index, std::move(cppGuessPoints));
 }
 
 void SwervePathBuilderImpl::wpt_linear_velocity_direction(size_t index,
@@ -129,17 +91,16 @@ void SwervePathBuilderImpl::wpt_linear_velocity_max_magnitude(
                      trajopt::LinearVelocityMaxMagnitudeConstraint{magnitude});
 }
 
-void SwervePathBuilderImpl::wpt_angular_velocity(size_t index,
-                                                 double angular_velocity) {
-  // this probably ought to be added to SwervePathBuilder in the C++ API
-  path.WptConstraint(
-      index, trajopt::AngularVelocityEqualityConstraint{angular_velocity});
-}
-
 void SwervePathBuilderImpl::wpt_angular_velocity_max_magnitude(
     size_t index, double angular_velocity) {
   path.WptConstraint(
       index, trajopt::AngularVelocityMaxMagnitudeConstraint{angular_velocity});
+}
+
+void SwervePathBuilderImpl::wpt_linear_acceleration_max_magnitude(
+    size_t index, double magnitude) {
+  path.WptConstraint(
+      index, trajopt::LinearAccelerationMaxMagnitudeConstraint{magnitude});
 }
 
 void SwervePathBuilderImpl::wpt_point_at(size_t index, double field_point_x,
@@ -164,14 +125,6 @@ void SwervePathBuilderImpl::sgmt_linear_velocity_max_magnitude(
                       trajopt::LinearVelocityMaxMagnitudeConstraint{magnitude});
 }
 
-void SwervePathBuilderImpl::sgmt_angular_velocity(size_t from_index,
-                                                  size_t to_index,
-                                                  double angular_velocity) {
-  path.SgmtConstraint(
-      from_index, to_index,
-      trajopt::AngularVelocityEqualityConstraint{angular_velocity});
-}
-
 void SwervePathBuilderImpl::sgmt_angular_velocity_max_magnitude(
     size_t from_index, size_t to_index, double angular_velocity) {
   path.SgmtConstraint(
@@ -179,22 +132,26 @@ void SwervePathBuilderImpl::sgmt_angular_velocity_max_magnitude(
       trajopt::AngularVelocityMaxMagnitudeConstraint{angular_velocity});
 }
 
+void SwervePathBuilderImpl::sgmt_linear_acceleration_max_magnitude(
+    size_t from_index, size_t to_index, double magnitude) {
+  path.SgmtConstraint(
+      from_index, to_index,
+      trajopt::LinearAccelerationMaxMagnitudeConstraint{magnitude});
+}
+
 void SwervePathBuilderImpl::sgmt_point_at(size_t from_index, size_t to_index,
                                           double field_point_x,
                                           double field_point_y,
                                           double heading_tolerance) {
   path.SgmtConstraint(from_index, to_index,
-                      trajopt::PointAtConstraint{
-                          trajopt::Translation2d{field_point_x, field_point_y},
-                          heading_tolerance});
+                      trajopt::PointAtConstraint{{field_point_x, field_point_y},
+                                                 heading_tolerance});
 }
 
 void SwervePathBuilderImpl::sgmt_circle_obstacle(size_t from_index,
                                                  size_t to_index, double x,
                                                  double y, double radius) {
-  auto obstacle =
-      trajopt::Obstacle{.safetyDistance = radius, .points = {{x, y}}};
-  path.SgmtObstacle(from_index, to_index, obstacle);
+  path.SgmtObstacle(from_index, to_index, {radius, {{x, y}}});
 }
 
 void SwervePathBuilderImpl::sgmt_polygon_obstacle(size_t from_index,
@@ -202,56 +159,43 @@ void SwervePathBuilderImpl::sgmt_polygon_obstacle(size_t from_index,
                                                   const rust::Vec<double> x,
                                                   const rust::Vec<double> y,
                                                   double radius) {
-  std::vector<trajopt::Translation2d> points;
-  if (x.size() != y.size()) {
+  if (x.size() != y.size()) [[unlikely]] {
     return;
   }
-  for (size_t i = 0; i < x.size(); i++) {
-    points.push_back({x.at(i), y.at(i)});
+
+  std::vector<trajopt::Translation2d> cppPoints;
+  for (size_t i = 0; i < x.size(); ++i) {
+    cppPoints.emplace_back(x.at(i), y.at(i));
   }
-  auto obstacle = trajopt::Obstacle{.safetyDistance = radius, .points = points};
-  path.SgmtObstacle(from_index, to_index, obstacle);
-}
 
-HolonomicTrajectorySample _convert_holonomic_trajectory_sample(
-    const trajopt::HolonomicTrajectorySample& sample) {
-  // copy data into rust vecs
-  rust::Vec<double> fx;
-  std::copy(sample.moduleForcesX.begin(), sample.moduleForcesX.end(),
-            std::back_inserter(fx));
-
-  rust::Vec<double> fy;
-  std::copy(sample.moduleForcesY.begin(), sample.moduleForcesY.end(),
-            std::back_inserter(fy));
-
-  return HolonomicTrajectorySample{
-      .timestamp = sample.timestamp,
-      .x = sample.x,
-      .y = sample.y,
-      .heading = sample.heading,
-      .velocity_x = sample.velocityX,
-      .velocity_y = sample.velocityY,
-      .angular_velocity = sample.angularVelocity,
-      .module_forces_x = std::move(fx),
-      .module_forces_y = std::move(fy),
-  };
-}
-
-HolonomicTrajectory _convert_holonomic_trajectory(
-    const trajopt::HolonomicTrajectory& trajectory) {
-  return HolonomicTrajectory{
-      .samples = _cpp_vector_to_rust_vec<trajopt::HolonomicTrajectorySample,
-                                         HolonomicTrajectorySample,
-                                         &_convert_holonomic_trajectory_sample>(
-          trajectory.samples)};
+  path.SgmtObstacle(from_index, to_index,
+                    trajopt::Obstacle{.safetyDistance = radius,
+                                      .points = std::move(cppPoints)});
 }
 
 HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
                                                     int64_t handle) const {
   trajopt::SwerveTrajectoryGenerator generator{path, handle};
   if (auto sol = generator.Generate(diagnostics); sol.has_value()) {
-    return _convert_holonomic_trajectory(
-        trajopt::HolonomicTrajectory{sol.value()});
+    trajopt::HolonomicTrajectory cppTrajectory{sol.value()};
+
+    rust::Vec<HolonomicTrajectorySample> rustSamples;
+    for (const auto& cppSample : cppTrajectory.samples) {
+      rust::Vec<double> fx;
+      std::copy(cppSample.moduleForcesX.begin(), cppSample.moduleForcesX.end(),
+                std::back_inserter(fx));
+
+      rust::Vec<double> fy;
+      std::copy(cppSample.moduleForcesY.begin(), cppSample.moduleForcesY.end(),
+                std::back_inserter(fy));
+
+      rustSamples.push_back(HolonomicTrajectorySample{
+          cppSample.timestamp, cppSample.x, cppSample.y, cppSample.heading,
+          cppSample.velocityX, cppSample.velocityY, cppSample.angularVelocity,
+          std::move(fx), std::move(fy)});
+    }
+
+    return HolonomicTrajectory{std::move(rustSamples)};
   } else {
     throw std::runtime_error{sol.error()};
   }
@@ -268,12 +212,28 @@ HolonomicTrajectory SwervePathBuilderImpl::generate(bool diagnostics,
  */
 void SwervePathBuilderImpl::add_progress_callback(
     rust::Fn<void(HolonomicTrajectory, int64_t)> callback) {
-  path.AddIntermediateCallback([=](trajopt::SwerveSolution& solution,
-                                   int64_t handle) {
-    callback(
-        _convert_holonomic_trajectory(trajopt::HolonomicTrajectory{solution}),
-        handle);
-  });
+  path.AddIntermediateCallback(
+      [=](trajopt::SwerveSolution& solution, int64_t handle) {
+        trajopt::HolonomicTrajectory cppTrajectory{solution};
+
+        rust::Vec<HolonomicTrajectorySample> rustSamples;
+        for (const auto& cppSample : cppTrajectory.samples) {
+          rust::Vec<double> fx;
+          std::copy(cppSample.moduleForcesX.begin(),
+                    cppSample.moduleForcesX.end(), std::back_inserter(fx));
+
+          rust::Vec<double> fy;
+          std::copy(cppSample.moduleForcesY.begin(),
+                    cppSample.moduleForcesY.end(), std::back_inserter(fy));
+
+          rustSamples.push_back(HolonomicTrajectorySample{
+              cppSample.timestamp, cppSample.x, cppSample.y, cppSample.heading,
+              cppSample.velocityX, cppSample.velocityY,
+              cppSample.angularVelocity, std::move(fx), std::move(fy)});
+        }
+
+        callback(HolonomicTrajectory{rustSamples}, handle);
+      });
 }
 
 void SwervePathBuilderImpl::cancel_all() {
@@ -311,14 +271,15 @@ HolonomicTrajectory SwervePathBuilderImpl::calculate_spline_initial_guess()
       path.CalculateSplineInitialGuessWithKinematicsAndConstraints());
 }
 
-rust::usize _cpp_size_to_rust_usize(const size_t& count) {
-  return count;
-}
-
 rust::Vec<rust::usize>
 SwervePathBuilderImpl::calculate_control_interval_counts() const {
-  return _cpp_vector_to_rust_vec<size_t, rust::usize, &_cpp_size_to_rust_usize>(
-      path.CalculateControlIntervalCounts());
+  const auto cppCounts = path.CalculateControlIntervalCounts();
+
+  rust::Vec<rust::usize> rustCounts;
+  for (const auto& count : cppCounts) {
+    rustCounts.emplace_back(count);
+  }
+  return rustCounts;
 }
 
 std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl() {

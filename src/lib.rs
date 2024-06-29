@@ -17,7 +17,7 @@ mod ffi {
     }
 
     #[derive(Debug, Deserialize, Serialize)]
-    struct InitialGuessPoint {
+    struct Pose2d {
         x: f64,
         y: f64,
         heading: f64,
@@ -75,7 +75,7 @@ mod ffi {
         fn sgmt_initial_guess_points(
             self: Pin<&mut SwervePathBuilderImpl>,
             from_index: usize,
-            guess_points: &Vec<InitialGuessPoint>,
+            guess_points: &Vec<Pose2d>,
         );
 
         fn wpt_linear_velocity_direction(
@@ -88,15 +88,15 @@ mod ffi {
             index: usize,
             magnitude: f64,
         );
-        fn wpt_angular_velocity(
-            self: Pin<&mut SwervePathBuilderImpl>,
-            index: usize,
-            angular_velocity: f64,
-        );
         fn wpt_angular_velocity_max_magnitude(
             self: Pin<&mut SwervePathBuilderImpl>,
             index: usize,
             angular_velocity: f64,
+        );
+        fn wpt_linear_acceleration_max_magnitude(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            index: usize,
+            magnitude: f64,
         );
         fn wpt_point_at(
             self: Pin<&mut SwervePathBuilderImpl>,
@@ -118,17 +118,17 @@ mod ffi {
             to_index: usize,
             magnitude: f64,
         );
-        fn sgmt_angular_velocity(
-            self: Pin<&mut SwervePathBuilderImpl>,
-            from_index: usize,
-            to_index: usize,
-            angular_velocity: f64,
-        );
         fn sgmt_angular_velocity_max_magnitude(
             self: Pin<&mut SwervePathBuilderImpl>,
             from_index: usize,
             to_index: usize,
             angular_velocity: f64,
+        );
+        fn sgmt_linear_acceleration_max_magnitude(
+            self: Pin<&mut SwervePathBuilderImpl>,
+            from_index: usize,
+            to_index: usize,
+            magnitude: f64,
         );
         fn sgmt_point_at(
             self: Pin<&mut SwervePathBuilderImpl>,
@@ -230,7 +230,7 @@ impl SwervePathBuilder {
     pub fn sgmt_initial_guess_points(
         &mut self,
         from_index: usize,
-        guess_points: &Vec<crate::ffi::InitialGuessPoint>,
+        guess_points: &Vec<crate::ffi::Pose2d>,
     ) {
         crate::ffi::SwervePathBuilderImpl::sgmt_initial_guess_points(
             self.path.pin_mut(),
@@ -255,19 +255,19 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn wpt_angular_velocity(&mut self, index: usize, angular_velocity: f64) {
-        crate::ffi::SwervePathBuilderImpl::wpt_angular_velocity(
+    pub fn wpt_angular_velocity_max_magnitude(&mut self, index: usize, angular_velocity: f64) {
+        crate::ffi::SwervePathBuilderImpl::wpt_angular_velocity_max_magnitude(
             self.path.pin_mut(),
             index,
             angular_velocity,
         );
     }
 
-    pub fn wpt_angular_velocity_max_magnitude(&mut self, index: usize, angular_velocity: f64) {
-        crate::ffi::SwervePathBuilderImpl::wpt_angular_velocity_max_magnitude(
+    pub fn wpt_linear_acceleration_max_magnitude(&mut self, index: usize, magnitude: f64) {
+        crate::ffi::SwervePathBuilderImpl::wpt_linear_acceleration_max_magnitude(
             self.path.pin_mut(),
             index,
-            angular_velocity,
+            magnitude,
         );
     }
 
@@ -315,20 +315,6 @@ impl SwervePathBuilder {
         );
     }
 
-    pub fn sgmt_angular_velocity(
-        &mut self,
-        from_index: usize,
-        to_index: usize,
-        angular_velocity: f64,
-    ) {
-        crate::ffi::SwervePathBuilderImpl::sgmt_angular_velocity(
-            self.path.pin_mut(),
-            from_index,
-            to_index,
-            angular_velocity,
-        );
-    }
-
     pub fn sgmt_angular_velocity_max_magnitude(
         &mut self,
         from_index: usize,
@@ -340,6 +326,20 @@ impl SwervePathBuilder {
             from_index,
             to_index,
             angular_velocity,
+        );
+    }
+
+    pub fn sgmt_linear_acceleration_max_magnitude(
+        &mut self,
+        from_index: usize,
+        to_index: usize,
+        magnitude: f64,
+    ) {
+        crate::ffi::SwervePathBuilderImpl::sgmt_linear_acceleration_max_magnitude(
+            self.path.pin_mut(),
+            from_index,
+            to_index,
+            magnitude,
         );
     }
 
@@ -447,6 +447,10 @@ impl SwervePathBuilder {
     pub fn add_progress_callback(&mut self, callback: fn(HolonomicTrajectory, i64)) {
         crate::ffi::SwervePathBuilderImpl::add_progress_callback(self.path.pin_mut(), callback);
     }
+
+    pub fn cancel_all(&mut self) {
+        crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
+    }
 }
 
 impl Default for SwervePathBuilder {
@@ -457,6 +461,6 @@ impl Default for SwervePathBuilder {
 
 pub use ffi::HolonomicTrajectory;
 pub use ffi::HolonomicTrajectorySample;
-pub use ffi::InitialGuessPoint;
+pub use ffi::Pose2d;
 pub use ffi::SwerveDrivetrain;
 pub use ffi::SwerveModule;

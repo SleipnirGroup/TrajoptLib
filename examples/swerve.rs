@@ -69,8 +69,8 @@ fn main() {
     path.pose_wpt(end_idx, 4.0, 0., 0.0);
     path.wpt_linear_velocity_max_magnitude(0, 0.0);
     path.wpt_linear_velocity_max_magnitude(end_idx, 0.0);
-    path.wpt_angular_velocity(0, 0.0);
-    path.wpt_angular_velocity(end_idx, 0.0);
+    path.wpt_angular_velocity_max_magnitude(0, 0.0);
+    path.wpt_angular_velocity_max_magnitude(end_idx, 0.0);
     // path.sgmt_circle_obstacle(0, 1, 0.5, 0.1, 0.2);
     let counts = path.calculate_control_interval_counts();
     println!("counts; {:#?}", &counts);

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <cassert>
+
 #include <sleipnir/autodiff/Variable.hpp>
 #include <sleipnir/optimization/OptimizationProblem.hpp>
 
@@ -12,17 +14,20 @@
 namespace trajopt {
 
 /**
- * Angular velocity equality constraint.
+ * Linear acceleration max magnitude inequality constraint.
  */
-class TRAJOPT_DLLEXPORT AngularVelocityEqualityConstraint {
+class TRAJOPT_DLLEXPORT LinearAccelerationMaxMagnitudeConstraint {
  public:
   /**
-   * Constructs an AngularVelocityEqualityConstraint.
+   * Constructs a LinearAccelerationMaxMagnitudeConstraint.
    *
-   * @param angularVelocity The angular velocity.
+   * @param maxMagnitude The maximum linear acceleration magnitude. Must be
+   *     nonnegative.
    */
-  explicit AngularVelocityEqualityConstraint(double angularVelocity)
-      : m_angularVelocity{angularVelocity} {}
+  explicit LinearAccelerationMaxMagnitudeConstraint(double maxMagnitude)
+      : m_maxMagnitude{maxMagnitude} {
+    assert(maxMagnitude >= 0.0);
+  }
 
   /**
    * Applies this constraint to the given problem.
@@ -37,14 +42,20 @@ class TRAJOPT_DLLEXPORT AngularVelocityEqualityConstraint {
   void Apply(sleipnir::OptimizationProblem& problem,
              [[maybe_unused]] const Pose2v& pose,
              [[maybe_unused]] const Translation2v& linearVelocity,
-             const sleipnir::Variable& angularVelocity,
-             [[maybe_unused]] const Translation2v& linearAcceleration,
+             [[maybe_unused]] const sleipnir::Variable& angularVelocity,
+             const Translation2v& linearAcceleration,
              [[maybe_unused]] const sleipnir::Variable& angularAcceleration) {
-    problem.SubjectTo(angularVelocity == m_angularVelocity);
+    if (m_maxMagnitude == 0.0) {
+      problem.SubjectTo(linearAcceleration.X() == 0.0);
+      problem.SubjectTo(linearAcceleration.Y() == 0.0);
+    } else {
+      problem.SubjectTo(linearAcceleration.SquaredNorm() <=
+                        m_maxMagnitude * m_maxMagnitude);
+    }
   }
 
  private:
-  double m_angularVelocity;
+  double m_maxMagnitude;
 };
 
 }  // namespace trajopt
