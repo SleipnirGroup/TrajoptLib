@@ -219,11 +219,10 @@ CalculateWaypointStatesWithControlIntervals(
   return waypoint_states;
 }
 
-std::vector<size_t> CalculateControlIntervalCounts(
+std::vector<size_t> CalculateControlIntervalCountsWithDt(
     const trajopt::SwervePath path,
     const std::vector<std::vector<Pose2d>> initialGuessPoints,
     const double desiredDt) {
-  const auto desiredDt = 0.1;
   const auto trajectoriesSamples =
       CalculateWaypointStatesWithDt(path, initialGuessPoints, desiredDt);
   std::vector<size_t> counts;
@@ -235,7 +234,7 @@ std::vector<size_t> CalculateControlIntervalCounts(
   return counts;
 }
 
-SwerveSolution CalculateSplineInitialGuessWithKinematicsAndConstraints(
+inline SwerveSolution CalculateSplineInitialGuessWithKinematicsAndConstraints(
     const trajopt::SwervePath path,
     const std::vector<std::vector<Pose2d>> initialGuessPoints,
     std::vector<size_t> controlIntervalCounts) {
@@ -244,7 +243,8 @@ SwerveSolution CalculateSplineInitialGuessWithKinematicsAndConstraints(
 
   SwerveSolution initialGuess;
   for (const auto& traj : trajectoriesSamples) {
-    /// FIXME: first segment is always 1 point long so always 0.1s to second sample
+    /// FIXME: first segment is always 1 point long so always 0.1s to second
+    /// sample
     auto dt = 0.1_s;
     if (traj.size() > 1) {
       dt = traj.at(1).t - traj.front().t;

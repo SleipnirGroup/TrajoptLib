@@ -268,15 +268,14 @@ HolonomicTrajectory SwervePathBuilderImpl::calculate_linear_initial_guess()
 HolonomicTrajectory SwervePathBuilderImpl::calculate_spline_initial_guess()
     const {
   return _convert_sol_to_holonomic_trajectory(
-      path.CalculateSplineInitialGuessWithKinematicsAndConstraints());
+      path.CalculateSplineInitialGuess());
 }
 
 rust::Vec<rust::usize>
 SwervePathBuilderImpl::calculate_control_interval_counts() const {
-  const auto cppCounts = path.CalculateControlIntervalCounts();
-
+  auto cppCounts = path.CalculateControlIntervalCounts();
   rust::Vec<rust::usize> rustCounts;
-  for (const auto& count : cppCounts) {
+  for (const auto count : cppCounts) {
     rustCounts.emplace_back(count);
   }
   return rustCounts;
