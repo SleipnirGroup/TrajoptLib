@@ -168,15 +168,15 @@ mod ffi {
             callback: fn(HolonomicTrajectory, i64),
         );
 
+        fn cancel_all(self: Pin<&mut SwervePathBuilderImpl>);
+
+        fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
+
         fn calculate_linear_initial_guess(self: &SwervePathBuilderImpl) -> HolonomicTrajectory;
 
         fn calculate_spline_initial_guess(self: &SwervePathBuilderImpl) -> HolonomicTrajectory;
 
         fn calculate_control_interval_counts(self: &SwervePathBuilderImpl) -> Vec<usize>;
-
-        fn cancel_all(self: Pin<&mut SwervePathBuilderImpl>);
-
-        fn new_swerve_path_builder_impl() -> UniquePtr<SwervePathBuilderImpl>;
     }
 }
 
@@ -419,22 +419,6 @@ impl SwervePathBuilder {
         }
     }
 
-    pub fn calculate_linear_initial_guess(&self) -> HolonomicTrajectory {
-        self.path.calculate_linear_initial_guess()
-    }
-
-    pub fn calculate_spline_initial_guess(&self) -> HolonomicTrajectory {
-        self.path.calculate_spline_initial_guess()
-    }
-
-    pub fn calculate_control_interval_counts(&self) -> Vec<usize> {
-        self.path.calculate_control_interval_counts()
-    }
-
-    pub fn cancel_all(&mut self) {
-        crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
-    }
-
     ///
     /// Add a callback that will be called on each iteration of the solver.
     ///
@@ -450,6 +434,18 @@ impl SwervePathBuilder {
 
     pub fn cancel_all(&mut self) {
         crate::ffi::SwervePathBuilderImpl::cancel_all(self.path.pin_mut());
+    }
+
+    pub fn calculate_linear_initial_guess(&self) -> HolonomicTrajectory {
+        self.path.calculate_linear_initial_guess()
+    }
+
+    pub fn calculate_spline_initial_guess(&self) -> HolonomicTrajectory {
+        self.path.calculate_spline_initial_guess()
+    }
+
+    pub fn calculate_control_interval_counts(&self) -> Vec<usize> {
+        self.path.calculate_control_interval_counts()
     }
 }
 

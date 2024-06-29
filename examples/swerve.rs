@@ -1,4 +1,4 @@
-use trajoptlib::{InitialGuessPoint, SwerveDrivetrain, SwerveModule, SwervePathBuilder};
+use trajoptlib::{Pose2d, SwerveDrivetrain, SwerveModule, SwervePathBuilder};
 
 fn main() {
     let drivetrain = SwerveDrivetrain {
@@ -44,12 +44,12 @@ fn main() {
     // path.sgmt_initial_guess_points(
     //     0,
     //     &vec![
-    //         InitialGuessPoint {
+    //         Pose2d {
     //             x: 1.,
     //             y: 0.5,
     //             heading: -0.5,
     //         },
-    //         InitialGuessPoint {
+    //         Pose2d {
     //             x: 2.,
     //             y: -0.5,
     //             heading: -0.5,
@@ -59,7 +59,7 @@ fn main() {
     // path.pose_wpt(1, 0.25, 0.0, 0.0);
     path.sgmt_initial_guess_points(
         0,
-        &vec![InitialGuessPoint {
+        &vec![Pose2d {
             x: 2.0,
             y: 0.0,
             heading: 0.0,
