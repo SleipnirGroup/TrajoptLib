@@ -172,48 +172,13 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   SwerveSolution CalculateInitialGuess() const;
 
   /**
-   * Calculate control intervals
-   *
-   * @return control intervals for each waypoint
-   */
-  std::vector<size_t> CalculateControlIntervalCounts() const;
-
-  /**
-   * Calculate trajectories between waypoints
-   * using WPILib splines and trajectories.
-   *
-   * @return control intervals for each waypoint
-   */
-  std::vector<frc::Trajectory> GenerateWaypointSplineTrajectories() const;
-
-  /**
-   * Calculate states separated by waypoints to be used
-   * in the spline initial guess.
-   *
-   * @return control intervals for each waypoint
-   */
-  std::vector<std::vector<frc::Trajectory::State>>
-  CalculateWaypointStatesWithDt(const double desiredDt) const;
-
-  /**
-   * Calculate states separated by waypoints to be used
-   * in the spline initial guess.
-   *
-   * @return control intervals for each waypoint
-   */
-  std::vector<std::vector<frc::Trajectory::State>>
-  CalculateWaypointStatesWithControlIntervals() const;
-
-  /**
-   * Calculate a discrete initial guess of the x, y, and heading
-   * of the robot that goes through each waypoint.
-   * Uses the trajectory generator and kinematics from WPILib
-   * with minor modifications to support swerve rotation.
+   * Calculate a discrete, spline initial guess of the x, y, and heading
+   * of the robot that goes through each segment with some kinematics
+   *  and considering some path constraints.
    *
    * @return the initial guess, as a solution
    */
-  SwerveSolution CalculateSplineInitialGuessWithKinematicsAndConstraints()
-      const;
+  SwerveSolution CalculateSplineInitialGuess() const;
 
   /**
    * Add a callback to retrieve the state of the solver as a SwerveSolution.
