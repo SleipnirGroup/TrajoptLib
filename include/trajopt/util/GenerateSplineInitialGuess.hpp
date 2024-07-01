@@ -288,7 +288,7 @@ inline SwerveSolution CalculateSplineInitialGuessWithKinematicsAndConstraints(
       path, initialGuessPoints, controlIntervalCounts);
 
   SwerveSolution initialGuess;
-  for (auto i = 0; i < trajectoriesSamples.size(); ++i) {
+  for (size_t i = 0; i < trajectoriesSamples.size(); ++i) {
     const auto& traj = trajectoriesSamples.at(i);
     /// FIXME: first segment is always 1 point long so always 0.1s to second
     /// sample
