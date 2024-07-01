@@ -217,6 +217,10 @@ CalculateWaypointStatesWithControlIntervals(
   return waypoint_states;
 }
 
+/** 
+ * This is used to calculated the suggested number of states in order to get 
+ * a path with a dt of around desiredDt.
+ */
 std::vector<std::vector<frc::Trajectory::State>> CalculateWaypointStatesWithDt(
     const trajopt::SwervePath path,
     const std::vector<std::vector<Pose2d>> initialGuessPoints,
