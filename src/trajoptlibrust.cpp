@@ -241,23 +241,25 @@ void SwervePathBuilderImpl::cancel_all() {
 }
 
 HolonomicTrajectory _convert_sol_to_holonomic_trajectory(
-    const trajopt::SwerveSolution& sol) {
-  rust::Vec<HolonomicTrajectorySample> samples;
-  double total_time = 0;
-  samples.reserve(sol.x.size());
-  for (size_t i = 0; i < sol.x.size(); ++i) {
-    HolonomicTrajectorySample p = HolonomicTrajectorySample{
-        .timestamp = total_time,
-        .x = sol.x.at(i),
-        .y = sol.y.at(i),
-        .heading = std::atan2(sol.thetasin.at(i), sol.thetacos.at(i)),
-    };
-    samples.emplace_back(p);
-    total_time += sol.dt.at(i);
+    const trajopt::SwerveSolution& solution) {
+  trajopt::HolonomicTrajectory cppTrajectory{solution};
+
+  rust::Vec<HolonomicTrajectorySample> rustSamples;
+  for (const auto& cppSample : cppTrajectory.samples) {
+    rust::Vec<double> fx;
+    std::copy(cppSample.moduleForcesX.begin(), cppSample.moduleForcesX.end(),
+              std::back_inserter(fx));
+
+    rust::Vec<double> fy;
+    std::copy(cppSample.moduleForcesY.begin(), cppSample.moduleForcesY.end(),
+              std::back_inserter(fy));
+
+    rustSamples.push_back(HolonomicTrajectorySample{
+        cppSample.timestamp, cppSample.x, cppSample.y, cppSample.heading,
+        cppSample.velocityX, cppSample.velocityY, cppSample.angularVelocity,
+        std::move(fx), std::move(fy)});
   }
-  return HolonomicTrajectory{
-      .samples = samples,
-  };
+  return HolonomicTrajectory{rustSamples};
 }
 
 HolonomicTrajectory SwervePathBuilderImpl::calculate_linear_initial_guess()

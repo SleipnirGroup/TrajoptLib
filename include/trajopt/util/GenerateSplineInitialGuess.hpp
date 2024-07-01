@@ -286,7 +286,6 @@ inline SwerveSolution CalculateSplineInitialGuessWithKinematicsAndConstraints(
     std::vector<size_t> controlIntervalCounts) {
   const auto trajectoriesSamples = CalculateWaypointStatesWithControlIntervals(
       path, initialGuessPoints, controlIntervalCounts);
-
   SwerveSolution initialGuess;
   for (size_t i = 0; i < trajectoriesSamples.size(); ++i) {
     const auto& traj = trajectoriesSamples.at(i);
@@ -295,7 +294,7 @@ inline SwerveSolution CalculateSplineInitialGuessWithKinematicsAndConstraints(
     auto dt = 0.1_s;
     if (traj.size() > 1) {
       dt = traj.at(1).t - traj.front().t;
-    } else if (traj.size() == 1 && i + 1 < trajectoriesSamples.size()) {
+    } else if (traj.size() == 1 && (i + 1) < trajectoriesSamples.size()) {
       dt = trajectoriesSamples.at(i + 1).front().t - traj.front().t;
     }
 
@@ -306,14 +305,22 @@ inline SwerveSolution CalculateSplineInitialGuessWithKinematicsAndConstraints(
       //   point.pose.Rotation().Cos(),
       //   point.pose.Rotation().Sin(),
       //   dt.value());
+      initialGuess.dt.push_back(dt.value());
+
       initialGuess.x.push_back(point.pose.X().value());
       initialGuess.y.push_back(point.pose.Y().value());
       initialGuess.thetacos.push_back(point.pose.Rotation().Cos());
       initialGuess.thetasin.push_back(point.pose.Rotation().Sin());
-      initialGuess.dt.push_back(dt.value());
+      initialGuess.vx.push_back(0.0);
+      initialGuess.vy.push_back(0.0);
+      initialGuess.omega.push_back(0);
+      initialGuess.ax.push_back(0);
+      initialGuess.ay.push_back(0);
+      initialGuess.alpha.push_back(0);
+      initialGuess.moduleFX.push_back(std::vector<double>{0, 0, 0, 0});
+      initialGuess.moduleFY.push_back(std::vector<double>{0, 0, 0, 0});
     }
   }
-
   return initialGuess;
 }
 
