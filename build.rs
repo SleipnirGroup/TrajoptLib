@@ -26,6 +26,10 @@ fn main() {
         .include(format!("{}/include/eigen3", cmake_dest.display()))
         .std("c++20");
 
+    if cfg!(target_os = "windows") {
+        bridge_build.flag("/EHsc").flag("/utf-8");
+    }
+
     bridge_build.compile("trajoptrust");
 
     println!(
