@@ -217,8 +217,8 @@ CalculateWaypointStatesWithControlIntervals(
   return waypoint_states;
 }
 
-/** 
- * This is used to calculated the suggested number of states in order to get 
+/**
+ * This is used to calculated the suggested number of states in order to get
  * a path with a dt of around desiredDt.
  */
 std::vector<std::vector<frc::Trajectory::State>> CalculateWaypointStatesWithDt(
