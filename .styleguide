@@ -9,6 +9,7 @@ cppSrcFileInclude {
 }
 
 modifiableFileExclude {
+  \.patch$
   expected$
   \.patch$
 }
