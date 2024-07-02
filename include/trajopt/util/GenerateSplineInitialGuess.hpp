@@ -4,12 +4,13 @@
 
 #include <vector>
 
-#include "frc/MathUtil.h"
-#include "frc/geometry/Pose2d.h"
-#include "frc/geometry/Translation2d.h"
-#include "frc/trajectory/Trajectory.h"
-#include "frc/trajectory/TrajectoryGenerator.h"
-#include "frc/trajectory/TrajectoryParameterizer.h"
+#include <frc/MathUtil.h>
+#include <frc/geometry/Pose2d.h>
+#include <frc/geometry/Translation2d.h>
+#include <frc/trajectory/Trajectory.h>
+#include <frc/trajectory/TrajectoryGenerator.h>
+#include <frc/trajectory/TrajectoryParameterizer.h>
+
 #include "spline/CubicHermitePoseSplineHolonomic.hpp"
 #include "spline/SplineParameterizer.hpp"
 #include "spline/SplineUtil.hpp"

@@ -2,13 +2,14 @@
 
 #pragma once
 
-#include <frc/trajectory/Trajectory.h>
 #include <stdint.h>
 
 #include <cassert>
 #include <cstddef>
 #include <functional>
 #include <vector>
+
+#include <frc/trajectory/Trajectory.h>
 
 #include "trajopt/constraint/Constraint.hpp"
 #include "trajopt/drivetrain/SwerveDrivetrain.hpp"
