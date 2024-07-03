@@ -20,7 +20,7 @@ fn main() {
     let mut bridge_build = cxx_build::bridge("src/lib.rs");
 
     bridge_build
-        .file("src/trajoptlibrust.cpp")
+        .file("src/RustFFI.cpp")
         .include("src")
         .include(format!("{}/include", cmake_dest.display()))
         .include(format!("{}/include/eigen3", cmake_dest.display()))
@@ -45,7 +45,7 @@ fn main() {
     println!("cargo:rustc-link-lib=Sleipnir");
     println!("cargo:rustc-link-lib=fmt");
 
-    println!("cargo:rerun-if-changed=src/trajoptlibrust.hpp");
-    println!("cargo:rerun-if-changed=src/trajoptlibrust.cpp");
+    println!("cargo:rerun-if-changed=src/RustFFI.hpp");
+    println!("cargo:rerun-if-changed=src/RustFFI.cpp");
     println!("cargo:rerun-if-changed=src/lib.rs");
 }

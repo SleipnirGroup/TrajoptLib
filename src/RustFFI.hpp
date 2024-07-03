@@ -9,15 +9,15 @@
 
 #include "trajopt/path/SwervePathBuilder.hpp"
 
-namespace trajoptlibrust {
+namespace trajopt::rsffi {
 
 struct HolonomicTrajectory;
 struct Pose2d;
 struct SwerveDrivetrain;
 
-class SwervePathBuilderImpl {
+class SwervePathBuilder {
  public:
-  SwervePathBuilderImpl() = default;
+  SwervePathBuilder() = default;
 
   void set_drivetrain(const SwerveDrivetrain& drivetrain);
   void set_bumpers(double length, double width);
@@ -68,9 +68,9 @@ class SwervePathBuilderImpl {
   void cancel_all();
 
  private:
-  trajopt::SwervePathBuilder path;
+  trajopt::SwervePathBuilder path_builder;
 };
 
-std::unique_ptr<SwervePathBuilderImpl> new_swerve_path_builder_impl();
+std::unique_ptr<SwervePathBuilder> swerve_path_builder_new();
 
-}  // namespace trajoptlibrust
+}  // namespace trajopt::rsffi

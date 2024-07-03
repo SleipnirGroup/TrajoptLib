@@ -67,7 +67,7 @@ option(BUILD_EXAMPLES "Build examples" OFF)
 include(CompilerFlags)
 
 file(GLOB_RECURSE TrajoptLib_src src/*.cpp)
-list(FILTER TrajoptLib_src EXCLUDE REGEX trajoptlibrust.cpp)
+list(FILTER TrajoptLib_src EXCLUDE REGEX RustFFI.cpp)
 
 add_library(TrajoptLib ${TrajoptLib_src})
 compiler_flags(TrajoptLib)
