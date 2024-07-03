@@ -17,6 +17,7 @@
 #include "trajopt/drivetrain/SwerveModule.hpp"
 #include "trajopt/trajectory/HolonomicTrajectory.hpp"
 #include "trajopt/trajectory/HolonomicTrajectorySample.hpp"
+#include "trajopt/util/Cancellation.hpp"
 #include "trajoptlib/src/lib.rs.h"
 
 namespace trajopt::rsffi {
@@ -240,12 +241,12 @@ void SwervePathBuilder::add_progress_callback(
       });
 }
 
-void SwervePathBuilder::cancel_all() {
-  path_builder.CancelAll();
-}
-
 std::unique_ptr<SwervePathBuilder> swerve_path_builder_new() {
   return std::make_unique<SwervePathBuilder>();
+}
+
+void cancel_all() {
+  trajopt::GetCancellationFlag() = 1;
 }
 
 }  // namespace trajopt::rsffi

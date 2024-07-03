@@ -65,12 +65,12 @@ class SwervePathBuilder {
   void add_progress_callback(
       rust::Fn<void(HolonomicTrajectory, int64_t)> callback);
 
-  void cancel_all();
-
  private:
   trajopt::SwervePathBuilder path_builder;
 };
 
 std::unique_ptr<SwervePathBuilder> swerve_path_builder_new();
+
+void cancel_all();
 
 }  // namespace trajopt::rsffi

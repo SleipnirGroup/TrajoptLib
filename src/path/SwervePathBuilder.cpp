@@ -198,10 +198,6 @@ void SwervePathBuilder::AddIntermediateCallback(
   path.callbacks.push_back(callback);
 }
 
-void SwervePathBuilder::CancelAll() {
-  trajopt::GetCancellationFlag() = 1;
-}
-
 void SwervePathBuilder::NewWpts(size_t finalIndex) {
   int64_t targetIndex = finalIndex;
   int64_t greatestIndex = path.waypoints.size() - 1;
