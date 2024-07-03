@@ -181,11 +181,6 @@ class TRAJOPT_DLLEXPORT SwervePathBuilder {
   void AddIntermediateCallback(
       const std::function<void(SwerveSolution&, int64_t)> callback);
 
-  /**
-   * Cancel all currently generating SwervePathBuilders.
-   */
-  void CancelAll();
-
  private:
   SwervePath path;
 

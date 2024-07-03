@@ -162,9 +162,9 @@ mod ffi {
             callback: fn(HolonomicTrajectory, i64),
         );
 
-        fn cancel_all(self: Pin<&mut SwervePathBuilder>);
-
         fn swerve_path_builder_new() -> UniquePtr<SwervePathBuilder>;
+
+        fn cancel_all();
     }
 }
 
@@ -424,16 +424,16 @@ impl SwervePathBuilder {
     pub fn add_progress_callback(&mut self, callback: fn(HolonomicTrajectory, i64)) {
         crate::ffi::SwervePathBuilder::add_progress_callback(self.path_builder.pin_mut(), callback);
     }
-
-    pub fn cancel_all(&mut self) {
-        crate::ffi::SwervePathBuilder::cancel_all(self.path_builder.pin_mut());
-    }
 }
 
 impl Default for SwervePathBuilder {
     fn default() -> Self {
         Self::new()
     }
+}
+
+pub fn cancel_all() {
+    crate::ffi::cancel_all();
 }
 
 pub use ffi::HolonomicTrajectory;
