@@ -106,7 +106,7 @@ fetchcontent_declare(
     # main on 2024-06-23
     GIT_TAG 346ef361d306b60fa9cf8d96912c37cfaecf78b7
     PATCH_COMMAND
-        git apply ${CMAKE_CURRENT_SOURCE_DIR}/cmake/0001-Downgrade-to-C-20.patch
+        git am ${CMAKE_CURRENT_SOURCE_DIR}/cmake/0001-Downgrade-to-C-20.patch
     UPDATE_DISCONNECTED 1
 )
 fetchcontent_makeavailable(Sleipnir)
