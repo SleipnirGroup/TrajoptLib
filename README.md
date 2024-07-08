@@ -1,3 +1,5 @@
+TrajoptLib has moved into the [Choreo](https://github.com/SleipnirGroup/Choreo/) repo.
+
 # TrajoptLib
 
 ![Build](https://github.com/SleipnirGroup/TrajoptLib/actions/workflows/build.yml/badge.svg)
