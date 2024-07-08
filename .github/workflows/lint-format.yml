@@ -81,7 +81,7 @@ jobs:
       - run: pip3 install wpiformat
 
       - name: Create compile_commands.json
-        run: cmake -B build -S . -DOPTIMIZER_BACKEND=sleipnir -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
+        run: cmake -B build -S . -DCMAKE_EXPORT_COMPILE_COMMANDS=YES
 
       - name: List changed files
         run: wpiformat -list-changed-files
